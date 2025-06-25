@@ -19,17 +19,23 @@ $pets = $mysqli->query("SELECT * FROM pets WHERE owner_id = $user_id");
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pet Profile</title>
   <style>
-    body { font-family: 'Arial', sans-serif; background: #f9f9f9; padding: 2rem; }
-    .profile-card { background: white; padding: 1.5rem; border-radius: 12px; max-width: 800px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+    body { font-family: 'Arial', sans-serif; background: #8CE7BE; padding: 2rem; }
+    .profile-card { background: #FFE29D; padding: 1.5rem; border-radius: 12px; max-width: 1100px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
     .tabs { display: flex; gap: 1rem; margin-top: 1rem; border-bottom: 1px solid #ccc; }
     .tab { padding: 0.5rem; cursor: pointer; border-bottom: 2px solid transparent; }
     .tab.active { border-bottom: 2px solid teal; font-weight: bold; }
     .tab-content { display: none; margin-top: 1rem; }
     .tab-content.active { display: block; }
     .section { margin-bottom: 1rem; }
+    #logoPreview {width: 170px; height: 170px; object-fit: contain; margin-right: 10px; border-radius: 50%}
   </style>
 </head>
 <body>
+
+<div style="display: flex; align-items: center; margin-bottom: 20px;">
+  <img src="../uploads/logo.jpg" alt="Logo" id="logoPreview">
+</div>
+
 
 <div class="profile-card">
   <h2>My Pet Profile</h2>
@@ -40,67 +46,87 @@ $pets = $mysqli->query("SELECT * FROM pets WHERE owner_id = $user_id");
     <div class="tab" data-tab="grooming">Grooming History</div>
   </div>
 
-  <?php while ($pet = $pets->fetch_assoc()) {
-    $pet_id = $pet['pet_id'];
+  <?php
+require '../db.php';
 
-    // Fetch related tables
-    $health = $mysqli->query("SELECT * FROM health_info WHERE pet_id = $pet_id")->fetch_assoc();
-    $behavior = $mysqli->query("SELECT * FROM behavior_preferences WHERE pet_id = $pet_id")->fetch_assoc();
-    $history = $mysqli->query("SELECT * FROM grooming_history WHERE pet_id = $pet_id ORDER BY history_id DESC LIMIT 5");
-  ?>
+if (isset($_GET['updated'])) {
+  echo "<p style='color:green;'>Pet profile updated successfully!</p>";
+}
 
-  <h3><?= htmlspecialchars($pet['name']) ?> (<?= $pet['breed'] ?>)</h3>
+$user_id = 1; // replace with session-based user ID
+$pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
 
-  <div class="tab-content active" id="health">
-    <div class="section">
-      <strong>Allergies:</strong> <?= $health['allergies'] ?? 'None' ?>
-    </div>
-    <div class="section">
-      <strong>Medications:</strong> <?= $health['medications'] ?? 'None' ?>
-    </div>
-    <div class="section">
-      <strong>Medical Conditions:</strong> <?= $health['medical_conditions'] ?? 'None' ?>
-    </div>
+while ($pet = $pets->fetch_assoc()) {
+  $pet_id = $pet['pet_id'];
+
+  $health = $mysqli->query("SELECT * FROM health_info WHERE pet_id = $pet_id")->fetch_assoc();
+  $behavior = $mysqli->query("SELECT * FROM behavior_preferences WHERE pet_id = $pet_id")->fetch_assoc();
+  $history = $mysqli->query("SELECT * FROM grooming_history WHERE pet_id = $pet_id ORDER BY history_id DESC LIMIT 5");
+?>
+
+<div class="pet-profile" id="pet-<?= $pet_id ?>">
+  <h3>
+    <img src="<?= $pet['photo_url'] ?>" alt="<?= $pet['name'] ?>" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px;">
+    <?= htmlspecialchars($pet['name']) ?> (<?= $pet['breed'] ?>)
+    <a href="#" class="edit-button" data-id="<?= $pet['pet_id'] ?>" style="float: right; font-size: 14px;">✏️ Edit</a>
+  </h3>
+
+  <?php include 'edit-pet-form.php'; ?>
+
+  <!-- Tab headers -->
+  <div class="tabs">
+    <div class="tab active" data-tab="health-<?= $pet_id ?>">Health Info</div>
+    <div class="tab" data-tab="behavior-<?= $pet_id ?>">Behavior & Preferences</div>
+    <div class="tab" data-tab="grooming-<?= $pet_id ?>">Grooming History</div>
   </div>
 
-  <div class="tab-content" id="behavior">
-    <div class="section">
-      <strong>Behavior Notes:</strong> <?= $behavior['behavior_notes'] ?? 'None' ?>
-    </div>
-    <div class="section">
-      <strong>Nail Trimming:</strong> <?= $behavior['nail_trimming'] ?? 'Not specified' ?>
-    </div>
-    <div class="section">
-      <strong>Haircut Style:</strong> <?= $behavior['haircut_style'] ?? 'None' ?>
-    </div>
+  <div class="tab-content active" id="health-<?= $pet_id ?>">
+    <strong>Allergies:</strong> <?= $health['allergies'] ?? 'None' ?><br>
+    <strong>Medications:</strong> <?= $health['medications'] ?? 'None' ?><br>
+    <strong>Medical Conditions:</strong> <?= $health['medical_conditions'] ?? 'None' ?>
   </div>
 
-  <div class="tab-content" id="grooming">
+  <div class="tab-content" id="behavior-<?= $pet_id ?>">
+    <strong>Behavior Notes:</strong> <?= $behavior['behavior_notes'] ?? 'None' ?><br>
+    <strong>Nail Trimming:</strong> <?= $behavior['nail_trimming'] ?? 'Not specified' ?><br>
+    <strong>Haircut Style:</strong> <?= $behavior['haircut_style'] ?? 'None' ?>
+  </div>
+
+  <div class="tab-content" id="grooming-<?= $pet_id ?>">
     <?php while ($row = $history->fetch_assoc()) { ?>
-      <div class="section">
-        <strong>Date:</strong> <?= $row['summary'] ?><br><br>
-        <strong>Notes:</strong> <?= $row['notes'] ?? 'N/A' ?><br><br>
-        <strong>Tips:</strong> <?= $row['tips_for_next_time'] ?? 'None' ?><br><br><hr>
+      <div>
+        <strong>Date:</strong> <?= $row['summary'] ?><br>
+        <strong>Notes:</strong> <?= $row['notes'] ?? 'N/A' ?><br>
+        <strong>Tips:</strong> <?= $row['tips_for_next_time'] ?? 'None' ?><hr>
       </div>
     <?php } ?>
   </div>
-
-  <?php } ?>
 </div>
+<?php } ?>
 
 <script>
-  const tabs = document.querySelectorAll('.tab');
-  const contents = document.querySelectorAll('.tab-content');
-
-  tabs.forEach(tab => {
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      contents.forEach(c => c.classList.remove('active'));
+      const petId = tab.dataset.tab.split('-')[1];
+      document.querySelectorAll(`#pet-${petId} .tab`).forEach(t => t.classList.remove('active'));
+      document.querySelectorAll(`#pet-${petId} .tab-content`).forEach(c => c.classList.remove('active'));
       tab.classList.add('active');
       document.getElementById(tab.dataset.tab).classList.add('active');
     });
   });
+
+  // Edit form toggle
+  document.querySelectorAll('.edit-button').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const petId = btn.dataset.id;
+      const form = document.getElementById('edit-form-' + petId);
+      form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+    });
+  });
 </script>
+
 
 </body>
 </html>
