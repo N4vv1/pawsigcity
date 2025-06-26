@@ -58,6 +58,14 @@ $pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
 
     <?php include 'pet-edit.php'; ?>
 
+    <div class="section">
+      <strong>Age:</strong> <?= htmlspecialchars($pet['age']) ?><br><br>
+      <strong>Birthday:</strong> <?= htmlspecialchars($pet['birthday']) ?><br><br>
+      <strong>Gender:</strong> <?= htmlspecialchars($pet['gender']) ?><br><br>
+      <strong>Color:</strong> <?= htmlspecialchars($pet['color']) ?><br>
+    </div>
+
+
     <div class="tabs">
       <div class="tab active" data-tab="health-<?= $pet_id ?>">Health Info</div>
       <div class="tab" data-tab="behavior-<?= $pet_id ?>">Behavior & Preferences</div>
