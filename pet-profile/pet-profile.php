@@ -1,15 +1,15 @@
 <?php
-// database connection
-$mysqli = new mysqli("localhost", "root", "", "pet_grooming_system");
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
+session_start(); // this must come first
+
+if (isset($_SESSION['success'])) {
+  echo "<p style='color:green; font-weight: bold;'>" . $_SESSION['success'] . "</p>";
+  unset($_SESSION['success']); // so it only shows once
 }
 
-// Assume logged-in user ID (replace with session-based logic)
-$user_id = 1;
+require '../db.php'; // DB connection here
 
-// Get the user's pet(s)
-$pets = $mysqli->query("SELECT * FROM pets WHERE owner_id = $user_id");
+$user_id = 1; // Replace with $_SESSION['user_id'] when login is implemented
+$pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +27,7 @@ $pets = $mysqli->query("SELECT * FROM pets WHERE owner_id = $user_id");
     .tab-content { display: none; margin-top: 1rem; }
     .tab-content.active { display: block; }
     .section { margin-bottom: 1rem; }
-    #logoPreview {width: 170px; height: 170px; object-fit: contain; margin-right: 10px; border-radius: 50%}
+    #logoPreview { width: 170px; height: 170px; object-fit: contain; margin-right: 10px; border-radius: 50% }
   </style>
 </head>
 <body>
@@ -36,97 +36,85 @@ $pets = $mysqli->query("SELECT * FROM pets WHERE owner_id = $user_id");
   <img src="../uploads/logo.jpg" alt="Logo" id="logoPreview">
 </div>
 
-
 <div class="profile-card">
   <h2>My Pet Profile</h2>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="health">Health Info</div>
-    <div class="tab" data-tab="behavior">Behavior & Preferences</div>
-    <div class="tab" data-tab="grooming">Grooming History</div>
+  <?php while ($pet = $pets->fetch_assoc()) {
+    $pet_id = $pet['pet_id'];
+
+    $health = $mysqli->query("SELECT * FROM health_info WHERE pet_id = $pet_id")->fetch_assoc();
+    $behavior = $mysqli->query("SELECT * FROM behavior_preferences WHERE pet_id = $pet_id")->fetch_assoc();
+    $history = $mysqli->query("SELECT * FROM grooming_history WHERE pet_id = $pet_id ORDER BY history_id DESC LIMIT 5");
+  ?>
+
+  <div class="pet-profile" id="pet-<?= $pet_id ?>">
+    <h3>
+      <img src="<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>" 
+           style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; vertical-align: middle; margin-right: 10px;"
+           onerror="this.onerror=null;this.src='../uploads/default.jpg';">
+      <?= htmlspecialchars($pet['name']) ?> (<?= htmlspecialchars($pet['breed']) ?>)
+      <a href="#" class="edit-button" data-id="<?= $pet_id ?>" style="float: right; font-size: 14px;">✏️ Edit</a>
+    </h3>
+
+    <?php include 'pet-edit.php'; ?>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="health-<?= $pet_id ?>">Health Info</div>
+      <div class="tab" data-tab="behavior-<?= $pet_id ?>">Behavior & Preferences</div>
+      <div class="tab" data-tab="grooming-<?= $pet_id ?>">Grooming History</div>
+    </div>
+
+    <div class="tab-content active" id="health-<?= $pet_id ?>">
+      <div class="section"><strong>Allergies:</strong> <?= $health['allergies'] ?? 'None' ?></div>
+      <div class="section"><strong>Medications:</strong> <?= $health['medications'] ?? 'None' ?></div>
+      <div class="section"><strong>Medical Conditions:</strong> <?= $health['medical_conditions'] ?? 'None' ?></div>
+    </div>
+
+    <div class="tab-content" id="behavior-<?= $pet_id ?>">
+      <div class="section"><strong>Behavior Notes:</strong> <?= $behavior['behavior_notes'] ?? 'None' ?></div>
+      <div class="section"><strong>Nail Trimming:</strong> <?= $behavior['nail_trimming'] ?? 'Not specified' ?></div>
+      <div class="section"><strong>Haircut Style:</strong> <?= $behavior['haircut_style'] ?? 'None' ?></div>
+    </div>
+
+    <div class="tab-content" id="grooming-<?= $pet_id ?>">
+      <?php while ($row = $history->fetch_assoc()) { ?>
+        <div class="section">
+          <strong>Date:</strong> <?= $row['summary'] ?><br>
+          <strong>Notes:</strong> <?= $row['notes'] ?? 'N/A' ?><br>
+          <strong>Tips:</strong> <?= $row['tips_for_next_time'] ?? 'None' ?><hr>
+        </div>
+      <?php } ?>
+    </div>
   </div>
-
-  <?php
-require '../db.php';
-
-if (isset($_GET['updated'])) {
-  echo "<p style='color:green;'>Pet profile updated successfully!</p>";
-}
-
-$user_id = 1; // replace with session-based user ID
-$pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
-
-while ($pet = $pets->fetch_assoc()) {
-  $pet_id = $pet['pet_id'];
-
-  $health = $mysqli->query("SELECT * FROM health_info WHERE pet_id = $pet_id")->fetch_assoc();
-  $behavior = $mysqli->query("SELECT * FROM behavior_preferences WHERE pet_id = $pet_id")->fetch_assoc();
-  $history = $mysqli->query("SELECT * FROM grooming_history WHERE pet_id = $pet_id ORDER BY history_id DESC LIMIT 5");
-?>
-
-<div class="pet-profile" id="pet-<?= $pet_id ?>">
-  <h3>
-    <img src="<?= $pet['photo_url'] ?>" alt="<?= $pet['name'] ?>" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px;">
-    <?= htmlspecialchars($pet['name']) ?> (<?= $pet['breed'] ?>)
-    <a href="#" class="edit-button" data-id="<?= $pet['pet_id'] ?>" style="float: right; font-size: 14px;">✏️ Edit</a>
-  </h3>
-
-  <?php include 'edit-pet-form.php'; ?>
-
-  <!-- Tab headers -->
-  <div class="tabs">
-    <div class="tab active" data-tab="health-<?= $pet_id ?>">Health Info</div>
-    <div class="tab" data-tab="behavior-<?= $pet_id ?>">Behavior & Preferences</div>
-    <div class="tab" data-tab="grooming-<?= $pet_id ?>">Grooming History</div>
-  </div>
-
-  <div class="tab-content active" id="health-<?= $pet_id ?>">
-    <strong>Allergies:</strong> <?= $health['allergies'] ?? 'None' ?><br>
-    <strong>Medications:</strong> <?= $health['medications'] ?? 'None' ?><br>
-    <strong>Medical Conditions:</strong> <?= $health['medical_conditions'] ?? 'None' ?>
-  </div>
-
-  <div class="tab-content" id="behavior-<?= $pet_id ?>">
-    <strong>Behavior Notes:</strong> <?= $behavior['behavior_notes'] ?? 'None' ?><br>
-    <strong>Nail Trimming:</strong> <?= $behavior['nail_trimming'] ?? 'Not specified' ?><br>
-    <strong>Haircut Style:</strong> <?= $behavior['haircut_style'] ?? 'None' ?>
-  </div>
-
-  <div class="tab-content" id="grooming-<?= $pet_id ?>">
-    <?php while ($row = $history->fetch_assoc()) { ?>
-      <div>
-        <strong>Date:</strong> <?= $row['summary'] ?><br>
-        <strong>Notes:</strong> <?= $row['notes'] ?? 'N/A' ?><br>
-        <strong>Tips:</strong> <?= $row['tips_for_next_time'] ?? 'None' ?><hr>
-      </div>
-    <?php } ?>
-  </div>
+  <hr><br>
+  <?php } ?>
 </div>
-<?php } ?>
 
 <script>
-  // Tab switching
+  // Tab switching per pet profile
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const petId = tab.dataset.tab.split('-')[1];
-      document.querySelectorAll(`#pet-${petId} .tab`).forEach(t => t.classList.remove('active'));
-      document.querySelectorAll(`#pet-${petId} .tab-content`).forEach(c => c.classList.remove('active'));
+      const wrapper = document.querySelector(`#pet-${petId}`);
+
+      wrapper.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      wrapper.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
       tab.classList.add('active');
-      document.getElementById(tab.dataset.tab).classList.add('active');
+      wrapper.querySelector(`#${tab.dataset.tab}`).classList.add('active');
     });
   });
 
-  // Edit form toggle
+  // Toggle Edit Form
   document.querySelectorAll('.edit-button').forEach(btn => {
     btn.addEventListener('click', e => {
       e.preventDefault();
       const petId = btn.dataset.id;
       const form = document.getElementById('edit-form-' + petId);
-      form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
     });
   });
 </script>
-
 
 </body>
 </html>
