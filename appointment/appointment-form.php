@@ -7,8 +7,11 @@ $user_id = 1; // Replace with $_SESSION['user_id'] when login is active
 // Fetch user's pets
 $pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
 
-// Fetch available services
-$services = $mysqli->query("SELECT * FROM services");
+// Fetch user's pets
+$pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
+
+// Fetch available packages
+$packages = $mysqli->query("SELECT * FROM packages WHERE is_active = 1");
 ?>
 
 <!DOCTYPE html>
@@ -29,23 +32,20 @@ if (isset($_SESSION['success'])) {
 
 <form action="appointment-handler.php" method="POST">
   <label for="pet_id">Choose your pet:</label><br>
-  <select name="pet_id" id="pet_id" required onchange="showBreed(this)">
-    <option value="" disabled selected>Select a pet</option>
-    <?php 
-        $petArray = []; // Collect pet data for JS
-        while ($pet = $pets->fetch_assoc()): 
-        $petArray[$pet['pet_id']] = $pet['breed'];
-    ?>
-        <option value="<?= $pet['pet_id'] ?>"><?= htmlspecialchars($pet['name']) ?></option>
+  <select name="pet_id" id="pet_id" required>
+    <?php while ($pet = $pets->fetch_assoc()): ?>
+      <option value="<?= $pet['pet_id'] ?>">
+        <?= htmlspecialchars($pet['name']) ?> (<?= htmlspecialchars($pet['breed']) ?>)
+      </option>
     <?php endwhile; ?>
-  </select><br>
-  <p id="breedDisplay" style="font-weight: bold; margin-top: 5px;"></p>
+  </select><br><br>
 
-
-  <label for="service_id">Select Service:</label><br>
-  <select name="service_id" id="service_id" required>
-    <?php while ($service = $services->fetch_assoc()): ?>
-      <option value="<?= $service['service_id'] ?>"><?= htmlspecialchars($service['name']) ?></option>
+  <label for="service_id">Select Grooming Package:</label><br>
+  <select name="package_id" id="package_id" required>
+    <?php while ($package = $packages->fetch_assoc()): ?>
+      <option value="<?= $package['id'] ?>">
+        <?= htmlspecialchars($package['name']) ?> - ₱<?= number_format($package['price'], 2) ?>
+      </option>
     <?php endwhile; ?>
   </select><br><br>
 
@@ -63,6 +63,7 @@ if (isset($_SESSION['success'])) {
 
 </body>
 </html>
+
 <script>
   const breedData = <?= json_encode($petArray) ?>;
 

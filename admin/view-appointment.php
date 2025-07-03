@@ -4,13 +4,14 @@ require '../db.php';
 // Join multiple tables to display full appointment info
 $query = "
   SELECT a.*, 
-         u.full_name AS client_name,
-         p.name AS pet_name,
-         s.name AS service_name
+       u.full_name AS client_name,
+       p.name AS pet_name,
+       p.breed AS pet_breed,
+       pk.name AS package_name
   FROM appointments a
   JOIN users u ON a.user_id = u.user_id
   JOIN pets p ON a.pet_id = p.pet_id
-  JOIN services s ON a.service_id = s.service_id
+  JOIN packages pk ON a.package_id = pk.id
   ORDER BY a.appointment_date DESC
 ";
 
@@ -56,7 +57,8 @@ $appointments = $mysqli->query($query);
             echo htmlspecialchars($breed['breed']);
           ?>
         </td>
-        <td><?= htmlspecialchars($row['service_name']) ?></td>
+        <td><?= htmlspecialchars($row['package_name']) ?></td>
+        <td><?= htmlspecialchars($row['pet_breed']) ?></td>
         <td><?= htmlspecialchars($row['appointment_date']) ?></td>
         <td><?= ucfirst($row['status']) ?></td>
         <td><?= htmlspecialchars($row['groomer_name']) ?: 'Not assigned' ?></td>
