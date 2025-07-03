@@ -10,13 +10,13 @@
 </head>
 <body>
   
-  <a href="index.php" class="back-button">
+  <a href="../homepage/index.php" class="back-button">
   <i class='bx bx-arrow-back'></i> Back
 </a>
 
 
   <div class="wrapper">
-    <form action="main.php" method="post" class="login_box">
+    <form action="../homepage/main.php" method="post" class="login_box">
       <div class="login-header">
         <span>LOGIN</span>
       </div>

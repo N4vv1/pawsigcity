@@ -208,7 +208,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo">
-      <img src="Logo.jpg" alt="Logo" />
+      <img src="../homepage/Logo.jpg" alt="Logo" />
     </div>
     <nav class="menu">
       <a href="#"><i class='bx bx-home'></i>Dashboard / Home</a>
@@ -247,7 +247,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
           <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
               <td><?php echo $row['id']; ?></td>
-              <td><img src="gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
+              <td><img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
               <td><?php echo htmlspecialchars($row['image_path']); ?></td>
               <td class="actions">
                 <a href="gallery_edit.php?id=<?php echo $row['id']; ?>" class="edit-btn">Edit</a>

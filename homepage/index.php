@@ -30,7 +30,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="Logo.jpg" alt="Logo" class="icon" />
+        <img src="../homepage/Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -56,7 +56,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
+          <img src="../homepage/pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -65,7 +65,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="about.jpg" alt="About" class="about-image" />
+          <img src="../homepage/about.jpg" alt="About" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
@@ -87,7 +87,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
     <ul class="service-list">
 
       <li class="service-item">
-        <a href="loginform.html" class="service-link">
+        <a href="../homepage/loginform.html" class="service-link">
           <img src="fullgroom.png" alt="Full Grooming" class="service-image" />
           <h3 class="name">FULL GROOMING</h3>
           <p class="text">
@@ -97,7 +97,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
       </li>
 
       <li class="service-item">
-        <a href="loginform.html" class="service-link">
+        <a href="../homepage/loginform.html" class="service-link">
           <img src="bathdry.png" alt="Spa Bath" class="service-image" />
           <h3 class="name">SPA BATH</h3>
           <p class="text">
@@ -108,7 +108,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
 
       <li class="service-item">
         <a href="loginform.html" class="service-link">
-          <img src="bnd.png" alt="Bath and Dry" class="service-image" />
+          <img src="../homepage/bnd.png" alt="Bath and Dry" class="service-image" />
           <h3 class="name">BATH AND DRY</h3>
           <p class="text">
             A quick and refreshing service that includes a full bath and gentle blow dry — ideal for keeping your pet clean between full grooming sessions.
@@ -135,7 +135,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
             <?php while($row = $result->fetch_assoc()): ?>
               <li class="gallery-item">
                 <div class="gallery-image-container">
-                  <img src="gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" 
+                  <img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" 
                        alt="Gallery Image" 
                        class="gallery-image" />
                 </div>
@@ -227,7 +227,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
     galleryList.classList.add('fade-out');
 
     setTimeout(() => {
-      fetch(`gallery_load.php?page=${page}`)
+      fetch(`../dashboard/gallery_load.php?page=${page}`)
         .then(response => response.json())
         .then(data => {
           // Update gallery content

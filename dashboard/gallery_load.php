@@ -24,7 +24,7 @@ if ($result && $result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
         $html .= '<li class="gallery-item">';
         $html .= '<div class="gallery-image-container">';
-        $html .= '<img src="gallery_images/' . htmlspecialchars($row['image_path']) . '" alt="Gallery Image" class="gallery-image" />';
+        $html .= '<img src="../gallery_images/' . htmlspecialchars($row['image_path']) . '" alt="Gallery Image" class="gallery-image" />';
         $html .= '</div>';
         $html .= '</li>';
     }

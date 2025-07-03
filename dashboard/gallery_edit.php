@@ -21,14 +21,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
   $newImageName = basename($_FILES["image"]["name"]);
   $targetPath = $folder . $newImageName;
 
-  if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
+  // Create folder if it doesn't exist
+  if (!is_dir($folder)) {
+    mkdir($folder, 0777, true);
+  }
+
+  $fileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
+  $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+  if (!in_array($fileType, $allowedTypes)) {
+    $error = "❌ Only JPG, JPEG, PNG, or GIF files are allowed.";
+  } elseif (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
     $oldImagePath = $folder . $currentImage;
     if ($currentImage !== $newImageName && file_exists($oldImagePath)) {
       unlink($oldImagePath);
     }
 
     $stmt = $conn->prepare("UPDATE gallery SET image_path = ? WHERE id = ?");
-    $stmt->bind_param("s", $newImageName, $id);
+    $stmt->bind_param("si", $newImageName, $id); // ✅ FIXED: correct type definition string
     $stmt->execute();
 
     header("Location: gallery.php");

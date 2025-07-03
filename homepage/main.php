@@ -1,5 +1,5 @@
 <?php 
-require_once 'conn.php'; 
+require_once '../conn.php'; 
 
 // Pagination settings
 $images_per_page = 6; // Number of images per page
@@ -30,7 +30,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="Logo.jpg" alt="Logo" class="icon" />
+        <img src="../homepage/Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -56,7 +56,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
+          <img src="../homepage/pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -87,7 +87,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
         <ul class="service-list">
           <li class="service-item">
             <a href="service.php" class="service-link">
-              <img src="fullgroom.png" alt="Full Grooming" class="service-image" />
+              <img src="../homepage/fullgroom.png" alt="Full Grooming" class="service-image" />
               <h3 class="name">FULL GROOMING</h3>
               <p class="text">
                 Our Full Grooming package includes a warm bath, blow dry, nail trim, tooth brushing, ear cleaning, and a stylish haircut — everything your pet needs to look and feel their best.
@@ -132,7 +132,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
             <?php while($row = $result->fetch_assoc()): ?>
               <li class="gallery-item">
                 <div class="gallery-image-container">
-                  <img src="gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" 
+                  <img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" 
                        alt="Gallery Image" 
                        class="gallery-image" />
                 </div>
@@ -224,7 +224,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
     galleryList.classList.add('fade-out');
 
     setTimeout(() => {
-      fetch(`gallery_load.php?page=${page}`)
+      fetch(`../dashboard/gallery_load.php?page=${page}`)
         .then(response => response.json())
         .then(data => {
           // Update gallery content
