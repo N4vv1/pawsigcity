@@ -8,7 +8,7 @@ if (isset($_SESSION['success'])) {
 
 require '../db.php'; // DB connection here
 
-$user_id = 1; // Replace with $_SESSION['user_id'] when login is implemented
+$user_id = $_SESSION['user_id'];
 $pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
 ?>
 
@@ -51,7 +51,7 @@ $pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
     <h3>
       <img src="<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>" 
            style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; vertical-align: middle; margin-right: 10px;"
-           onerror="this.onerror=null;this.src='../uploads/default.jpg';">
+           onerror="this.onerror=null;this.src='../uploads/';">
       <?= htmlspecialchars($pet['name']) ?> (<?= htmlspecialchars($pet['breed']) ?>)
       <a href="#" class="edit-button" data-id="<?= $pet_id ?>" style="float: right; font-size: 14px;">✏️ Edit</a>
     </h3>
