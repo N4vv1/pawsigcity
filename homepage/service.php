@@ -31,7 +31,7 @@
   $host = "localhost";
   $user = "root";
   $password = ""; // your password if any
-  $dbname = "purrfect_paw";
+  $dbname = "pet_grooming_system";
 
   $conn = new mysqli($host, $user, $password, $dbname);
 

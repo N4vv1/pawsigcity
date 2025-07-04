@@ -33,6 +33,10 @@ $appointments = $mysqli->query($query);
 
 <h2>📋 All Appointments</h2>
 
+<?php if (isset($_GET['rescheduled'])): ?>
+  <p style="color: green; font-weight: bold;">Appointment successfully rescheduled!</p>
+<?php endif; ?>
+
 <table>
   <thead>
     <tr>
@@ -44,6 +48,7 @@ $appointments = $mysqli->query($query);
       <th>Status</th>
       <th>Groomer</th>
       <th>Notes</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -63,6 +68,8 @@ $appointments = $mysqli->query($query);
         <td><?= ucfirst($row['status']) ?></td>
         <td><?= htmlspecialchars($row['groomer_name']) ?: 'Not assigned' ?></td>
         <td><?= nl2br(htmlspecialchars($row['notes'] ?? '')) ?></td>
+        <td><a href="reschedule-appointment.php?id=<?= $row['appointment_id'] ?>">🗓 Reschedule</a></td>
+
       </tr>
     <?php endwhile; ?>
   </tbody>

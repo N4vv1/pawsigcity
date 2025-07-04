@@ -1,19 +1,32 @@
 <?php 
-require_once '../conn.php'; 
+session_start();
+require_once '../db.php';
+
+$user_id = $_SESSION['user_id']; // Use session instead of fixed ID
+
+// Check if the user has pets
+$petCheck = $mysqli->query("SELECT COUNT(*) AS count FROM pets WHERE user_id = $user_id");
+$petCount = $petCheck->fetch_assoc()['count'];
+
+if ($petCount == 0) {
+    echo '<div style="background:#ffefc1; padding:15px; margin:20px 0; border:1px solid #ffc107;">
+            🐶 You haven’t added any pets yet. <a href="../pets/add-pet.php"><strong>Add one now</strong></a> to book a grooming appointment!
+          </div>';
+}
 
 // Pagination settings
-$images_per_page = 6; // Number of images per page
+$images_per_page = 6;
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $images_per_page;
 
 // Get total number of images
-$total_result = $conn->query("SELECT COUNT(*) as total FROM gallery");
+$total_result = $mysqli->query("SELECT COUNT(*) as total FROM gallery");
 $total_row = $total_result->fetch_assoc();
 $total_images = $total_row['total'];
 $total_pages = ceil($total_images / $images_per_page);
 
 // Get images for current page
-$result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
+$result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
 ?>
 
 <!DOCTYPE html>
