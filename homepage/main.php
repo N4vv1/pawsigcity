@@ -5,7 +5,7 @@ require_once '../db.php';
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     // Optional: Redirect to login
-    header('Location: ../homepage/loginform.php');
+    header('Location: ../homepage/login/loginform.php');
     exit;
 }
 
@@ -36,6 +36,7 @@ $total_pages = ceil($total_images / $images_per_page);
 $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,6 +59,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
         <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
         <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
         <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a href="./logout/logout.php" class="logout-button">Logout</a>
       </ul>
     </nav>
   </header>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../db.php'; // use $mysqli as your DB connection
+require_once '../../db.php'; // use $mysqli as your DB connection
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } elseif ($user['role'] == 'staff') {
                 header("Location: ../staff/dashboard.php");
             } else {
-                header("Location: ../homepage/main.php");
+                header("Location: http://localhost/purrfect-paws/homepage/main.php");
             }
             exit;
         } else {

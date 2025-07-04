@@ -87,7 +87,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
     <ul class="service-list">
 
       <li class="service-item">
-        <a href="../homepage/loginform.php" class="service-link">
+        <a href="../homepage/login/loginform.php" class="service-link">
           <img src="fullgroom.png" alt="Full Grooming" class="service-image" />
           <h3 class="name">FULL GROOMING</h3>
           <p class="text">
@@ -97,7 +97,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
       </li>
 
       <li class="service-item">
-        <a href="../homepage/loginform.php" class="service-link">
+        <a href="../homepage/login/loginform.php" class="service-link">
           <img src="bathdry.png" alt="Spa Bath" class="service-image" />
           <h3 class="name">SPA BATH</h3>
           <p class="text">
@@ -107,7 +107,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
       </li>
 
       <li class="service-item">
-        <a href="../homepage/loginform.php" class="service-link">
+        <a href="../homepage/login/loginform.php" class="service-link">
           <img src="../homepage/bnd.png" alt="Bath and Dry" class="service-image" />
           <h3 class="name">BATH AND DRY</h3>
           <p class="text">
