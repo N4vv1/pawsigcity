@@ -30,7 +30,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../homepage/Logo.jpg" alt="Logo" class="icon" />
+        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -56,7 +56,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../homepage/pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
+          <img src="../homepage/images/pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>

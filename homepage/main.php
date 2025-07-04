@@ -4,22 +4,16 @@ require_once '../db.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    // Optional: Redirect to login
+
     header('Location: ../homepage/login/loginform.php');
     exit;
 }
 
-$user_id = $_SESSION['user_id']; // Safe to use now
+$user_id = $_SESSION['user_id'];
 
 // Check if the user has pets
 $petCheck = $mysqli->query("SELECT COUNT(*) AS count FROM pets WHERE user_id = $user_id");
 $petCount = $petCheck->fetch_assoc()['count'];
-
-if ($petCount == 0) {
-    echo '<div style="background:#ffefc1; padding:15px; margin:20px 0; border:1px solid #ffc107;">
-            🐶 You haven’t added any pets yet. <a href="../pets/add-pet.php"><strong>Add one now</strong></a> to book a grooming appointment!
-          </div>';
-}
 
 // Pagination settings
 $images_per_page = 6;
@@ -51,7 +45,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../homepage/Logo.jpg" alt="Logo" class="icon" />
+        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -59,6 +53,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
         <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
         <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
         <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a href="../pets/pet-profile.php" class="nav-link">Pet</a></li>
         <li class="nav-item"><a href="./logout/logout.php" class="logout-button">Logout</a>
       </ul>
     </nav>
@@ -82,6 +77,16 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
         </div>
       </div>
     </section>
+    <?php if ($petCount == 0): ?>
+      <section class="section-content" style="margin-top: 20px;">
+        <div style="background:#ffefc1; padding:15px; border:1px solid #ffc107; text-align:center; border-radius: 8px;">
+          🐶 You haven’t added any pets yet. 
+          <a href="../pets/add-pet.php" style="font-weight:bold; color:#d35400;">Add one now</a> 
+          to book a grooming appointment!
+        </div>
+      </section>
+    <?php endif; ?>
+
 
     <!-- About Section -->
     <section class="about-section" id="about">
