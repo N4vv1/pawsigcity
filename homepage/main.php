@@ -2,7 +2,14 @@
 session_start();
 require_once '../db.php';
 
-$user_id = $_SESSION['user_id']; // Use session instead of fixed ID
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Optional: Redirect to login
+    header('Location: ../homepage/loginform.php');
+    exit;
+}
+
+$user_id = $_SESSION['user_id']; // Safe to use now
 
 // Check if the user has pets
 $petCheck = $mysqli->query("SELECT COUNT(*) AS count FROM pets WHERE user_id = $user_id");

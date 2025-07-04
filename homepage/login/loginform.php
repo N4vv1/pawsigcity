@@ -16,14 +16,14 @@
 
 
   <div class="wrapper">
-    <form action="../homepage/main.php" method="post" class="login_box">
+    <form action="login-handler.php" method="post" class="login_box">
       <div class="login-header">
         <span>LOGIN</span>
       </div>
 
       <div class="input_box">
-        <input type="text" id="user" class="input-field" name="username" required />
-        <label for="user" class="label">Username</label>
+        <input type="text" id="user" class="input-field" name="email" required />
+        <label for="user" class="label">Email</label>
         <i class="bx bx-user icon"></i>
       </div>
 
