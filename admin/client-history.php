@@ -1,6 +1,11 @@
 <?php
 require '../db.php';
 
+if ($_SESSION['role'] !== 'admin') {
+  header("Location: ../homepage/main.php");
+  exit;
+}
+
 $user_id = $_GET['user_id'] ?? null;
 
 if ($user_id) {

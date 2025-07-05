@@ -73,7 +73,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../homepage/pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
+          <img src="./images/pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -92,7 +92,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="about.jpg" alt="About" class="about-image" />
+          <img src="./images/about.jpg" alt="About" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
@@ -113,8 +113,8 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
       <div class="section-content">
         <ul class="service-list">
           <li class="service-item">
-            <a href="service.php" class="service-link">
-              <img src="../homepage/fullgroom.png" alt="Full Grooming" class="service-image" />
+            <a href="../appointment/service.php" class="service-link">
+              <img src="./images/fullgroom.png" alt="Full Grooming" class="service-image" />
               <h3 class="name">FULL GROOMING</h3>
               <p class="text">
                 Our Full Grooming package includes a warm bath, blow dry, nail trim, tooth brushing, ear cleaning, and a stylish haircut — everything your pet needs to look and feel their best.
@@ -123,8 +123,8 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
           </li>
 
           <li class="service-item">
-            <a href="service.php" class="service-link">
-              <img src="bathdry.png" alt="Spa Bath" class="service-image" />
+            <a href="../appointment/service.php" class="service-link">
+              <img src="./images/bathdry.png" alt="Spa Bath" class="service-image" />
               <h3 class="name">SPA BATH</h3>
               <p class="text">
                 Pamper your pet with our luxurious Spa Bath, which features a nano bubble bath, gentle massage, blow dry, nail trim, tooth brushing, and ear cleaning. This package also includes a stylish haircut, odor eliminator, and paw moisturizer for a complete spa experience.
@@ -133,8 +133,8 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
           </li>
 
           <li class="service-item">
-            <a href="service.php" class="service-link">
-              <img src="bnd.png" alt="Bath and Dry" class="service-image" />
+            <a href="../appointment/service.php" class="service-link">
+              <img src="./images/bnd.png" alt="Bath and Dry" class="service-image" />
               <h3 class="name">BATH AND DRY</h3>
               <p class="text">
                 A quick and refreshing service that includes a full bath and gentle blow dry — ideal for keeping your pet clean between full grooming sessions.

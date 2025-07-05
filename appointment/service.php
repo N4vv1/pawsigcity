@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PURRFECT PAWS | SERVICES</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../homepage/style.css">
 </head>
 <body>
 
@@ -15,11 +15,11 @@
         <img src="Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
-        <li class="nav-item"><a href="main.php" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link active">Services</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link">Gallery</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
       </ul>
     </nav>
   </header>
@@ -99,9 +99,15 @@
               <li>No features listed.</li>
             <?php endif; ?>
           </ul>
+          <!-- Add Book Now button -->
+          <form action="appointment-handler.php" method="POST">
+            <input type="hidden" name="package_id" value="<?= $pkg_id ?>">
+            <button type="submit">Book Now</button>
+          </form>
         </div>
       <?php endforeach; ?>
     </div>
+
   </section>
 
   <!-- Ala Carte Section -->

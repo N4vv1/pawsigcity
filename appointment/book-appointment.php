@@ -2,142 +2,127 @@
 session_start();
 require '../db.php';
 
-$user_id = 1; // Replace with $_SESSION['user_id'] when login is active
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login/loginform.php");
+    exit;
+}
 
-$pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
-$packages = $mysqli->query("SELECT * FROM packages WHERE is_active = 1");
+$user_id = $_SESSION['user_id'];
+$selected_pet_id = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : null;
+$package_id = isset($_GET['package_id']) ? intval($_GET['package_id']) : null;
+
+// Fetch user's pets securely
+$pets_stmt = $mysqli->prepare("SELECT * FROM pets WHERE user_id = ?");
+$pets_stmt->bind_param("i", $user_id);
+$pets_stmt->execute();
+$pets_result = $pets_stmt->get_result();
+
+// If pet is selected, check if the pet belongs to the user
+if ($selected_pet_id) {
+    $pet_check_stmt = $mysqli->prepare("SELECT * FROM pets WHERE pet_id = ? AND user_id = ?");
+    $pet_check_stmt->bind_param("ii", $selected_pet_id, $user_id);
+    $pet_check_stmt->execute();
+    $valid_pet = $pet_check_stmt->get_result()->fetch_assoc();
+
+    if (!$valid_pet) {
+        echo "<p style='text-align:center;color:red;'>Invalid pet selection.</p>";
+        exit;
+    }
+
+    // Load packages only if pet is valid
+    $packages_stmt = $mysqli->prepare("SELECT * FROM packages WHERE is_active = 1");
+    $packages_stmt->execute();
+    $packages_result = $packages_stmt->get_result();
+}
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
   <title>Book Appointment</title>
-  <link rel="stylesheet" href="../homepage/style.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
+  <link rel="stylesheet" href="../homepage/style.css">
   <style>
-
-    h2 {
-      text-align: center;
-      color: #252525;
-      margin-bottom: 30px;
-    }
-
-    .form-container {
-      background: white;
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    .form-container label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #252525;
-    }
-
-    .form-container input,
-    .form-container select,
-    .form-container textarea {
-      width: 100%;
-      padding: 10px 14px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    .form-container button {
-      width: 100%;
-      background-color: #A8E6CF;
-      color: #252525;
-      padding: 12px;
-      border: none;
-      border-radius: 30px;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .form-container button:hover {
-      background-color: #FFE29D;
-    }
-
+    .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .btn { padding: 10px 20px; background: #A8E6CF; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .btn:hover { background: #FFD3B6; }
+    .form-container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    label { font-weight: bold; margin-top: 15px; display: block; }
     .alert-success {
-      width: fit-content;
-      margin: 0 auto 20px;
-      background-color: #FFE29D;
-      color: #252525;
-      padding: 12px 20px;
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px;
       border-radius: 8px;
-      font-weight: 600;
       text-align: center;
+      margin-bottom: 20px;
+    }
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <nav class="navbar section-content">
-    <a href="#" class="navbar-logo">
-      <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
-    </a>
-    <ul class="nav-menu">
-      <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
-      <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-      <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
-      <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
-      <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-      <li class="nav-item"><a href="../pets/pet-profile.php" class="nav-link">Pet</a></li>
-      <li class="nav-item"><a href="./logout/logout.php" class="logout-button">Logout</a></li>
-    </ul>
-  </nav>
-</header>
+<h2 style="text-align:center;">Book a Grooming Appointment</h2>
 
 <?php if (isset($_SESSION['success'])): ?>
   <div class="alert-success"><?= $_SESSION['success'] ?></div>
   <?php unset($_SESSION['success']); ?>
 <?php endif; ?>
 
-<h2>Book a Grooming Appointment</h2>
+<?php if (isset($_SESSION['error'])): ?>
+  <div class="alert-error"><?= $_SESSION['error'] ?></div>
+  <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 
-<div class="form-container">
-  <form action="appointment-handler.php" method="POST">
-    <label for="pet_id">Choose your pet:</label>
-    <select name="pet_id" id="pet_id" required>
-      <?php while ($pet = $pets->fetch_assoc()): ?>
-        <option value="<?= $pet['pet_id'] ?>">
-          <?= htmlspecialchars($pet['name']) ?> (<?= htmlspecialchars($pet['breed']) ?>)
-        </option>
-      <?php endwhile; ?>
-    </select>
+<?php if (!$selected_pet_id): ?>
+  <!-- Step 1: Choose pet -->
+  <div class="form-container">
+    <h3>Choose a pet to book an appointment for:</h3>
+    <?php while ($pet = $pets_result->fetch_assoc()): ?>
+      <div class="card">
+        <strong><?= htmlspecialchars($pet['name']) ?></strong> (<?= htmlspecialchars($pet['breed']) ?>)
+        <form method="GET" action="book-appointment.php" style="margin-top:10px;">
+          <input type="hidden" name="pet_id" value="<?= $pet['pet_id'] ?>">
+          <button class="btn" type="submit">Book for this Pet</button>
+        </form>
+      </div>
+    <?php endwhile; ?>
+  </div>
 
-    <label for="package_id">Select Grooming Package:</label>
-    <select name="package_id" id="package_id" required>
-      <?php while ($package = $packages->fetch_assoc()): ?>
-        <option value="<?= $package['id'] ?>">
-          <?= htmlspecialchars($package['name']) ?> - ₱<?= number_format($package['price'], 2) ?>
-        </option>
-      <?php endwhile; ?>
-    </select>
+<?php else: ?>
+  <!-- Step 2: Booking Form -->
+  <div class="form-container">
+    <a href="book-appointment.php" style="display:block;margin-bottom:20px;">← Choose another pet</a>
 
-    <label for="appointment_date">Appointment Date and Time:</label>
-    <input type="datetime-local" name="appointment_date" id="appointment_date" required>
+    <form method="POST" action="appointment-handler.php">
+      <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
 
-    <label for="groomer_name">Preferred Groomer (optional):</label>
-    <input type="text" name="groomer_name" id="groomer_name">
+      <label for="package_id">Select Grooming Package:</label>
+      <select name="package_id" id="package_id" required>
+        <?php while ($pkg = $packages_result->fetch_assoc()): ?>
+          <option value="<?= $pkg['id'] ?>" <?= $package_id == $pkg['id'] ? 'selected' : '' ?>>
+            <?= htmlspecialchars($pkg['name']) ?> - ₱<?= number_format($pkg['price'], 2) ?>
+          </option>
+        <?php endwhile; ?>
+      </select>
 
-    <label for="notes">Notes (optional):</label>
-    <textarea name="notes" id="notes" rows="3"></textarea>
+      <label for="appointment_date">Appointment Date and Time:</label>
+      <input type="datetime-local" name="appointment_date" id="appointment_date" required>
 
-    <button type="submit">Book Appointment</button>
-  </form>
-</div>
+      <label for="groomer_name">Preferred Groomer (optional):</label>
+      <input type="text" name="groomer_name" id="groomer_name">
+
+      <label for="notes">Notes (optional):</label>
+      <textarea name="notes" id="notes" rows="3"></textarea>
+
+      <button type="submit" class="btn">Book Appointment</button>
+    </form>
+  </div>
+<?php endif; ?>
 
 </body>
 </html>
