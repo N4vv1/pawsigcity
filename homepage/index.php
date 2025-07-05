@@ -51,7 +51,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
           <h3 class="subtitle">Best Grooming in the Town of Caniogan</h3>
           <p class="description">From Paw-scheduling to Tail-wagging — We’ve Got It Covered.</p>
           <div class="buttons">
-            <a href="loginform.php" class="button book-now">Book Now</a>
+            <a href="../homepage/login/loginform.php" class="button book-now">Book Now</a>
             <a href="#contact" class="button contact-us">Contact Us</a>
           </div>
         </div>

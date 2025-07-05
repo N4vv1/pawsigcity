@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     if ($stmt->execute()) {
       $_SESSION['success'] = "Registration successful!";
-      header("Location: register.php");
+      header("Location: ../login/loginform.php");
       exit;
     } else {
       $error = "Something went wrong. Please try again.";

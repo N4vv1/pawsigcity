@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (isset($_SESSION['success'])) {
+  echo "<script>alert('{$_SESSION['success']}');</script>";
+  unset($_SESSION['success']);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,11 +16,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
-  
-  <a href="../homepage/index.php" class="back-button">
-  <i class='bx bx-arrow-back'></i> Back
-</a>
 
+  <a href="../homepage/index.php" class="back-button">
+    <i class='bx bx-arrow-back'></i> Back
+  </a>
 
   <div class="wrapper">
     <form action="login-handler.php" method="post" class="login_box">
@@ -48,7 +54,7 @@
       </div>
 
       <div class="register">
-        <span>Don't have an account? <a href="./register/register.php">Register</a></span>
+        <span>Don't have an account? <a href="../register/register.php">Register</a></span>
       </div>
     </form>
   </div>
