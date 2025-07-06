@@ -1,4 +1,4 @@
-/* Google Font */
+ /* Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* Scroll behavior for smooth anchor link navigation */
@@ -760,3 +760,68 @@ textarea.form-input {
   background: var(--secondary-color);
   color: var(--primary-color);
 }
+
+
+/* Enlarge the user icon */
+.profile-icon i {
+  font-size: 32px; /* or 36px for even larger */
+  color: var(--dark-color);
+  transition: color 0.3s ease;
+}
+
+/* Hover color effect */
+.profile-icon:hover i {
+  color: var(--secondary-color);
+}
+
+/* Dropdown container */
+.nav-item.dropdown {
+  position: relative;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--light-pink-color);
+  border: 1px solid var(--medium-gray-color);
+  border-radius: var(--border-radius-s);
+  min-width: 180px;
+  padding: 10px 0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+  z-index: 10;
+}
+
+/* Show dropdown on hover */
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Keep it open a bit longer after hover loss */
+.nav-item.dropdown {
+  transition: all 0.4s ease;
+}
+
+/* Dropdown menu links */
+.dropdown-menu li a {
+  display: block;
+  padding: 12px 20px;
+  font-size: var(--font-size-n);
+  color: var(--dark-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-menu li a:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+

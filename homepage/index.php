@@ -27,7 +27,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
 </head>
 <body>
   <!-- Navbar Header -->
-  <header>
+   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
         <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
@@ -38,9 +38,19 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
         <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
         <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
         <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item dropdown">
+        <a href="#" class="nav-link profile-icon">
+          <i class="fas fa-user-circle" style="font-size: 24px;"></i>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+          <li><a href="./logout/logout.php">Logout</a></li>
+        </ul>
+      </li>
       </ul>
     </nav>
   </header>
+
 
   <!-- Hero Section -->
   <main>

@@ -53,8 +53,15 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
         <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
         <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
         <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-        <li class="nav-item"><a href="../pets/pet-profile.php" class="nav-link">Pet</a></li>
-        <li class="nav-item"><a href="./logout/logout.php" class="logout-button">Logout</a>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link profile-icon">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="./logout/logout.php">Logout</a></li>
+          </ul>
+        </li>
       </ul>
     </nav>
   </header>
