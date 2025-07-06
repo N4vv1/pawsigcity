@@ -28,28 +28,28 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
 <body>
   <!-- Navbar Header -->
    <header>
-    <nav class="navbar section-content">
-      <a href="#" class="navbar-logo">
-        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
-      </a>
-      <ul class="nav-menu">
-        <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
-        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
-        <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
-        <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-        <li class="nav-item dropdown">
+  <nav class="navbar section-content">
+    <a href="#" class="navbar-logo">
+      <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+    </a>
+    <ul class="nav-menu">
+      <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+      <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+      <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
+      <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
+      <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+      <li class="nav-item dropdown">
         <a href="#" class="nav-link profile-icon">
           <i class="fas fa-user-circle" style="font-size: 24px;"></i>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-          <li><a href="./logout/logout.php">Logout</a></li>
+          <li><a href="../homepage/login/loginform.php">Login</a></li>
         </ul>
       </li>
-      </ul>
-    </nav>
-  </header>
+    </ul>
+  </nav>
+</header>
+
 
 
   <!-- Hero Section -->

@@ -221,11 +221,11 @@ if (!$pets) {
       <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
     </a>
     <ul class="nav-menu">
-      <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
-      <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-      <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
-      <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
-      <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Services</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
       <li class="nav-item dropdown">
         <a href="#" class="nav-link profile-icon active">
           <i class="fas fa-user-circle"></i>

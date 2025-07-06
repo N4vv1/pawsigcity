@@ -17,7 +17,7 @@ if (isset($_SESSION['success'])) {
 </head>
 <body>
 
-  <a href="../homepage/index.php" class="back-button">
+  <a href="../index.php" class="back-button">
     <i class='bx bx-arrow-back'></i> Back
   </a>
 

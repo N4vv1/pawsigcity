@@ -40,33 +40,185 @@ if ($selected_pet_id) {
 <head>
   <title>Book Appointment</title>
   <link rel="stylesheet" href="../homepage/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    .card { background: #fff; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .btn { padding: 10px 20px; background: #A8E6CF; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-    .btn:hover { background: #FFD3B6; }
-    .form-container { max-width: 600px; margin: auto; background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-    label { font-weight: bold; margin-top: 15px; display: block; }
-    .alert-success {
-      background-color: #d4edda;
-      color: #155724;
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-      margin-bottom: 20px;
+  :root {
+    --primary-color: #A8E6CF;
+    --secondary-color: #FFE29D;
+  }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f9f9f9;
+  }
+
+ h2 {
+  color: #444;
+  margin-top: 50px; /* 🔼 Push it down more */
+  margin-bottom: 1rem;
+  text-align: center;
+}
+  h3 {
+    color: #444;
+    margin-bottom: 1rem;
+  }
+
+ .form-container {
+  max-width: 960px;
+  margin: 60px auto 40px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+
+  .card {
+    border: 2px solid var(--secondary-color);
+    padding: 20px 25px;
+    border-radius: 10px;
+    background: var(--secondary-color);
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .card strong {
+    font-size: 1.2rem;
+    color: #333;
+  }
+
+  .btn {
+    background: var(--primary-color);
+    border: none;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .btn:hover {
+    background: #91d6b8;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+  }
+
+  select,
+  input[type="text"],
+  input[type="datetime-local"],
+  textarea {
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+    transition: border-color 0.3s ease;
+  }
+
+  select:focus,
+  input:focus,
+  textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px 20px;
+    margin: 30px auto 10px;
+    width: 90%;
+    border-left: 6px solid #28a745;
+    border-radius: 8px;
+  }
+
+  .alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px 20px;
+    margin: 30px auto 10px;
+    width: 90%;
+    border-left: 6px solid #dc3545;
+    border-radius: 8px;
+  }
+
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .card {
+      flex-direction: column;
+      align-items: flex-start;
     }
-    .alert-error {
-      background-color: #f8d7da;
-      color: #721c24;
-      padding: 12px;
-      border-radius: 8px;
+
+    .btn {
+      width: 100%;
       text-align: center;
-      margin-bottom: 20px;
     }
-  </style>
+  }
+</style>
+
+
 </head>
 <body>
+   <header>
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="#home" class="nav-link ">Home</a></li>
+        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="#service" class="nav-link active">Services</a></li>
+        <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link profile-icon">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-<h2 style="text-align:center;">Book a Grooming Appointment</h2>
+<!-- ✅ Start page content wrapper -->
+<div class="page-content">
+
+<h2>Book a Grooming Appointment</h2>
 
 <?php if (isset($_SESSION['success'])): ?>
   <div class="alert-success"><?= $_SESSION['success'] ?></div>
@@ -123,6 +275,8 @@ if ($selected_pet_id) {
     </form>
   </div>
 <?php endif; ?>
+
+</div> <!-- ✅ End page-content -->
 
 </body>
 </html>
