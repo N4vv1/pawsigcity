@@ -125,21 +125,21 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
       <div class="section-content">
         <ul class="service-list">
           <li class="service-item">
-            <a href="service.php" class="service-link">
+            <a href="../appointment/service.php" class="service-link">
               <img src="../homepage/fullgroom.png" alt="Full Grooming" class="service-image" />
               <h3 class="name">FULL GROOMING</h3>
               <p class="text">Includes bath, dry, haircut, nail trim, brushing, and more.</p>
             </a>
           </li>
           <li class="service-item">
-            <a href="service.php" class="service-link">
+            <a href="../appointment/service.php" class="service-link">
               <img src="bathdry.png" alt="Spa Bath" class="service-image" />
               <h3 class="name">SPA BATH</h3>
               <p class="text">Pamper with nano bubble bath, odor eliminator, and paw moisturizer.</p>
             </a>
           </li>
           <li class="service-item">
-            <a href="service.php" class="service-link">
+            <a href="../appointment/service.php" class="service-link">
               <img src="bnd.png" alt="Bath and Dry" class="service-image" />
               <h3 class="name">BATH AND DRY</h3>
               <p class="text">Quick cleaning — perfect between full grooming sessions.</p>
