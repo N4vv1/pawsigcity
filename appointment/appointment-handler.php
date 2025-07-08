@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Redirect to payment step
         $_SESSION['success'] = "Appointment booked successfully!";
-        header("Location: ../homepage/payment/payment.php?appointment_id=$appointment_id");
+        header("Location: ../pets/pet-profile.php?appointment_id=$appointment_id");
         exit;
     } else {
         $_SESSION['error'] = "Database error: " . $stmt->error;
