@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
   exit;
 }
 
-$user_id = $_SESSION['user_id']; // get user ID from session
+$user_id = $_SESSION['user_id'];
 
 // Query to get user's pets
 $pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
@@ -26,9 +26,10 @@ if (!$pets) {
   <title>Pet Profile</title>
   <link rel="stylesheet" href="../homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
+      font-family: 'Poppins', sans-serif;
       background-color: #F9F9F9;
       margin: 0;
       padding: 0;
@@ -37,7 +38,7 @@ if (!$pets) {
     .add-pet-button {
       display: block;
       width: fit-content;
-      margin: 160px auto 20px;
+      margin: 20px auto;
       background-color: #6FCF97;
       color: white;
       padding: 10px 20px;
@@ -54,7 +55,7 @@ if (!$pets) {
 
     .profile-card {
       max-width: 850px;
-      margin: 0 auto 60px;
+      margin: 120px auto 60px;
       background-color: #fff;
       padding: 40px;
       border-radius: 18px;
@@ -70,25 +71,53 @@ if (!$pets) {
     }
 
     .pet-profile {
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
-      padding: 25px;
-      border-radius: 14px;
-      margin-bottom: 35px;
-      transition: box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 40px;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
 
-    .pet-profile:hover {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .pet-profile h3 {
+    .pet-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-top: 0;
-      font-size: 20px;
-      color: #333;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .pet-header img {
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border: 3px solid #eee;
+    }
+
+    .pet-details {
+      flex-grow: 1;
+    }
+
+    .pet-details h3 {
+      margin: 0;
+      font-size: 24px;
+      color: #2c3e50;
+    }
+
+    .pet-meta {
+      margin-top: 8px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .actions {
+      margin-top: 10px;
+    }
+
+    .edit-button, form button {
+      margin-right: 10px;
     }
 
     .edit-button {
@@ -121,17 +150,16 @@ if (!$pets) {
       background: #c82333;
     }
 
-    .section {
-      margin: 18px 0;
-      line-height: 1.6;
-      color: #444;
-    }
-
     .tabs {
+      background: #f9f9f9;
+      padding: 10px 15px;
+      border-radius: 12px;
       display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      justify-content: center;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
       flex-wrap: wrap;
-      gap: 12px;
-      margin: 25px 0 10px;
     }
 
     .tab {
@@ -152,6 +180,7 @@ if (!$pets) {
     .tab.active {
       background-color: #a8e6cf;
       color: #000;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .tab-content {
@@ -165,21 +194,21 @@ if (!$pets) {
       display: block;
     }
 
-    .pet-profile img {
-      border: 3px solid #ccc;
-      border-radius: 50%;
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      margin-right: 15px;
-      vertical-align: middle;
+    .section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+      line-height: 1.6;
+      color: #444;
+      margin-bottom: 10px;
     }
 
     .form-wrapper {
-      background-color: #A8E6CF;
+      background-color: #F1FAEE;
       padding: 20px;
       border-radius: 12px;
       margin-top: 15px;
+      border: 2px dashed #A8DADC;
     }
 
     .form-wrapper input,
@@ -210,11 +239,25 @@ if (!$pets) {
       border-top: 1px solid #ddd;
       margin: 25px 0;
     }
+
+    @media (max-width: 600px) {
+      .pet-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .pet-header img {
+        width: 80px;
+        height: 80px;
+      }
+
+      .section {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-
-<!-- Navbar -->
 <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
@@ -238,8 +281,7 @@ if (!$pets) {
     </ul>
   </nav>
 </header>
-
-<!-- Main Section -->
+<div style="height: 60px;"></div>
 <div class="profile-card">
   <a href="add-pet.php" class="add-pet-button">➕ Add Pet</a>
   <h2>My Pet Profile</h2>
@@ -253,19 +295,27 @@ if (!$pets) {
     ?>
 
     <div class="pet-profile" id="pet-<?= $pet_id ?>">
-      <h3>
+      <div class="pet-header">
         <img src="../<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>"
              onerror="this.onerror=null;this.src='../uploads/default.jpg';">
-        <?= htmlspecialchars($pet['name']) ?> (<?= htmlspecialchars($pet['breed']) ?>)
+        <div class="pet-details">
+          <h3><?= htmlspecialchars($pet['name']) ?> (<?= htmlspecialchars($pet['breed']) ?>)</h3>
+          <div class="pet-meta">
+            Age: <?= htmlspecialchars($pet['age']) ?> |
+            Gender: <?= htmlspecialchars($pet['gender']) ?> |
+            Color: <?= htmlspecialchars($pet['color']) ?><br>
+            Birthday: <?= htmlspecialchars($pet['birthday']) ?>
+          </div>
+          <div class="actions">
+            <a href="#" class="edit-button" data-id="<?= $pet_id ?>">✏️ Edit</a>
+            <form action="delete-pet.php" method="POST" style="display:inline;" onsubmit="return confirm('Delete this pet?');">
+              <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
+              <button type="submit">🗑 Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
 
-        <a href="#" class="edit-button" data-id="<?= $pet_id ?>">✏️ Edit</a>
-        <form action="delete-pet.php" method="POST" style="float:right; margin-right:10px;" onsubmit="return confirm('Delete this pet?');">
-          <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
-          <button type="submit">🗑 Delete</button>
-        </form>
-      </h3>
-
-      <!-- 🟢 EDIT FORM INCLUDED HERE -->
       <div id="edit-form-<?= $pet_id ?>" class="form-wrapper" style="display:none;">
         <form action="update-pet.php" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
@@ -281,14 +331,6 @@ if (!$pets) {
           <input type="file" name="photo_url">
           <button type="submit" class="form-submit-btn">Update Pet</button>
         </form>
-      </div>
-
-      <!-- Pet Info -->
-      <div class="section">
-        <strong>Age:</strong> <?= htmlspecialchars($pet['age']) ?><br><br>
-        <strong>Birthday:</strong> <?= htmlspecialchars($pet['birthday']) ?><br><br>
-        <strong>Gender:</strong> <?= htmlspecialchars($pet['gender']) ?><br><br>
-        <strong>Color:</strong> <?= htmlspecialchars($pet['color']) ?><br>
       </div>
 
       <div class="tabs">
@@ -319,15 +361,12 @@ if (!$pets) {
         <?php endwhile; ?>
       </div>
     </div>
-    <hr><br>
     <?php endwhile; ?>
   <?php else: ?>
     <p>You haven’t added any pets yet. <a href="add-pet.php">Add one now</a>.</p>
   <?php endif; ?>
 </div>
-
 <script>
-  // Tab switch logic
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const petId = tab.dataset.tab.split('-')[1];
@@ -339,7 +378,6 @@ if (!$pets) {
     });
   });
 
-  // Edit toggle
   document.querySelectorAll('.edit-button').forEach(btn => {
     btn.addEventListener('click', e => {
       e.preventDefault();
@@ -348,6 +386,6 @@ if (!$pets) {
     });
   });
 </script>
-
 </body>
 </html>
+  

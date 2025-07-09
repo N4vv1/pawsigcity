@@ -71,6 +71,18 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
     </nav>
   </header>
 
+  <div style="height: 120px;"></div>
+     <?php if ($petCount == 0): ?>
+    <section class="section-content" style="margin-top: 20px;">
+      <div style="background:#ffefc1; padding:15px; border:1px solid #ffc107; text-align:center; border-radius: 8px;">
+        🐶 You haven’t added any pets yet. 
+        <a href="../pets/add-pet.php" style="font-weight:bold; color:#d35400;">Add one now</a> 
+        to book a grooming appointment!
+      </div>
+    </section>
+    <?php endif; ?>
+
+
   <!-- Hero Section -->
   <main>
     <section class="hero-section" id="home">
@@ -85,20 +97,11 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../homepage/pawpatrol-removebg-preview.png" alt="Hero Dog" class="image-hero" />
+          <img src="../homepage/images/pawpatrol-removebg-preview.png" alt="Hero Dog" class="image-hero" />
         </div>
       </div>
     </section>
 
-    <?php if ($petCount == 0): ?>
-    <section class="section-content" style="margin-top: 20px;">
-      <div style="background:#ffefc1; padding:15px; border:1px solid #ffc107; text-align:center; border-radius: 8px;">
-        🐶 You haven’t added any pets yet. 
-        <a href="../pets/add-pet.php" style="font-weight:bold; color:#d35400;">Add one now</a> 
-        to book a grooming appointment!
-      </div>
-    </section>
-    <?php endif; ?>
 
     <!-- About Section -->
     <section class="about-section" id="about">
