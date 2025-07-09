@@ -1,10 +1,11 @@
 <?php
 require '../db.php';
 
-if ($_SESSION['role'] !== 'admin') {
-  header("Location: ../homepage/main.php");
-  exit;
-}
+//if ($_SESSION['role'] !== 'admin') {
+  //header("Location: ../homepage/main.php");
+  //exit;
+//}
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $appointment_id = $_POST['appointment_id'];

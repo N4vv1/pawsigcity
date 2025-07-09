@@ -13,7 +13,7 @@ $reason = trim($_POST['cancel_reason'] ?? '');
 
 if (!$appointment_id || empty($reason)) {
     $_SESSION['error'] = "Missing reason or appointment ID.";
-    header("Location: ../homepage/dashboard.php");
+    header("Location: http://localhost/purrfect-paws/homepage/appointments.php");
     exit;
 }
 
@@ -33,5 +33,5 @@ if ($stmt->execute()) {
     $_SESSION['error'] = "Failed to submit cancellation request.";
 }
 
-header("Location: ../homepage/dashboard.php");
+header("Location: http://localhost/purrfect-paws/homepage/appointments.php");
 exit;

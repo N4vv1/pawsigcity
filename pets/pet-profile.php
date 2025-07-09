@@ -18,6 +18,8 @@ if (!$pets) {
   exit;
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -275,12 +277,14 @@ if (!$pets) {
         </a>
         <ul class="dropdown-menu">
           <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+          <li><a href="../homepage/appointments.php">Appointments</a></li>
           <li><a href="./logout/logout.php">Logout</a></li>
         </ul>
       </li>
     </ul>
   </nav>
 </header>
+
 <div style="height: 60px;"></div>
 <div class="profile-card">
   <a href="add-pet.php" class="add-pet-button">➕ Add Pet</a>
@@ -291,9 +295,7 @@ if (!$pets) {
       $pet_id = $pet['pet_id'];
       $health = $mysqli->query("SELECT * FROM health_info WHERE pet_id = $pet_id")->fetch_assoc();
       $behavior = $mysqli->query("SELECT * FROM behavior_preferences WHERE pet_id = $pet_id")->fetch_assoc();
-      $history = $mysqli->query("SELECT * FROM grooming_history WHERE pet_id = $pet_id ORDER BY history_id DESC LIMIT 5");
     ?>
-
     <div class="pet-profile" id="pet-<?= $pet_id ?>">
       <div class="pet-header">
         <img src="../<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>"
@@ -336,7 +338,6 @@ if (!$pets) {
       <div class="tabs">
         <div class="tab active" data-tab="health-<?= $pet_id ?>">Health Info</div>
         <div class="tab" data-tab="behavior-<?= $pet_id ?>">Behavior & Preferences</div>
-        <div class="tab" data-tab="grooming-<?= $pet_id ?>">Grooming History</div>
       </div>
 
       <div class="tab-content active" id="health-<?= $pet_id ?>">
@@ -350,22 +351,13 @@ if (!$pets) {
         <div class="section"><strong>Nail Trimming:</strong> <?= $behavior['nail_trimming'] ?? 'Not specified' ?></div>
         <div class="section"><strong>Haircut Style:</strong> <?= $behavior['haircut_style'] ?? 'None' ?></div>
       </div>
-
-      <div class="tab-content" id="grooming-<?= $pet_id ?>">
-        <?php while ($row = $history->fetch_assoc()): ?>
-          <div class="section">
-            <strong>Date:</strong> <?= $row['summary'] ?><br>
-            <strong>Notes:</strong> <?= $row['notes'] ?? 'N/A' ?><br>
-            <strong>Tips:</strong> <?= $row['tips_for_next_time'] ?? 'None' ?><hr>
-          </div>
-        <?php endwhile; ?>
-      </div>
     </div>
     <?php endwhile; ?>
   <?php else: ?>
     <p>You haven’t added any pets yet. <a href="add-pet.php">Add one now</a>.</p>
   <?php endif; ?>
 </div>
+
 <script>
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {

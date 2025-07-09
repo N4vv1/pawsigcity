@@ -12,7 +12,7 @@ $user_id = $_SESSION['user_id'];
 
 if (!$appointment_id || !is_numeric($appointment_id)) {
     $_SESSION['error'] = "Invalid appointment ID.";
-    header("Location: ../homepage/dashboard.php");
+    header("Location: http://localhost/purrfect-paws/homepage/appointments.php");
     exit;
 }
 
@@ -24,7 +24,7 @@ $appointment = $stmt->get_result()->fetch_assoc();
 
 if (!$appointment) {
     $_SESSION['error'] = "Appointment not found.";
-    header("Location: ../homepage/dashboard.php");
+    header("Location: http://localhost/purrfect-paws/homepage/appointments.php");
     exit;
 }
 ?>
