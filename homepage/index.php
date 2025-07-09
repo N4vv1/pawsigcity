@@ -75,7 +75,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="../homepage/about.jpg" alt="About" class="about-image" />
+          <img src="../homepage/images/about.jpg" alt="About" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
@@ -98,7 +98,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
 
       <li class="service-item">
         <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="fullgroom.png" alt="Full Grooming" class="service-image" />
+          <img src="../homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
           <h3 class="name">FULL GROOMING</h3>
           <p class="text">
             Our Full Grooming package includes a warm bath, blow dry, nail trim, tooth brushing, ear cleaning, and a stylish haircut — everything your pet needs to look and feel their best.
@@ -108,7 +108,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
 
       <li class="service-item">
         <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="bathdry.png" alt="Spa Bath" class="service-image" />
+          <img src="../homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
           <h3 class="name">SPA BATH</h3>
           <p class="text">
             Pamper your pet with our luxurious Spa Bath, which features a nano bubble bath, gentle massage, blow dry, nail trim, tooth brushing, and ear cleaning. This package also includes a stylish haircut, odor eliminator, and paw moisturizer for a complete spa experience.
@@ -118,7 +118,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
 
       <li class="service-item">
         <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="../homepage/bnd.png" alt="Bath and Dry" class="service-image" />
+          <img src="../homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
           <h3 class="name">BATH AND DRY</h3>
           <p class="text">
             A quick and refreshing service that includes a full bath and gentle blow dry — ideal for keeping your pet clean between full grooming sessions.
@@ -145,7 +145,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
             <?php while($row = $result->fetch_assoc()): ?>
               <li class="gallery-item">
                 <div class="gallery-image-container">
-                  <img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" 
+                  <img src="../u<?php echo htmlspecialchars($row['image_path']); ?>" 
                        alt="Gallery Image" 
                        class="gallery-image" />
                 </div>
@@ -205,6 +205,43 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
         </form>
       </div>
     </section>
+
+    <!-- Footer Section -->
+<footer class="footer-section">
+  <div class="section-content footer-container">
+    <div class="footer-logo">
+      <img src="../homepage/images/Logo.jpg" alt="Purrfect Paws Logo" />
+      <h3>Purrfect Paws</h3>
+    </div>
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#service">Services</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-contact">
+      <h4>Contact Us</h4>
+      <p>324 Dr. Sixto Antonio Ave., Caniogan, Pasig City</p>
+      <p>Email: purrfectpaws@gmail.com</p>
+      <p>Phone: 09XX-XXX-XXXX</p>
+    </div>
+    <div class="footer-socials">
+      <h4>Follow Us</h4>
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 Purrfect Paws. All rights reserved.</p>
+  </div>
+</footer>
+
   </main>
 
   <script>

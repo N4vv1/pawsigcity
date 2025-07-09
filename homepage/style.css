@@ -475,7 +475,7 @@ header .navbar {
 
 /* Contact Section */
 .contact-section {
-  padding: 100px 20px;
+   padding: 100px 20px ;
   background: var(--primary-color);
   color: var(--white-color);
 }
@@ -570,195 +570,94 @@ textarea.form-input {
   border: 1px solid var(--primary-color);
 }
 
-/* Footer */
-.footer-bar {
-  background-color: var(--secondary-color);
+
+.footer-section {
+  background-color: var(--dark-color);
+  color: var(--white-color);
+  padding: 60px 20px 20px;
+  margin-top: 0;
+  font-size: var(--font-size-s);
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.footer-logo {
+  flex: 1 1 200px;
   text-align: center;
-  padding: 15px 0;
-  color: #333;
-  font-weight: 500;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  border-top: 1px solid #ccc;
 }
 
-.page-content {
-  padding: 140px 20px 100px;
-  background: var(--light-pink-color);
-  min-height: 100vh;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.page-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--dark-color);
+.footer-logo img {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius-circle);
   margin-bottom: 10px;
 }
 
-.page-subtitle {
-  font-size: var(--font-size-n);
-  color: var(--dark-color);
-}
-
-.packages-grid {
-  display: flex;
-  gap: 30px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 60px;
-}
-
-.package-card {
-  background: var(--white-color);
-  border: 2px solid var(--primary-color);
-  border-radius: var(--border-radius-m);
-  padding: 25px 20px;
-  width: 320px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-}
-
-.package-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
-}
-
-.package-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: var(--secondary-color);
-  color: var(--primary-color);
-  font-weight: var(--font-weight-bold);
-  padding: 6px 12px;
-  font-size: var(--font-size-s);
-  border-radius: var(--border-radius-s);
-}
-
-.package-header {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.package-name {
+.footer-logo h3 {
   font-size: var(--font-size-l);
-  font-weight: var(--font-weight-bold);
-  color: var(--dark-color);
-  margin-bottom: 8px;
+  color: var(--secondary-color);
 }
 
-.package-price {
+.footer-links,
+.footer-contact,
+.footer-socials {
+  flex: 1 1 200px;
+}
+
+.footer-links h4,
+.footer-contact h4,
+.footer-socials h4 {
+  margin-bottom: 15px;
   font-size: var(--font-size-m);
-  color: var(--primary-color);
+  color: var(--secondary-color);
 }
 
-.package-price small {
-  font-size: var(--font-size-s);
-  color: var(--medium-gray-color);
-}
-
-.package-features {
+.footer-links ul {
   list-style: none;
   padding: 0;
 }
 
-.package-features li {
-  padding: 8px 0;
-  border-bottom: 1px solid var(--light-pink-color);
-  color: var(--dark-color);
-  font-size: var(--font-size-n);
+.footer-links ul li {
+  margin-bottom: 10px;
+}
+
+.footer-links ul li a {
+  color: var(--white-color);
+  transition: color 0.3s ease;
+}
+
+.footer-links ul li a:hover {
+  color: var(--secondary-color);
+}
+
+.footer-contact p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.footer-socials .social-icons a {
+  font-size: 24px;
+  color: var(--white-color);
+  margin-right: 12px;
+  transition: color 0.3s ease;
+}
+
+.footer-socials .social-icons a:hover {
+  color: var(--secondary-color);
+}
+
+.footer-bottom {
   text-align: center;
-}
-
-/* À La Carte Section */
-.alacarte-section {
-  margin-top: 60px;
-}
-
-.alacarte-title {
-  font-size: var(--font-size-l);
-  color: var(--dark-color);
-  text-align: center;
-  margin-bottom: 30px;
-  font-weight: var(--font-weight-semi-bold);
-}
-
-.alacarte-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-.alacarte-item {
-  background: var(--white-color);
-  padding: 16px 20px;
-  border: 2px dashed var(--primary-color);
-  border-radius: var(--border-radius-m);
-  width: 200px;
-  text-align: center;
-  transition: transform 0.3s ease, background 0.3s ease;
-  cursor: pointer;
-}
-
-.alacarte-item:hover {
-  transform: translateY(-5px);
-  background: var(--secondary-color);
-}
-
-.alacarte-name {
-  font-weight: var(--font-weight-semi-bold);
-  font-size: var(--font-size-m);
-  color: var(--dark-color);
-  margin-bottom: 6px;
-}
-
-.alacarte-price {
-  font-size: var(--font-size-s);
-  color: var(--primary-color);
-}
-
-/* Navigation Buttons */
-.navigation {
-  display: flex;
-  justify-content: space-between;
   margin-top: 40px;
-}
-
-.btn {
-  padding: 12px 28px;
-  font-size: var(--font-size-m);
-  border-radius: var(--border-radius-s);
-  font-weight: var(--font-weight-bold);
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.btn-back {
-  background: var(--medium-gray-color);
-  color: var(--white-color);
-}
-
-.btn-next {
-  background: var(--primary-color);
-  color: var(--white-color);
-}
-
-.btn-next:disabled {
-  background: #ccc;
-  color: #888;
-  cursor: not-allowed;
-}
-
-.btn:hover:not(:disabled) {
-  background: var(--secondary-color);
-  color: var(--primary-color);
+  padding-top: 20px;
+  border-top: 1px solid #444;
+  font-size: var(--font-size-s);
+  color: #bbb;
 }
 
 

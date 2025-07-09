@@ -212,6 +212,43 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
         </form>
       </div>
     </section>
+
+     <!-- Footer Section -->
+<footer class="footer-section">
+  <div class="section-content footer-container">
+    <div class="footer-logo">
+      <img src="../homepage/images/Logo.jpg" alt="Purrfect Paws Logo" />
+      <h3>Purrfect Paws</h3>
+    </div>
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#service">Services</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-contact">
+      <h4>Contact Us</h4>
+      <p>324 Dr. Sixto Antonio Ave., Caniogan, Pasig City</p>
+      <p>Email: purrfectpaws@gmail.com</p>
+      <p>Phone: 09XX-XXX-XXXX</p>
+    </div>
+    <div class="footer-socials">
+      <h4>Follow Us</h4>
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 Purrfect Paws. All rights reserved.</p>
+  </div>
+</footer>
+
   </main>
 
   <!-- JavaScript -->

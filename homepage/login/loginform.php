@@ -1,8 +1,14 @@
 <?php
 session_start();
+
 if (isset($_SESSION['success'])) {
   echo "<script>alert('{$_SESSION['success']}');</script>";
   unset($_SESSION['success']);
+}
+
+if (isset($_SESSION['login_error'])) {
+  echo "<script>alert('{$_SESSION['login_error']}');</script>";
+  unset($_SESSION['login_error']);
 }
 ?>
 <!DOCTYPE html>
@@ -28,7 +34,7 @@ if (isset($_SESSION['success'])) {
       </div>
 
       <div class="input_box">
-        <input type="text" id="user" class="input-field" name="email" required />
+        <input type="email" id="user" class="input-field" name="email" required />
         <label for="user" class="label">Email</label>
         <i class="bx bx-user icon"></i>
       </div>
