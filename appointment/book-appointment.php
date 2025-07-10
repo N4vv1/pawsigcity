@@ -19,6 +19,7 @@ $pets_result = $pets_stmt->get_result();
 
 // If pet is selected, check if the pet belongs to the user
 if ($selected_pet_id) {
+    // Check pet ownership
     $pet_check_stmt = $mysqli->prepare("SELECT * FROM pets WHERE pet_id = ? AND user_id = ?");
     $pet_check_stmt->bind_param("ii", $selected_pet_id, $user_id);
     $pet_check_stmt->execute();
@@ -29,11 +30,42 @@ if ($selected_pet_id) {
         exit;
     }
 
-    // Load packages only if pet is valid
+    // Prepare JSON payload for API
+    $api_url = "http://127.0.0.1:5000/recommend";
+    $payload = json_encode([
+        "breed" => $valid_pet['breed'],
+        "gender" => $valid_pet['gender'],
+        "age" => (int)$valid_pet['age']
+    ]);
+
+    // Make cURL POST request
+    $ch = curl_init($api_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($payload)
+    ]);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    // Decode result
+    $response_data = json_decode($response, true);
+    $recommended_package = $response_data['recommended_package'] ?? null;
+
+    // Load packages
     $packages_stmt = $mysqli->prepare("SELECT * FROM packages WHERE is_active = 1");
     $packages_stmt->execute();
     $packages_result = $packages_stmt->get_result();
 }
+
+if (isset($response_data['error'])) {
+    $recommended_package = null;
+    $_SESSION['error'] = "⚠️ Recommendation not available for this breed: " . htmlspecialchars($valid_pet['breed']);
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -197,7 +229,7 @@ if ($selected_pet_id) {
         <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
-        <li class="nav-item"><a href="#home" class="nav-link ">Home</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link ">Home</a></li>
         <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
         <li class="nav-item"><a href="#service" class="nav-link active">Services</a></li>
         <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
@@ -252,6 +284,14 @@ if ($selected_pet_id) {
 
     <form method="POST" action="appointment-handler.php">
       <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
+
+      <?php if ($recommended_package): ?>
+        <p style="font-weight: bold; color: #333;">
+          🐾 Recommended Package for <?= htmlspecialchars($valid_pet['name']) ?>:
+          <span style="color: #2c3e50;"><?= htmlspecialchars($recommended_package) ?></span>
+        </p>
+      <?php endif; ?>
+
 
       <label for="package_id">Select Grooming Package:</label>
       <select name="package_id" id="package_id" required>
