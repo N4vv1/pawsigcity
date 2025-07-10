@@ -327,7 +327,7 @@ $appointments = $mysqli->query("SELECT * FROM appointments ORDER BY appointment_
     <img src="../homepage/images/Logo.jpg" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="home.php"><i class='bx bx-home'></i>Dashboard / Home</a>
+    <a href="../../dashboard/home_dashboard/home.php"><i class='bx bx-home'></i>Dashboard / Home</a>
     <hr>
     <a href="../create_user/create-user.php"><i class='bx bx-user-plus'></i>Create User</a>
     <hr>
