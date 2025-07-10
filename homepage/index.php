@@ -145,7 +145,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
             <?php while($row = $result->fetch_assoc()): ?>
               <li class="gallery-item">
                 <div class="gallery-image-container">
-                  <img src="../u<?php echo htmlspecialchars($row['image_path']); ?>" 
+                  <img src="../../Purrfect-paws/dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" 
                        alt="Gallery Image" 
                        class="gallery-image" />
                 </div>
@@ -274,7 +274,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
     galleryList.classList.add('fade-out');
 
     setTimeout(() => {
-      fetch(`../dashboard/gallery_load.php?page=${page}`)
+      fetch(`../dashboard/gallery_dashboard/gallery_load.php?page=${page}`)
         .then(response => response.json())
         .then(data => {
           // Update gallery content

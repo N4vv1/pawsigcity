@@ -31,6 +31,6 @@ $deleteStmt->bind_param("i", $id);
 $deleteStmt->execute();
 
 // Redirect to dashboard with a success flag
-header("Location: ../gallery.php?deleted=1");
+header("Location:../gallery_dashboard/gallery.php?deleted=1");
 exit;
 ?>

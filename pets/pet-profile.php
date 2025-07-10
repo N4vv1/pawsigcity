@@ -277,6 +277,7 @@ if (!$pets) {
         </a>
         <ul class="dropdown-menu">
           <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+          <li><a href="add-pet.php">Add Pet</a></li>
           <li><a href="../homepage/appointments.php">Appointments</a></li>
           <li><a href="../homepage/logout/logout.php">Logout</a></li>
         </ul>
@@ -287,8 +288,7 @@ if (!$pets) {
 
 <div style="height: 60px;"></div>
 <div class="profile-card">
-  <a href="add-pet.php" class="add-pet-button">➕ Add Pet</a>
-  <h2>My Pet Profile</h2>
+  <h2>Pet Profile</h2>
 
   <?php if ($pets->num_rows > 0): ?>
     <?php while ($pet = $pets->fetch_assoc()):

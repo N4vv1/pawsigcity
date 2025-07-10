@@ -3,23 +3,29 @@ require_once '../../conn.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
   $folder = "gallery_images/";
-  $filename = basename($_FILES["image"]["name"]);
-  $targetPath = $folder . $filename;
+$filename = basename($_FILES["image"]["name"]);
+$targetPath = $folder . $filename;
 
-  $fileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
-  $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+$fileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
+$allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
 
-  if (!in_array($fileType, $allowedTypes)) {
-    $error = "❌ Only JPG, JPEG, PNG, or GIF files are allowed.";
-  } elseif (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
+if (!in_array($fileType, $allowedTypes)) {
+  $error = "❌ Only JPG, JPEG, PNG, or GIF files are allowed.";
+} else {
+  if (!is_dir($folder)) {
+    mkdir($folder, 0777, true);
+  }
+
+  if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
     $stmt = $conn->prepare("INSERT INTO gallery (image_path) VALUES (?)");
     $stmt->bind_param("s", $filename);
     $stmt->execute();
-    header("Location: ../gallery.php");
+    header("Location: ../gallery_dashboard/gallery.php");
     exit;
   } else {
     $error = "❌ Failed to upload the image.";
   }
+}
 }
 ?>
 
@@ -127,6 +133,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
       font-weight: 500;
     }
 
+    #preview-container {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#imagePreview {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 12px;
+  border: 2px solid #A8E6CF;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  display: none;
+  margin-bottom: 10px;
+}
+
+.file-name {
+  display: block;
+  font-size: 0.9rem;
+  color: #555;
+  font-style: italic;
+}
+
+
     @media (max-width: 480px) {
       .form-wrapper {
         padding: 30px 20px;
@@ -147,8 +176,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
       </label>
 
       <div id="preview-container">
-        <img id="imagePreview" src="" alt="Image Preview" />
-      </div>
+  <img id="imagePreview" src="" alt="Image Preview" />
+  <span id="fileName" class="file-name"></span>
+</div>
 
       <button type="submit">Upload Image</button>
     </form>
@@ -157,23 +187,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
   </div>
 
   <script>
-    const imageInput = document.getElementById("imageInput");
-    const imagePreview = document.getElementById("imagePreview");
+  const imageInput = document.getElementById("imageInput");
+  const imagePreview = document.getElementById("imagePreview");
+  const fileNameDisplay = document.getElementById("fileName");
 
-    imageInput.addEventListener("change", function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function () {
-          imagePreview.src = reader.result;
-          imagePreview.style.display = "block";
-        };
-        reader.readAsDataURL(file);
-      } else {
-        imagePreview.src = "";
-        imagePreview.style.display = "none";
-      }
-    });
-  </script>
+  imageInput.addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        imagePreview.src = reader.result;
+        imagePreview.style.display = "block";
+        fileNameDisplay.textContent = file.name;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      imagePreview.src = "";
+      imagePreview.style.display = "none";
+      fileNameDisplay.textContent = "";
+    }
+  });
+</script>
+
 </body>
 </html>

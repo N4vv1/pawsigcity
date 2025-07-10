@@ -64,7 +64,8 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
           </a>
           <ul class="dropdown-menu">
             <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-            <li><a href="appointments.php">Appointments</a></li>
+            <li><a href="../pets/add-pet.php">Add Pet</a></li>
+            <li><a href="../appointment/book-appointment.php">Appointments</a></li>
             <li><a href="../homepage/logout/logout.php">Logout</a></li> <!-- ✅ Fixed -->
           </ul>
         </li>
@@ -108,7 +109,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="about.jpg" alt="About Our Shop" class="about-image" />
+          <img src="../homepage/images/about.jpg" alt="About Our Shop" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
@@ -129,22 +130,22 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
       <div class="section-content">
         <ul class="service-list">
           <li class="service-item">
-            <a href="../appointment/service.php" class="service-link">
-              <img src="../homepage/fullgroom.png" alt="Full Grooming" class="service-image" />
+            <a href="../appointment/book-appointment.php" class="service-link">
+              <img src="../homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
               <h3 class="name">FULL GROOMING</h3>
               <p class="text">Includes bath, dry, haircut, nail trim, brushing, and more.</p>
             </a>
           </li>
           <li class="service-item">
-            <a href="../appointment/service.php" class="service-link">
-              <img src="bathdry.png" alt="Spa Bath" class="service-image" />
+            <a href="../appointment/book-appointment.php" class="service-link">
+              <img src="../homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
               <h3 class="name">SPA BATH</h3>
               <p class="text">Pamper with nano bubble bath, odor eliminator, and paw moisturizer.</p>
             </a>
           </li>
           <li class="service-item">
-            <a href="../appointment/service.php" class="service-link">
-              <img src="bnd.png" alt="Bath and Dry" class="service-image" />
+            <a href="../appointment/book-appointment.php" class="service-link">
+              <img src="../homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
               <h3 class="name">BATH AND DRY</h3>
               <p class="text">Quick cleaning — perfect between full grooming sessions.</p>
             </a>
@@ -164,7 +165,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
                 <?php while($row = $result->fetch_assoc()): ?>
                   <li class="gallery-item">
                     <div class="gallery-image-container">
-                      <img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image" class="gallery-image" />
+                      <img src="../dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image" class="gallery-image" />
                     </div>
                   </li>
                 <?php endwhile; ?>
@@ -282,7 +283,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
       galleryList.classList.add('fade-out');
 
       setTimeout(() => {
-        fetch(`../dashboard/gallery_load.php?page=${page}`)
+        fetch(`../dashboard/gallery_dashboard/gallery_load.php?page=${page}`)
           .then(response => response.json())
           .then(data => {
             galleryList.innerHTML = data.html;

@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
     $stmt->bind_param("si", $newImageName, $id); // ✅ FIXED: correct type definition string
     $stmt->execute();
 
-    header("Location: ../gallery.php");
+    header("Location: ../gallery_dashboard/gallery.php");
     exit;
   } else {
     $error = "❌ Failed to upload new image.";
@@ -166,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
       }
     }
   </style>
+  
 </head>
 <body>
   <div class="form-wrapper">
@@ -174,7 +175,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
     <?php if (!empty($error)) echo "<p class='error'>$error</p>"; ?>
 
     <p><strong>Current Image:</strong></p>
-    <img src="gallery_images/<?php echo htmlspecialchars($currentImage); ?>" alt="Current Image" />
+    <img id="currentImage" src="gallery_images/<?php echo htmlspecialchars($currentImage); ?>" alt="Current Image" />
+
 
     <form method="post" enctype="multipart/form-data">
       <label for="imageUpload" class="custom-file-upload">
@@ -187,5 +189,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
 
     <a href="../gallery_dashboard/gallery.php" class="back-link">← Back to Dashboard</a>
   </div>
+
+  <script>
+  const imageUpload = document.getElementById("imageUpload");
+  const currentImage = document.getElementById("currentImage");
+
+  imageUpload.addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        currentImage.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
 </body>
 </html>

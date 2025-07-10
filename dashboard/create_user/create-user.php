@@ -128,8 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     .menu hr {
       border: none;
-      border-top: 1px solid var(--medium-gray-color);
-      margin: 8px 0;
+      border-top: 1px solid var(--secondary-color);
+      margin: 9px 0;
     }
 
     .submenu {
@@ -345,10 +345,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <!-- Sidebar -->
     <aside class="sidebar">
   <div class="logo">
-    <img src="../homepage/images/Logo.jpg" alt="Logo" />
+    <img src="../../homepage/images/Logo.jpg" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../../dashboard/home_dashboard/home.php"><i class='bx bx-home'></i>Dashboard / Home</a>
+    <a href="../../dashboard/home_dashboard/home.php"><i class='bx bx-home'></i>Home</a>
     <hr>
     <a href="../create_user/create-user.php" class="active"><i class='bx bx-user-plus'></i>Create User</a>
     <hr>
