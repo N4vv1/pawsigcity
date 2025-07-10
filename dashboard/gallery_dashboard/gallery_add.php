@@ -1,5 +1,5 @@
 <?php
-require_once '../conn.php';
+require_once '../../conn.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
   $folder = "gallery_images/";
@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
     $stmt = $conn->prepare("INSERT INTO gallery (image_path) VALUES (?)");
     $stmt->bind_param("s", $filename);
     $stmt->execute();
-    header("Location: gallery.php");
+    header("Location: ../gallery.php");
     exit;
   } else {
     $error = "❌ Failed to upload the image.";
@@ -153,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
       <button type="submit">Upload Image</button>
     </form>
 
-    <a href="gallery.php" class="back-link">← Back to Dashboard</a>
+    <a href="../gallery_dashboard/gallery.php" class="back-link">← Back to Dashboard</a>
   </div>
 
   <script>

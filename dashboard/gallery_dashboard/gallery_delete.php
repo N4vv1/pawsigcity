@@ -1,5 +1,5 @@
 <?php
-require_once '../conn.php';
+require_once '../../conn.php';
 
 // Validate image ID from query string
 $id = $_GET['id'] ?? null;
@@ -31,6 +31,6 @@ $deleteStmt->bind_param("i", $id);
 $deleteStmt->execute();
 
 // Redirect to dashboard with a success flag
-header("Location: gallery.php?deleted=1");
+header("Location: ../gallery.php?deleted=1");
 exit;
 ?>

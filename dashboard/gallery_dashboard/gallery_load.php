@@ -1,5 +1,5 @@
 <?php
-require_once '../conn.php';
+require_once '../../conn.php';
 
 // Set content type to JSON
 header('Content-Type: application/json');

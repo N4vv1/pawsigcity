@@ -23,26 +23,34 @@ $appointments = $result->get_result();
 <html>
 <head>
   <title>User Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 20px; }
-    table { width: 100%; background: white; border-collapse: collapse; }
-    th, td { padding: 10px; border: 1px solid #ddd; text-align: left; vertical-align: top; }
-    th { background: #f1f1f1; }
-    .badge.approved { background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 5px; }
-    .badge.pending { background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 5px; }
-    .button {
-      padding: 6px 12px; background: #A8E6CF; border-radius: 5px;
-      text-decoration: none; margin: 2px 2px; display: inline-block;
-    }
-    .button:hover { background: #FFD3B6; }
-    .feedback {
-      margin-top: 5px;
-      font-size: 0.9em;
-      color: #333;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
+   <header>
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
+        <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link profile-icon active">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="appointments.php">Appointments</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
 <a href="main.php" class="button" style="margin-bottom: 15px; display: inline-block;">⬅ Back</a>
 

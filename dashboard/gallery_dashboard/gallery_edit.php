@@ -1,5 +1,5 @@
 <?php
-require_once '../conn.php';
+require_once '../../conn.php';
 
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) {
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
     $stmt->bind_param("si", $newImageName, $id); // ✅ FIXED: correct type definition string
     $stmt->execute();
 
-    header("Location: gallery.php");
+    header("Location: ../gallery.php");
     exit;
   } else {
     $error = "❌ Failed to upload new image.";
@@ -185,7 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
       <button type="submit">Update Image</button>
     </form>
 
-    <a href="gallery.php" class="back-link">← Back to Dashboard</a>
+    <a href="../gallery_dashboard/gallery.php" class="back-link">← Back to Dashboard</a>
   </div>
 </body>
 </html>

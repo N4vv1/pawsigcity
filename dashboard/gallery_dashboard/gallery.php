@@ -1,5 +1,5 @@
 <?php
-require_once '../conn.php';
+require_once '../../conn.php';
 $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
 ?>
 
@@ -206,33 +206,27 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
 <body>
 
   <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">
-      <img src="../homepage/Logo.jpg" alt="Logo" />
-    </div>
-    <nav class="menu">
-      <a href="#"><i class='bx bx-home'></i>Dashboard / Home</a>
-      <hr>
-      <a href="#"><i class='bx bx-folder'></i>Client History</a>
-      <hr>
-      <a href="#"><i class='bx bx-note'></i>Session Notes</a>
-      <div class="submenu">
-        <a href="#"><i class='bx bx-right-arrow-alt'></i> Add Notes (Logger)</a>
-        <a href="#"><i class='bx bx-show-alt'></i> View Notes (Groomer)</a>
-      </div>
-      <hr>
-      <a href="#"><i class='bx bx-wrench'></i>Assignment Tool</a>
-      <hr>
-      <a href="gallery.php" class="active"><i class='bx bx-camera'></i>Pet Gallery</a>
-      <hr>
-      <a href="#"><i class='bx bx-log-out'></i>Logout</a>
-    </nav>
-  </aside>
+ <aside class="sidebar">
+  <div class="logo">
+    <img src="../homepage/images/Logo.jpg" alt="Logo" />
+  </div>
+  <nav class="menu">
+    <a href="home.php"><i class='bx bx-home'></i>Dashboard / Home</a>
+    <hr>
+    <a href="../create_user/create-user.php"><i class='bx bx-user-plus'></i>Create User</a>
+    <hr>
+    <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
+    <hr>
+    <a href="../gallery_dashboard/gallery.php" class="active"><i class='bx bx-camera'></i>Pet Gallery</a>
+    <hr>
+    <a href="#"><i class='bx bx-log-out'></i>Logout</a>
+  </nav>
+</aside>
+
 
   <!-- Main Content -->
   <main class="content">
-    <h2>Gallery Dashboard</h2>
-    <a href="gallery_add.php" class="add-btn">+ Add New Image</a>
+    <a href="../gallery_dashboard/gallery_add.php" class="add-btn">+ Add New Image</a>
     <table>
       <thead>
         <tr>
@@ -250,8 +244,8 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
               <td><img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
               <td><?php echo htmlspecialchars($row['image_path']); ?></td>
               <td class="actions">
-                <a href="gallery_edit.php?id=<?php echo $row['id']; ?>" class="edit-btn">Edit</a>
-                <a href="gallery_delete.php?id=<?php echo $row['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this image?')">Delete</a>
+                <a href="../gallery_dashboard/gallery_edit.php?id=<?php echo $row['id']; ?>" class="edit-btn">Edit</a>
+                <a href="../gallery_dashboard/gallery_delete.php?id=<?php echo $row['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this image?')">Delete</a>
               </td>
             </tr>
           <?php endwhile; ?>
