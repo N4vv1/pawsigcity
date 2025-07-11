@@ -3,11 +3,10 @@ session_start();
 require '../db.php';
 
 // Check if user is logged in
-//if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  // Redirect non-admins to login or another appropriate page
-  //header('Location: ../login/loginform.php');
-  //exit;
-//}
+// if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+//   header('Location: ../login/loginform.php');
+//   exit;
+// }
 
 // Fetch all appointments
 $query = "
@@ -61,20 +60,7 @@ $pendingCancellations = $mysqli->query("SELECT * FROM appointments WHERE cancel_
     .button:hover { background: #FFD3B6; }
     .danger { background: #FFB6B6; }
 
-    /* Modal styles */
-    #deleteModal {
-      display: none; position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-    }
-    #deleteModal .modal-content {
-      background: #fff; padding: 20px;
-      border-radius: 5px; max-width: 400px;
-      text-align: center;
-    }
-    .modal {
+    #deleteModal, .modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
@@ -86,23 +72,19 @@ $pendingCancellations = $mysqli->query("SELECT * FROM appointments WHERE cancel_
     }
 
     .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
       max-width: 600px;
       max-height: 80vh;
       overflow-y: auto;
       text-align: left;
     }
-
   </style>
 </head>
 <body>
 
-<a href="../dashboard/home_dashboard/home.php" style="display: inline-block; padding: 8px 16px; background: #A8E6CF; color: black; text-decoration: none; border-radius: 5px; margin-bottom: 20px;">
-  ⬅ Back to Dashboard
-</a>
+<a href="../dashboard/home_dashboard/home.php" class="button" style="margin-bottom: 20px;">⬅ Back to Dashboard</a>
 
 <h2>📋 Admin - Manage Appointments</h2>
 
@@ -126,117 +108,118 @@ $pendingCancellations = $mysqli->query("SELECT * FROM appointments WHERE cancel_
   <?php unset($_SESSION['deleted']); ?>
 <?php endif; ?>
 
-
-<?php if ($pendingApprovals->num_rows > 0): ?>
+<?php if ($pendingApprovals && $pendingApprovals->num_rows > 0): ?>
   <div class="reminder">
     ⏰ You have <?= $pendingApprovals->num_rows ?> unapproved appointment(s) scheduled today.
   </div>
 <?php endif; ?>
 
-<?php if ($pendingCancellations->num_rows > 0): ?>
+<?php if ($pendingCancellations && $pendingCancellations->num_rows > 0): ?>
   <div class="reminder" style="border-left: 5px solid red;">
     ❗ You have <?= $pendingCancellations->num_rows ?> cancellation request(s) to review.
   </div>
 <?php endif; ?>
 
-<table>
-  <thead>
-    <tr>
-      <th>Client</th>
-      <th>Pet</th>
-      <th>Breed</th>
-      <th>Service</th>
-      <th>Date & Time</th>
-      <th>Status</th>
-      <th>Approval</th>
-      <th>Cancel Reason</th>
-      <th>Groomer</th>
-      <th>Notes</th>
-      <th>Feedback</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php while ($row = $appointments->fetch_assoc()): ?>
-      <tr>
-        <td><?= htmlspecialchars($row['client_name']) ?></td>
-        <td><?= htmlspecialchars($row['pet_name']) ?></td>
-        <td><?= htmlspecialchars($row['pet_breed']) ?></td>
-        <td><?= htmlspecialchars($row['package_name']) ?></td>
-        <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+<div id="appointmentsModal" class="modal">
+  <div class="modal-content">
+    <h2>📋 All Appointments</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Pet</th>
+          <th>Breed</th>
+          <th>Service</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Approval</th>
+          <th>Cancel Reason</th>
+          <th>Groomer</th>
+          <th>Notes</th>
+          <th>Feedback</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $appointmentList = $mysqli->query("
+          SELECT a.*, 
+                 u.full_name AS client_name,
+                 u.user_id,
+                 p.name AS pet_name,
+                 p.breed AS pet_breed,
+                 pk.name AS package_name
+          FROM appointments a
+          JOIN users u ON a.user_id = u.user_id
+          JOIN pets p ON a.pet_id = p.pet_id
+          JOIN packages pk ON a.package_id = pk.id
+          ORDER BY a.appointment_date DESC
+        ");
+        while ($row = $appointmentList->fetch_assoc()):
+        ?>
+          <tr>
+            <td><?= htmlspecialchars($row['client_name']) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($row['pet_breed']) ?></td>
+            <td><?= htmlspecialchars($row['package_name']) ?></td>
+            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+            <td>
+              <?php if ($row['status'] === 'completed'): ?>
+                <span style="color: green; font-weight: bold;">Completed</span>
+              <?php elseif ($row['status'] === 'confirmed'): ?>
+                <span style="color: green; font-weight: bold;">Confirmed</span>
+              <?php elseif ($row['status'] === 'cancelled'): ?>
+                <span style="color: red; font-weight: bold;">Cancelled</span>
+              <?php elseif (!empty($row['cancel_requested'])): ?>
+                <span style="color: red; font-weight: bold;">Cancel Requested</span>
+              <?php else: ?>
+                <span style="color: orange; font-weight: bold;">Pending</span>
+              <?php endif; ?>
+            </td>
+            <td>
+              <?php if ($row['status'] === 'cancelled'): ?>
+                <span style="color: red; font-weight: bold;">Cancelled</span>
+              <?php elseif (!empty($row['is_approved'])): ?>
+                <span style="color: green; font-weight: bold;">Approved</span>
+              <?php else: ?>
+                <span style="color: orange; font-weight: bold;">Pending</span>
+              <?php endif; ?>
+            </td>
+            <td><?= !empty($row['cancel_reason']) ? nl2br(htmlspecialchars($row['cancel_reason'])) : '-' ?></td>
+            <td><?= !empty($row['groomer_name']) ? htmlspecialchars($row['groomer_name']) : 'Not assigned' ?></td>
+            <td><?= nl2br(htmlspecialchars($row['notes'] ?? '')) ?></td>
+            <td>
+              <?php if (isset($row['rating'])): ?>
+                ⭐ <?= $row['rating'] ?>/5<br>
+                <?= !empty($row['feedback']) ? nl2br(htmlspecialchars($row['feedback'])) : '<em>No comment.</em>' ?>
+              <?php else: ?>
+                <em>No feedback</em>
+              <?php endif; ?>
+            </td>
+            <td>
+              <?php if (empty($row['is_approved']) && empty($row['cancel_requested']) && $row['status'] !== 'cancelled'): ?>
+                <a href="../admin/approve/approve-handler.php?id=<?= $row['appointment_id'] ?>" class="button">Approve</a>
+              <?php endif; ?>
 
-        <td>
-          <?php if ($row['status'] === 'completed'): ?>
-            <span class="approved">🎉 Completed</span>
-          <?php elseif ($row['status'] === 'confirmed'): ?>
-            <span class="approved">✅ Confirmed</span>
-          <?php elseif ($row['status'] === 'cancelled'): ?>
-            <span class="cancel-request">❌ Cancelled</span>
-          <?php elseif ($row['cancel_requested'] == 1): ?>
-            <span class="cancel-request">🛑 Cancel Requested</span>
-          <?php else: ?>
-            <span class="pending">⌛ <?= ucfirst($row['status']) ?></span>
-          <?php endif; ?>
-        </td>
+              <?php if (!empty($row['cancel_requested'])): ?>
+                <a href="cancel-approve.php?id=<?= $row['appointment_id'] ?>&action=approve" class="button danger">Approve Cancel</a>
+              <?php endif; ?>
 
+              <?php if ($row['status'] === 'confirmed'): ?>
+                <a href="mark-completed.php?id=<?= $row['appointment_id'] ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">Complete</a>
+              <?php endif; ?>
 
-        <td>
-          <?php if ($row['status'] === 'cancelled'): ?>
-            <span class="cancel-request" style="color: #721c24;">❌ Cancelled</span>
-          <?php elseif ($row['is_approved']): ?>
-            <span class="approved">✅ Approved</span>
-          <?php else: ?>
-            <span class="pending">❗ Pending</span>
-          <?php endif; ?>
-        </td>
+              <button class="button delete-btn" data-id="<?= $row['appointment_id'] ?>">Delete</button>
+              <a href="javascript:void(0)" class="button" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
+            </td>
+          </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+    <button onclick="closeModal('appointmentsModal')">Close</button>
+  </div>
+</div>
 
-
-        <td><?= $row['cancel_reason'] ? nl2br(htmlspecialchars($row['cancel_reason'])) : '-' ?></td>
-        <td><?= $row['groomer_name'] ?: 'Not assigned' ?></td>
-        <td><?= nl2br(htmlspecialchars($row['notes'] ?? '')) ?></td>
-        <td>
-          <?php if (isset($row['rating']) && $row['rating'] !== null): ?>
-            ⭐ <?= $row['rating'] ?>/5<br>
-            <?= !empty($row['feedback']) ? nl2br(htmlspecialchars($row['feedback'])) : '<em>No comment.</em>' ?>
-          <?php else: ?>
-            <em>No feedback</em>
-          <?php endif; ?>
-        </td>
-
-
-        <td>
-          <?php if (!$row['is_approved'] && $row['cancel_requested'] != 1 && $row['status'] !== 'cancelled'): ?>
-            <a href="../admin/approve/approve-handler.php?id=<?= $row['appointment_id'] ?>" 
-              class="button">
-              ✔ Approve
-            </a>
-          <?php endif; ?>
-
-          <?php if ($row['cancel_requested'] == 1): ?>
-            <a href="cancel-approve.php?id=<?= $row['appointment_id'] ?>&action=approve"
-              class="button danger">
-              ✅ Approve Cancel
-            </a>
-          <?php endif; ?>
-
-          <?php if ($row['status'] === 'confirmed'): ?>
-            <a href="mark-completed.php?id=<?= $row['appointment_id'] ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">
-              🎯 Complete
-            </a>
-          <?php endif; ?>
-
-          <!-- Delete button triggers modal -->
-          <button class="button delete-btn" data-id="<?= $row['appointment_id'] ?>">
-            🗑 Delete
-          </button>
-
-          <!-- 📖 View History -->
-          <a href="javascript:void(0)" class="button" onclick="viewHistory(<?= $row['user_id'] ?>)">📖 History</a>
-        </td>
-      </tr>
-    <?php endwhile; ?>
-  </tbody>
-</table>
 
 <!-- Delete Modal -->
 <div id="deleteModal">
@@ -260,7 +243,6 @@ $pendingCancellations = $mysqli->query("SELECT * FROM appointments WHERE cancel_
   </div>
 </div>
 
-
 <script>
   const deleteBtns = document.querySelectorAll('.delete-btn');
   const deleteModal = document.getElementById('deleteModal');
@@ -268,48 +250,37 @@ $pendingCancellations = $mysqli->query("SELECT * FROM appointments WHERE cancel_
 
   deleteBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-id');
-      deleteInput.value = id;
+      deleteInput.value = btn.getAttribute('data-id');
       deleteModal.style.display = 'flex';
     });
   });
 
-  function closeModal() {
-    deleteModal.style.display = 'none';
+  function closeModal(id = 'deleteModal') {
+    document.getElementById(id).style.display = 'none';
   }
 
-  window.addEventListener('click', (e) => {
-    if (e.target === deleteModal) closeModal();
-  });
-</script>
-
-<script>
-function viewHistory(userId) {
-  document.getElementById('historyTable').innerHTML = 'Loading...';
-  document.getElementById('historyModal').style.display = 'flex';
-
-  fetch(`fetch-history.php?user_id=${userId}`)
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('historyTable').innerHTML = html;
-    })
-    .catch(() => {
-      document.getElementById('historyTable').innerHTML = 'Failed to load history.';
+  window.onclick = function(event) {
+    const modals = ['deleteModal', 'historyModal'];
+    modals.forEach(id => {
+      const modal = document.getElementById(id);
+      if (event.target === modal) modal.style.display = 'none';
     });
-}
+  }
 
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
-}
+  function viewHistory(userId) {
+    document.getElementById('historyTable').innerHTML = 'Loading...';
+    document.getElementById('historyModal').style.display = 'flex';
 
-// Optional: Click outside to close
-window.onclick = function(event) {
-  const modal = document.getElementById('historyModal');
-  if (event.target === modal) modal.style.display = 'none';
-}
+    fetch(`fetch-history.php?user_id=${userId}`)
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('historyTable').innerHTML = html;
+      })
+      .catch(() => {
+        document.getElementById('historyTable').innerHTML = 'Failed to load history.';
+      });
+  }
 </script>
-
-
 
 </body>
 </html>

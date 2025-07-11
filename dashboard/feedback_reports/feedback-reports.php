@@ -2,6 +2,11 @@
 require '../../db.php';
 session_start();
 
+//if ($_SESSION['role'] !== 'admin') {
+  //header("Location: ../homepage/main.php");
+  //exit;
+//}
+
 // Fetch feedback with sentiment
 $query = "
     SELECT a.appointment_id, u.full_name AS client_name, p.name AS pet_name,
@@ -20,26 +25,48 @@ if (!$results) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Feedback Reports</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
+    :root {
+      --white-color: #fff;
+      --dark-color: #252525;
+      --primary-color: #A8E6CF;
+      --secondary-color: #FFE29D;
+      --light-pink-color: #faf4f5;
+      --medium-gray-color: #ccc;
+      --font-size-s: 0.9rem;
+      --font-size-n: 1rem;
+      --font-size-l: 1.5rem;
+      --font-size-xl: 2rem;
+      --font-weight-semi-bold: 600;
+      --font-weight-bold: 700;
+      --border-radius-s: 8px;
+      --border-radius-circle: 50%;
+      --site-max-width: 1300px;
+    }
+
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+      background: var(--light-pink-color);
       display: flex;
     }
 
-    /* Sidebar */
     .sidebar {
       width: 260px;
       height: 100vh;
-      background-color: #A8E6CF;
+      background-color: var(--primary-color);
       padding: 30px 20px;
       position: fixed;
       left: 0;
@@ -57,7 +84,7 @@ if (!$results) {
     .sidebar .logo img {
       width: 80px;
       height: 80px;
-      border-radius: 50%;
+      border-radius: var(--border-radius-circle);
     }
 
     .menu {
@@ -71,10 +98,10 @@ if (!$results) {
       align-items: center;
       padding: 10px 12px;
       text-decoration: none;
-      color: #252525;
-      border-radius: 8px;
+      color: var(--dark-color);
+      border-radius: var(--border-radius-s);
       transition: background 0.3s, color 0.3s;
-      font-weight: 600;
+      font-weight: var(--font-weight-semi-bold);
     }
 
     .menu a i {
@@ -84,18 +111,17 @@ if (!$results) {
 
     .menu a:hover,
     .menu a.active {
-      background-color: #FFE29D;
-      color: #252525;
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
     }
 
     .menu hr {
       border: none;
-      border-top: 1px solid #FFE29D;
+      border-top: 1px solid var(--secondary-color);
       margin: 9px 0;
     }
 
-    /* Main Content */
-    main.content {
+    .content {
       margin-left: 260px;
       padding: 40px;
       flex-grow: 1;
@@ -103,24 +129,37 @@ if (!$results) {
     }
 
     h2 {
-      margin-bottom: 20px;
+      font-size: var(--font-size-xl);
+      color: var(--dark-color);
+      margin-bottom: 25px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      font-size: 0.95rem;
+      color: var(--dark-color);
+      background: var(--white-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
     }
 
     th, td {
-      border: 1px solid #ccc;
-      padding: 12px;
+      padding: 16px 12px;
+      border: 1px solid var(--medium-gray-color);
       text-align: left;
     }
 
     th {
-      background: #eee;
+      background: var(--primary-color);
+      font-weight: var(--font-weight-bold);
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #ffe29d33;
     }
 
     .positive { color: green; font-weight: bold; }
@@ -130,7 +169,6 @@ if (!$results) {
 </head>
 <body>
 
-<!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/Logo.jpg" alt="Logo" />
@@ -150,10 +188,8 @@ if (!$results) {
   </nav>
 </aside>
 
-<!-- Main Content -->
 <main class="content">
   <h2>📊 Feedback Reports</h2>
-
   <table>
     <thead>
       <tr>

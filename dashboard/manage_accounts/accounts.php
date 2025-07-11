@@ -1,7 +1,10 @@
 <?php
 session_start();
 require '../../db.php';
-
+//if ($_SESSION['role'] !== 'admin') {
+  //header("Location: ../homepage/main.php");
+  //exit;
+//}
 // Handle new user creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
   $full_name = trim($_POST['full_name']);

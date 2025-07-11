@@ -1,5 +1,6 @@
 <?php
 require_once '../../conn.php';
+
 $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
 ?>
 
