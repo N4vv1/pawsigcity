@@ -41,7 +41,6 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
       display: flex;
     }
 
-    /* Sidebar Styles */
     .sidebar {
       width: 260px;
       height: 100vh;
@@ -88,20 +87,11 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
       font-size: 20px;
     }
 
-    .menu a:hover {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
-    }
-
+    .menu a:hover,
     .menu a.active {
       background-color: var(--secondary-color);
       color: var(--dark-color);
     }
-
-    .menu a.active:hover {
-      background-color: #fdd56c;
-    }
-
 
     .menu hr {
       border: none;
@@ -120,7 +110,6 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
       font-size: var(--font-size-s);
     }
 
-    /* Content Area */
     .content {
       margin-left: 260px;
       padding: 40px;
@@ -143,6 +132,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
       font-weight: var(--font-weight-semi-bold);
       display: inline-block;
       margin-bottom: 20px;
+      cursor: pointer;
     }
 
     .add-btn:hover {
@@ -182,6 +172,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
       margin: 0 5px;
       border-radius: var(--border-radius-s);
       display: inline-block;
+      cursor: pointer;
     }
 
     .edit-btn {
@@ -201,12 +192,62 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
     .delete-btn:hover {
       background-color: #ff4949;
     }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+
+    .modal-content {
+      background: var(--white-color);
+      padding: 40px 30px;
+      border-radius: 20px;
+      width: 95%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.25s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+
+    .modal-content .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 26px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #888;
+      transition: color 0.2s ease-in-out;
+    }
+
+    .modal-content .close-btn:hover {
+      color: #000;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
- <aside class="sidebar">
+<aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/Logo.jpg" alt="Logo" />
   </div>
@@ -223,46 +264,62 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
   </nav>
 </aside>
 
+<main class="content">
+  <button class="add-btn" onclick="openModal('../gallery_dashboard/gallery_add.php')">+ Add New Image</button>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Preview</th>
+        <th>Filename</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if ($result->num_rows > 0): ?>
+        <?php while ($row = $result->fetch_assoc()): ?>
+          <tr>
+            <td><?php echo $row['id']; ?></td>
+            <td><img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
+            <td><?php echo htmlspecialchars($row['image_path']); ?></td>
+            <td class="actions">
+              <a class="edit-btn" onclick="openModal('../gallery_dashboard/gallery_edit.php?id=<?php echo $row['id']; ?>')">Edit</a>
+              <a href="../gallery_dashboard/gallery_delete.php?id=<?php echo $row['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this image?')">Delete</a>
+            </td>
+          </tr>
+        <?php endwhile; ?>
+      <?php else: ?>
+        <tr><td colspan="4">No images found.</td></tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+</main>
 
-  <!-- Main Content -->
-  <main class="content">
-    <a href="../gallery_dashboard/gallery_add.php" class="add-btn">+ Add New Image</a>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Preview</th>
-          <th>Filename</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php if ($result->num_rows > 0): ?>
-          <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-              <td><?php echo $row['id']; ?></td>
-              <td><img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
-              <td><?php echo htmlspecialchars($row['image_path']); ?></td>
-              <td class="actions">
-                <a href="../gallery_dashboard/gallery_edit.php?id=<?php echo $row['id']; ?>" class="edit-btn">Edit</a>
-                <a href="../gallery_dashboard/gallery_delete.php?id=<?php echo $row['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this image?')">Delete</a>
-              </td>
-            </tr>
-          <?php endwhile; ?>
-        <?php else: ?>
-          <tr><td colspan="4">No images found.</td></tr>
-        <?php endif; ?>
-      </tbody>
-    </table>
-  </main>
+<!-- Modal -->
+<div class="modal" id="dynamicModal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <div id="modalBody">Loading...</div>
+  </div>
+</div>
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('deleted') === '1') {
-      alert('🗑️ Image has been successfully deleted.');
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  </script>
+<script>
+function openModal(url) {
+  const modal = document.getElementById("dynamicModal");
+  const modalBody = document.getElementById("modalBody");
+  modal.style.display = "flex";
+  modalBody.innerHTML = "Loading...";
+  fetch(url)
+    .then(res => res.text())
+    .then(html => modalBody.innerHTML = html)
+    .catch(() => modalBody.innerHTML = '<p style="color:red">Failed to load content.</p>');
+}
+
+function closeModal() {
+  document.getElementById("dynamicModal").style.display = "none";
+  document.getElementById("modalBody").innerHTML = "";
+}
+</script>
 
 </body>
 </html>
