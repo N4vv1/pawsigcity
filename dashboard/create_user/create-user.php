@@ -348,13 +348,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <img src="../../homepage/images/Logo.jpg" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../../dashboard/home_dashboard/home.php"><i class='bx bx-home'></i>Home</a>
+    <a href="home.php" class="active"><i class='bx bx-home'></i>Home</a>
     <hr>
-    <a href="../create_user/create-user.php" class="active"><i class='bx bx-user-plus'></i>Create User</a>
+    <a href="../manage_accounts/accounts.php"><i class='bx bx-camera'></i>User Management</a>
     <hr>
-    <a href="../session_notes.php/notes.php" ><i class='bx bx-note'></i>Session Notes</a>
+    <a href="../create_user/create-user.php"><i class='bx bx-user-plus'></i>Create User</a>
+    <hr>
+    <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
+    <hr>
+    <a href="../feedback_reports/feedback-reports.php" class="button">📝 View Feedback Reports</a>
     <hr>
     <a href="#"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
@@ -368,7 +372,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST" class="login_box">
           <div class="login-header">
             <span>Create Admin Account</span>
-          </div>
+          </div><br>
 
           <?php if (isset($error)): ?>
             <p class="message-error"><?= $error ?></p>

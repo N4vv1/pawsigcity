@@ -13,6 +13,21 @@ html {
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
 }
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+  color: #333;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.7;
+  text-align: justify;
+  color: #444;
+}
+
 
 :root {
   --white-color: #fff;
@@ -22,13 +37,7 @@ html {
   --light-pink-color: #faf4f5;
   --medium-gray-color: #ccc;
 
-  --font-size-s: 0.9rem;
-  --font-size-n: 1rem;
-  --font-size-m: 1.12rem;
-  --font-size-l: 1.5rem;
-  --font-size-xl: 2rem;
-  --font-size-xxl: 2.3rem;
-
+  --font-size-xxl: 2.8rem;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semi-bold: 600;
@@ -96,6 +105,7 @@ header {
   width: 100%;
   z-index: 5;
   background: var(--primary-color);
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 header .navbar {
@@ -155,10 +165,10 @@ header .navbar {
 
 
 /* Active state */
-.navbar .nav-menu .nav-link.active {
-  background: var(--secondary-color);
-  color: var(--primary-color);
-  font-weight: var(--font-weight-semi-bold);
+.navbar .nav-link.active {
+  background-color: var(--secondary-color);
+  font-weight: 700;
+  border-bottom: 3px solid var(--dark-color);
 }
 
 /* Underline effect */
@@ -182,8 +192,14 @@ header .navbar {
 
 /* Hero Section */
 .hero-section {
+
   min-height: 100vh;
   background: linear-gradient(to bottom right, var(--primary-color), #d6f5e8);
+
+  background: linear-gradient(to right, var(--primary-color), #d9f7f0);
+  color: #222;
+  padding: 100px 20px;
+
 }
 
 .hero-section .section-content {
@@ -196,6 +212,7 @@ header .navbar {
 
 .hero-section .hero-details .title {
   font-size: var(--font-size-xxl);
+
   color: var(--secondary-color);
   font-weight: 800;
 }
@@ -206,6 +223,14 @@ header .navbar {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semi-bold);
   font-weight: 600;
+
+  color: var(--dark-color);
+}
+
+.hero-section .hero-details .subtitle {
+  font-size: var(--font-size-l);
+  color: var(--dark-color);
+
 }
 
 
@@ -248,7 +273,7 @@ header .navbar {
   margin-right: 30px;
 }
 
-/* Update text colors for better contrast */
+
 .hero-section .hero-details .subtitle,
 .hero-section .hero-details .description {
   color: var(--dark-color); /* Was white; now dark for better contrast on light bg */
@@ -257,6 +282,16 @@ header .navbar {
 .service-section .text {
   color: #f8f8f8; /* Slightly brighter white */
 }
+
+
+
+.button:hover,
+.submit-button:hover {
+  background: var(--secondary-color);
+  color: var(--dark-color);
+}
+
+
 
 
 /* About Section */
@@ -331,9 +366,10 @@ header .navbar {
 }
 
 .service-section .service-item {
-  background: rgba(255, 255, 255, 0.1);
+   background: #fff;
+   color: #222;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #ddd;
   border-radius: var(--border-radius-m);
   padding: 30px 25px;
   display: flex;
@@ -346,6 +382,7 @@ header .navbar {
   min-height: 400px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .service-section .service-item:hover {
@@ -375,7 +412,7 @@ header .navbar {
 .service-section .text {
   font-size: var(--font-size-s);
   line-height: 1.6;
-  color: var(--white-color);
+   color: #555;
   text-align: justify;
   flex-grow: 1;
   display: flex;
@@ -401,9 +438,10 @@ header .navbar {
 
 .gallery-section .gallery-item {
   width: calc(100% / 3 - 32px);
-  border-radius: var(--font-size-s);
+   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease;
   cursor: pointer;
 }
 
@@ -569,9 +607,15 @@ header .navbar {
 /* Contact Form */
 .contact-form {
   flex: 1;
+
   min-width: 320px;
   background: #ffffff;
   border: 2px solid var(--secondary-color);
+
+  min-width: 300px;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ddd;
   border-radius: var(--border-radius-m);
   padding: 40px 35px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
@@ -768,18 +812,19 @@ textarea.form-input {
   position: absolute;
   top: 100%;
   right: 0;
-  background: var(--light-pink-color);
-  border: 1px solid var(--medium-gray-color);
+  background: #fff; /* brighter for clarity */
+  border: 1px solid #ddd;
   border-radius: var(--border-radius-s);
-  min-width: 180px;
+  min-width: 200px;
   padding: 10px 0;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
-  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
-  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+  z-index: 20;
 }
+
 
 /* Show dropdown on hover */
 .nav-item.dropdown:hover .dropdown-menu {
@@ -794,17 +839,46 @@ textarea.form-input {
   transition: all 0.4s ease;
 }
 
-/* Dropdown menu links */
 .dropdown-menu li a {
   display: block;
   padding: 12px 20px;
   font-size: var(--font-size-n);
-  color: var(--dark-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #333;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .dropdown-menu li a:hover {
   background-color: var(--secondary-color);
   color: var(--primary-color);
+  font-weight: 600;
 }
+table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 1000px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+table th, table td {
+  padding: 14px 18px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+table th {
+  background-color: var(--primary-color);
+  color: #333;
+  font-weight: 600;
+}
+h2 {
+  text-align: center;
+  margin-top: 120px;
+  margin-bottom: 30px;
+  color: #444;
+}
+
 

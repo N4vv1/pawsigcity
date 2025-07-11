@@ -100,7 +100,7 @@ $pendingCancellations = $mysqli->query("SELECT * FROM appointments WHERE cancel_
 </head>
 <body>
 
-<a href="../admin/admin-dashboard.php" style="display: inline-block; padding: 8px 16px; background: #A8E6CF; color: black; text-decoration: none; border-radius: 5px; margin-bottom: 20px;">
+<a href="../dashboard/home_dashboard/home.php" style="display: inline-block; padding: 8px 16px; background: #A8E6CF; color: black; text-decoration: none; border-radius: 5px; margin-bottom: 20px;">
   ⬅ Back to Dashboard
 </a>
 

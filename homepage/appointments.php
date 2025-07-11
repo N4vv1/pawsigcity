@@ -33,7 +33,7 @@ $appointments = $result->get_result();
         <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
-        <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="main.php" class="nav-link">Home</a></li>
         <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
         <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
         <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
@@ -66,6 +66,7 @@ $appointments = $result->get_result();
       <th>Pet</th>
       <th>Service</th>
       <th>Date & Time</th>
+      <th>Recommended Package</th>
       <th>Approval</th>
       <th>Status</th>
       <th>Session Notes</th>
@@ -78,6 +79,7 @@ $appointments = $result->get_result();
         <td><?= htmlspecialchars($row['pet_name']) ?></td>
         <td><?= htmlspecialchars($row['package_name']) ?></td>
         <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+        <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
         <td>
   <?php if ($row['status'] === 'cancelled'): ?>
     <span class="badge pending" style="background: #f8d7da; color: #721c24;">Cancelled</span>

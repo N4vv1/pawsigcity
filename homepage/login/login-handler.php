@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: ../admin/admin-dashboard.php");
                     break;
                 default: // customer
-                    header("Location: http://localhost/purrfect-paws/homepage/main.php");
+                    header("Location: http://localhost/Purrfect-paws/homepage/main.php");
                     break;
             }
             exit;
