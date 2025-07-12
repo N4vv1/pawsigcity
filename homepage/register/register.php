@@ -3,13 +3,20 @@ session_start();
 require '../../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $full_name = trim($_POST['full_name']);
+  // Get individual name parts
+  $first_name  = trim($_POST['first_name']);
+  $middle_name = trim($_POST['middle_name']);
+  $last_name   = trim($_POST['last_name']);
+
+  // Combine into full_name (with optional middle initial)
+  $full_name = $first_name . ' ' . ($middle_name ? $middle_name . ' ' : '') . $last_name;
+
   $email     = trim($_POST['email']);
   $password  = password_hash($_POST['password'], PASSWORD_BCRYPT);
   $phone     = trim($_POST['phone']);
-  $role      = 'customer'; // default role for registration
+  $role      = 'customer';
 
-  // Check for duplicate email
+  // Check if email already exists
   $check = $mysqli->prepare("SELECT * FROM users WHERE email = ?");
   $check->bind_param("s", $email);
   $check->execute();
@@ -59,8 +66,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <?php endif; ?>
 
       <div class="input_box">
-        <input type="text" class="input-field" name="full_name" required />
-        <label class="label">Full Name</label>
+        <input type="text" class="input-field" name="first_name" required />
+        <label class="label">First Name</label>
+        <i class='bx bx-user icon'></i>
+      </div>
+
+      <div class="input_box">
+        <input type="text" class="input-field" name="middle_name" />
+        <label class="label">Middle Name (optional)</label>
+        <i class='bx bx-user icon'></i>
+      </div>
+
+      <div class="input_box">
+        <input type="text" class="input-field" name="last_name" required />
+        <label class="label">Last Name</label>
         <i class='bx bx-user icon'></i>
       </div>
 

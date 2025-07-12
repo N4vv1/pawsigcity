@@ -368,7 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST" class="login_box">
           <div class="login-header">
             <span>Create Admin Account</span>
-          </div>
+          </div><br>
 
           <?php if (isset($error)): ?>
             <p class="message-error"><?= $error ?></p>

@@ -775,5 +775,33 @@ textarea.form-input {
   color: var(--primary-color);
   font-weight: 600;
 }
+table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 1000px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+table th, table td {
+  padding: 14px 18px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+table th {
+  background-color: var(--primary-color);
+  color: #333;
+  font-weight: 600;
+}
+h2 {
+  text-align: center;
+  margin-top: 120px;
+  margin-bottom: 30px;
+  color: #444;
+}
 
 

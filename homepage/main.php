@@ -65,8 +65,9 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
           <ul class="dropdown-menu">
             <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
             <li><a href="../pets/add-pet.php">Add Pet</a></li>
-            <li><a href="../appointment/book-appointment.php">Appointments</a></li>
-            <li><a href="../homepage/logout/logout.php">Logout</a></li> <!-- ✅ Fixed -->
+            <li><a href="../appointment/book-appointment.php">Book</a></li>
+            <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
           </ul>
         </li>
       </ul>

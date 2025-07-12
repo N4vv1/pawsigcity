@@ -10,8 +10,19 @@ if (!$id) {
 }
 ?>
 
+<?php if (isset($_SESSION['error'])): ?>
+  <p style="color: red;"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['success'])): ?>
+  <p style="color: green;"><?= $_SESSION['success']; unset($_SESSION['success']); ?></p>
+<?php endif; ?>
+
+
 <h3>Rate Your Appointment</h3>
-<form action="submit-feedback.php" method="POST">
+<p>Please rate your experience. <strong>Tell us what you liked or what we can improve!</strong></p>
+
+<form action="rate-handler.php" method="POST" onsubmit="return validateFeedback();">
   <input type="hidden" name="appointment_id" value="<?= htmlspecialchars($id) ?>">
   
   <label>Rating:</label>
@@ -22,8 +33,25 @@ if (!$id) {
     <?php endfor; ?>
   </select><br><br>
 
-  <label>Comments (optional):</label><br>
-  <textarea name="feedback" rows="4" cols="50"></textarea><br><br>
+  <label>Comments (optional but encouraged):</label><br>
+  <textarea name="feedback" id="feedback" required rows="4" cols="50" placeholder="E.g. I loved how gentle the groomer was with my dog."></textarea><br><br>
 
   <button type="submit">Submit</button>
 </form>
+
+<script>
+function validateFeedback() {
+  const feedback = document.getElementById('feedback').value.trim();
+
+  // If not empty, check if at least 10 words
+  if (feedback !== '') {
+    const wordCount = feedback.split(/\s+/).length;
+    if (wordCount < 10) {
+      alert("Please enter at least 10 words so we can better understand your experience.");
+      return false;
+    }
+  }
+
+  return true;
+}
+</script>

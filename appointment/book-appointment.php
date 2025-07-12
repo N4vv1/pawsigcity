@@ -17,6 +17,8 @@ $pets_stmt->bind_param("i", $user_id);
 $pets_stmt->execute();
 $pets_result = $pets_stmt->get_result();
 
+$recommended_package = null;
+
 // If pet is selected, check if the pet belongs to the user
 if ($selected_pet_id) {
     $pet_check_stmt = $mysqli->prepare("SELECT * FROM pets WHERE pet_id = ? AND user_id = ?");
@@ -47,7 +49,14 @@ if ($selected_pet_id) {
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
     $response = curl_exec($ch);
+    if (curl_errno($ch)) {
+        $_SESSION['error'] = "⚠️ API request error: " . curl_error($ch);
+        curl_close($ch);
+        header("Location: book-appointment.php");
+        exit;
+    }
     curl_close($ch);
+
 
     $response_data = json_decode($response, true);
     $recommended_package = $response_data['recommended_package'] ?? null;
@@ -57,17 +66,17 @@ if ($selected_pet_id) {
     $packages_result = $packages_stmt->get_result();
 }
 
-if (isset($response_data['error'])) {
+if (isset($response_data) && isset($response_data['error'])) {
     $recommended_package = null;
     $_SESSION['error'] = "⚠️ Recommendation not available for this breed: " . htmlspecialchars($valid_pet['breed']);
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
   <title>Book Appointment</title>
   <link rel="stylesheet" href="../homepage/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
@@ -287,35 +296,8 @@ textarea:focus {
   </style>
 </head>
 <body>
-  <div class="header-wrapper">
-    <header>
-      <nav class="navbar section-content">
-        <a href="#" class="navbar-logo">
-          <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
-        </a>
-        <ul class="nav-menu">
-          <li class="nav-item"><a href="../homepage/main.php" class="nav-link ">Home</a></li>
-          <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-          <li class="nav-item"><a href="#service" class="nav-link active">Services</a></li>
-          <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
-          <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-          <li class="nav-item dropdown">
-            <a href="#" class="nav-link profile-icon">
-              <i class="fas fa-user-circle"></i>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-              <li><a href="../homepage/logout/logout.php">Logout</a></li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
-    </header>
-  </div>
-    <div style="height: 60px;"></div>
   <div class="form-wrapper">
     <div class="page-content">
-
       <h2>Book a Grooming Appointment</h2>
 
       <?php if (isset($_SESSION['success'])): ?>
@@ -341,52 +323,51 @@ textarea:focus {
             </div>
           <?php endwhile; ?>
         </div>
-
       <?php else: ?>
         <div class="form-container">
-  <a href="book-appointment.php" class="back-link">← Choose another pet</a>
+          <a href="book-appointment.php" class="back-link">← Choose another pet</a>
 
-  <form method="POST" action="appointment-handler.php" class="booking-form">
-    <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
+          <form method="POST" action="appointment-handler.php" class="booking-form">
+            <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
 
-    <?php if ($recommended_package): ?>
-      <div class="recommendation-box">
-        🐾 Recommended Package for <strong><?= htmlspecialchars($valid_pet['name']) ?></strong>:
-        <span class="recommend"><?= htmlspecialchars($recommended_package) ?></span>
-      </div>
-    <?php endif; ?>
+            <?php if ($recommended_package): ?>
+              <input type="hidden" name="recommended_package" value="<?= htmlspecialchars($recommended_package) ?>">
+              <div class="recommendation-box">
+                🐾 Recommended Package for <strong><?= htmlspecialchars($valid_pet['name']) ?></strong>:
+                <span class="recommend"><?= htmlspecialchars($recommended_package) ?></span>
+              </div>
+            <?php endif; ?>
 
-    <div class="form-group">
-      <label for="package_id"><i class="fas fa-box"></i> Select Grooming Package:</label>
-      <select name="package_id" id="package_id" required>
-        <?php while ($pkg = $packages_result->fetch_assoc()): ?>
-          <option value="<?= $pkg['id'] ?>" <?= $package_id == $pkg['id'] ? 'selected' : '' ?>>
-            <?= htmlspecialchars($pkg['name']) ?> - ₱<?= number_format($pkg['price'], 2) ?>
-          </option>
-        <?php endwhile; ?>
-      </select>
-    </div>
+            <div class="form-group">
+              <label for="package_id"><i class="fas fa-box"></i> Select Grooming Package:</label>
+              <select name="package_id" id="package_id" required>
+                <?php while ($pkg = $packages_result->fetch_assoc()): ?>
+                  <option value="<?= $pkg['id'] ?>" <?= ($pkg['name'] == $recommended_package) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($pkg['name']) ?> - ₱<?= number_format($pkg['price'], 2) ?>
+                  </option>
+                <?php endwhile; ?>
+              </select>
+            </div>
 
-    <div class="form-group">
-      <label for="appointment_date"><i class="fas fa-calendar-alt"></i> Appointment Date and Time:</label>
-      <input type="datetime-local" name="appointment_date" id="appointment_date" required>
-    </div>
+            <div class="form-group">
+              <label for="appointment_date"><i class="fas fa-calendar-alt"></i> Appointment Date and Time:</label>
+              <input type="datetime-local" name="appointment_date" id="appointment_date" required>
+            </div>
 
-    <div class="form-group">
-      <label for="groomer_name"><i class="fas fa-user"></i> Preferred Groomer (optional):</label>
-      <input type="text" name="groomer_name" id="groomer_name" placeholder="Enter name...">
-    </div>
+            <div class="form-group">
+              <label for="groomer_name"><i class="fas fa-user"></i> Preferred Groomer (optional):</label>
+              <input type="text" name="groomer_name" id="groomer_name" placeholder="Enter name...">
+            </div>
 
-    <div class="form-group">
-      <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
-      <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>
-    </div>
+            <div class="form-group">
+              <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
+              <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>
+            </div>
 
-    <button type="submit" class="btn submit-btn">📅 Book Appointment</button>
-  </form>
-</div>
+            <button type="submit" class="btn submit-btn">📅 Book Appointment</button>
+          </form>
+        </div>
       <?php endif; ?>
-
     </div>
   </div>
 </body>

@@ -328,7 +328,7 @@ $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointm
   display: inline-block;
   margin-top: 10px;
   font-size: 0.95rem;
-  color: var(--primary-color);
+  color: black;
   text-decoration: underline;
   transition: color 0.3s ease;
 }
@@ -349,11 +349,15 @@ $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointm
   <nav class="menu">
     <a href="home.php" class="active"><i class='bx bx-home'></i>Home</a>
     <hr>
+    <a href="../manage_accounts/accounts.php"><i class='bx bx-camera'></i>User Management</a>
+    <hr>
     <a href="../create_user/create-user.php"><i class='bx bx-user-plus'></i>Create User</a>
     <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
+    <hr>
+    <a href="../feedback_reports/feedback-reports.php" class="button">📝 View Feedback Reports</a>
     <hr>
     <a href="#"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
@@ -431,6 +435,7 @@ $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointm
           <th>User ID</th>
           <th>Pet ID</th>
           <th>Service</th>
+          <th>Recommended</th>
           <th>Date</th>
           <th>Status</th>
         </tr>
@@ -438,7 +443,7 @@ $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointm
       <tbody>
         <?php
         $pendingList = $mysqli->query("
-          SELECT a.appointment_id, a.user_id, a.pet_id, pk.name AS service, a.appointment_date, a.status
+          SELECT a.appointment_id, a.user_id, a.pet_id, pk.name AS service, a.recommended_package, a.appointment_date, a.status
           FROM appointments a
           JOIN packages pk ON a.package_id = pk.id
           WHERE a.status = 'pending'
@@ -450,6 +455,7 @@ $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointm
           <td><?= $row['user_id'] ?></td>
           <td><?= $row['pet_id'] ?></td>
           <td><?= htmlspecialchars($row['service']) ?></td>
+          <td><?= !empty($row['recommended_package']) ? htmlspecialchars($row['recommended_package']) : '<em>Not available</em>' ?></td>
           <td><?= htmlspecialchars($row['appointment_date']) ?></td>
           <td><?= ucfirst($row['status']) ?></td>
         </tr>
@@ -481,7 +487,7 @@ $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointm
       <i class='bx bx-calendar-check dashboard-icon'></i>
       <h3>Total Appointments</h3>
       <p><?= $total_appointments ?></p>
-      <a href="../appointment/manage-appointments.php">Manage Appointments</a>
+      <a href="../../appointment/manage-appointments.php">Manage Appointments</a>
     </div>
 
     <div class="card dashboard-card">
