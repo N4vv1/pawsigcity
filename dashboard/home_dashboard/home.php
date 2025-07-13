@@ -351,8 +351,6 @@ $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointm
     <hr>
     <a href="../manage_accounts/accounts.php"><i class='bx bx-camera'></i>User Management</a>
     <hr>
-    <a href="../create_user/create-user.php"><i class='bx bx-user-plus'></i>Create User</a>
-    <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
