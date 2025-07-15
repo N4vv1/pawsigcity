@@ -4,7 +4,8 @@ require '../db.php';
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     $_SESSION['completed'] = "❌ Invalid appointment ID.";
-    header("Location: manage-appointments.php");
+    header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?show=appointments");
+
     exit;
 }
 
@@ -19,5 +20,6 @@ if ($stmt->execute()) {
     $_SESSION['completed'] = "❌ Failed to update status.";
 }
 
-header("Location: manage-appointments.php");
+header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?show=appointments");
+
 exit;

@@ -66,7 +66,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../homepage/images/pawpatrol-removebg-preview.png" alt="Hero" class="image-hero" />
+          <img src="../../Purrfect-paws/homepage/images/paw.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -145,7 +145,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
             <?php while($row = $result->fetch_assoc()): ?>
               <li class="gallery-item">
                 <div class="gallery-image-container">
-                  <img src="../../Purrfect-paws/dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" 
+                  <img src="../dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>"
                        alt="Gallery Image" 
                        class="gallery-image" />
                 </div>

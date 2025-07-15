@@ -1,6 +1,11 @@
 <?php
 require_once '../../conn.php';
 
+//if ($_SESSION['role'] !== 'admin') {
+  //header("Location: ../homepage/main.php");
+  //exit;
+//}
+
 $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
 ?>
 
@@ -194,13 +199,13 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
       background-color: #ff4949;
     }
 
-    .modal {
+        .modal {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(5px);
-      display: flex;
+      /* display: flex;  ❌ REMOVE THIS LINE */
       align-items: center;
       justify-content: center;
       z-index: 9999;
@@ -310,7 +315,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
 function openModal(url) {
   const modal = document.getElementById("dynamicModal");
   const modalBody = document.getElementById("modalBody");
-  modal.style.display = "flex";
+  modal.style.display = "flex"; // ← this will correctly show the modal only when needed
   modalBody.innerHTML = "Loading...";
   fetch(url)
     .then(res => res.text())

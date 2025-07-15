@@ -8,9 +8,9 @@ if (isset($_GET['id'])) {
     $stmt->bind_param("i", $appointment_id);
     $stmt->execute();
 
-    header("Location: http://localhost/purrfect-paws/appointment/manage-appointments.php?approved=1");
+   header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?approved=1&show=appointments");
     exit;
 } else {
-    header("Location: http://localhost/purrfect-paws/appointment/manage-appointments.php");
+    header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php");
     exit;
 }

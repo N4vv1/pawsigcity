@@ -24,7 +24,8 @@ if ($result && $result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
         $html .= '<li class="gallery-item">';
         $html .= '<div class="gallery-image-container">';
-        $html .= '<img src="../gallery_images/' . htmlspecialchars($row['image_path']) . '" alt="Gallery Image" class="gallery-image" />';
+        // UPDATED IMAGE PATH — relative from your HTML file (e.g. homepage/index.php)
+        $html .= '<img src="../dashboard/gallery_images/' . htmlspecialchars($row['image_path']) . '" alt="Gallery Image" class="gallery-image" />';
         $html .= '</div>';
         $html .= '</li>';
     }

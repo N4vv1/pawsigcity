@@ -6,7 +6,7 @@ $id = $_GET['id'] ?? null;
 
 if (!$id || !is_numeric($id)) {
     $_SESSION['deleted'] = '❌ Invalid appointment ID.';
-    header("Location: manage-appointments.php");
+    header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?deleted=1&show=appointments");
     exit;
 }
 
@@ -18,5 +18,5 @@ if ($stmt->execute()) {
 } else {
     $_SESSION['deleted'] = '❌ Failed to delete appointment.';
 }
-header("Location: manage-appointments.php");
+header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?deleted=1&show=appointments");
 exit;

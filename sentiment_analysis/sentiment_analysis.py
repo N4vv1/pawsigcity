@@ -10,19 +10,22 @@ conn = mysql.connector.connect(
 )
 cursor = conn.cursor()
 
-# Fetch feedback with NULL sentiment (to avoid reprocessing)
+# Fetch feedback with NULL sentiment
 cursor.execute("SELECT appointment_id, feedback, rating FROM appointments WHERE feedback IS NOT NULL AND sentiment IS NULL")
 feedback_data = cursor.fetchall()
 
-# Initialize VADER
+# Initialize analyzer
 analyzer = SentimentIntensityAnalyzer()
 
-# Analyze and update sentiment
+# Process each feedback
 for appointment_id, feedback, rating in feedback_data:
-    score = analyzer.polarity_scores(feedback)
-    compound = score['compound']
+    scores = analyzer.polarity_scores(feedback)
+    compound = scores['compound']
+    pos = scores['pos']
+    neu = scores['neu']
+    neg = scores['neg']
 
-    # Classify sentiment using VADER
+    # Classification logic (based on VADER scoring system)
     if compound >= 0.05:
         sentiment = 'positive'
     elif compound <= -0.05:
@@ -30,20 +33,22 @@ for appointment_id, feedback, rating in feedback_data:
     else:
         sentiment = 'neutral'
 
-    # Override if feedback is neutral but rating is very low
+    # Example of override logic (aligning with human rating)
     if rating == 1 and sentiment == 'neutral':
         sentiment = 'negative'
 
-    # Debug output
-    print(f"Appointment #{appointment_id}: {sentiment} (Score: {compound}, Rating: {rating})")
+    print(f"[Appointment #{appointment_id}] Feedback: \"{feedback}\"")
+    print(f"Scores => Compound: {compound}, Pos: {pos}, Neu: {neu}, Neg: {neg}, Rating: {rating}")
+    print(f"=> Sentiment: {sentiment}")
+    print("-" * 60)
 
-    # Update sentiment in database
+    # Update database
     cursor.execute(
         "UPDATE appointments SET sentiment = %s WHERE appointment_id = %s",
         (sentiment, appointment_id)
     )
 
-# Commit changes and close connection
+# Commit and close
 conn.commit()
 cursor.close()
 conn.close()

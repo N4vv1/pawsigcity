@@ -1,1 +1,1 @@
-C:\Users\Ivan\AppData\Local\Programs\Python\Python313\python.exe: can't open file 'E:\\xampp\\htdocs\\Purrfect-paws\\recommendation\\recommend.py': [Errno 2] No such file or directory
+The system cannot find the path specified.

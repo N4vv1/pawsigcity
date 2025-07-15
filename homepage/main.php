@@ -73,17 +73,27 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
       </ul>
     </nav>
   </header>
-
-  <div style="height: 120px;"></div>
      <?php if ($petCount == 0): ?>
-    <section class="section-content" style="margin-top: 20px;">
-      <div style="background:#ffefc1; padding:15px; border:1px solid #ffc107; text-align:center; border-radius: 8px;">
-        🐶 You haven’t added any pets yet. 
-        <a href="../pets/add-pet.php" style="font-weight:bold; color:#d35400;">Add one now</a> 
-        to book a grooming appointment!
-      </div>
-    </section>
-    <?php endif; ?>
+  <div id="petToast" class="pet-toast">
+    <div class="pet-toast-content">
+      🐶 You haven’t added any pets yet. 
+      <a href="../pets/add-pet.php" class="toast-link">Add one now</a> to book a grooming appointment!
+      <button class="toast-close" onclick="document.getElementById('petToast').style.display='none'">&times;</button>
+    </div>
+  </div>
+  <script>
+    // Show toast on load
+    window.addEventListener("DOMContentLoaded", () => {
+      const toast = document.getElementById("petToast");
+      if (toast) {
+        toast.style.display = "block";
+        // Optional: auto-hide after 7 seconds
+        setTimeout(() => toast.style.display = "none", 200000);
+      }
+    });
+  </script>
+<?php endif; ?>
+
 
 
   <!-- Hero Section -->
@@ -93,14 +103,14 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
         <div class="hero-details">
           <h2 class="title">PURRFECT PAWS</h2>
           <h3 class="subtitle">Best Grooming in the Town of Caniogan</h3>
-          <p class="description">From Paw-scheduling to Tail-wagging — We've Got It Covered.</p>
+          <p class="description">From Paw-scheduling to Tail-wagging — We’ve Got It Covered.</p>
           <div class="buttons">
-            <a href="service.php" class="button book-now">Book Now</a>
+            <a href="../homepage/login/loginform.php" class="button book-now">Book Now</a>
             <a href="#contact" class="button contact-us">Contact Us</a>
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../homepage/images/pawpatrol-removebg-preview.png" alt="Hero Dog" class="image-hero" />
+          <img src="../../Purrfect-paws/homepage/images/paw.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>

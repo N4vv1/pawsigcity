@@ -79,223 +79,224 @@ if (isset($response_data) && isset($response_data['error'])) {
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+ <style>
+  * {
+    box-sizing: border-box;
+  }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+  }
 
-    .header-wrapper {
-      margin: 0;
-      padding: 0;
-    }
+  .header-wrapper {
+    margin: 0;
+    padding: 0;
+  }
 
-    .form-wrapper {
-      margin-top: 100px; /* Pushes form below header */
-    }
+  .form-wrapper {
+    margin-top: 100px;
+  }
 
-    .page-content {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 30px;
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-    }
+  .page-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease-in-out;
+  }
 
-    h2, h3 {
-      color: #2c3e50;
-      text-align: center;
-      margin-bottom: 24px;
-    }
+  h2, h3 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 24px;
+    font-weight: 700;
+  }
 
-    .form-container {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
 
-    .card {
-      background-color: #f4f7f8;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
+  .card {
+    background-color: #f4f7f8;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
 
-    .card strong {
-      font-size: 1.1rem;
-      color: #34495e;
-    }
+  .card strong {
+    font-size: 1.1rem;
+    color: #34495e;
+  }
 
-    .btn {
-      margin-top: 10px;
-      background-color: #A8E6CF;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      color: #252525;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+  .btn, .submit-btn {
+    background-color: #A8E6CF;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #252525;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
 
-    .btn:hover {
-      background-color: #87d7b7;
-    }
+  .btn:hover, .submit-btn:hover {
+    background-color: #87d7b7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
-    select, input[type="datetime-local"], input[type="text"], textarea {
-      width: 100%;
-      padding: 10px 12px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      background-color: #fff;
-    }
+  select,
+  input[type="datetime-local"],
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 12px 16px;
+    margin-top: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease-in-out;
+  }
 
-    label {
-      font-weight: 600;
-      color: #333;
-      margin-top: 10px;
-    }
+  select:focus,
+  input[type="datetime-local"]:focus,
+  input[type="text"]:focus,
+  textarea:focus {
+    border-color: #A8E6CF;
+    box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.4);
+    outline: none;
+    background-color: #fcfffc;
+  }
 
-    textarea {
-      resize: vertical;
-    }
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
 
-    .alert-success, .alert-error {
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-weight: 500;
-      margin-bottom: 20px;
-    }
+  label {
+    font-weight: 600;
+    color: #333;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-    .alert-success {
-      background-color: #e0fce0;
-      color: #2e7d32;
-      border: 1px solid #b2dfdb;
-    }
+  label i {
+    color: #A8E6CF;
+  }
 
-    .alert-error {
-      background-color: #ffe3e3;
-      color: #c62828;
-      border: 1px solid #ffcdd2;
-    }
+  .alert-success,
+  .alert-error {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
 
-    a {
-      text-decoration: none;
-      color: #3498db;
-    }
+  .alert-success {
+    background-color: #e0fce0;
+    color: #2e7d32;
+    border: 1px solid #b2dfdb;
+  }
 
-    a:hover {
-      text-decoration: underline;
-    }
+  .alert-error {
+    background-color: #ffe3e3;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+  }
 
-    .booking-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.03);
-}
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.03);
+  }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
 
-label i {
-  margin-right: 8px;
-  color: #A8E6CF;
-}
+  .recommendation-box {
+    background-color: #e8fff3;
+    border-left: 5px solid #A8E6CF;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+  }
 
-input[type="datetime-local"]:focus,
-input[type="text"]:focus,
-select:focus,
-textarea:focus {
-  border-color: #A8E6CF;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.4);
-}
+  .recommend {
+    color: #16a085;
+    font-weight: bold;
+  }
 
-.back-link {
-  display: inline-block;
-  color: #3498db;
-  font-weight: 600;
-  margin-bottom: 16px;
-}
+  .back-link {
+    display: inline-block;
+    color: #3498db;
+    font-weight: 600;
+    margin-bottom: 16px;
+    transition: color 0.3s ease;
+  }
 
-.recommendation-box {
-  background-color: #e8fff3;
-  border-left: 5px solid #A8E6CF;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #2c3e50;
-}
+  a, a:hover {
+    text-decoration: none;
+    color: #3498db;
+  }
 
-.recommend {
-  color: #16a085;
-  font-weight: bold;
-}
+  a:hover {
+    color: #2c80b4;
+  }
+</style>
 
-.submit-btn {
-  display: inline-block;
-  font-size: 1.05rem;
-  padding: 12px 20px;
-  background-color: #A8E6CF;
-  border-radius: 8px;
-  color: #252525;
-  border: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.submit-btn:hover {
-  background-color: #87d7b7;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-select,
-input[type="datetime-local"],
-input[type="text"],
-textarea {
-  width: 100%;
-  padding: 12px 16px;
-  margin-top: 6px;
-  font-size: 1rem;
-  font-family: inherit;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #fff;
-  color: #333;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: all 0.25s ease-in-out;
-}
-
-select:focus,
-input[type="datetime-local"]:focus,
-input[type="text"]:focus,
-textarea:focus {
-  border-color: #A8E6CF;
-  box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.4);
-  outline: none;
-  background-color: #fcfffc;
-}
-
-  </style>
 </head>
 <body>
+  <header>
+  <nav class="navbar section-content">
+    <a href="#" class="navbar-logo">
+      <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+    </a>
+    <ul class="nav-menu">
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link profile-icon">
+          <i class="fas fa-user-circle"></i>
+        </a>
+         <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="../pets/add-pet.php">Add Pet</a></li>
+            <li><a href="../appointment/book-appointment.php">Book</a></li>
+            <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+          </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<div style="height: 60px;"></div>
   <div class="form-wrapper">
     <div class="page-content">
       <h2>Book a Grooming Appointment</h2>
@@ -353,12 +354,7 @@ textarea:focus {
               <label for="appointment_date"><i class="fas fa-calendar-alt"></i> Appointment Date and Time:</label>
               <input type="datetime-local" name="appointment_date" id="appointment_date" required>
             </div>
-
-            <div class="form-group">
-              <label for="groomer_name"><i class="fas fa-user"></i> Preferred Groomer (optional):</label>
-              <input type="text" name="groomer_name" id="groomer_name" placeholder="Enter name...">
-            </div>
-
+            
             <div class="form-group">
               <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
               <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>

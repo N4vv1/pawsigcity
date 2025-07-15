@@ -13,7 +13,7 @@ $user_id = $_SESSION['user_id'];
 
 if (!$appointment_id || empty($cancel_reason)) {
     $_SESSION['error'] = "Missing reason or appointment ID.";
-    header("Location: cancel-request.php?id=" . urlencode($appointment_id));
+    header("Location: ../homepage/appointments.php");
     exit;
 }
 
@@ -24,10 +24,12 @@ $stmt = $mysqli->prepare("UPDATE appointments
 $stmt->bind_param("sii", $cancel_reason, $appointment_id, $user_id);
 
 if ($stmt->execute()) {
-    $_SESSION['success'] = "Cancellation request submitted. Waiting for admin approval.";
+    $_SESSION['cancel_success'] = "Cancellation request submitted. Waiting for admin approval.";
+    $_SESSION['reopen_modal_id'] = $appointment_id;
 } else {
-    $_SESSION['error'] = "Failed to submit request.";
+    $_SESSION['error'] = "Failed to submit cancellation request.";
 }
 
-header("Location: ../homepage/dashboard.php");
+header("Location: ../homepage/appointments.php");
 exit;
+?>

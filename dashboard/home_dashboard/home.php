@@ -260,6 +260,97 @@ main {
   background-color: var(--secondary-color);
 }
 
+.feedback-box {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  font-size: inherit;
+  display: block;
+}
+
+
+.feedback-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+}
+
+.feedback-stars {
+  color: #FFD700;
+  font-size: 1rem;
+  display: flex;
+  gap: 2px;
+}
+
+
+.feedback-comment {
+  color: #333;
+  line-height: 1.3;
+  font-style: italic;
+  word-wrap: break-word;
+}
+
+.feedback-user {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.feedback-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* Action buttons group */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Button style refinements */
+.button {
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: #252525;
+  background: #A8E6CF;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.button:hover {
+  background: #80d1b8;
+  color: #000;
+}
+
+.button.danger {
+  background-color: #FFB6B6;
+}
+
+.button.danger:hover {
+  background-color: #e67d7d;
+}
+
+.button.secondary {
+  background-color: #FFE29D;
+}
+
+.button.secondary:hover {
+  background-color: #f8d775;
+}
+
+.button.view-history {
+  background-color: #dcdcdc;
+}
+
+.button.view-history:hover {
+  background-color: #c0c0c0;
+}
    </style>
 </head>
 <body>
@@ -311,7 +402,7 @@ main {
       </div>
       <h3>Total Appointments</h3>
       <p><?= $total_appointments ?></p>
-      <a href="../admin/manage_appointments.php">Go to Appointments</a>
+      <a href="javascript:void(0)" onclick="openModal('appointments')">View Appointments</a>
     </div>
 
     <div class="card">
@@ -482,6 +573,8 @@ main {
   </div>
 </div>
 
+
+
 <!-- COMPLETED APPOINTMENTS MODAL -->
 <div id="completedModal" class="modal">
   <div class="modal-content">
@@ -521,36 +614,194 @@ main {
     <button onclick="closeModal('completedModal')">Close</button>
   </div>
 </div>
+
+<!-- ALL APPOINTMENTS MODAL -->
+<div id="appointmentsModal" class="modal">
+  <div class="modal-content" style="max-width: 95%; max-height: 90vh; overflow-y: auto;">
+    <h2>📋 All Appointments</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Pet</th>
+          <th>Breed</th>
+          <th>Service</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Approval</th>
+          <th>Cancel Reason</th>
+          <th>Groomer</th>
+          <th>Notes</th>
+          <th>Feedback</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $appointmentList = $mysqli->query("
+          SELECT a.*, 
+                 u.full_name AS client_name,
+                 u.user_id,
+                 p.name AS pet_name,
+                 p.breed AS pet_breed,
+                 pk.name AS package_name
+          FROM appointments a
+          JOIN users u ON a.user_id = u.user_id
+          JOIN pets p ON a.pet_id = p.pet_id
+          JOIN packages pk ON a.package_id = pk.id
+          ORDER BY a.appointment_date DESC
+        ");
+        while ($row = $appointmentList->fetch_assoc()):
+        ?>
+          <tr>
+            <td><?= htmlspecialchars($row['client_name']) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($row['pet_breed']) ?></td>
+            <td><?= htmlspecialchars($row['package_name']) ?></td>
+            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+            <td>
+              <?php if ($row['status'] === 'completed'): ?>
+                <span style="color: green;">Completed</span>
+              <?php elseif ($row['status'] === 'confirmed'): ?>
+                <span style="color: green;">Confirmed</span>
+              <?php elseif ($row['status'] === 'cancelled'): ?>
+                <span style="color: red;">Cancelled</span>
+              <?php elseif (!empty($row['cancel_requested'])): ?>
+                <span style="color: red;">Cancel Requested</span>
+              <?php else: ?>
+                <span style="color: orange;">Pending</span>
+              <?php endif; ?>
+            </td>
+            <td>
+              <?= $row['status'] === 'cancelled' ? '<span style="color:red;">Cancelled</span>' :
+                  (!empty($row['is_approved']) ? '<span style="color:green;">Approved</span>' : '<span style="color:orange;">Pending</span>') ?>
+            </td>
+            <td><?= !empty($row['cancel_reason']) ? nl2br(htmlspecialchars($row['cancel_reason'])) : '-' ?></td>
+            <td><?= !empty($row['groomer_name']) ? htmlspecialchars($row['groomer_name']) : 'Not assigned' ?></td>
+            <td><?= nl2br(htmlspecialchars($row['notes'] ?? '')) ?></td>
+            <td>
+            <?php if (isset($row['rating'])): ?>
+              <div class="feedback-box">
+                <div class="feedback-header">
+                  <div class="feedback-stars">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                      <i class="fa<?= $i <= $row['rating'] ? 's' : 'r' ?> fa-star"></i>
+                    <?php endfor; ?>
+                  </div>
+                </div>
+                <div class="feedback-comment">
+                  <?= !empty($row['feedback']) ? nl2br(htmlspecialchars($row['feedback'])) : '<em>No comment.</em>' ?>
+                </div>
+              </div>
+            <?php else: ?>
+              <em>No feedback</em>
+            <?php endif; ?>
+          </td>
+            <td>
+              <?php if (empty($row['is_approved']) && empty($row['cancel_requested']) && $row['status'] !== 'cancelled'): ?>
+                <a href="../../admin/approve/approve-handler.php?id=<?= $row['appointment_id'] ?>" class="button">Approve</a>
+              <?php endif; ?>
+
+              <?php if (!empty($row['cancel_requested'])): ?>
+                <a href="../../appointment/cancel-approve.php?id=<?= $row['appointment_id'] ?>&action=approve" class="button danger">Approve Cancel</a>
+              <?php endif; ?>
+
+              <?php if ($row['status'] === 'confirmed'): ?>
+                <a href="../../appointment/mark-completed.php?id=<?= $row['appointment_id'] ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">Complete</a>
+              <?php endif; ?>
+
+              <a href="../../appointment/delete-appointment.php?id=<?= $row['appointment_id'] ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+              <a href="javascript:void(0)" class="button" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
+            </td>
+          </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+    <button onclick="closeModal('appointmentsModal')">Close</button>
+  </div>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="modal">
+  <div class="modal-content" id="historyContent">
+    <h3>📖 Appointment History</h3>
+    <div id="historyTable">Loading...</div>
+    <button onclick="closeModal('historyModal')">Close</button>
+  </div>
+</div>
+
 </main>
 
 <script>
-  function openModal(type) {
-    const modals = {
-      users: 'usersModal',
-      pets: 'petsModal',
-      pending: 'pendingModal',
-      confirmed: 'confirmedModal',
-      completed: 'completedModal',
-      appointments: 'appointmentsModal' // ✅ Added this line
-    };
+  const modals = {
+    users: 'usersModal',
+    pets: 'petsModal',
+    pending: 'pendingModal',
+    confirmed: 'confirmedModal',
+    completed: 'completedModal',
+    appointments: 'appointmentsModal',
+    history: 'historyModal'
+  };
 
-    if (modals[type]) {
-      document.getElementById(modals[type]).style.display = 'flex';
+  function openModal(type) {
+    const modalId = modals[type];
+    if (modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.style.display = 'flex';
     }
   }
 
   function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
   }
 
-  // Close modal when clicking outside
   window.onclick = function(event) {
-    ['usersModal', 'petsModal', 'pendingModal', 'confirmedModal', 'completedModal', 'appointmentsModal'].forEach(id => {
+    Object.values(modals).forEach(id => {
       const modal = document.getElementById(id);
       if (event.target === modal) modal.style.display = 'none';
     });
   }
+
+  function viewHistory(userId) {
+    openModal('history');
+    const historyContainer = document.getElementById('historyTable');
+    historyContainer.innerHTML = 'Loading...';
+
+    fetch(`fetch-history.php?user_id=${userId}`)
+      .then(response => response.text())
+      .then(html => {
+        historyContainer.innerHTML = html;
+      })
+      .catch(() => {
+        historyContainer.innerHTML = 'Failed to load history.';
+      });
+  }
+
+  // Auto-show modal and alert based on query params
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const modalToShow = params.get('show');
+
+    if (modalToShow && modals[modalToShow]) {
+      openModal(modalToShow);
+
+      if (params.get('approved') === '1') {
+        alert('Appointment approved successfully.');
+      }
+      if (params.get('deleted') === '1') {
+        alert('Appointment deleted successfully.');
+      }
+      if (params.get('completed') === '1') {
+        alert('Appointment marked as completed.');
+      }
+
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  });
 </script>
-tab
+
+
 </body>
 </html>
