@@ -6,7 +6,7 @@ $id = $_GET['id'] ?? null;
 $action = $_GET['action'] ?? null;
 
 if (!$id || !in_array($action, ['approve', 'reject'])) {
-    header("Location: manage-appointments.php");
+    hheader("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php&cancelled=1");
     exit;
 }
 
@@ -28,5 +28,5 @@ $stmt->bind_param("i", $id);
 $stmt->execute();
 
 // Redirect without query string
-header("Location: manage-appointments.php");
+header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?show=appointments&cancelled=1");
 exit;

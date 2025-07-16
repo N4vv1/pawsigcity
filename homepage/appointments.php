@@ -192,6 +192,18 @@ $appointments = $result->get_result();
       color: green;
       font-weight: 600;
     }
+
+    .container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+table {
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
   </style>
 </head>
 <body>
@@ -228,11 +240,11 @@ $appointments = $result->get_result();
     <p class="success-message"><?= $_SESSION['success']; unset($_SESSION['success']); ?></p>
   <?php endif; ?>
 
-  <div style="margin-top: 60px;">
-  <a href="main.php" class="button" style="margin-left: -400px;">⬅ Back</a>
+ <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 20px;">
+  <a href="main.php" class="button" style="background-color: #d4d4d4;">⬅ Back</a>
+  <h2 style="margin: 0; flex: 1; text-align: center;">🐾 Your Appointments</h2>
+  <div style="width: 80px;"></div> <!-- Spacer to balance layout -->
 </div>
-
-  <h2>🐾 Your Appointments</h2>
 
   <table>
     <thead>
@@ -273,7 +285,7 @@ $appointments = $result->get_result();
             <?php endif; ?>
 
             <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
-              <a class="button" href="./feedback/leave-feedback.php?id=<?= $row['appointment_id'] ?>">⭐ Feedback</a>
+              <button class="button" type="button" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">⭐ Feedback</button>
             <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
               <div class="feedback">
                 ⭐ <?= $row['rating'] ?>/5<br>
@@ -319,6 +331,48 @@ $appointments = $result->get_result();
   </div>
 </div>
 
+<!-- Feedback Modal -->
+<div id="feedbackModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:30px; border-radius:16px; width:420px; position:relative;">
+    <h3 style="color:#2a9d8f; margin-bottom:10px;">Rate Your Appointment</h3>
+    <p style="font-size:14px; color:#555;">Please rate your experience. <strong>Tell us what you liked or what we can improve!</strong></p>
+    
+    <?php if (isset($_SESSION['error'])): ?>
+      <div style="background: #fdecea; color: #b71c1c; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 10px;">
+        <?= $_SESSION['error']; unset($_SESSION['error']); ?>
+      </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['success'])): ?>
+      <div style="background: #e6f4ea; color: #2e7d32; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 10px;">
+        <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+      </div>
+    <?php endif; ?>
+
+    <form action="./feedback/rate-handler.php" method="POST" onsubmit="return validateFeedback();">
+      <input type="hidden" name="appointment_id" id="feedback_appointment_id">
+
+      <label style="font-weight: 600; margin-top: 15px;">Rating:</label>
+      <select name="rating" required style="width:100%; padding:10px; border-radius:8px; font-size:14px;">
+        <option value="">Choose</option>
+        <?php for ($i = 1; $i <= 5; $i++): ?>
+          <option value="<?= $i ?>"><?= $i ?> star<?= $i > 1 ? 's' : '' ?></option>
+        <?php endfor; ?>
+      </select>
+
+      <label style="font-weight: 600; margin-top: 15px;">Comments <small>(minimum 10 words)</small>:</label>
+      <textarea name="feedback" id="feedback_text" required placeholder="E.g. I loved how gentle the groomer was with my dog." style="width:100%; padding:10px; border-radius:8px; margin:10px 0;"></textarea>
+
+      <div style="text-align:right;">
+        <button type="button" onclick="closeFeedbackModal()" style="margin-right:10px; background:#ccc;" class="button">Close</button>
+        <button type="submit" class="button">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
 <script>
   function openCancelModal(id) {
     document.getElementById('cancel_appointment_id').value = id;
@@ -338,14 +392,39 @@ $appointments = $result->get_result();
     document.getElementById('rescheduleModal').style.display = 'none';
   }
 
-  // Close modal if background is clicked
+  function openFeedbackModal(id) {
+    document.getElementById('feedback_appointment_id').value = id;
+    document.getElementById('feedbackModal').style.display = 'flex';
+  }
+
+  function closeFeedbackModal() {
+    document.getElementById('feedbackModal').style.display = 'none';
+  }
+
+  // Close any modal if background is clicked
   window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-      closeCancelModal();
-      closeRescheduleModal();
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+
+  // Validate feedback (optional but encouraged)
+  function validateFeedback() {
+    const feedback = document.getElementById('feedback').value.trim();
+    if (feedback !== '') {
+      const wordCount = feedback.split(/\s+/).length;
+      if (wordCount < 10) {
+        alert("Please enter at least 10 words so we can better understand your experience.");
+        return false;
+      }
     }
-  };
+    return true;
+  }
 </script>
+
 
 </body>
 </html>

@@ -402,7 +402,7 @@ main {
       </div>
       <h3>Total Appointments</h3>
       <p><?= $total_appointments ?></p>
-      <a href="javascript:void(0)" onclick="openModal('appointments')">View Appointments</a>
+      <a href="javascript:void(0)" onclick="openModal('appointments')">Manage Appointments</a>
     </div>
 
     <div class="card">
@@ -698,12 +698,13 @@ main {
             <?php endif; ?>
           </td>
             <td>
+            <div class="action-buttons">
               <?php if (empty($row['is_approved']) && empty($row['cancel_requested']) && $row['status'] !== 'cancelled'): ?>
                 <a href="../../admin/approve/approve-handler.php?id=<?= $row['appointment_id'] ?>" class="button">Approve</a>
               <?php endif; ?>
 
               <?php if (!empty($row['cancel_requested'])): ?>
-                <a href="../../appointment/cancel-approve.php?id=<?= $row['appointment_id'] ?>&action=approve" class="button danger">Approve Cancel</a>
+                <a href="../../appointment/cancel-approve.php?id=<?= $row['appointment_id'] ?>&action=approve" class="button danger">Cancel</a>
               <?php endif; ?>
 
               <?php if ($row['status'] === 'confirmed'): ?>
@@ -711,8 +712,9 @@ main {
               <?php endif; ?>
 
               <a href="../../appointment/delete-appointment.php?id=<?= $row['appointment_id'] ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
-              <a href="javascript:void(0)" class="button" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
-            </td>
+              <a href="javascript:void(0)" class="button view-history" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
+            </div>
+          </td>
           </tr>
         <?php endwhile; ?>
       </tbody>
@@ -768,7 +770,7 @@ main {
     const historyContainer = document.getElementById('historyTable');
     historyContainer.innerHTML = 'Loading...';
 
-    fetch(`fetch-history.php?user_id=${userId}`)
+    fetch(`../../appointment/fetch-history.php?user_id=${userId}`)
       .then(response => response.text())
       .then(html => {
         historyContainer.innerHTML = html;
@@ -778,7 +780,38 @@ main {
       });
   }
 
-  // Auto-show modal and alert based on query params
+  // --- Toast Notification ---
+  function showToast(message) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #4CAF50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        z-index: 9999;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: none;
+      `;
+      document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.style.display = 'block';
+
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 3000);
+  }
+
+  // Auto-show modal and toast based on query params
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const modalToShow = params.get('show');
@@ -787,18 +820,21 @@ main {
       openModal(modalToShow);
 
       if (params.get('approved') === '1') {
-        alert('Appointment approved successfully.');
+        showToast('✅ Appointment approved successfully.');
       }
       if (params.get('deleted') === '1') {
-        alert('Appointment deleted successfully.');
+        showToast('🗑️ Appointment deleted successfully.');
       }
       if (params.get('completed') === '1') {
-        alert('Appointment marked as completed.');
+        showToast('🎉 Appointment marked as completed.');
       }
-
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
+      if (params.get('cancelled') === '1') {
+        showToast('❌ Appointment cancelled successfully.');
+      }
     }
+
+    // Clean the URL
+    window.history.replaceState({}, document.title, window.location.pathname);
   });
 </script>
 

@@ -1,0 +1,24 @@
+2025-07-16 13:54:17,864 - Failed to load model or encoders: No module named 'sklearn'
+2025-07-16 13:55:26,321 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-16 13:55:26,321 - [33mPress CTRL+C to quit[0m
+2025-07-16 13:55:43,624 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-16 13:55:43,627 - 127.0.0.1 - - [16/Jul/2025 13:55:43] "POST /recommend HTTP/1.1" 200 -
+2025-07-16 13:56:00,791 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-16 13:56:00,792 - 127.0.0.1 - - [16/Jul/2025 13:56:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-16 13:56:42,911 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-16 13:56:42,911 - 127.0.0.1 - - [16/Jul/2025 13:56:42] "POST /recommend HTTP/1.1" 200 -
+2025-07-16 14:08:40,031 - Prediction error: y contains previously unseen labels: 'doberman'
+2025-07-16 14:08:40,032 - 127.0.0.1 - - [16/Jul/2025 14:08:40] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-16 14:08:44,217 - Prediction error: y contains previously unseen labels: 'sdfsd'
+2025-07-16 14:08:44,218 - 127.0.0.1 - - [16/Jul/2025 14:08:44] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-16 14:08:46,365 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-16 14:08:46,365 - 127.0.0.1 - - [16/Jul/2025 14:08:46] "POST /recommend HTTP/1.1" 200 -
+2025-07-16 14:08:50,025 - Prediction error: y contains previously unseen labels: 'doberman'
+2025-07-16 14:08:50,025 - 127.0.0.1 - - [16/Jul/2025 14:08:50] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-16 14:40:11,299 - Prediction error: y contains previously unseen labels: 'asdasd'
+2025-07-16 14:40:11,299 - 127.0.0.1 - - [16/Jul/2025 14:40:11] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-16 14:40:50,846 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-16 14:40:50,846 - 127.0.0.1 - - [16/Jul/2025 14:40:50] "POST /recommend HTTP/1.1" 200 -
+2025-07-16 14:41:51,464 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-16 14:41:51,464 - 127.0.0.1 - - [16/Jul/2025 14:41:51] "POST /recommend HTTP/1.1" 200 -
