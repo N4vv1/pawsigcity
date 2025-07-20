@@ -19,6 +19,69 @@ $pets_result = $pets_stmt->get_result();
 
 $recommended_package = null;
 
+// Function to get peak hours data
+function getPeakHoursData($mysqli) {
+    // Get appointment data from the last 3 months to analyze patterns
+    $peak_hours_query = "
+        SELECT 
+            HOUR(appointment_date) as hour,
+            DAYOFWEEK(appointment_date) as day_of_week,
+            COUNT(*) as appointment_count
+        FROM appointments 
+        WHERE appointment_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
+        AND status != 'cancelled'
+        GROUP BY HOUR(appointment_date), DAYOFWEEK(appointment_date)
+        ORDER BY appointment_count DESC
+    ";
+    
+    $result = $mysqli->query($peak_hours_query);
+    $peak_data = [];
+    
+    while ($row = $result->fetch_assoc()) {
+        $peak_data[] = $row;
+    }
+    
+    return $peak_data;
+}
+
+// Function to predict peak hours for a given date
+function predictPeakHours($mysqli, $date) {
+    $day_of_week = date('N', strtotime($date)) + 1; // Convert to MySQL DAYOFWEEK format
+    
+    // Get average appointments per hour for this day of week
+    $query = "
+        SELECT 
+            HOUR(appointment_date) as hour,
+            COUNT(*) as avg_appointments,
+            CASE 
+                WHEN COUNT(*) >= 8 THEN 'high'
+                WHEN COUNT(*) >= 4 THEN 'medium'
+                ELSE 'low'
+            END as peak_level
+        FROM appointments 
+        WHERE DAYOFWEEK(appointment_date) = ?
+        AND appointment_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
+        AND status != 'cancelled'
+        GROUP BY HOUR(appointment_date)
+        ORDER BY hour ASC
+    ";
+    
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("i", $day_of_week);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $hourly_data = [];
+    while ($row = $result->fetch_assoc()) {
+        $hourly_data[$row['hour']] = $row;
+    }
+    
+    return $hourly_data;
+}
+
+// Get peak hours data for display
+$peak_hours_data = getPeakHoursData($mysqli);
+
 // If pet is selected, check if the pet belongs to the user
 if ($selected_pet_id) {
     $pet_check_stmt = $mysqli->prepare("SELECT * FROM pets WHERE pet_id = ? AND user_id = ?");
@@ -56,7 +119,6 @@ if ($selected_pet_id) {
         exit;
     }
     curl_close($ch);
-
 
     $response_data = json_decode($response, true);
     $recommended_package = $response_data['recommended_package'] ?? null;
@@ -265,6 +327,146 @@ if (isset($response_data) && isset($response_data['error'])) {
   a:hover {
     color: #2c80b4;
   }
+
+  /* Peak Hours Matching Theme Styles */
+.peak-hours-container {
+  background: #f4f7f8;
+  color: #2c3e50;
+  padding: 24px;
+  border-radius: 16px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+}
+
+.peak-hours-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #34495e;
+}
+
+.peak-info {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e2e2;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.peak-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+
+.legend-color.high {
+  background-color: #ffcccc;
+}
+
+.legend-color.medium {
+  background-color: #fff3cd;
+}
+
+.legend-color.low {
+  background-color: #d4edda;
+}
+
+.peak-hours-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.peak-hour-item {
+  background-color: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.peak-hour-item.high {
+  background-color: #ffefef;
+  border-color: #f8d7da;
+}
+
+.peak-hour-item.medium {
+  background-color: #fffbea;
+  border-color: #ffeeba;
+}
+
+.peak-hour-item.low {
+  background-color: #ecfdf3;
+  border-color: #c3e6cb;
+}
+
+.hour-time {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.hour-level {
+  font-size: 0.9rem;
+  margin-top: 4px;
+  color: #666;
+}
+
+/* Peak Indicator over input */
+.peak-indicator {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ccc;
+  color: white;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.peak-indicator.show {
+  opacity: 1;
+}
+
+.peak-indicator.high {
+  background: #e57373;
+}
+
+.peak-indicator.medium {
+  background: #f0ad4e;
+  color: #333;
+}
+
+.peak-indicator.low {
+  background: #81c784;
+}
+
 </style>
 
 </head>
@@ -311,6 +513,33 @@ if (isset($response_data) && isset($response_data['error'])) {
         <?php unset($_SESSION['error']); ?>
       <?php endif; ?>
 
+      <!-- Peak Hours Information -->
+      <div class="peak-hours-container">
+        <div class="peak-hours-title">
+          <i class="fas fa-chart-line"></i>
+          Peak Hours Prediction
+        </div>
+        
+        <div class="peak-info">
+          <strong>💡 Smart Scheduling:</strong> Based on historical data, we predict busy and quiet times to help you choose the best appointment slot. Green hours typically have shorter wait times!
+        </div>
+        
+        <div class="peak-legend">
+          <div class="legend-item">
+            <div class="legend-color high"></div>
+            <span>High Demand</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color medium"></div>
+            <span>Moderate Demand</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color low"></div>
+            <span>Low Demand</span>
+          </div>
+        </div>
+      </div>
+
       <?php if (!$selected_pet_id): ?>
         <div class="form-container">
           <h3>Choose a pet to book an appointment for:</h3>
@@ -352,7 +581,11 @@ if (isset($response_data) && isset($response_data['error'])) {
 
             <div class="form-group">
               <label for="appointment_date"><i class="fas fa-calendar-alt"></i> Appointment Date and Time:</label>
-              <input type="datetime-local" name="appointment_date" id="appointment_date" required>
+              <div class="datetime-container">
+                <input type="datetime-local" name="appointment_date" id="appointment_date" required>
+                <div class="peak-indicator" id="peakIndicator">Select date/time</div>
+              </div>
+              <small style="color: #666; margin-top: 5px;">💡 The indicator above shows demand level for your selected time</small>
             </div>
             
             <div class="form-group">
@@ -366,5 +599,107 @@ if (isset($response_data) && isset($response_data['error'])) {
       <?php endif; ?>
     </div>
   </div>
+
+  <script>
+    // Peak hours data from PHP
+    const peakHoursData = <?= json_encode($peak_hours_data) ?>;
+    
+    // Create a map for quick lookup
+    const peakHoursMap = {};
+    peakHoursData.forEach(item => {
+      const key = `${item.day_of_week}-${item.hour}`;
+      peakHoursMap[key] = item.appointment_count;
+    });
+    
+    // Function to get peak level based on appointment count
+    function getPeakLevel(count) {
+      if (count >= 8) return 'high';
+      if (count >= 4) return 'medium';
+      return 'low';
+    }
+    
+    // Function to update peak indicator
+    function updatePeakIndicator() {
+      const dateInput = document.getElementById('appointment_date');
+      const indicator = document.getElementById('peakIndicator');
+      
+      if (!dateInput.value) {
+        indicator.className = 'peak-indicator';
+        indicator.textContent = 'Select date/time';
+        return;
+      }
+      
+      const selectedDate = new Date(dateInput.value);
+      const dayOfWeek = selectedDate.getDay() + 1; // Convert to MySQL format
+      const hour = selectedDate.getHours();
+      
+      const key = `${dayOfWeek}-${hour}`;
+      const appointmentCount = peakHoursMap[key] || 0;
+      const peakLevel = getPeakLevel(appointmentCount);
+      
+      // Update indicator
+      indicator.className = `peak-indicator show ${peakLevel}`;
+      
+      let text = '';
+      let icon = '';
+      switch(peakLevel) {
+        case 'high':
+          text = 'High Demand';
+          icon = '🔴';
+          break;
+        case 'medium':
+          text = 'Moderate';
+          icon = '🟡';
+          break;
+        case 'low':
+          text = 'Low Demand';
+          icon = '🟢';
+          break;
+      }
+      
+      indicator.textContent = `${icon} ${text}`;
+    }
+    
+    // Add event listener to datetime input
+    document.addEventListener('DOMContentLoaded', function() {
+      const dateInput = document.getElementById('appointment_date');
+      if (dateInput) {
+        dateInput.addEventListener('change', updatePeakIndicator);
+        dateInput.addEventListener('input', updatePeakIndicator);
+        
+        // Set minimum date to today
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 16);
+        dateInput.min = localISOTime;
+      }
+    });
+    
+    // Display current week's peak hours
+    function displayWeeklyPeakHours() {
+      const today = new Date();
+      const currentDay = today.getDay();
+      
+      // Create a summary of peak hours for the current week
+      const weeklyData = {};
+      
+      for (let day = 1; day <= 7; day++) {
+        weeklyData[day] = {};
+        for (let hour = 8; hour <= 18; hour++) {
+          const key = `${day}-${hour}`;
+          const count = peakHoursMap[key] || 0;
+          weeklyData[day][hour] = {
+            count: count,
+            level: getPeakLevel(count)
+          };
+        }
+      }
+      
+      console.log('Weekly Peak Hours Data:', weeklyData);
+    }
+    
+    // Call the function when page loads
+    document.addEventListener('DOMContentLoaded', displayWeeklyPeakHours);
+  </script>
 </body>
 </html>

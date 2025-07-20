@@ -451,48 +451,52 @@ if (isset($_GET['id'])) {
 
     <!-- Modal -->
     <div id="userModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Create Admin Account</h2>
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Create Admin Account</h2>
 
-        <?php if (isset($error)): ?>
-          <p class="message-error"><?= $error ?></p>
-        <?php elseif (isset($success)): ?>
-          <p class="message-success"><?= $success ?></p>
-          <script>setTimeout(closeModal, 1500);</script>
-        <?php endif; ?>
+    <?php if (isset($error)): ?>
+      <p class="message-error"><?= $error ?></p>
+    <?php elseif (isset($success)): ?>
+      <p class="message-success"><?= $success ?></p>
+      <script>setTimeout(closeModal, 1500);</script>
+    <?php endif; ?>
 
-        <form method="POST">
-          <div class="input_box">
-            <input type="text" class="input-field" name="full_name" required />
-            <label class="label">Full Name</label>
-            <i class='bx bx-user icon'></i>
-          </div>
+    <form method="POST">
+      <!-- Hidden flag to trigger the create_user logic in PHP -->
+      <input type="hidden" name="create_user" value="1">
 
-          <div class="input_box">
-            <input type="email" class="input-field" name="email" required />
-            <label class="label">Email</label>
-            <i class='bx bx-envelope icon'></i>
-          </div>
-
-          <div class="input_box">
-            <input type="password" class="input-field" name="password" required />
-            <label class="label">Password</label>
-            <i class='bx bx-lock-alt icon'></i>
-          </div>
-
-          <div class="input_box">
-            <input type="text" class="input-field" name="phone" required />
-            <label class="label">Phone Number</label>
-            <i class='bx bx-phone icon'></i>
-          </div>
-
-          <div class="input_box">
-            <input type="submit" class="input-submit" value="Create Admin" />
-          </div>
-        </form>
+      <div class="input_box">
+        <input type="text" class="input-field" name="full_name" required />
+        <label class="label">Full Name</label>
+        <i class='bx bx-user icon'></i>
       </div>
-    </div>
+
+      <div class="input_box">
+        <input type="email" class="input-field" name="email" required />
+        <label class="label">Email</label>
+        <i class='bx bx-envelope icon'></i>
+      </div>
+
+      <div class="input_box">
+        <input type="password" class="input-field" name="password" required />
+        <label class="label">Password</label>
+        <i class='bx bx-lock-alt icon'></i>
+      </div>
+
+      <div class="input_box">
+        <input type="text" class="input-field" name="phone" required />
+        <label class="label">Phone Number</label>
+        <i class='bx bx-phone icon'></i>
+      </div>
+
+      <div class="input_box">
+        <input type="submit" class="input-submit" value="Create Admin" />
+      </div>
+    </form>
+  </div>
+</div>
+
 
     <?php if (isset($edit_user)): ?>
   <div id="editModal" class="modal" style="display:flex;">

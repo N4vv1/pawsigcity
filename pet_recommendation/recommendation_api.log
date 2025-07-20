@@ -22,3 +22,42 @@
 2025-07-16 14:40:50,846 - 127.0.0.1 - - [16/Jul/2025 14:40:50] "POST /recommend HTTP/1.1" 200 -
 2025-07-16 14:41:51,464 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
 2025-07-16 14:41:51,464 - 127.0.0.1 - - [16/Jul/2025 14:41:51] "POST /recommend HTTP/1.1" 200 -
+2025-07-17 11:38:07,288 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-17 11:38:07,288 - [33mPress CTRL+C to quit[0m
+2025-07-17 11:38:07,305 - Prediction error: y contains previously unseen labels: 'Brownie'
+2025-07-17 11:38:07,306 - 127.0.0.1 - - [17/Jul/2025 11:38:07] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-17 11:38:50,232 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-17 11:38:50,233 - 127.0.0.1 - - [17/Jul/2025 11:38:50] "POST /recommend HTTP/1.1" 200 -
+2025-07-17 11:38:53,134 - Prediction error: y contains previously unseen labels: 'sdfsd'
+2025-07-17 11:38:53,134 - 127.0.0.1 - - [17/Jul/2025 11:38:53] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-17 11:38:55,086 - Prediction error: y contains previously unseen labels: 'doberman'
+2025-07-17 11:38:55,087 - 127.0.0.1 - - [17/Jul/2025 11:38:55] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-17 11:42:54,458 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-17 11:42:54,458 - 127.0.0.1 - - [17/Jul/2025 11:42:54] "POST /recommend HTTP/1.1" 200 -
+2025-07-18 14:11:54,608 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-18 14:11:54,608 - [33mPress CTRL+C to quit[0m
+2025-07-18 14:11:55,149 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-18 14:11:55,151 - 127.0.0.1 - - [18/Jul/2025 14:11:55] "POST /recommend HTTP/1.1" 200 -
+2025-07-18 14:12:52,319 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-18 14:12:52,320 - 127.0.0.1 - - [18/Jul/2025 14:12:52] "POST /recommend HTTP/1.1" 200 -
+2025-07-18 14:13:20,622 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-18 14:13:20,622 - 127.0.0.1 - - [18/Jul/2025 14:13:20] "POST /recommend HTTP/1.1" 200 -
+2025-07-18 14:15:18,717 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-18 14:15:18,718 - 127.0.0.1 - - [18/Jul/2025 14:15:18] "POST /recommend HTTP/1.1" 200 -
+2025-07-18 14:26:57,877 - 127.0.0.1 - - [18/Jul/2025 14:26:57] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:28:35,789 - 127.0.0.1 - - [18/Jul/2025 14:28:35] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:28:46,091 - 127.0.0.1 - - [18/Jul/2025 14:28:46] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:30:04,853 - 127.0.0.1 - - [18/Jul/2025 14:30:04] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:30:29,363 - 127.0.0.1 - - [18/Jul/2025 14:30:29] "[33mGET /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:30:29,400 - 127.0.0.1 - - [18/Jul/2025 14:30:29] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-18 14:36:19,897 - 127.0.0.1 - - [18/Jul/2025 14:36:19] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:36:36,436 - 127.0.0.1 - - [18/Jul/2025 14:36:36] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:37:04,087 - 127.0.0.1 - - [18/Jul/2025 14:37:04] "[33mGET /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:38:24,042 - 127.0.0.1 - - [18/Jul/2025 14:38:24] "[33mGET /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:38:42,684 - 127.0.0.1 - - [18/Jul/2025 14:38:42] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:40:14,496 - 127.0.0.1 - - [18/Jul/2025 14:40:14] "[33mGET /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:42:40,116 - 127.0.0.1 - - [18/Jul/2025 14:42:40] "[33mGET /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:43:51,532 - 127.0.0.1 - - [18/Jul/2025 14:43:51] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
+2025-07-18 14:45:58,809 - 127.0.0.1 - - [18/Jul/2025 14:45:58] "[33mPOST /ask HTTP/1.1[0m" 404 -

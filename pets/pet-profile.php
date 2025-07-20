@@ -320,7 +320,7 @@ if (!$pets) {
       </div>
 
       <div id="edit-form-<?= $pet_id ?>" class="form-wrapper" style="display:none;">
-        <form action="update-pet.php" method="POST" enctype="multipart/form-data">
+        <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
           <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
           <input type="text" name="name" value="<?= htmlspecialchars($pet['name']) ?>" placeholder="Pet Name" required>
           <input type="text" name="breed" value="<?= htmlspecialchars($pet['breed']) ?>" placeholder="Breed" required>

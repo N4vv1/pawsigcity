@@ -12,6 +12,40 @@ $total_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments
 $pending_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments WHERE status = 'pending'")->fetch_assoc()['count'];
 $confirmed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments WHERE status = 'confirmed'")->fetch_assoc()['count'];
 $completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments WHERE status = 'completed'")->fetch_assoc()['count'];
+
+date_default_timezone_set('Asia/Manila');
+$now = new DateTime();
+
+$autoCheck = $mysqli->query("
+  SELECT appointment_id, appointment_date
+  FROM appointments
+  WHERE status = 'confirmed'
+");
+
+$noShowCount = 0;
+while ($row = $autoCheck->fetch_assoc()) {
+    $appointmentTime = new DateTime($row['appointment_date']);
+    $graceEnd = clone $appointmentTime;
+    $graceEnd->modify('+15 minutes');
+
+    if ($now > $graceEnd) {
+        $id = $row['appointment_id'];
+
+        // Only update if it's not already a no_show (just in case)
+        $update = $mysqli->query("UPDATE appointments SET status = 'no_show' WHERE appointment_id = $id");
+        if ($update) {
+            $noShowCount++;
+        }
+    }
+}
+
+if ($noShowCount > 0) {
+    // Redirect to show toast
+    header("Location: home.php?noshows=$noShowCount&show=appointments");
+    exit;
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -660,7 +694,9 @@ main {
             <td><?= htmlspecialchars($row['package_name']) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td>
-              <?php if ($row['status'] === 'completed'): ?>
+              <?php if ($row['status'] === 'no_show'): ?>
+                <span style="color: red; font-weight: bold;">No Show</span>
+              <?php elseif ($row['status'] === 'completed'): ?>
                 <span style="color: green;">Completed</span>
               <?php elseif ($row['status'] === 'confirmed'): ?>
                 <span style="color: green;">Confirmed</span>
@@ -699,21 +735,31 @@ main {
           </td>
             <td>
             <div class="action-buttons">
-              <?php if (empty($row['is_approved']) && empty($row['cancel_requested']) && $row['status'] !== 'cancelled'): ?>
-                <a href="../../admin/approve/approve-handler.php?id=<?= $row['appointment_id'] ?>" class="button">Approve</a>
-              <?php endif; ?>
+            <?php
+              $status = strtolower($row['status']);
+              $appointmentId = $row['appointment_id'];
+              $isApproved = !empty($row['is_approved']);
+            ?>
 
-              <?php if (!empty($row['cancel_requested'])): ?>
-                <a href="../../appointment/cancel-approve.php?id=<?= $row['appointment_id'] ?>&action=approve" class="button danger">Cancel</a>
-              <?php endif; ?>
+            <?php if ($status === 'pending' && !$isApproved): ?>
+              <a href="../../admin/approve/approve-handler.php?id=<?= $appointmentId ?>" class="button">Approve</a>
+              <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
 
-              <?php if ($row['status'] === 'confirmed'): ?>
-                <a href="../../appointment/mark-completed.php?id=<?= $row['appointment_id'] ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">Complete</a>
-              <?php endif; ?>
+            <?php elseif ($status === 'confirmed'): ?>
+              <a href="../../appointment/mark-completed.php?id=<?= $appointmentId ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">Complete</a>
+              <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
 
-              <a href="../../appointment/delete-appointment.php?id=<?= $row['appointment_id'] ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
-              <a href="javascript:void(0)" class="button view-history" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
-            </div>
+            <?php elseif ($status === 'cancelled' || $status === 'no_show' || $status === 'completed'): ?>
+              <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+            <?php endif; ?>
+
+            <?php if (!empty($row['cancel_requested']) && $status !== 'cancelled'): ?>
+              <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger">Cancel</a>
+            <?php endif; ?>
+
+            <a href="javascript:void(0)" class="button view-history" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
+          </div>
+
           </td>
           </tr>
         <?php endwhile; ?>
@@ -731,6 +777,8 @@ main {
     <button onclick="closeModal('historyModal')">Close</button>
   </div>
 </div>
+
+
 
 </main>
 
@@ -813,29 +861,37 @@ main {
 
   // Auto-show modal and toast based on query params
   window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const modalToShow = params.get('show');
+  const params = new URLSearchParams(window.location.search);
+  const modalToShow = params.get('show');
 
-    if (modalToShow && modals[modalToShow]) {
-      openModal(modalToShow);
+  if (modalToShow && modals[modalToShow]) {
+    openModal(modalToShow);
 
-      if (params.get('approved') === '1') {
-        showToast('✅ Appointment approved successfully.');
-      }
-      if (params.get('deleted') === '1') {
-        showToast('🗑️ Appointment deleted successfully.');
-      }
-      if (params.get('completed') === '1') {
-        showToast('🎉 Appointment marked as completed.');
-      }
-      if (params.get('cancelled') === '1') {
-        showToast('❌ Appointment cancelled successfully.');
-      }
+    if (params.get('approved') === '1') {
+      showToast('✅ Appointment approved successfully.');
     }
+    if (params.get('deleted') === '1') {
+      showToast('🗑️ Appointment deleted successfully.');
+    }
+    if (params.get('completed') === '1') {
+      showToast('🎉 Appointment marked as completed.');
+    }
+    if (params.get('cancelled') === '1') {
+      showToast('❌ Appointment cancelled successfully.');
+    }
+  }
 
-    // Clean the URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-  });
+  // ✅ This should be here
+  if (params.get('noshows')) {
+    const count = params.get('noshows');
+    showToast(`🚫 ${count} appointment(s) marked as NO SHOW`);
+  }
+
+  // Clean the URL
+  window.history.replaceState({}, document.title, window.location.pathname);
+});
+
+
 </script>
 
 

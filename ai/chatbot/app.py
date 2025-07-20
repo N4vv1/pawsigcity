@@ -1,22 +1,15 @@
-from flask import Flask, request, jsonify, render_template
-import pickle
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
-# Load model and vectorizer
-with open('chatbot_model.pkl', 'rb') as f:
-    model, vectorizer = pickle.load(f)
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/ask', methods=['POST'])
+@app.route("/ask", methods=["POST"])
 def ask():
-    user_msg = request.json['message']
-    vec_msg = vectorizer.transform([user_msg])
-    response = model.predict(vec_msg)[0]
-    return jsonify({'response': response})
+    data = request.get_json()
+    msg = data.get("message", "").lower()
+    # Fallback logic
+    return jsonify(response="I'm still learning, but I will try to help!")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)

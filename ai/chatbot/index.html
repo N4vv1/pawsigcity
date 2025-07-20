@@ -1,37 +1,293 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>AI Chatbot</title>
+  <title>HelpPawl</title>
+  <link rel="stylesheet" href="../../homepage/style.css">
   <style>
-    body { font-family: sans-serif; margin: 50px; }
-    #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
-    #userInput { width: 300px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f0f2f5;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 30px;
+      color: #333;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 15px;
+    }
+
+    #chat {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      width: 100%;
+      max-width: 700px;
+      height: 550px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .user-msg, .bot-msg {
+      padding: 10px 15px;
+      border-radius: 20px;
+      max-width: 80%;
+      font-size: 15px;
+    }
+
+    .user-msg {
+      align-self: flex-end;
+      background-color: #DCF8C6;
+    }
+
+    .bot-msg {
+      align-self: flex-start;
+      background-color: #f1f0f0;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    #userInput {
+      flex-grow: 1;
+      padding: 12px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    .suggested-container {
+      position: sticky;
+      top: 20px;
+      z-index: 10;
+      align-self: flex-start;
+    }
+
+
+   
+    #toggleCategories {
+      position: sticky;
+      top: 20px;
+      z-index: 15;
+      font-size: 14px;
+      padding: 6px 12px;
+      background-color: #eee;
+      color: #333;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    #toggleCategories:hover {
+      background-color: #ddd;
+    }
+
+    .suggested-section {
+      margin-top: 40px;
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .suggested-section.active {
+      display: flex;
+    }
+
+    .suggested-section h3 {
+      margin: 10px 0 5px;
+      font-size: 16px;
+      color: #555;
+    }
+
+    .suggested-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .suggested-group button {
+      background-color: #eee;
+      color: #333;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .suggested-group button:hover {
+      background-color: #ddd;
+    }
   </style>
 </head>
+
 <body>
-  <h2>Chat with AI</h2>
-  <div id="chat"></div>
-  <input type="text" id="userInput" placeholder="Say something..." />
-  <button onclick="sendMessage()">Send</button>
+  <header>
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
+        <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link profile-icon">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="../pets/add-pet.php">Add Pet</a></li>
+            <li><a href="../appointment/book-appointment.php">Book</a></li>
+            <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <div style="height: 50px;"></div>
+
+  <h2>Chat with HelpPawl</h2>
+
+  <div class="chat-container">
+    <div id="chat">
+      <!-- Toggle Button -->
+      <div class="suggested-container">
+        <button id="toggleCategories" onclick="toggleSuggested()">☰ Menu</button>
+        <div class="suggested-section" id="suggestedSection">
+          <h3>💬 General Questions</h3>
+          <div class="suggested-group">
+            <button onclick="sendSuggested('hi')">Hi</button>
+            <button onclick="sendSuggested('hello')">Hello</button>
+            <button onclick="sendSuggested('what is your name')">What is your name?</button>
+            <button onclick="sendSuggested('thank you')">Thank you</button>
+            <button onclick="sendSuggested('bye')">Bye</button>
+          </div>
+
+          <h3>📍 Location & Contact</h3>
+          <div class="suggested-group">
+            <button onclick="sendSuggested('where are you located')">Where are you located?</button>
+            <button onclick="sendSuggested('what are your contact')">Contact info?</button>
+            <button onclick="sendSuggested('when are you open')">When are you open?</button>
+          </div>
+
+          <h3>📆 Booking</h3>
+          <div class="suggested-group">
+            <button onclick="sendSuggested('how can i book an appointment')">How to book?</button>
+            <button onclick="sendSuggested('do you accept walk-ins')">Do you accept walk-ins?</button>
+          </div>
+
+          <h3>🛁 Services & Payment</h3>
+          <div class="suggested-group">
+            <button onclick="sendSuggested('do you offer grooming services')">Do you offer grooming?</button>
+            <button onclick="sendSuggested('how much is grooming')">Grooming cost?</button>
+            <button onclick="sendSuggested('what services do you offer')">What services do you offer?</button>
+            <button onclick="sendSuggested('what payment methods do you accept')">Payment methods?</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
   <script>
-    async function sendMessage() {
+    const predefinedResponses = {
+      "hi": "Hello there!",
+      "hello": "Hi! How can I assist you today?",
+      "where are you located": "Hello! Purrfect Paws is located at 324 Dr. Sixto Antonio Avenue Caniogan Pasig City.",
+      "what are your contact": "You can email us at purrfectpaws@gmail.com or reach us via call or text at 09123.",
+      "when are you open": "We're open daily from 9:00 AM to 8:00 PM Monday to Sunday.",
+      "what is your name": "Hi! I’m your friendly assistant at Purrfect Paws.",
+      "how can i book an appointment": "You can book an appointment online through our website or contact us directly via call or text.",
+      "do you offer grooming services": "Yes! We offer pet grooming services including bathing, haircut, and nail trimming.",
+      "how much is grooming": "Grooming prices start at ₱499 depending on the size and breed of your pet.",
+      "do you accept walk-ins": "We highly recommend appointments, but we do accept walk-ins when available.",
+      "what services do you offer": "We offer grooming, vaccination, deworming, and vet consultations.",
+      "what payment methods do you accept": "We accept cash, GCash, and major credit/debit cards.",
+      "thank you": "You're welcome! Let me know if there's anything else I can help with.",
+      "bye": "Goodbye! Hope to see you and your pet soon!"
+    };
+
+    async function sendMessage(message = null) {
       const input = document.getElementById("userInput");
       const chat = document.getElementById("chat");
-      const message = input.value;
-      if (!message) return;
+      const userMessage = message || input.value.trim();
+      if (!userMessage) return;
 
-      chat.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+      chat.innerHTML += `<p class="user-msg"><strong>You:</strong> ${userMessage}</p>`;
       input.value = "";
 
-      const res = await fetch("/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-      });
-      const data = await res.json();
-      chat.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+      const lowerMessage = userMessage.toLowerCase();
+
+      if (predefinedResponses[lowerMessage]) {
+        setTimeout(() => {
+          chat.innerHTML += `<p class="bot-msg"><strong>Bot:</strong> ${predefinedResponses[lowerMessage]}</p>`;
+          chat.scrollTop = chat.scrollHeight;
+        }, 300);
+      } else {
+        try {
+          const res = await fetch("http://127.0.0.1:5000/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMessage })
+          });
+          const data = await res.json();
+          chat.innerHTML += `<p class="bot-msg"><strong>Bot:</strong> ${data.response}</p>`;
+        } catch (error) {
+          chat.innerHTML += `<p class="bot-msg"><strong>Bot:</strong> ⚠️ Server not responding. Is Flask running?</p>`;
+        }
+      }
+
       chat.scrollTop = chat.scrollHeight;
+    }
+
+    function sendSuggested(text) {
+      sendMessage(text);
+    }
+
+    function toggleSuggested() {
+      const section = document.getElementById("suggestedSection");
+      section.classList.toggle("active");
     }
   </script>
 </body>
