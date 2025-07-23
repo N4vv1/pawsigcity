@@ -59,77 +59,10 @@ if (!$pets) {
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
 
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 40px;
-    }
-
-    .navbar-logo .icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-    }
-
-    .nav-menu {
-      list-style: none;
-      display: flex;
-      gap: 20px;
-      margin: 0;
-      padding: 0;
-    }
-
-    .nav-item a {
-      text-decoration: none;
-      color: var(--dark);
-      font-weight: 600;
-      transition: color var(--transition);
-    }
-
-    .nav-item a:hover {
-      color: #00796B;
-    }
-
-    .dropdown {
-      position: relative;
-    }
-
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      min-width: 150px;
-      z-index: 1000;
-    }
-
-    .dropdown:hover .dropdown-menu {
-      display: block;
-    }
-
-    .dropdown-menu li {
-      list-style: none;
-    }
-
-    .dropdown-menu a {
-      display: block;
-      padding: 10px 15px;
-      color: var(--dark);
-      text-decoration: none;
-      transition: background var(--transition);
-    }
-
-    .dropdown-menu a:hover {
-      background: #f0f0f0;
-    }
 
     .back-button {
       position: absolute;
-      top: 140px;
+      top: 160px;
       left: 30px;
       background-color: var(--secondary);
       color: #333;
@@ -311,7 +244,7 @@ if (!$pets) {
       }
       
       .back-button {
-        top: 100px;
+        top: 120px;
         left: 20px;
       }
       
@@ -326,7 +259,8 @@ if (!$pets) {
   </style>
 </head>
 <body>
-  <header>
+  
+<header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
         <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
@@ -334,18 +268,19 @@ if (!$pets) {
       <ul class="nav-menu">
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
         <li class="nav-item dropdown">
           <a href="#" class="nav-link profile-icon active">
             <i class="fas fa-user-circle"></i>
           </a>
-           <ul class="dropdown-menu">
+          <ul class="dropdown-menu">
             <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
             <li><a href="../pets/add-pet.php">Add Pet</a></li>
             <li><a href="../appointment/book-appointment.php">Book</a></li>
             <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../../Purrfect-paws/ai/chatbot/index.html">Help Center</a></li>
             <li><a href="../homepage/logout/logout.php">Logout</a></li>
           </ul>
         </li>
@@ -353,7 +288,7 @@ if (!$pets) {
     </nav>
   </header>
 
-  <div style="height: 60px;"></div>
+  <div style="height: 3px;"></div>
   <a href="pet-profile.php" class="back-button">&larr; Back</a>
   
   <div class="add-pet-container">

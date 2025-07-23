@@ -2,123 +2,312 @@
 <html>
 <head>
   <title>HelpPawl</title>
+  <meta charset="UTF-8">
   <link rel="stylesheet" href="../../homepage/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --white-color: #fff;
+      --dark-color: #252525;
+      --primary-color: #A8E6CF;
+      --secondary-color: #FFE29D;
+      --light-pink-color: #faf4f5;
+      --medium-gray-color: #ccc;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 0;
-      background-color: #f0f2f5;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--dark-color);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="2"/></g></svg>') repeat;
+      pointer-events: none;
+      z-index: -1;
     }
 
     h2 {
       text-align: center;
-      margin-top: 30px;
-      color: #333;
+      margin: 20px 0;
+      font-size: 42px;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: -0.5px;
     }
 
     .chat-container {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+      padding: 20px 5%;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .chat-wrapper {
+      flex-grow: 1;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(37, 37, 37, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2);
+      padding: 0;
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #3a3a3a 100%);
+      padding: 20px 30px;
+      color: white;
+      display: flex;
       align-items: center;
-      padding: 30px 15px;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-header i {
+      font-size: 24px;
+      opacity: 0.9;
+    }
+
+    .chat-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .chat-status {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
     #chat {
-      background: #ffffff;
-      border: 1px solid #ddd;
-      border-radius: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      padding: 20px;
-      width: 100%;
-      max-width: 700px;
-      height: 550px;
+      padding: 24px;
+      min-height: 500px;
+      max-height: 600px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
-      position: relative;
+      gap: 16px;
+      background: linear-gradient(to bottom, var(--light-pink-color) 0%, var(--white-color) 100%);
     }
 
-    .user-msg, .bot-msg {
-      padding: 10px 15px;
+    .message-wrapper {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      animation: messageSlide 0.3s ease-out;
+    }
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-msg,
+    .bot-msg {
+      padding: 16px 20px;
       border-radius: 20px;
-      max-width: 80%;
+      max-width: 75%;
       font-size: 15px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      position: relative;
+      font-weight: 400;
     }
 
     .user-msg {
       align-self: flex-end;
-      background-color: #DCF8C6;
+      background: linear-gradient(135deg, var(--dark-color) 0%, #3a3a3a 100%);
+      color: white;
+      border-bottom-right-radius: 8px;
+      box-shadow: 0 4px 12px rgba(37, 37, 37, 0.2);
     }
 
     .bot-msg {
       align-self: flex-start;
-      background-color: #f1f0f0;
+      background: var(--white-color);
+      color: var(--dark-color);
+      border: 1px solid var(--medium-gray-color);
+      border-bottom-left-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .bot-avatar, .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .bot-avatar {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--dark-color);
+    }
+
+    .user-avatar {
+      background: linear-gradient(135deg, var(--dark-color) 0%, #3a3a3a 100%);
+      color: white;
+    }
+
+    .input-section {
+      padding: 20px 24px;
+      background: var(--white-color);
+      border-top: 1px solid var(--medium-gray-color);
     }
 
     .input-area {
       display: flex;
-      gap: 10px;
-      width: 100%;
-      max-width: 700px;
+      gap: 12px;
+      align-items: flex-end;
     }
 
     #userInput {
       flex-grow: 1;
-      padding: 12px 15px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 25px;
+      padding: 16px 20px;
+      font-size: 15px;
+      border: 2px solid var(--medium-gray-color);
+      border-radius: 24px;
       outline: none;
+      background: var(--light-pink-color);
+      transition: all 0.2s ease;
+      font-family: inherit;
+      resize: none;
+      min-height: 24px;
+      max-height: 120px;
     }
 
-    button {
-      padding: 10px 20px;
+    #userInput:focus {
+      border-color: var(--primary-color);
+      background: var(--white-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.2);
+    }
+
+    .send-btn {
+      padding: 16px;
       font-size: 16px;
-      background: #4CAF50;
+      background: linear-gradient(135deg, var(--dark-color) 0%, #3a3a3a 100%);
       color: white;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background: #45a049;
-    }
-
-    .suggested-container {
-      position: sticky;
-      top: 20px;
-      z-index: 10;
-      align-self: flex-start;
-    }
-
-
-   
-    #toggleCategories {
-      position: sticky;
-      top: 20px;
-      z-index: 15;
-      font-size: 14px;
-      padding: 6px 12px;
-      background-color: #eee;
-      color: #333;
       border: none;
       border-radius: 20px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      height: 52px;
+      box-shadow: 0 4px 12px rgba(37, 37, 37, 0.2);
+    }
+
+    .send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 37, 37, 0.3);
+    }
+
+    .send-btn:active {
+      transform: translateY(0);
+    }
+
+    .suggested-container {
+      flex-shrink: 0;
+      width: 320px;
+      position: sticky;
+      top: 120px;
+      align-self: flex-start;
+    }
+
+    .suggestions-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #toggleCategories {
+      width: 100%;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 18px 24px;
+      background: linear-gradient(135deg, var(--light-pink-color) 0%, var(--white-color) 100%);
+      color: var(--dark-color);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     #toggleCategories:hover {
-      background-color: #ddd;
+      background: linear-gradient(135deg, var(--white-color) 0%, var(--medium-gray-color) 100%);
+    }
+
+    #toggleCategories::after {
+      content: '▼';
+      transition: transform 0.2s ease;
+    }
+
+    #toggleCategories.active::after {
+      transform: rotate(180deg);
     }
 
     .suggested-section {
-      margin-top: 40px;
       display: none;
+      padding: 24px;
+      gap: 24px;
       flex-direction: column;
-      gap: 20px;
     }
 
     .suggested-section.active {
@@ -126,30 +315,160 @@
     }
 
     .suggested-section h3 {
-      margin: 10px 0 5px;
+      margin: 0 0 12px 0;
       font-size: 16px;
-      color: #555;
+      font-weight: 600;
+      color: var(--dark-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .suggested-section h3::before {
+      content: '';
+      width: 4px;
+      height: 16px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      border-radius: 2px;
     }
 
     .suggested-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
     .suggested-group button {
-      background-color: #eee;
-      color: #333;
-      font-size: 14px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: none;
+      background: var(--light-pink-color);
+      color: var(--dark-color);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--medium-gray-color);
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.2s ease;
+      font-family: inherit;
     }
 
     .suggested-group button:hover {
-      background-color: #ddd;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--dark-color);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(168, 230, 207, 0.3);
+    }
+
+    .typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 20px;
+      background: var(--white-color);
+      border: 1px solid var(--medium-gray-color);
+      border-radius: 20px;
+      border-bottom-left-radius: 8px;
+      max-width: 75%;
+      align-self: flex-start;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .typing-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9ca3af;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typing {
+      0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Scroll styling */
+    #chat::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #chat::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #chat::-webkit-scrollbar-thumb {
+      background: rgba(168, 230, 207, 0.5);
+      border-radius: 3px;
+    }
+
+    #chat::-webkit-scrollbar-thumb:hover {
+      background: rgba(168, 230, 207, 0.7);
+    }
+
+    @media (max-width: 1024px) {
+      .chat-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .suggested-container {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        order: -1;
+      }
+
+      h2 {
+        font-size: 32px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .chat-container {
+        padding: 15px 3%;
+      }
+
+      h2 {
+        font-size: 28px;
+        margin: 15px 0;
+      }
+
+      .chat-header {
+        padding: 16px 20px;
+      }
+
+      #chat {
+        padding: 20px;
+        min-height: 400px;
+        max-height: 500px;
+      }
+
+      .input-section {
+        padding: 16px 20px;
+      }
+
+      .user-msg, .bot-msg {
+        max-width: 85%;
+        font-size: 14px;
+        padding: 14px 16px;
+      }
+
+      .suggested-section {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -158,95 +477,171 @@
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+        <img src="../../homepage/images/Logo.jpg" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
-        <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
-        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
-        <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
-        <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a href="../../homepage/main.php" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="../../homepage/main.php" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="../../homepage/main.php" class="nav-link">Services</a></li>
+        <li class="nav-item"><a href="../../homepage/main.php" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="../../homepage/main.php" class="nav-link">Contact</a></li>
         <li class="nav-item dropdown">
-          <a href="#" class="nav-link profile-icon">
+          <a href="#" class="nav-link profile-icon active">
             <i class="fas fa-user-circle"></i>
           </a>
           <ul class="dropdown-menu">
-            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-            <li><a href="../pets/add-pet.php">Add Pet</a></li>
-            <li><a href="../appointment/book-appointment.php">Book</a></li>
-            <li><a href="../homepage/appointments.php">Appointments</a></li>
-            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+            <li><a href="../../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="../../pets/add-pet.php">Add Pet</a></li>
+            <li><a href="./../../appointment/book-appointment.php">Book</a></li>
+            <li><a href="../../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../../Purrfect-paws/ai/chatbot/index.html">Help Center</a></li>
+            <li><a href="../../homepage/logout/logout.php">Logout</a></li>
           </ul>
         </li>
       </ul>
     </nav>
   </header>
-  <div style="height: 50px;"></div>
-
-  <h2>Chat with HelpPawl</h2>
+  
+  <div style="height: 200px;"></div>
 
   <div class="chat-container">
-    <div id="chat">
-      <!-- Toggle Button -->
-      <div class="suggested-container">
-        <button id="toggleCategories" onclick="toggleSuggested()">☰ Menu</button>
+    <div class="suggested-container">
+      <div class="suggestions-card">
+        <button id="toggleCategories" onclick="toggleSuggested()">
+          <span><i class="fas fa-magic" style="margin-right: 8px;"></i>Quick Questions</span>
+        </button>
         <div class="suggested-section" id="suggestedSection">
-          <h3>💬 General Questions</h3>
-          <div class="suggested-group">
-            <button onclick="sendSuggested('hi')">Hi</button>
-            <button onclick="sendSuggested('hello')">Hello</button>
-            <button onclick="sendSuggested('what is your name')">What is your name?</button>
-            <button onclick="sendSuggested('thank you')">Thank you</button>
-            <button onclick="sendSuggested('bye')">Bye</button>
+          <div>
+            <h3><i class="fas fa-comments"></i>General</h3>
+            <div class="suggested-group">
+              <button onclick="sendSuggested('hi')">Hi</button>
+              <button onclick="sendSuggested('hello')">Hello</button>
+              <button onclick="sendSuggested('what is your name')">What is your name?</button>
+              <button onclick="sendSuggested('thank you')">Thank you</button>
+              <button onclick="sendSuggested('bye')">Bye</button>
+            </div>
           </div>
 
-          <h3>📍 Location & Contact</h3>
-          <div class="suggested-group">
-            <button onclick="sendSuggested('where are you located')">Where are you located?</button>
-            <button onclick="sendSuggested('what are your contact')">Contact info?</button>
-            <button onclick="sendSuggested('when are you open')">When are you open?</button>
+          <div>
+            <h3><i class="fas fa-map-marker-alt"></i>Location & Contact</h3>
+            <div class="suggested-group">
+              <button onclick="sendSuggested('where are you located')">Where are you located?</button>
+              <button onclick="sendSuggested('what are your contact')">Contact info?</button>
+              <button onclick="sendSuggested('when are you open')">When are you open?</button>
+            </div>
           </div>
 
-          <h3>📆 Booking</h3>
-          <div class="suggested-group">
-            <button onclick="sendSuggested('how can i book an appointment')">How to book?</button>
-            <button onclick="sendSuggested('do you accept walk-ins')">Do you accept walk-ins?</button>
+          <div>
+            <h3><i class="fas fa-calendar-alt"></i>Booking</h3>
+            <div class="suggested-group">
+              <button onclick="sendSuggested('how can i book an appointment')">How to book?</button>
+              <button onclick="sendSuggested('do you accept walk-ins')">Do you accept walk-ins?</button>
+            </div>
           </div>
 
-          <h3>🛁 Services & Payment</h3>
-          <div class="suggested-group">
-            <button onclick="sendSuggested('do you offer grooming services')">Do you offer grooming?</button>
-            <button onclick="sendSuggested('how much is grooming')">Grooming cost?</button>
-            <button onclick="sendSuggested('what services do you offer')">What services do you offer?</button>
-            <button onclick="sendSuggested('what payment methods do you accept')">Payment methods?</button>
+          <div>
+            <h3><i class="fas fa-cut"></i>Services & Payment</h3>
+            <div class="suggested-group">
+              <button onclick="sendSuggested('do you offer grooming services')">Do you offer grooming?</button>
+              <button onclick="sendSuggested('how much is grooming')">Grooming cost?</button>
+              <button onclick="sendSuggested('what services do you offer')">What services do you offer?</button>
+              <button onclick="sendSuggested('what payment methods do you accept')">Payment methods?</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Type your message..." />
-      <button onclick="sendMessage()">Send</button>
+    <div class="chat-wrapper">
+      <div class="chat-header">
+        <i class="fas fa-robot"></i>
+        <h3>HelpPAWL Assistant</h3>
+        <div class="chat-status">
+          <div class="status-dot"></div>
+          <span>Online</span>
+        </div>
+      </div>
+      
+      <div id="chat">
+        <div class="message-wrapper">
+          <div class="bot-avatar">
+            <i class="fas fa-paw"></i>
+          </div>
+          <div class="bot-msg">
+            <strong>Assistant:</strong> Welcome to Purrfect Paws! 🐾 I'm here to help you with any questions about our services, booking appointments, or general information. How can I assist you today?
+          </div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="bot-avatar">
+            <i class="fas fa-paw"></i>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-size: 12px; color: #9ca3af;">Assistant is typing...</div>
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <div class="input-area">
+          <textarea id="userInput" placeholder="Type your message..." rows="1"></textarea>
+          <button class="send-btn" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
     const predefinedResponses = {
-      "hi": "Hello there!",
-      "hello": "Hi! How can I assist you today?",
-      "where are you located": "Hello! Purrfect Paws is located at 324 Dr. Sixto Antonio Avenue Caniogan Pasig City.",
-      "what are your contact": "You can email us at purrfectpaws@gmail.com or reach us via call or text at 09123.",
-      "when are you open": "We're open daily from 9:00 AM to 8:00 PM Monday to Sunday.",
-      "what is your name": "Hi! I’m your friendly assistant at Purrfect Paws.",
-      "how can i book an appointment": "You can book an appointment online through our website or contact us directly via call or text.",
-      "do you offer grooming services": "Yes! We offer pet grooming services including bathing, haircut, and nail trimming.",
-      "how much is grooming": "Grooming prices start at ₱499 depending on the size and breed of your pet.",
-      "do you accept walk-ins": "We highly recommend appointments, but we do accept walk-ins when available.",
-      "what services do you offer": "We offer grooming, vaccination, deworming, and vet consultations.",
-      "what payment methods do you accept": "We accept cash, GCash, and major credit/debit cards.",
-      "thank you": "You're welcome! Let me know if there's anything else I can help with.",
-      "bye": "Goodbye! Hope to see you and your pet soon!"
+      "hi": "Hello there! 👋",
+      "hello": "Hi! How can I assist you today? 😊",
+      "where are you located": "Hello! Purrfect Paws is located at 324 Dr. Sixto Antonio Avenue Caniogan Pasig City. 📍",
+      "what are your contact": "You can email us at purrfectpaws@gmail.com or reach us via call or text at 09123. 📞",
+      "when are you open": "We're open daily from 9:00 AM to 8:00 PM Monday to Sunday. 🕘",
+      "what is your name": "Hi! I'm your friendly assistant at Purrfect Paws. 🤖",
+      "how can i book an appointment": "You can book an appointment online through our website or contact us directly via call or text. 📅",
+      "do you offer grooming services": "Yes! We offer pet grooming services including bathing, haircut, and nail trimming. ✂️",
+      "how much is grooming": "Grooming prices start at ₱499 depending on the size and breed of your pet. 💰",
+      "do you accept walk-ins": "We highly recommend appointments, but we do accept walk-ins when available. 🚶‍♂️",
+      "what services do you offer": "We offer grooming, vaccination, deworming, and vet consultations. 🏥",
+      "what payment methods do you accept": "We accept cash, GCash, and major credit/debit cards. 💳",
+      "thank you": "You're welcome! Let me know if there's anything else I can help with. 😊",
+      "bye": "Goodbye! Hope to see you and your pet soon! 👋🐾"
     };
+
+    // Auto-resize textarea
+    const userInput = document.getElementById("userInput");
+    userInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Send message on Enter (but not Shift+Enter)
+    userInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function showTypingIndicator() {
+      const indicator = document.getElementById("typingIndicator");
+      indicator.style.display = "flex";
+      const chat = document.getElementById("chat");
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const indicator = document.getElementById("typingIndicator");
+      indicator.style.display = "none";
+    }
 
     async function sendMessage(message = null) {
       const input = document.getElementById("userInput");
@@ -254,16 +649,36 @@
       const userMessage = message || input.value.trim();
       if (!userMessage) return;
 
-      chat.innerHTML += `<p class="user-msg"><strong>You:</strong> ${userMessage}</p>`;
+      // Add user message
+      const userWrapper = document.createElement('div');
+      userWrapper.className = 'message-wrapper';
+      userWrapper.style.justifyContent = 'flex-end';
+      userWrapper.innerHTML = `
+        <div class="user-msg"><strong>You:</strong> ${userMessage}</div>
+        <div class="user-avatar"><i class="fas fa-user"></i></div>
+      `;
+      chat.appendChild(userWrapper);
+      
       input.value = "";
+      input.style.height = 'auto';
 
       const lowerMessage = userMessage.toLowerCase();
 
+      // Show typing indicator
+      showTypingIndicator();
+
       if (predefinedResponses[lowerMessage]) {
         setTimeout(() => {
-          chat.innerHTML += `<p class="bot-msg"><strong>Bot:</strong> ${predefinedResponses[lowerMessage]}</p>`;
+          hideTypingIndicator();
+          const botWrapper = document.createElement('div');
+          botWrapper.className = 'message-wrapper';
+          botWrapper.innerHTML = `
+            <div class="bot-avatar"><i class="fas fa-paw"></i></div>
+            <div class="bot-msg"><strong>Assistant:</strong> ${predefinedResponses[lowerMessage]}</div>
+          `;
+          chat.appendChild(botWrapper);
           chat.scrollTop = chat.scrollHeight;
-        }, 300);
+        }, Math.random() * 1000 + 500); // Random delay between 500-1500ms
       } else {
         try {
           const res = await fetch("http://127.0.0.1:5000/ask", {
@@ -272,9 +687,30 @@
             body: JSON.stringify({ message: userMessage })
           });
           const data = await res.json();
-          chat.innerHTML += `<p class="bot-msg"><strong>Bot:</strong> ${data.response}</p>`;
+          
+          setTimeout(() => {
+            hideTypingIndicator();
+            const botWrapper = document.createElement('div');
+            botWrapper.className = 'message-wrapper';
+            botWrapper.innerHTML = `
+              <div class="bot-avatar"><i class="fas fa-paw"></i></div>
+              <div class="bot-msg"><strong>Assistant:</strong> ${data.response}</div>
+            `;
+            chat.appendChild(botWrapper);
+            chat.scrollTop = chat.scrollHeight;
+          }, Math.random() * 1000 + 500);
         } catch (error) {
-          chat.innerHTML += `<p class="bot-msg"><strong>Bot:</strong> ⚠️ Server not responding. Is Flask running?</p>`;
+          setTimeout(() => {
+            hideTypingIndicator();
+            const botWrapper = document.createElement('div');
+            botWrapper.className = 'message-wrapper';
+            botWrapper.innerHTML = `
+              <div class="bot-avatar"><i class="fas fa-paw"></i></div>
+              <div class="bot-msg"><strong>Assistant:</strong> ⚠️ I'm having trouble connecting to my server right now. Please try again in a moment!</div>
+            `;
+            chat.appendChild(botWrapper);
+            chat.scrollTop = chat.scrollHeight;
+          }, 800);
         }
       }
 
@@ -287,7 +723,9 @@
 
     function toggleSuggested() {
       const section = document.getElementById("suggestedSection");
+      const button = document.getElementById("toggleCategories");
       section.classList.toggle("active");
+      button.classList.toggle("active");
     }
   </script>
 </body>

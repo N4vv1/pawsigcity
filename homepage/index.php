@@ -89,7 +89,7 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $i
         </div>
       </div>
     </section>
-
+    
     <!-- Services Section -->
 <section class="service-section" id="service">
   <h2 class="section-title">Our Services</h2>

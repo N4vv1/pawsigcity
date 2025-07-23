@@ -67,6 +67,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
             <li><a href="../pets/add-pet.php">Add Pet</a></li>
             <li><a href="../appointment/book-appointment.php">Book</a></li>
             <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../../Purrfect-paws/ai/chatbot/index.html">Help Center</a></li>
             <li><a href="../homepage/logout/logout.php">Logout</a></li>
           </ul>
         </li>

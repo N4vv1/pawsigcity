@@ -472,31 +472,32 @@ if (isset($response_data) && isset($response_data['error'])) {
 </head>
 <body>
   <header>
-  <nav class="navbar section-content">
-    <a href="#" class="navbar-logo">
-      <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
-    </a>
-    <ul class="nav-menu">
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
-      <li class="nav-item dropdown">
-        <a href="#" class="nav-link profile-icon">
-          <i class="fas fa-user-circle"></i>
-        </a>
-         <ul class="dropdown-menu">
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link profile-icon">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <ul class="dropdown-menu">
             <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
             <li><a href="../pets/add-pet.php">Add Pet</a></li>
             <li><a href="../appointment/book-appointment.php">Book</a></li>
             <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../../Purrfect-paws/ai/chatbot/index.html">Help Center</a></li>
             <li><a href="../homepage/logout/logout.php">Logout</a></li>
           </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
 <div style="height: 60px;"></div>
   <div class="form-wrapper">
