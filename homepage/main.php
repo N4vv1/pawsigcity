@@ -37,6 +37,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
   <title>Purrfect Paws</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="icon" type="image/png" href="./images/Logo.jpg">
 
   <style>
     .fade-out {

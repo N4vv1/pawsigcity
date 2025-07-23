@@ -140,6 +140,7 @@ if (isset($response_data) && isset($response_data['error'])) {
   <title>Book Appointment</title>
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="icon" type="image/png" href="../homepage/images/Logo.jpg">
 
  <style>
   * {
