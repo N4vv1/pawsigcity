@@ -21,16 +21,14 @@ $recommended_package = null;
 
 // Function to get peak hours data
 function getPeakHoursData($mysqli) {
-    // Get appointment data from the last 3 months to analyze patterns
     $peak_hours_query = "
         SELECT 
-            HOUR(appointment_date) as hour,
             DAYOFWEEK(appointment_date) as day_of_week,
             COUNT(*) as appointment_count
         FROM appointments 
         WHERE appointment_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
         AND status != 'cancelled'
-        GROUP BY HOUR(appointment_date), DAYOFWEEK(appointment_date)
+        GROUP BY DAYOFWEEK(appointment_date)
         ORDER BY appointment_count DESC
     ";
     
@@ -141,6 +139,10 @@ if (isset($response_data) && isset($response_data['error'])) {
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="icon" type="image/png" href="../homepage/images/Logo.jpg">
+  <!-- Add inside <head> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 
  <style>
   * {
@@ -468,6 +470,13 @@ if (isset($response_data) && isset($response_data['error'])) {
   background: #81c784;
 }
 
+.datetime-container {
+  position: relative;
+}
+
+
+
+
 </style>
 
 </head>
@@ -584,7 +593,7 @@ if (isset($response_data) && isset($response_data['error'])) {
             <div class="form-group">
               <label for="appointment_date"><i class="fas fa-calendar-alt"></i> Appointment Date and Time:</label>
               <div class="datetime-container">
-                <input type="datetime-local" name="appointment_date" id="appointment_date" required>
+                <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
                 <div class="peak-indicator" id="peakIndicator">Select date/time</div>
               </div>
               <small style="color: #666; margin-top: 5px;">💡 The indicator above shows demand level for your selected time</small>
@@ -603,105 +612,121 @@ if (isset($response_data) && isset($response_data['error'])) {
   </div>
 
   <script>
-    // Peak hours data from PHP
-    const peakHoursData = <?= json_encode($peak_hours_data) ?>;
-    
-    // Create a map for quick lookup
-    const peakHoursMap = {};
-    peakHoursData.forEach(item => {
-      const key = `${item.day_of_week}-${item.hour}`;
-      peakHoursMap[key] = item.appointment_count;
-    });
-    
-    // Function to get peak level based on appointment count
-    function getPeakLevel(count) {
-      if (count >= 8) return 'high';
-      if (count >= 4) return 'medium';
-      return 'low';
+  // Peak hours data from PHP
+  const peakHoursData = <?= json_encode($peak_hours_data) ?>;
+
+  // Create a map for quick lookup by day of week
+  const peakHoursMap = {};
+  peakHoursData.forEach(item => {
+    const key = `${item.day_of_week}`;
+    peakHoursMap[key] = item.appointment_count;
+  });
+
+  // Function to get peak level based on appointment count
+  function getPeakLevel(count) {
+    if (count >= 5) return 'high';
+    if (count >= 3) return 'medium';
+    return 'low';
+  }
+
+  // Function to update peak indicator and disable high demand days
+  function updatePeakIndicator() {
+    const dateInput = document.getElementById('appointment_date');
+    const indicator = document.getElementById('peakIndicator');
+    const submitBtn = document.querySelector('.submit-btn');
+
+    if (!dateInput.value) {
+      indicator.className = 'peak-indicator';
+      indicator.textContent = 'Select date/time';
+      submitBtn.disabled = false;
+      submitBtn.textContent = '📅 Book Appointment';
+      submitBtn.style.cursor = 'pointer';
+      submitBtn.style.backgroundColor = '';
+      return;
     }
-    
-    // Function to update peak indicator
-    function updatePeakIndicator() {
-      const dateInput = document.getElementById('appointment_date');
-      const indicator = document.getElementById('peakIndicator');
-      
-      if (!dateInput.value) {
-        indicator.className = 'peak-indicator';
-        indicator.textContent = 'Select date/time';
-        return;
-      }
-      
-      const selectedDate = new Date(dateInput.value);
-      const dayOfWeek = selectedDate.getDay() + 1; // Convert to MySQL format
-      const hour = selectedDate.getHours();
-      
-      const key = `${dayOfWeek}-${hour}`;
-      const appointmentCount = peakHoursMap[key] || 0;
-      const peakLevel = getPeakLevel(appointmentCount);
-      
-      // Update indicator
-      indicator.className = `peak-indicator show ${peakLevel}`;
-      
-      let text = '';
-      let icon = '';
-      switch(peakLevel) {
-        case 'high':
-          text = 'High Demand';
-          icon = '🔴';
-          break;
-        case 'medium':
-          text = 'Moderate';
-          icon = '🟡';
-          break;
-        case 'low':
-          text = 'Low Demand';
-          icon = '🟢';
-          break;
-      }
-      
-      indicator.textContent = `${icon} ${text}`;
+
+    const selectedDate = new Date(dateInput.value);
+    const dayOfWeek = selectedDate.getDay() + 1; // Convert to MySQL DAYOFWEEK (1 = Sunday)
+
+    const appointmentCount = peakHoursMap[dayOfWeek] || 0;
+    const peakLevel = getPeakLevel(appointmentCount);
+
+    // Update peak indicator design
+    indicator.className = `peak-indicator show ${peakLevel}`;
+
+    let text = '';
+    let icon = '';
+    switch (peakLevel) {
+      case 'high':
+        text = 'High Demand';
+        icon = '🔴';
+        break;
+      case 'medium':
+        text = 'Moderate';
+        icon = '🟡';
+        break;
+      case 'low':
+        text = 'Low Demand';
+        icon = '🟢';
+        break;
     }
-    
-    // Add event listener to datetime input
-    document.addEventListener('DOMContentLoaded', function() {
-      const dateInput = document.getElementById('appointment_date');
-      if (dateInput) {
-        dateInput.addEventListener('change', updatePeakIndicator);
-        dateInput.addEventListener('input', updatePeakIndicator);
-        
-        // Set minimum date to today
-        const now = new Date();
-        const offset = now.getTimezoneOffset() * 60000;
-        const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 16);
-        dateInput.min = localISOTime;
-      }
-    });
-    
-    // Display current week's peak hours
-    function displayWeeklyPeakHours() {
-      const today = new Date();
-      const currentDay = today.getDay();
-      
-      // Create a summary of peak hours for the current week
-      const weeklyData = {};
-      
-      for (let day = 1; day <= 7; day++) {
-        weeklyData[day] = {};
-        for (let hour = 8; hour <= 18; hour++) {
-          const key = `${day}-${hour}`;
-          const count = peakHoursMap[key] || 0;
-          weeklyData[day][hour] = {
-            count: count,
-            level: getPeakLevel(count)
-          };
-        }
-      }
-      
-      console.log('Weekly Peak Hours Data:', weeklyData);
+    indicator.textContent = `${icon} ${text}`;
+
+    // Disable booking on high demand days
+    if (peakLevel === 'high') {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Unavailable (High Demand)';
+      submitBtn.style.cursor = 'not-allowed';
+      submitBtn.style.backgroundColor = '#ccc';
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '📅 Book Appointment';
+      submitBtn.style.cursor = 'pointer';
+      submitBtn.style.backgroundColor = '';
     }
-    
-    // Call the function when page loads
-    document.addEventListener('DOMContentLoaded', displayWeeklyPeakHours);
-  </script>
+  }
+
+  // Set up listeners when the page loads
+  document.addEventListener('DOMContentLoaded', function () {
+    const dateInput = document.getElementById('appointment_date');
+    if (dateInput) {
+      dateInput.addEventListener('change', updatePeakIndicator);
+      dateInput.addEventListener('input', updatePeakIndicator);
+
+      // Set minimum date to now
+      const now = new Date();
+      const offset = now.getTimezoneOffset() * 60000;
+      const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 16);
+      dateInput.min = localISOTime;
+    }
+  });
+
+  // Optional: Developer console view of weekly pattern
+  function displayWeeklyPeakHours() {
+    const summary = {};
+    for (let day = 1; day <= 7; day++) {
+      const count = peakHoursMap[day] || 0;
+      summary[day] = {
+        count: count,
+        level: getPeakLevel(count)
+      };
+    }
+    console.log('📊 Peak Demand Per Day:', summary);
+  }
+
+  document.addEventListener('DOMContentLoaded', displayWeeklyPeakHours);
+
+  flatpickr("#appointment_date", {
+  enableTime: true,
+  dateFormat: "Y-m-d H:i",
+  minDate: "today",
+  defaultHour: 10,
+  time_24hr: true,
+  onChange: function(selectedDates, dateStr, instance) {
+    updatePeakIndicator(); // Your custom logic for peak indicator
+  }
+});
+</script>
+
 </body>
 </html>
