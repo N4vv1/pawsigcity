@@ -359,7 +359,8 @@ $appointments = $result->get_result();
 
   // Validate feedback (optional but encouraged)
   function validateFeedback() {
-    const feedback = document.getElementById('feedback').value.trim();
+  const feedback = document.getElementById('feedback_text').value.trim(); // ✅ This matches your form
+
     if (feedback !== '') {
       const wordCount = feedback.split(/\s+/).length;
       if (wordCount < 10) {
@@ -371,6 +372,16 @@ $appointments = $result->get_result();
   }
 </script>
 
-
+<?php if (isset($_SESSION['show_feedback_modal']) && $_SESSION['show_feedback_modal']): ?>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const feedbackId = <?= json_encode($_SESSION['feedback_appointment_id'] ?? null) ?>;
+    if (feedbackId) {
+      openFeedbackModal(feedbackId);
+    }
+  });
+</script>
+<?php unset($_SESSION['show_feedback_modal'], $_SESSION['feedback_appointment_id']); ?>
+<?php endif; ?>
 </body>
 </html>

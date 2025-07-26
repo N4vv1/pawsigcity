@@ -177,13 +177,13 @@ if (!$results) {
   <nav class="menu">
     <a href="../home_dashboard/home.php"><i class='bx bx-home'></i>Home</a>
     <hr>
-    <a href="../manage_accounts/accounts.php"><i class='bx bx-user'></i>User Management</a>
+    <a href="../manage_accounts/accounts.php"><i class='bx bx-camera'></i>User Management</a>
     <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="feedback-reports.php" class="active"><i class='bx bx-message-square-dots'></i>Feedback Reports</a>
+    <a href="../feedback_reports/feedback-reports.php" class="active"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
     <a href="#"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
