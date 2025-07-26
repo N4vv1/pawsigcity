@@ -115,3 +115,48 @@
 2025-07-26 01:40:12,695 - 127.0.0.1 - - [26/Jul/2025 01:40:12] "POST /recommend HTTP/1.1" 200 -
 2025-07-26 01:40:27,717 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
 2025-07-26 01:40:27,718 - 127.0.0.1 - - [26/Jul/2025 01:40:27] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 19:38:28,586 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-26 19:38:28,587 - [33mPress CTRL+C to quit[0m
+2025-07-26 19:38:42,769 - Prediction error: y contains previously unseen labels: 'Bully'
+2025-07-26 19:38:42,770 - 127.0.0.1 - - [26/Jul/2025 19:38:42] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-07-26 19:39:09,283 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 19:39:09,283 - 127.0.0.1 - - [26/Jul/2025 19:39:09] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 01:32:18,402 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 01:32:18,405 - 127.0.0.1 - - [27/Jul/2025 01:32:18] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 01:39:40,166 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 01:39:40,167 - 127.0.0.1 - - [27/Jul/2025 01:39:40] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 01:39:43,766 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 01:39:43,767 - 127.0.0.1 - - [27/Jul/2025 01:39:43] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 01:40:38,161 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 01:40:38,162 - 127.0.0.1 - - [27/Jul/2025 01:40:38] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 01:41:08,882 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 01:41:08,883 - 127.0.0.1 - - [27/Jul/2025 01:41:08] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 01:43:26,439 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 01:43:26,440 - 127.0.0.1 - - [27/Jul/2025 01:43:26] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 01:43:43,642 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 01:43:43,642 - 127.0.0.1 - - [27/Jul/2025 01:43:43] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:25:20,787 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:25:20,787 - 127.0.0.1 - - [27/Jul/2025 02:25:20] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:32:46,991 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:32:46,991 - 127.0.0.1 - - [27/Jul/2025 02:32:46] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:53:04,373 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:53:04,374 - 127.0.0.1 - - [27/Jul/2025 02:53:04] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:55:26,261 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:55:26,262 - 127.0.0.1 - - [27/Jul/2025 02:55:26] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:55:27,290 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:55:27,291 - 127.0.0.1 - - [27/Jul/2025 02:55:27] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:55:34,195 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:55:34,196 - 127.0.0.1 - - [27/Jul/2025 02:55:34] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:58:35,214 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:58:35,214 - 127.0.0.1 - - [27/Jul/2025 02:58:35] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:58:36,438 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:58:36,438 - 127.0.0.1 - - [27/Jul/2025 02:58:36] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:58:36,965 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:58:36,965 - 127.0.0.1 - - [27/Jul/2025 02:58:36] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:58:37,117 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:58:37,118 - 127.0.0.1 - - [27/Jul/2025 02:58:37] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 02:58:37,299 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 02:58:37,300 - 127.0.0.1 - - [27/Jul/2025 02:58:37] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:02:49,059 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:02:49,059 - 127.0.0.1 - - [27/Jul/2025 03:02:49] "POST /recommend HTTP/1.1" 200 -
