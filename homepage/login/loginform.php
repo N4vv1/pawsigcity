@@ -20,6 +20,7 @@ if (isset($_SESSION['login_error'])) {
   <link rel="stylesheet" href="login.css" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../../homepage/images/Logo.jpg">
 </head>
 <body>
 

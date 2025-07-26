@@ -25,215 +25,162 @@ $appointments = $result->get_result();
   <title>Your Appointments</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="../homepage/images/Logo.jpg">
 
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding-top: 90px; /* offset for fixed navbar */
-    }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding-top: 90px; /* offset for fixed navbar */
+  }
 
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: #A8E6CF;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+  .section-content {
+    max-width: 1200px;
+    margin: auto;
+  }
 
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 40px;
-    }
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
 
-    .navbar-logo img {
-      height: 50px;
-    }
+  .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+  }
 
-    .nav-menu {
-      list-style: none;
-      display: flex;
-      gap: 20px;
-      margin: 0;
-      padding: 0;
-    }
+  .button {
+    padding: 8px 14px;
+    background-color: #A8E6CF;
+    color: #252525;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    margin: 5px 3px;
+    display: inline-block;
+  }
 
-    .nav-link {
-      text-decoration: none;
-      color: #333;
-      font-weight: 600;
-    }
+  .button:hover {
+    background-color: #87d7b7;
+  }
 
-    .nav-link.active,
-    .nav-link:hover {
-      color: #2a9d8f;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
 
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      background: white;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
+  th, td {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 15px;
+  }
 
-    .dropdown:hover .dropdown-menu {
-      display: block;
-    }
+  th {
+    background-color: #A8E6CF;
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+  }
 
-    .section-content {
-      max-width: 1200px;
-      margin: auto;
-    }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
 
-    h2 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
-      font-size: 28px;
-    }
+  tr:hover {
+    background-color: #f1f1f1;
+  }
 
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 20px;
-    }
+  .badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+  }
 
-    .button {
-      padding: 8px 14px;
-      background-color: #A8E6CF;
-      color: #252525;
-      text-decoration: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: background-color 0.3s;
-      margin: 5px 3px;
-      display: inline-block;
-    }
+  .approved {
+    background-color: #d4edda;
+    color: #155724;
+  }
 
-    .button:hover {
-      background-color: #87d7b7;
-    }
+  .pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border-radius: 12px;
-      overflow: hidden;
-    }
+  .cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
 
-    th, td {
-      padding: 16px 20px;
-      text-align: left;
-      font-size: 15px;
-    }
+  .feedback {
+    background-color: #e3f2fd;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #0d47a1;
+  }
 
-    th {
-      background-color: #A8E6CF;
-      color: #2c3e50;
-      font-weight: 600;
-      border-bottom: 2px solid #e0e0e0;
-    }
+  .feedback em {
+    color: #777;
+  }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
+  p.success-message {
+    text-align: center;
+    color: green;
+    font-weight: 600;
+  }
 
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    .badge {
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: inline-block;
-    }
-
-    .approved {
-      background-color: #d4edda;
-      color: #155724;
-    }
-
-    .pending {
-      background-color: #fff3cd;
-      color: #856404;
-    }
-
-    .cancelled {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
-
-    .feedback {
-      background-color: #e3f2fd;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: #0d47a1;
-    }
-
-    .feedback em {
-      color: #777;
-    }
-
-    p.success-message {
-      text-align: center;
-      color: green;
-      font-weight: 600;
-    }
-
-    .container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
+  .appointment-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
-table {
-  margin-top: 20px;
-  margin-bottom: 40px;
-}
-
-  </style>
+</style>
 </head>
 <body>
-
-<header>
-  <nav class="navbar section-content">
-    <a href="#" class="navbar-logo">
-      <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
-    </a>
-    <ul class="nav-menu">
-      <li><a href="../homepage/main.php" class="nav-link">Home</a></li>
-      <li><a href="../homepage/main.php" class="nav-link">About</a></li>
-      <li><a href="../homepage/main.php" class="nav-link active">Services</a></li>
-      <li><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
-      <li><a href="../homepage/main.php" class="nav-link">Contact</a></li>
-      <li class="nav-item dropdown">
-        <a href="#" class="nav-link profile-icon">
-          <i class="fas fa-user-circle"></i>
-        </a>
-        <ul class="dropdown-menu">
-          <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-          <li><a href="../pets/add-pet.php">Add Pet</a></li>
-          <li><a href="../appointment/book-appointment.php">Book</a></li>
-          <li><a href="../homepage/appointments.php">Appointments</a></li>
-          <li><a href="../homepage/logout/logout.php">Logout</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+<header class="appointment-header">
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link profile-icon">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="../pets/add-pet.php">Add Pet</a></li>
+            <li><a href="../appointment/book-appointment.php">Book</a></li>
+            <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../../Purrfect-paws/ai/chatbot/index.html">Help Center</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
 <div class="container">
   <?php if (isset($_SESSION['success'])): ?>
@@ -242,8 +189,7 @@ table {
 
  <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 20px;">
   <a href="main.php" class="button" style="background-color: #d4d4d4;">⬅ Back</a>
-  <h2 style="margin: 0; flex: 1; text-align: center;">🐾 Your Appointments</h2>
-  <div style="width: 80px;"></div> <!-- Spacer to balance layout -->
+  <div style="width: 80px;"></div>
 </div>
 
   <table>

@@ -7,11 +7,9 @@ body {
   color: var(--dark-color);
   background: var(--white-color);
 }
-
 /* Scroll behavior for smooth anchor link navigation */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 120px; /* Adjust based on fixed header height */
 }
 
 * {
@@ -40,7 +38,11 @@ p {
   --white-color: #fff;
   --dark-color: #252525;
   --primary-color: #A8E6CF;
+<<<<<<< HEAD
   --secondary-color: #FF9B2F;
+=======
+  --secondary-color: #FFDE63;
+>>>>>>> 978599e3a3dc5e97c7c2e8b809dd3a612cbecd68
   --light-pink-color: #faf4f5;
   --medium-gray-color: #ccc;
 
@@ -326,12 +328,12 @@ header .navbar {
 
 
 
-
-/* About Section */
 .about-section {
-  padding: 120px 0;
+  padding: 80px 0 120px; /* More top padding for visual spacing */
   background: var(--light-pink-color);
+  scroll-margin-top: 200px; /* Push it lower when scrolled to */
 }
+
 
 .about-section .section-content {
   display: flex;
@@ -583,10 +585,14 @@ header .navbar {
 
 /* Contact Section */
 .contact-section {
-  padding: 120px 20px;
-  background: linear-gradient(135deg, var(--primary-color), #c0f0df); /* light gradient */
+  padding: 30px 20px 80px;  /* Less top padding for tighter spacing */
+  background: linear-gradient(135deg, var(--primary-color), #c0f0df);
   color: var(--dark-color);
+  scroll-margin-top: 0px;   /* Maximum scroll-up effect */
 }
+
+
+
 
 .contact-section .section-title {
   color: var(--secondary-color);
@@ -733,7 +739,11 @@ textarea.form-input {
 .footer-contact,
 .footer-socials {
   flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align contents (like links/icons) to left under headings */
 }
+
 
 .footer-links h4,
 .footer-contact h4,
@@ -755,6 +765,8 @@ textarea.form-input {
 .footer-links ul li a {
   color: var(--white-color);
   transition: color 0.3s ease;
+  padding-left: 4px;
+  display: inline-block;
 }
 
 .footer-links ul li a:hover {
@@ -765,6 +777,14 @@ textarea.form-input {
   margin-bottom: 8px;
   line-height: 1.5;
 }
+.footer-socials .social-icons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 
 .footer-socials .social-icons a {
   font-size: 24px;
