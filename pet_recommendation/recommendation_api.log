@@ -61,3 +61,1657 @@
 2025-07-18 14:42:40,116 - 127.0.0.1 - - [18/Jul/2025 14:42:40] "[33mGET /ask HTTP/1.1[0m" 404 -
 2025-07-18 14:43:51,532 - 127.0.0.1 - - [18/Jul/2025 14:43:51] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
 2025-07-18 14:45:58,809 - 127.0.0.1 - - [18/Jul/2025 14:45:58] "[33mPOST /ask HTTP/1.1[0m" 404 -
+2025-07-26 00:30:03,034 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-26 00:30:03,034 - [33mPress CTRL+C to quit[0m
+2025-07-26 00:30:33,229 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:30:33,230 - 127.0.0.1 - - [26/Jul/2025 00:30:33] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:32:05,013 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:32:05,014 - 127.0.0.1 - - [26/Jul/2025 00:32:05] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:38:41,386 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:38:41,387 - 127.0.0.1 - - [26/Jul/2025 00:38:41] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:38:41,555 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:38:41,556 - 127.0.0.1 - - [26/Jul/2025 00:38:41] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:38:41,687 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:38:41,687 - 127.0.0.1 - - [26/Jul/2025 00:38:41] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:38:41,863 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:38:41,863 - 127.0.0.1 - - [26/Jul/2025 00:38:41] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:41:42,148 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:41:42,148 - 127.0.0.1 - - [26/Jul/2025 00:41:42] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:41:42,261 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:41:42,262 - 127.0.0.1 - - [26/Jul/2025 00:41:42] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:41:42,438 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:41:42,439 - 127.0.0.1 - - [26/Jul/2025 00:41:42] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:56,534 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:56,534 - 127.0.0.1 - - [26/Jul/2025 00:42:56] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:56,646 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:56,646 - 127.0.0.1 - - [26/Jul/2025 00:42:56] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:56,798 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:56,799 - 127.0.0.1 - - [26/Jul/2025 00:42:56] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:56,940 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:56,940 - 127.0.0.1 - - [26/Jul/2025 00:42:56] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:57,125 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:57,125 - 127.0.0.1 - - [26/Jul/2025 00:42:57] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:58,140 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:58,140 - 127.0.0.1 - - [26/Jul/2025 00:42:58] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:58,295 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:58,296 - 127.0.0.1 - - [26/Jul/2025 00:42:58] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:42:58,427 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:42:58,428 - 127.0.0.1 - - [26/Jul/2025 00:42:58] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:46:45,323 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:46:45,324 - 127.0.0.1 - - [26/Jul/2025 00:46:45] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:02,007 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:02,008 - 127.0.0.1 - - [26/Jul/2025 00:49:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:02,094 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:02,094 - 127.0.0.1 - - [26/Jul/2025 00:49:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:02,333 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:02,334 - 127.0.0.1 - - [26/Jul/2025 00:49:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:02,444 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:02,444 - 127.0.0.1 - - [26/Jul/2025 00:49:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:02,659 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:02,660 - 127.0.0.1 - - [26/Jul/2025 00:49:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:02,846 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:02,846 - 127.0.0.1 - - [26/Jul/2025 00:49:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:03,014 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:03,015 - 127.0.0.1 - - [26/Jul/2025 00:49:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:03,169 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:03,169 - 127.0.0.1 - - [26/Jul/2025 00:49:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:03,373 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:03,373 - 127.0.0.1 - - [26/Jul/2025 00:49:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:03,527 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:03,527 - 127.0.0.1 - - [26/Jul/2025 00:49:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:14,760 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:14,761 - 127.0.0.1 - - [26/Jul/2025 00:49:14] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:49:19,345 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:49:19,345 - 127.0.0.1 - - [26/Jul/2025 00:49:19] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:53:59,387 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:53:59,387 - 127.0.0.1 - - [26/Jul/2025 00:53:59] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:53:59,909 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:53:59,909 - 127.0.0.1 - - [26/Jul/2025 00:53:59] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:00,082 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:00,082 - 127.0.0.1 - - [26/Jul/2025 00:54:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:00,251 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:00,251 - 127.0.0.1 - - [26/Jul/2025 00:54:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:00,434 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:00,435 - 127.0.0.1 - - [26/Jul/2025 00:54:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:02,493 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:02,493 - 127.0.0.1 - - [26/Jul/2025 00:54:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:02,501 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:02,501 - 127.0.0.1 - - [26/Jul/2025 00:54:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:02,710 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:02,711 - 127.0.0.1 - - [26/Jul/2025 00:54:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:02,834 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:02,834 - 127.0.0.1 - - [26/Jul/2025 00:54:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:13,429 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:13,429 - 127.0.0.1 - - [26/Jul/2025 00:54:13] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:54:49,936 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:54:49,937 - 127.0.0.1 - - [26/Jul/2025 00:54:49] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:22,630 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:22,631 - 127.0.0.1 - - [26/Jul/2025 00:56:22] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:22,820 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:22,820 - 127.0.0.1 - - [26/Jul/2025 00:56:22] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:22,965 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:22,965 - 127.0.0.1 - - [26/Jul/2025 00:56:22] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:23,155 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:23,156 - 127.0.0.1 - - [26/Jul/2025 00:56:23] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:28,555 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:28,556 - 127.0.0.1 - - [26/Jul/2025 00:56:28] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:28,610 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:28,614 - 127.0.0.1 - - [26/Jul/2025 00:56:28] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:28,788 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:28,788 - 127.0.0.1 - - [26/Jul/2025 00:56:28] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:28,917 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:28,918 - 127.0.0.1 - - [26/Jul/2025 00:56:28] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:29,101 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:29,101 - 127.0.0.1 - - [26/Jul/2025 00:56:29] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:29,287 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:29,288 - 127.0.0.1 - - [26/Jul/2025 00:56:29] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:29,425 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:29,425 - 127.0.0.1 - - [26/Jul/2025 00:56:29] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 00:56:29,564 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 00:56:29,564 - 127.0.0.1 - - [26/Jul/2025 00:56:29] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:07,881 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:07,882 - 127.0.0.1 - - [26/Jul/2025 01:01:07] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:07,992 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:07,992 - 127.0.0.1 - - [26/Jul/2025 01:01:07] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:08,161 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:08,161 - 127.0.0.1 - - [26/Jul/2025 01:01:08] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:08,315 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:08,316 - 127.0.0.1 - - [26/Jul/2025 01:01:08] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:08,470 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:08,471 - 127.0.0.1 - - [26/Jul/2025 01:01:08] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:08,642 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:08,643 - 127.0.0.1 - - [26/Jul/2025 01:01:08] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:08,783 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:08,783 - 127.0.0.1 - - [26/Jul/2025 01:01:08] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:29,846 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:29,847 - 127.0.0.1 - - [26/Jul/2025 01:01:29] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:29,927 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:29,928 - 127.0.0.1 - - [26/Jul/2025 01:01:29] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:01:30,080 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:01:30,080 - 127.0.0.1 - - [26/Jul/2025 01:01:30] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:04:45,389 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:04:45,389 - 127.0.0.1 - - [26/Jul/2025 01:04:45] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:04:45,517 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:04:45,518 - 127.0.0.1 - - [26/Jul/2025 01:04:45] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:04:45,709 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:04:45,709 - 127.0.0.1 - - [26/Jul/2025 01:04:45] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:04:45,843 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:04:45,843 - 127.0.0.1 - - [26/Jul/2025 01:04:45] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:04:46,011 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:04:46,013 - 127.0.0.1 - - [26/Jul/2025 01:04:46] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:06:46,168 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:06:46,169 - 127.0.0.1 - - [26/Jul/2025 01:06:46] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:06:46,401 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:06:46,401 - 127.0.0.1 - - [26/Jul/2025 01:06:46] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:06:46,563 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:06:46,563 - 127.0.0.1 - - [26/Jul/2025 01:06:46] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:06:46,772 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:06:46,773 - 127.0.0.1 - - [26/Jul/2025 01:06:46] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:08:15,912 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:08:15,912 - 127.0.0.1 - - [26/Jul/2025 01:08:15] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:08:16,017 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:08:16,018 - 127.0.0.1 - - [26/Jul/2025 01:08:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:08:16,169 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:08:16,170 - 127.0.0.1 - - [26/Jul/2025 01:08:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:08:16,324 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:08:16,325 - 127.0.0.1 - - [26/Jul/2025 01:08:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:10:06,531 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:10:06,531 - 127.0.0.1 - - [26/Jul/2025 01:10:06] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:10:06,620 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:10:06,620 - 127.0.0.1 - - [26/Jul/2025 01:10:06] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:10:06,779 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:10:06,780 - 127.0.0.1 - - [26/Jul/2025 01:10:06] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:10:06,909 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:10:06,910 - 127.0.0.1 - - [26/Jul/2025 01:10:06] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:11:08,975 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:11:08,975 - 127.0.0.1 - - [26/Jul/2025 01:11:08] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:11:09,370 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:11:09,371 - 127.0.0.1 - - [26/Jul/2025 01:11:09] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:11:09,541 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:11:09,541 - 127.0.0.1 - - [26/Jul/2025 01:11:09] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:13:31,555 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:13:31,555 - 127.0.0.1 - - [26/Jul/2025 01:13:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:13:31,666 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:13:31,667 - 127.0.0.1 - - [26/Jul/2025 01:13:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:13:31,859 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:13:31,859 - 127.0.0.1 - - [26/Jul/2025 01:13:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:15:12,781 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:15:12,782 - 127.0.0.1 - - [26/Jul/2025 01:15:12] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:15:12,898 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:15:12,898 - 127.0.0.1 - - [26/Jul/2025 01:15:12] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:15:13,068 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:15:13,069 - 127.0.0.1 - - [26/Jul/2025 01:15:13] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:15:13,194 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:15:13,194 - 127.0.0.1 - - [26/Jul/2025 01:15:13] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:15:13,346 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:15:13,347 - 127.0.0.1 - - [26/Jul/2025 01:15:13] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:18:30,845 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:18:30,846 - 127.0.0.1 - - [26/Jul/2025 01:18:30] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:18:31,035 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:18:31,035 - 127.0.0.1 - - [26/Jul/2025 01:18:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:18:31,201 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:18:31,201 - 127.0.0.1 - - [26/Jul/2025 01:18:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:18:31,357 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:18:31,357 - 127.0.0.1 - - [26/Jul/2025 01:18:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:18:31,518 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:18:31,518 - 127.0.0.1 - - [26/Jul/2025 01:18:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:19:37,267 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:19:37,268 - 127.0.0.1 - - [26/Jul/2025 01:19:37] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:19:37,478 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:19:37,479 - 127.0.0.1 - - [26/Jul/2025 01:19:37] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:19:37,617 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:19:37,618 - 127.0.0.1 - - [26/Jul/2025 01:19:37] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:21:40,151 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:21:40,152 - 127.0.0.1 - - [26/Jul/2025 01:21:40] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:21:40,210 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:21:40,211 - 127.0.0.1 - - [26/Jul/2025 01:21:40] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:21:40,358 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:21:40,359 - 127.0.0.1 - - [26/Jul/2025 01:21:40] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:21:40,552 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:21:40,553 - 127.0.0.1 - - [26/Jul/2025 01:21:40] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:22:02,668 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:22:02,669 - 127.0.0.1 - - [26/Jul/2025 01:22:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:22:02,850 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:22:02,851 - 127.0.0.1 - - [26/Jul/2025 01:22:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:22:03,068 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:22:03,068 - 127.0.0.1 - - [26/Jul/2025 01:22:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:22:03,256 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:22:03,257 - 127.0.0.1 - - [26/Jul/2025 01:22:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:22:03,456 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:22:03,456 - 127.0.0.1 - - [26/Jul/2025 01:22:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:22:03,719 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:22:03,720 - 127.0.0.1 - - [26/Jul/2025 01:22:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:24:03,670 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:24:03,670 - 127.0.0.1 - - [26/Jul/2025 01:24:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:24:03,835 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:24:03,835 - 127.0.0.1 - - [26/Jul/2025 01:24:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:24:04,005 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:24:04,005 - 127.0.0.1 - - [26/Jul/2025 01:24:04] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:24:12,134 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:24:12,135 - 127.0.0.1 - - [26/Jul/2025 01:24:12] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:24:12,173 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:24:12,173 - 127.0.0.1 - - [26/Jul/2025 01:24:12] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:24:12,318 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:24:12,318 - 127.0.0.1 - - [26/Jul/2025 01:24:12] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:25:31,312 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:25:31,313 - 127.0.0.1 - - [26/Jul/2025 01:25:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:25:31,437 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:25:31,437 - 127.0.0.1 - - [26/Jul/2025 01:25:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:25:31,590 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:25:31,590 - 127.0.0.1 - - [26/Jul/2025 01:25:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:25:31,744 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:25:31,744 - 127.0.0.1 - - [26/Jul/2025 01:25:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:26:17,305 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:26:17,305 - 127.0.0.1 - - [26/Jul/2025 01:26:17] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:26:17,410 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:26:17,411 - 127.0.0.1 - - [26/Jul/2025 01:26:17] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:26:17,495 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:26:17,496 - 127.0.0.1 - - [26/Jul/2025 01:26:17] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:28:16,151 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:28:16,151 - 127.0.0.1 - - [26/Jul/2025 01:28:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:29:26,912 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:29:26,912 - 127.0.0.1 - - [26/Jul/2025 01:29:26] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:29:27,023 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:29:27,023 - 127.0.0.1 - - [26/Jul/2025 01:29:27] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:29:27,205 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:29:27,205 - 127.0.0.1 - - [26/Jul/2025 01:29:27] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:29:27,301 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:29:27,301 - 127.0.0.1 - - [26/Jul/2025 01:29:27] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:31:02,527 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:31:02,527 - 127.0.0.1 - - [26/Jul/2025 01:31:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:31:02,630 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:31:02,631 - 127.0.0.1 - - [26/Jul/2025 01:31:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:31:02,832 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:31:02,832 - 127.0.0.1 - - [26/Jul/2025 01:31:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:31:03,034 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:31:03,034 - 127.0.0.1 - - [26/Jul/2025 01:31:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:31:16,166 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:31:16,167 - 127.0.0.1 - - [26/Jul/2025 01:31:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:31:16,207 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:31:16,207 - 127.0.0.1 - - [26/Jul/2025 01:31:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 01:31:16,380 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 01:31:16,380 - 127.0.0.1 - - [26/Jul/2025 01:31:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:25:09,324 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-26 16:25:09,325 - [33mPress CTRL+C to quit[0m
+2025-07-26 16:25:24,327 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:25:24,327 - 127.0.0.1 - - [26/Jul/2025 16:25:24] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:27:55,172 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:27:55,173 - 127.0.0.1 - - [26/Jul/2025 16:27:55] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:27:55,283 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:27:55,284 - 127.0.0.1 - - [26/Jul/2025 16:27:55] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:27:55,403 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:27:55,403 - 127.0.0.1 - - [26/Jul/2025 16:27:55] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:27:55,608 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:27:55,608 - 127.0.0.1 - - [26/Jul/2025 16:27:55] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:31:00,630 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:31:00,630 - 127.0.0.1 - - [26/Jul/2025 16:31:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:31:00,737 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:31:00,737 - 127.0.0.1 - - [26/Jul/2025 16:31:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:31:00,845 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:31:00,845 - 127.0.0.1 - - [26/Jul/2025 16:31:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:31:01,040 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:31:01,040 - 127.0.0.1 - - [26/Jul/2025 16:31:01] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:31:01,187 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:31:01,187 - 127.0.0.1 - - [26/Jul/2025 16:31:01] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:31:01,327 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:31:01,327 - 127.0.0.1 - - [26/Jul/2025 16:31:01] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:32:18,173 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:32:18,173 - 127.0.0.1 - - [26/Jul/2025 16:32:18] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:32:18,296 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:32:18,297 - 127.0.0.1 - - [26/Jul/2025 16:32:18] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:32:18,421 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:32:18,422 - 127.0.0.1 - - [26/Jul/2025 16:32:18] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:32:18,565 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:32:18,566 - 127.0.0.1 - - [26/Jul/2025 16:32:18] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:49,333 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,336 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,339 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,341 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,344 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,349 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,354 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,357 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,359 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,365 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,384 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,386 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,389 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,391 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,395 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,401 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,405 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,412 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,430 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,434 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,438 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,442 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,444 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,448 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,452 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,457 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,460 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,464 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,467 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,469 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,474 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,477 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,483 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,485 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,489 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,493 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,500 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,503 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,524 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,526 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,530 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,532 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,534 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,540 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,543 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,547 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,551 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,554 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,561 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,564 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,566 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,573 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,578 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,582 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,585 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,601 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,604 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,607 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,610 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,613 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,631 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,634 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,636 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,639 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,642 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,645 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,650 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,654 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,658 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,661 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,665 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,677 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,679 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,682 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,685 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,688 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,692 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,709 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:35:49,709 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:49,715 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,717 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,720 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,722 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,726 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,730 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,733 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,735 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,738 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,742 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,745 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,750 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,753 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,770 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,774 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,777 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,782 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,786 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,789 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,795 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,798 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,804 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,808 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,832 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,834 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,836 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,841 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,845 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,849 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,853 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,878 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,881 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,886 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,888 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,890 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,893 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,898 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,901 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,904 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,907 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,910 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,915 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,918 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,939 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,941 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,944 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,947 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,950 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,952 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,956 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,962 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,965 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,986 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,990 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,993 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:49,997 - 127.0.0.1 - - [26/Jul/2025 16:35:49] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,000 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,002 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,005 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,010 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,013 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,016 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,019 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,025 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,047 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,051 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,054 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,058 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,077 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,079 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,082 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,108 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,111 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,115 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,117 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,121 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,124 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,130 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:35:50,131 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:50,135 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,137 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,155 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,157 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,160 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,164 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,167 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,170 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,172 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,177 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,181 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,184 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,201 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,203 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,207 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,212 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,216 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,218 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,233 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,235 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,237 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,263 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,266 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,269 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,272 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,276 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,278 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,282 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,294 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,297 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,300 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,325 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,327 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,330 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,334 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,336 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,339 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,343 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,346 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,371 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,373 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,377 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,380 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,384 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,387 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,390 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,393 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,395 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,399 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,402 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,418 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,420 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,423 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,426 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,428 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,432 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,435 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,439 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,506 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,508 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,513 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,517 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,521 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,542 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,544 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,547 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,550 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,553 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,573 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,575 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,578 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,582 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,586 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,590 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,593 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,596 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,600 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,619 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:35:50,620 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:50,625 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,627 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,630 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,634 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,650 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,652 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,655 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,681 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,683 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,686 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,711 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,715 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,717 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,743 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,744 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,749 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,753 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,757 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,761 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,765 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,768 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,788 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,791 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,794 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,819 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,823 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,826 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,830 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,849 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,852 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,855 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,882 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,884 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,887 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,889 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,911 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,914 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,918 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,921 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,924 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,930 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,935 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,938 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,958 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,961 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,966 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,969 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,973 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,976 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,989 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,991 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,993 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:50,996 - 127.0.0.1 - - [26/Jul/2025 16:35:50] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,002 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,005 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,008 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,012 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,034 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,037 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,040 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,066 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,069 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,072 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,075 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,079 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,084 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,088 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,091 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,094 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,100 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,102 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,105 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,111 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,114 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,126 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,128 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,133 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,138 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:35:51,138 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:51,144 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,147 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,150 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,172 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,174 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,176 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,181 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,184 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,187 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,190 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,192 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,218 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,221 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,224 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,226 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,250 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,252 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,254 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,259 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,262 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,281 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,284 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,287 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,290 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,296 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,300 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,304 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,308 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,314 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,318 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,322 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,325 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,341 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,344 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,348 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,354 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,357 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,361 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,363 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,367 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,370 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,373 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,376 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,380 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,385 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,388 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,393 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,397 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,401 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,405 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,410 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,413 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,421 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,424 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,449 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,452 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,455 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,479 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,482 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,509 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,524 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,540 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,555 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,571 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,573 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,577 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,581 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,585 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,589 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,593 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,598 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,602 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,607 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,633 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,636 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,640 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,643 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,648 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:35:51,648 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:51,678 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,683 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,687 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,689 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,694 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,698 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,702 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,705 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,709 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,712 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,725 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,728 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,731 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,734 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,740 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,744 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,749 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,771 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,773 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,775 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,781 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,783 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,802 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,805 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,808 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,811 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,814 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,819 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,821 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,824 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,828 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,830 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,835 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,848 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,851 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,863 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,866 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,871 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,874 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,877 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,894 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,897 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,900 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,903 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,907 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,911 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,914 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,917 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,920 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,922 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,925 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,939 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,942 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,945 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,948 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,952 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,956 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,959 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,962 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,968 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:51,973 - 127.0.0.1 - - [26/Jul/2025 16:35:51] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,001 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,004 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,031 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,034 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,039 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,042 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,044 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,061 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,064 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,068 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,072 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,093 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,094 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,108 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,110 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,112 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,140 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:35:52,140 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:52,144 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,147 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,151 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,155 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,169 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,171 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,173 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,176 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,200 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,202 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,205 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,208 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,210 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,213 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,218 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,222 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,224 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,226 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,231 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,235 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,237 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,239 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,244 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,247 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,251 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,253 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,255 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,260 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,263 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,268 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,292 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,294 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,307 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,323 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,339 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,342 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,355 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,370 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,385 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,401 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,418 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,433 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,448 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,463 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,479 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,483 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,488 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,509 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,525 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,529 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,532 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,537 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,547 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,552 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,571 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,586 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,588 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,590 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,593 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,595 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,600 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,603 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,607 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,611 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,614 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,617 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,621 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,624 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,627 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,632 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,636 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,640 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,643 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,647 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,650 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,652 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,655 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:52,661 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:35:52,661 - 127.0.0.1 - - [26/Jul/2025 16:35:52] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:35:57,208 - 127.0.0.1 - - [26/Jul/2025 16:35:57] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:57,775 - 127.0.0.1 - - [26/Jul/2025 16:35:57] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:58,576 - 127.0.0.1 - - [26/Jul/2025 16:35:58] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:58,991 - 127.0.0.1 - - [26/Jul/2025 16:35:58] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:35:59,328 - 127.0.0.1 - - [26/Jul/2025 16:35:59] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:36:00,031 - 127.0.0.1 - - [26/Jul/2025 16:36:00] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:36:00,447 - 127.0.0.1 - - [26/Jul/2025 16:36:00] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:36:00,806 - 127.0.0.1 - - [26/Jul/2025 16:36:00] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:01,996 - 127.0.0.1 - - [26/Jul/2025 16:41:01] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:01,999 - 127.0.0.1 - - [26/Jul/2025 16:41:01] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,004 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,009 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,014 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,026 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,029 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,042 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,056 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,059 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,071 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,074 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,076 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,087 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,090 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,092 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,118 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,121 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,134 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,139 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,142 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,149 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,154 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,178 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,194 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,197 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,210 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,226 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,242 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,257 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,260 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,263 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,268 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,272 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,282 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,304 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,319 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,323 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,326 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,328 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,350 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,354 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,357 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,360 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,382 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,385 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,389 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,414 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,429 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,432 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,445 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,448 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,452 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,475 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,490 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,492 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,506 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,508 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,512 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,516 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,520 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,537 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,552 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,555 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,557 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,568 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,571 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,574 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,578 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,582 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,599 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,614 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,629 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,645 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,660 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,675 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,677 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,683 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:41:02,683 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:41:02,707 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,708 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,721 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,736 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,739 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,752 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,767 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,782 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,798 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,814 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,830 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,845 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,860 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,876 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,892 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,907 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,922 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,938 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,954 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,957 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,960 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,964 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,967 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,971 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,973 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,984 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,987 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:02,999 - 127.0.0.1 - - [26/Jul/2025 16:41:02] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,014 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,030 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,032 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,036 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,039 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,061 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,063 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,076 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,092 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,107 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,110 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,122 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,139 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,155 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,171 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,185 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,200 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,216 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,231 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,234 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,237 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,241 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,244 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,262 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,277 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,280 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,293 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,308 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,323 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,339 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,342 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,346 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,350 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,354 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,358 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,370 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,373 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,376 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,400 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,415 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,419 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,424 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,428 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,431 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,447 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,463 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,465 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,470 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,477 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,482 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:41:03,482 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:41:03,508 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,523 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,539 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,555 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,570 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,586 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,601 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,616 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,620 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,623 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,647 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,649 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,663 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,677 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,693 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,696 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,699 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,702 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,725 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,740 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,756 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,771 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,788 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,804 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,821 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,825 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,828 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,851 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,867 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,870 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,875 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,879 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,889 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,894 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,913 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,929 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,944 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,960 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,962 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,965 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,970 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,975 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,977 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:03,990 - 127.0.0.1 - - [26/Jul/2025 16:41:03] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,005 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,021 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,037 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,052 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,055 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,068 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,083 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,087 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,091 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,094 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,096 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,099 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,105 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,129 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,144 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,160 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,176 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,191 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,207 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,223 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,238 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,241 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,243 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,254 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,256 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,259 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,263 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,265 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,286 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,289 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,292 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,316 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,332 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,336 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:41:04,337 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:41:04,378 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,393 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,409 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,424 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,440 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,456 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,460 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,462 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,467 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,470 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,487 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,490 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,502 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,505 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,518 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,533 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,548 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,564 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,579 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,595 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,599 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,605 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,609 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,615 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,642 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,658 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,674 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,690 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,694 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,721 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,724 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,751 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,756 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,760 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,765 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,774 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,797 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,812 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,815 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,821 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,845 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,859 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,863 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,868 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,873 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,889 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,905 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,922 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,926 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,935 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,940 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,968 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,970 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,983 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,985 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,991 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:04,994 - 127.0.0.1 - - [26/Jul/2025 16:41:04] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,001 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,005 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,029 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,031 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,034 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,060 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,062 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,076 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,091 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,107 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,122 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,138 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,141 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,144 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,155 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,157 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,159 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,163 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,169 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,174 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,186 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:41:05,187 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:41:05,202 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,216 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,231 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,247 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,262 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,278 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,293 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,295 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,299 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,324 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,340 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,343 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,346 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,350 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,353 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,358 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,372 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,387 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,390 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,394 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,398 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,400 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,419 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,434 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,449 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,464 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,480 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,484 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,486 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,496 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,500 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,509 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,514 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,519 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,526 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,542 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,558 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,561 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,574 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,577 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,580 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,583 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,586 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,606 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,609 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,611 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,614 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,637 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,642 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,645 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,649 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,667 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,682 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,698 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,713 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,728 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,743 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,758 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,774 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,777 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,780 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,782 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,806 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,821 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,824 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,828 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,832 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,852 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,868 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,884 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,899 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,915 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,930 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,933 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,945 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,961 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,977 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:05,982 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:41:05,982 - 127.0.0.1 - - [26/Jul/2025 16:41:05] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:41:06,023 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,026 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,030 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,056 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,070 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,085 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,102 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,116 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,131 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,146 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,150 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,157 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,162 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,177 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,193 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,196 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,198 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,224 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,227 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,240 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,243 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,246 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,270 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,286 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,301 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,304 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,307 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,331 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,334 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,336 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,340 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,363 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,365 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,368 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,372 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,374 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,378 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,381 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,386 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,390 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,394 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,397 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,402 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,406 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,410 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,413 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,418 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,420 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,423 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,428 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,432 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,435 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,455 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,457 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,459 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,462 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,485 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,488 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,493 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,496 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,499 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,502 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,507 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,510 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,515 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,518 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,531 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,534 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,537 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,541 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,544 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,562 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,564 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,566 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,571 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,576 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,593 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:06,598 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:41:06,599 - 127.0.0.1 - - [26/Jul/2025 16:41:06] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:41:08,871 - 127.0.0.1 - - [26/Jul/2025 16:41:08] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:09,421 - 127.0.0.1 - - [26/Jul/2025 16:41:09] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:09,799 - 127.0.0.1 - - [26/Jul/2025 16:41:09] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:10,398 - 127.0.0.1 - - [26/Jul/2025 16:41:10] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:10,744 - 127.0.0.1 - - [26/Jul/2025 16:41:10] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:41:12,336 - 127.0.0.1 - - [26/Jul/2025 16:41:12] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,862 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,877 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,879 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,884 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,889 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,892 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,897 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,923 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,939 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,954 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,970 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:05,985 - 127.0.0.1 - - [26/Jul/2025 16:44:05] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,001 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,016 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,020 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,023 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,026 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,047 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,051 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,055 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,058 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,060 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,078 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,094 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,097 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,103 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,105 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,125 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,141 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,155 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,158 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,160 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,187 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,203 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,218 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,221 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,233 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,237 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,240 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,243 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,246 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,251 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,256 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,280 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,295 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,298 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,300 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,327 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,329 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,333 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,358 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,361 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,365 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,369 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,373 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,378 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,405 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,421 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,437 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,440 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,452 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,468 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,484 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,499 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,514 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,530 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,546 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,561 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,576 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,579 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,582 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,606 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,622 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,625 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,627 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,638 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,654 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:06,670 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:44:06,670 - 127.0.0.1 - - [26/Jul/2025 16:44:06] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:44:08,592 - 127.0.0.1 - - [26/Jul/2025 16:44:08] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:09,517 - 127.0.0.1 - - [26/Jul/2025 16:44:09] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:09,798 - 127.0.0.1 - - [26/Jul/2025 16:44:09] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:10,422 - 127.0.0.1 - - [26/Jul/2025 16:44:10] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:12,070 - 127.0.0.1 - - [26/Jul/2025 16:44:12] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:12,440 - 127.0.0.1 - - [26/Jul/2025 16:44:12] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:14,334 - 127.0.0.1 - - [26/Jul/2025 16:44:14] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:15,504 - 127.0.0.1 - - [26/Jul/2025 16:44:15] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:15,790 - 127.0.0.1 - - [26/Jul/2025 16:44:15] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:44:16,253 - 127.0.0.1 - - [26/Jul/2025 16:44:16] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,018 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,031 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,034 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,037 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,042 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,062 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,078 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,094 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,097 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,100 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,124 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,126 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,131 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,133 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,135 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,139 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,145 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,150 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,154 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,157 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,162 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,167 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,170 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,186 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,188 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,193 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,197 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,218 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,234 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,236 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,238 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,264 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,267 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,269 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,280 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,283 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,285 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,311 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,314 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,317 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,322 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,327 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,331 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,333 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,335 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,340 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,345 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,350 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,353 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,371 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,387 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,391 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,403 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,406 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,412 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,435 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,438 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,443 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,447 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,450 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,466 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,468 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,470 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,496 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,499 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,504 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,511 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,517 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,521 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,532 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,536 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,558 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,561 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,587 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,595 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,598 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,603 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:30,619 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:46:30,619 - 127.0.0.1 - - [26/Jul/2025 16:46:30] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:46:32,200 - 127.0.0.1 - - [26/Jul/2025 16:46:32] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:32,663 - 127.0.0.1 - - [26/Jul/2025 16:46:32] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:33,014 - 127.0.0.1 - - [26/Jul/2025 16:46:33] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:46:33,975 - 127.0.0.1 - - [26/Jul/2025 16:46:33] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:49:53,743 - 127.0.0.1 - - [26/Jul/2025 16:49:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:01,726 - 127.0.0.1 - - [26/Jul/2025 16:51:01] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:09,377 - 127.0.0.1 - - [26/Jul/2025 16:51:09] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,116 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,119 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,132 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,148 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,150 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,154 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,161 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,178 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,194 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,196 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,197 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,201 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,205 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,210 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,214 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,218 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,221 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,227 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,230 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,234 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,256 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,259 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,262 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,264 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,270 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,276 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,287 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,290 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,294 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,296 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,318 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,333 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,349 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,351 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,354 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,360 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,380 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,395 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,410 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,426 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,442 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,458 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,460 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,473 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,475 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,477 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,483 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,486 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,491 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,495 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,499 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,503 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,519 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,521 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,525 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,528 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,532 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,537 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,542 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,545 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,566 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,568 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,581 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,583 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,584 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,597 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,599 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,601 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,612 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,628 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,630 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,643 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,645 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,658 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,674 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,676 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,679 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:53,686 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 16:51:53,686 - 127.0.0.1 - - [26/Jul/2025 16:51:53] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 16:51:56,216 - 127.0.0.1 - - [26/Jul/2025 16:51:56] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:58,482 - 127.0.0.1 - - [26/Jul/2025 16:51:58] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:58,807 - 127.0.0.1 - - [26/Jul/2025 16:51:58] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:59,127 - 127.0.0.1 - - [26/Jul/2025 16:51:59] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:51:59,544 - 127.0.0.1 - - [26/Jul/2025 16:51:59] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:00,620 - 127.0.0.1 - - [26/Jul/2025 16:52:00] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:01,622 - 127.0.0.1 - - [26/Jul/2025 16:52:01] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:04,148 - 127.0.0.1 - - [26/Jul/2025 16:52:04] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:06,617 - 127.0.0.1 - - [26/Jul/2025 16:52:06] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:08,399 - 127.0.0.1 - - [26/Jul/2025 16:52:08] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:10,292 - 127.0.0.1 - - [26/Jul/2025 16:52:10] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:10,697 - 127.0.0.1 - - [26/Jul/2025 16:52:10] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:11,349 - 127.0.0.1 - - [26/Jul/2025 16:52:11] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:11,779 - 127.0.0.1 - - [26/Jul/2025 16:52:11] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:12,553 - 127.0.0.1 - - [26/Jul/2025 16:52:12] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:22,047 - 127.0.0.1 - - [26/Jul/2025 16:52:22] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:24,669 - 127.0.0.1 - - [26/Jul/2025 16:52:24] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:33,698 - 127.0.0.1 - - [26/Jul/2025 16:52:33] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:34,048 - 127.0.0.1 - - [26/Jul/2025 16:52:34] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:34,560 - 127.0.0.1 - - [26/Jul/2025 16:52:34] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:35,361 - 127.0.0.1 - - [26/Jul/2025 16:52:35] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:37,197 - 127.0.0.1 - - [26/Jul/2025 16:52:37] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:37,739 - 127.0.0.1 - - [26/Jul/2025 16:52:37] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:38,361 - 127.0.0.1 - - [26/Jul/2025 16:52:38] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:40,336 - 127.0.0.1 - - [26/Jul/2025 16:52:40] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:46,968 - 127.0.0.1 - - [26/Jul/2025 16:52:46] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:52:47,941 - 127.0.0.1 - - [26/Jul/2025 16:52:47] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:53:18,888 - 127.0.0.1 - - [26/Jul/2025 16:53:18] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:53:21,675 - 127.0.0.1 - - [26/Jul/2025 16:53:21] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:53:22,116 - 127.0.0.1 - - [26/Jul/2025 16:53:22] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:53:22,618 - 127.0.0.1 - - [26/Jul/2025 16:53:22] "[33mOPTIONS /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 16:54:53,343 - 127.0.0.1 - - [26/Jul/2025 16:54:53] "[33mPOST /predict-peak HTTP/1.1[0m" 404 -
+2025-07-26 18:32:54,349 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-26 18:32:54,349 - [33mPress CTRL+C to quit[0m
+2025-07-26 18:33:10,224 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:33:10,225 - 127.0.0.1 - - [26/Jul/2025 18:33:10] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:38:32,508 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:38:32,509 - 127.0.0.1 - - [26/Jul/2025 18:38:32] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:39:42,321 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:39:42,321 - 127.0.0.1 - - [26/Jul/2025 18:39:42] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:45:16,117 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:45:16,118 - 127.0.0.1 - - [26/Jul/2025 18:45:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:47:20,593 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:47:20,594 - 127.0.0.1 - - [26/Jul/2025 18:47:20] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:50:16,927 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:50:16,928 - 127.0.0.1 - - [26/Jul/2025 18:50:16] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:50:23,589 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:50:23,589 - 127.0.0.1 - - [26/Jul/2025 18:50:23] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:52:03,132 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:52:03,133 - 127.0.0.1 - - [26/Jul/2025 18:52:03] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:53:15,592 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:53:15,593 - 127.0.0.1 - - [26/Jul/2025 18:53:15] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 18:53:17,088 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 18:53:17,088 - 127.0.0.1 - - [26/Jul/2025 18:53:17] "POST /recommend HTTP/1.1" 200 -
