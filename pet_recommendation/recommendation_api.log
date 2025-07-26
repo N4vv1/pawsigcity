@@ -1715,3 +1715,10 @@
 2025-07-26 18:53:15,593 - 127.0.0.1 - - [26/Jul/2025 18:53:15] "POST /recommend HTTP/1.1" 200 -
 2025-07-26 18:53:17,088 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
 2025-07-26 18:53:17,088 - 127.0.0.1 - - [26/Jul/2025 18:53:17] "POST /recommend HTTP/1.1" 200 -
+2025-07-26 23:59:00,350 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-26 23:59:00,350 - [33mPress CTRL+C to quit[0m
+2025-07-26 23:59:00,614 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-26 23:59:00,614 - 127.0.0.1 - - [26/Jul/2025 23:59:00] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 00:08:33,141 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 00:08:33,142 - 127.0.0.1 - - [27/Jul/2025 00:08:33] "POST /recommend HTTP/1.1" 200 -
