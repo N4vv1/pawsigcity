@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $password = "";
-$database = "pet_grooming_system";
+$database = "purrfect_paws_system";
 
 // Create connection
 $conn = new mysqli($host, $user, $password, $database);

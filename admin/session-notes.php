@@ -2,7 +2,7 @@
 require '../db.php';
 
 //if ($_SESSION['role'] !== 'admin') {
-  //header("Location: ../homepage/main.php");
+  //header("Location: http://localhost/purrfect-paws/homepage/login/loginform.php");
   //exit;
 //}
 

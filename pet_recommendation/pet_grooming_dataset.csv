@@ -1,52 +1,65 @@
-Breed,Gender,Age,Package
-Pomeranian,Female,11,Full Grooming
-Doberman,Female,6,Bath and Dry
-Chihuahua,Male,10,Nail Trim
-Beagle,Male,12,Bath and Dry
-Mini Pinscher,Male,12,Bath and Dry
-Aspin,Female,8,Bath and Dry
-Golden Retriever,Female,9,Bath and Dry
-Poodle,Female,4,Full Grooming
-French Bulldog,Male,4,Bath and Dry
-Poodle,Female,8,Full Grooming
-German Shepherd,Male,5,Bath and Dry
-Golden Retriever,Female,5,Bath and Dry
-Siberian Husky,Male,9,Spa Bath
-Doberman,Male,11,Bath and Dry
-Jack Russell Terrier,Male,9,Bath and Dry
-Belgian Malinois,Male,2,Spa Bath
-Border Collie,Female,9,Full Grooming
-French Bulldog,Female,7,Bath and Dry
-Labrador Retriever,Male,5,Spa Bath
-Poodle,Female,12,Full Grooming
-Mini Pinscher,Male,11,Bath and Dry
-French Bulldog,Male,3,Bath and Dry
-Belgian Malinois,Male,4,Spa Bath
-French Bulldog,Male,1,Bath and Dry
-Aspin,Female,10,Bath and Dry
-Chihuahua,Male,9,Nail Trim
-Pitbull,Male,6,Bath and Dry
-Chihuahua,Male,5,Nail Trim
-Doberman,Female,5,Bath and Dry
-Border Collie,Female,6,Full Grooming
-Jack Russell Terrier,Male,3,Bath and Dry
-Labrador Retriever,Male,3,Spa Bath
-Beagle,Male,9,Bath and Dry
-Chihuahua,Female,11,Nail Trim
-Beagle,Female,7,Bath and Dry
-Belgian Malinois,Male,6,Spa Bath
-Dachshund,Female,1,Bath and Dry
-Jack Russell Terrier,Male,4,Bath and Dry
-Belgian Malinois,Male,9,Spa Bath
-Dachshund,Female,1,Bath and Dry
-Border Collie,Female,7,Full Grooming
-Golden Retriever,Male,3,Bath and Dry
-Shih Tzu,Male,6,Full Grooming
-Golden Retriever,Female,9,Bath and Dry
-Labrador Retriever,Female,7,Spa Bath
-Dachshund,Male,9,Bath and Dry
-Boxer,Male,9,Spa Bath
-French Bulldog,Male,5,Bath and Dry
-Jack Russell Terrier,Female,10,Bath and Dry
-Doberman,Female,9,Bath and Dry
-American Bulldog,Male,1,Bath and Dry
+Breed,Package
+Pomeranian,Full Grooming
+Doberman,Bath and Dry
+Chihuahua,Nail Trim
+Beagle,Bath and Dry
+Mini Pinscher,Bath and Dry
+Aspin,Bath and Dry
+Golden Retriever,Bath and Dry
+Poodle,Full Grooming
+French Bulldog,Bath and Dry
+Poodle,Full Grooming
+German Shepherd,Bath and Dry
+Golden Retriever,Bath and Dry
+Siberian Husky,Spa Bath
+Doberman,Bath and Dry
+Jack Russell Terrier,Bath and Dry
+Belgian Malinois,Spa Bath
+Border Collie,Full Grooming
+French Bulldog,Bath and Dry
+Labrador Retriever,Spa Bath
+Poodle,Full Grooming
+Mini Pinscher,Bath and Dry
+French Bulldog,Bath and Dry
+Belgian Malinois,Spa Bath
+French Bulldog,Bath and Dry
+Aspin,Bath and Dry
+Chihuahua,Nail Trim
+Pitbull,Bath and Dry
+Chihuahua,Nail Trim
+Doberman,Bath and Dry
+Border Collie,Full Grooming
+Jack Russell Terrier,Bath and Dry
+Labrador Retriever,Spa Bath
+Beagle,Bath and Dry
+Chihuahua,Nail Trim
+Beagle,Bath and Dry
+Belgian Malinois,Spa Bath
+Dachshund,Bath and Dry
+Jack Russell Terrier,Bath and Dry
+Belgian Malinois,Spa Bath
+Dachshund,Bath and Dry
+Border Collie,Full Grooming
+Golden Retriever,Bath and Dry
+Shih Tzu,Full Grooming
+Golden Retriever,Bath and Dry
+Labrador Retriever,Spa Bath
+Dachshund,Bath and Dry
+Boxer,Spa Bath
+French Bulldog,Bath and Dry
+Jack Russell Terrier,Bath and Dry
+Doberman,Bath and Dry
+American Bulldog,Bath and Dry
+Shih Tzu (Princess Type),Full Grooming
+Pomeranian (Teacup),Full Grooming
+Siberian Husky,Bath and Dry
+Beagle,Bath and Dry
+Aspin,Bath and Dry
+Golden Retriever,Full Grooming
+Labrador,Full Grooming
+Dachshund,Full Grooming
+English Bulldog,Spa Bath
+Yorkie,Full Grooming
+Poodle,Full Grooming
+Shih Tzu (Choco Liver),Full Grooming
+Pekingese,Full Grooming
