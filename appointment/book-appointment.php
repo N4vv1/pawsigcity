@@ -950,7 +950,7 @@ $model_stats = $ml_model->getModelStats();
       <div class="peak-hours-container">
         <div class="peak-hours-title">
           <i class="fas fa-brain"></i>
-          AI-Powered Smart Scheduling
+          Purrfect Hours
           <span class="ml-badge">
             <i class="fas fa-robot"></i>
             Machine Learning
@@ -958,7 +958,7 @@ $model_stats = $ml_model->getModelStats();
         </div>
         
         <div class="peak-info">
-          <strong>🤖 Intelligent Predictions:</strong> Our machine learning decision tree analyzes historical appointment data to predict optimal booking slots. Days with 0 appointments are marked as <strong>Low Demand</strong>, 1-4 appointments as <strong>Moderate</strong>, and 5+ appointments as <strong>High Demand</strong>.
+          <strong>🤖 Purrfect Predictions:</strong> Our machine learning decision tree analyzes historical appointment data to predict optimal booking slots. Days with 0 appointments are marked as <strong>Low Demand</strong>, 1-4 appointments as <strong>Moderate</strong>, and 5+ appointments as <strong>High Demand</strong>.
           <br><br>
           <strong>🕘 Business Hours:</strong> Appointments available from 9:00 AM to 6:00 PM daily.
           

@@ -103,7 +103,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  z-index: 100;
   box-shadow: var(--shadow-light);
 }
 
@@ -127,16 +126,16 @@ body {
 .menu a {
   display: flex;
   align-items: center;
-  padding: 12px 14px;
+  padding: 10px 12px;
   text-decoration: none;
   color: var(--dark-color);
   border-radius: var(--border-radius-s);
+  transition: background 0.3s, color 0.3s;
   font-weight: var(--font-weight-semi-bold);
-  transition: var(--transition-speed);
 }
 
 .menu a i {
-  margin-right: 12px;
+  margin-right: 10px;
   font-size: 20px;
 }
 
@@ -144,7 +143,6 @@ body {
 .menu a.active {
   background-color: var(--secondary-color);
   color: var(--dark-color);
-  box-shadow: var(--shadow-light);
 }
 
 .menu hr {

@@ -344,7 +344,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 
   <!-- Sidebar -->
-    <aside class="sidebar">
+   <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/Logo.jpg" alt="Logo" />
   </div>
@@ -353,13 +353,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <hr>
     <a href="../manage_accounts/accounts.php"><i class='bx bx-camera'></i>User Management</a>
     <hr>
-    <a href="../create_user/create-user.php"><i class='bx bx-user-plus'></i>Create User</a>
-    <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="../feedback_reports/feedback-reports.php" class="button">📝 View Feedback Reports</a>
+    <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
     <a href="#"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
