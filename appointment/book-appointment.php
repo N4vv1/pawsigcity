@@ -893,9 +893,6 @@ $model_stats = $ml_model->getModelStats();
   position: relative;
 }
 
-
-
-
 .ml-confidence {
   font-size: 0.7rem;
   opacity: 0.8;
@@ -960,9 +957,9 @@ $model_stats = $ml_model->getModelStats();
         </div>
         
         <div class="peak-info">
-          <strong>🤖 Purrfect Predictions:</strong> Our machine learning decision tree analyzes historical appointment data to predict optimal booking slots. Days with 0 appointments are marked as <strong>Low Demand</strong>, 1-4 appointments as <strong>Moderate</strong>, and 5+ appointments as <strong>High Demand</strong>.
+          <strong>Purrfect Predictions:</strong> Our machine learning decision tree analyzes historical appointment data to predict optimal booking slots. Days with 0 appointments are marked as <strong>Low Demand</strong>, 1-4 appointments as <strong>Moderate</strong>, and 5+ appointments as <strong>High Demand</strong>.
           <br><br>
-          <strong>🕘 Business Hours:</strong> Appointments available from 9:00 AM to 6:00 PM daily.
+          <strong>Business Hours:</strong> Appointments available from 9:00 AM to 6:00 PM daily.
           
           <div class="model-stats">
             <strong>📊 Model Info:</strong> 
@@ -1034,7 +1031,7 @@ $model_stats = $ml_model->getModelStats();
                 <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
                 <div class="peak-indicator" id="peakIndicator">Select date/time</div>
               </div>
-              <small style="color: #666; margin-top: 5px;">🤖 AI-powered demand prediction based on actual appointment counts</small>
+              <small style="color: #666; margin-top: 5px;">AI-powered demand prediction based on actual appointment counts</small>
             </div>
             
             <div class="form-group">
@@ -1042,7 +1039,7 @@ $model_stats = $ml_model->getModelStats();
               <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>
             </div>
 
-            <button type="submit" class="btn submit-btn">🤖 Book Appointment (ML Optimized)</button>
+            <button type="submit" class="btn submit-btn">Book Appointment (ML Optimized)</button>
           </form>
         </div>
       <?php endif; ?>
@@ -1050,121 +1047,6 @@ $model_stats = $ml_model->getModelStats();
   </div>
 
   <script>
-  // Peak hours data from PHP
-  const peakHoursData = <?= json_encode($peak_hours_data) ?>;
-
-  // Create a map for quick lookup by day of week
-  const peakHoursMap = {};
-  peakHoursData.forEach(item => {
-    const key = `${item.day_of_week}`;
-    peakHoursMap[key] = item.appointment_count;
-  });
-
-  // Function to get peak level based on appointment count
-  function getPeakLevel(count) {
-    if (count >= 5) return 'high';
-    if (count >= 3) return 'medium';
-    return 'low';
-  }
-
-  // Function to update peak indicator and disable high demand days
-  function updatePeakIndicator() {
-    const dateInput = document.getElementById('appointment_date');
-    const indicator = document.getElementById('peakIndicator');
-    const submitBtn = document.querySelector('.submit-btn');
-
-    if (!dateInput.value) {
-      indicator.className = 'peak-indicator';
-      indicator.textContent = 'Select date/time';
-      submitBtn.disabled = false;
-      submitBtn.textContent = '📅 Book Appointment';
-      submitBtn.style.cursor = 'pointer';
-      submitBtn.style.backgroundColor = '';
-      return;
-    }
-
-    const selectedDate = new Date(dateInput.value);
-    const dayOfWeek = selectedDate.getDay() + 1; // Convert to MySQL DAYOFWEEK (1 = Sunday)
-
-    const appointmentCount = peakHoursMap[dayOfWeek] || 0;
-    const peakLevel = getPeakLevel(appointmentCount);
-
-    // Update peak indicator design
-    indicator.className = `peak-indicator show ${peakLevel}`;
-
-    let text = '';
-    let icon = '';
-    switch (peakLevel) {
-      case 'high':
-        text = 'High Demand';
-        icon = '🔴';
-        break;
-      case 'medium':
-        text = 'Moderate';
-        icon = '🟡';
-        break;
-      case 'low':
-        text = 'Low Demand';
-        icon = '🟢';
-        break;
-    }
-    indicator.textContent = `${icon} ${text}`;
-
-    // Disable booking on high demand days
-    if (peakLevel === 'high') {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Unavailable (High Demand)';
-      submitBtn.style.cursor = 'not-allowed';
-      submitBtn.style.backgroundColor = '#ccc';
-    } else {
-      submitBtn.disabled = false;
-      submitBtn.textContent = '📅 Book Appointment';
-      submitBtn.style.cursor = 'pointer';
-      submitBtn.style.backgroundColor = '';
-    }
-  }
-
-  // Set up listeners when the page loads
-  document.addEventListener('DOMContentLoaded', function () {
-    const dateInput = document.getElementById('appointment_date');
-    if (dateInput) {
-      dateInput.addEventListener('change', updatePeakIndicator);
-      dateInput.addEventListener('input', updatePeakIndicator);
-
-      // Set minimum date to now
-      const now = new Date();
-      const offset = now.getTimezoneOffset() * 60000;
-      const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 16);
-      dateInput.min = localISOTime;
-    }
-  });
-
-  // Optional: Developer console view of weekly pattern
-  function displayWeeklyPeakHours() {
-    const summary = {};
-    for (let day = 1; day <= 7; day++) {
-      const count = peakHoursMap[day] || 0;
-      summary[day] = {
-        count: count,
-        level: getPeakLevel(count)
-      };
-    }
-    console.log('📊 Peak Demand Per Day:', summary);
-  }
-
-  document.addEventListener('DOMContentLoaded', displayWeeklyPeakHours);
-
-  flatpickr("#appointment_date", {
-  enableTime: true,
-  dateFormat: "Y-m-d H:i",
-  minDate: "today",
-  defaultHour: 10,
-  time_24hr: true,
-  onChange: function(selectedDates, dateStr, instance) {
-    updatePeakIndicator(); // Your custom logic for peak indicator
-  }
-});
-</script>
   // Peak hours data from PHP (corrected to show actual appointment counts)
   const peakHoursData = <?= json_encode($peak_hours_data_raw) ?>;
   const mlPeakHoursData = <?= json_encode($peak_hours_data) ?>;
@@ -1230,7 +1112,7 @@ $model_stats = $ml_model->getModelStats();
       indicator.className = 'peak-indicator';
       indicator.textContent = 'Select date/time';
       submitBtn.disabled = false;
-      submitBtn.textContent = '🤖 Book Appointment (ML Optimized)';
+      submitBtn.textContent = 'Book Appointment (ML Optimized)';
       submitBtn.style.cursor = 'pointer';
       submitBtn.style.backgroundColor = '';
       submitBtn.style.opacity = '';
@@ -1301,10 +1183,10 @@ $model_stats = $ml_model->getModelStats();
       let buttonText;
       if (peakLevel === 'low') {
         buttonText = appointmentCount === 0 ? 
-          '🤖 Book Appointment (Perfect Time - No Conflicts!)' : 
-          '🤖 Book Appointment (Low Demand - Great Choice!)';
+          'Book Appointment (Perfect Time - No Conflicts!)' : 
+          'Book Appointment (Low Demand - Great Choice!)';
       } else {
-        buttonText = `🤖 Book Appointment (${appointmentCount} other appointments)`;
+        buttonText = `Book Appointment (${appointmentCount} other appointments)`;
       }
       submitBtn.innerHTML = buttonText;
       submitBtn.style.cursor = 'pointer';

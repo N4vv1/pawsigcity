@@ -306,7 +306,7 @@ $appointments = $result->get_result();
         <?php endfor; ?>
       </select>
 
-      <label style="font-weight: 600; margin-top: 15px;">Comments <small>(minimum 10 words)</small>:</label>
+      <label style="font-weight: 600; margin-top: 15px;">Comments <small>(minimum 5 words)</small>:</label>
       <textarea name="feedback" id="feedback_text" required placeholder="E.g. I loved how gentle the groomer was with my dog." style="width:100%; padding:10px; border-radius:8px; margin:10px 0;"></textarea>
 
       <div style="text-align:right;">
@@ -363,8 +363,8 @@ $appointments = $result->get_result();
 
     if (feedback !== '') {
       const wordCount = feedback.split(/\s+/).length;
-      if (wordCount < 10) {
-        alert("Please enter at least 10 words so we can better understand your experience.");
+      if (wordCount < 5) {
+        alert("Please enter at least 5 words so we can better understand your experience.");
         return false;
       }
     }

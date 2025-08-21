@@ -191,6 +191,18 @@ if (!$results) {
 
 <main class="content">
   <h2>📊 Feedback Reports</h2>
+  <form action="reanalyze_sentiment.php" method="POST">
+  <button type="submit" style="
+      padding: 8px 14px;
+      background-color: #ffdd57;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    ">🔁 Reanalyze Sentiment</button>
+  </form> <br>
+
   <table>
     <thead>
       <tr>

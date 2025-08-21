@@ -61,3 +61,24 @@
 2025-07-18 14:42:40,116 - 127.0.0.1 - - [18/Jul/2025 14:42:40] "[33mGET /ask HTTP/1.1[0m" 404 -
 2025-07-18 14:43:51,532 - 127.0.0.1 - - [18/Jul/2025 14:43:51] "[33mOPTIONS /ask HTTP/1.1[0m" 404 -
 2025-07-18 14:45:58,809 - 127.0.0.1 - - [18/Jul/2025 14:45:58] "[33mPOST /ask HTTP/1.1[0m" 404 -
+2025-07-27 03:38:30,422 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-27 03:38:30,422 - [33mPress CTRL+C to quit[0m
+2025-07-27 03:38:34,624 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:38:34,624 - 127.0.0.1 - - [27/Jul/2025 03:38:34] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:39:13,416 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:39:13,417 - 127.0.0.1 - - [27/Jul/2025 03:39:13] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:42:42,160 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:42:42,160 - 127.0.0.1 - - [27/Jul/2025 03:42:42] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:43:17,357 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:43:17,357 - 127.0.0.1 - - [27/Jul/2025 03:43:17] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:50:11,807 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:50:11,808 - 127.0.0.1 - - [27/Jul/2025 03:50:11] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:50:31,995 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:50:31,995 - 127.0.0.1 - - [27/Jul/2025 03:50:31] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:50:43,152 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:50:43,152 - 127.0.0.1 - - [27/Jul/2025 03:50:43] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 03:59:39,463 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 03:59:39,463 - 127.0.0.1 - - [27/Jul/2025 03:59:39] "POST /recommend HTTP/1.1" 200 -
+2025-07-27 04:01:00,313 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
+2025-07-27 04:01:00,314 - 127.0.0.1 - - [27/Jul/2025 04:01:00] "POST /recommend HTTP/1.1" 200 -

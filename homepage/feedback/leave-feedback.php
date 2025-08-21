@@ -46,8 +46,8 @@ function validateFeedback() {
   // If not empty, check if at least 10 words
   if (feedback !== '') {
     const wordCount = feedback.split(/\s+/).length;
-    if (wordCount < 10) {
-      alert("Please enter at least 10 words so we can better understand your experience.");
+    if (wordCount < 5) {
+      alert("Please enter at least 5 words so we can better understand your experience.");
       return false;
     }
   }

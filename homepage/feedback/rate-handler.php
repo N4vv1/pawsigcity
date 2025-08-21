@@ -23,8 +23,8 @@ if (!$id || !$rating) {
 // Check minimum word count if feedback is provided
 if (!empty($feedback)) {
     $wordCount = str_word_count($feedback);
-    if ($wordCount < 10) {
-        $_SESSION['error'] = "Please provide at least 10 words in your feedback.";
+    if ($wordCount < 5) {
+        $_SESSION['error'] = "Please provide at least 5 words in your feedback.";
         $_SESSION['show_feedback_modal'] = true;
         header("Location: http://localhost/Purrfect-paws/homepage/appointments.php");
         exit;
