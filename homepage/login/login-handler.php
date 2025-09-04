@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../db.php'; // $mysqli = DB connection
+require_once '../../db.php'; // $conn from pg_connect
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email']);
@@ -14,21 +14,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Fetch user by email
-    $stmt = $mysqli->prepare("SELECT user_id, full_name, email, password, role FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $query = "SELECT user_id, first_name, middle_name, last_name, email, password, role 
+              FROM users WHERE email = $1";
+    $result = pg_query_params($conn, $query, [$email]);
 
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
+    if (pg_num_rows($result) === 1) {
+        $user = pg_fetch_assoc($result);
 
         // Verify password
         if (password_verify($password, $user['password'])) {
+            // Combine full name
+            $full_name = $user['first_name'] 
+                        . (!empty($user['middle_name']) ? " " . $user['middle_name'] : "") 
+                        . " " . $user['last_name'];
+
             // Set session variables
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['full_name'] = $user['full_name'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['role'];
+            $_SESSION['user_id']   = $user['user_id'];
+            $_SESSION['full_name'] = $full_name;
+            $_SESSION['email']     = $user['email'];
+            $_SESSION['role']      = $user['role'];
 
             // Redirect based on role
             switch ($user['role']) {
@@ -36,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: ../admin/admin-dashboard.php");
                     break;
                 default: // customer
-                    header("Location: http://localhost/Purrfect-paws/homepage/main.php");
+                    header("Location: http://localhost/pawsigcity/homepage/main.php");
                     break;
             }
             exit;

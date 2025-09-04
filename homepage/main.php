@@ -11,8 +11,11 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = intval($_SESSION['user_id']); // Sanitized
 
 // Check if the user has pets
-$petCheck = $mysqli->query("SELECT COUNT(*) AS count FROM pets WHERE user_id = $user_id");
-$petCount = $petCheck->fetch_assoc()['count'];
+$petCheck = pg_query_params($conn, "SELECT COUNT(*) AS count FROM pets WHERE user_id = $1", [$user_id]);
+if (!$petCheck) {
+    die("Query failed: " . pg_last_error($conn));
+}
+$petCount = pg_fetch_assoc($petCheck)['count'];
 
 // Pagination settings
 $images_per_page = 6;
@@ -20,21 +23,28 @@ $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1; // San
 $offset = ($current_page - 1) * $images_per_page;
 
 // Get total number of images
-$total_result = $mysqli->query("SELECT COUNT(*) as total FROM gallery");
-$total_row = $total_result->fetch_assoc();
+$total_result = pg_query($conn, "SELECT COUNT(*) as total FROM gallery");
+if (!$total_result) {
+    die("Query failed: " . pg_last_error($conn));
+}
+$total_row = pg_fetch_assoc($total_result);
 $total_images = $total_row['total'];
 $total_pages = ceil($total_images / $images_per_page);
 
 // Get images for current page
-$result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
+$result = pg_query($conn, "SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
+if (!$result) {
+    die("Query failed: " . pg_last_error($conn));
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Purrfect Paws</title>
+  <title>PAWSig City</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="icon" type="image/png" href="./images/Logo.jpg">
@@ -103,7 +113,7 @@ $result = $mysqli->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT 
     <section class="hero-section" id="home">
       <div class="section-content">
         <div class="hero-details">
-          <h2 class="title">PURRFECT PAWS</h2>
+          <h2 class="title">PAWSig City</h2>
           <h3 class="subtitle">Best Grooming in the Town of Caniogan</h3>
           <p class="description">From Paw-scheduling to Tail-wagging — We’ve Got It Covered.</p>
           <div class="buttons">

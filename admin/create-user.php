@@ -9,25 +9,34 @@ require '../db.php';
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $full_name = trim($_POST['full_name']);
+  $firstname  = trim($_POST['firstname']);
+  $middlename = trim($_POST['middlename']);
+  $lastname   = trim($_POST['lastname']);
   $email     = trim($_POST['email']);
   $password  = password_hash($_POST['password'], PASSWORD_BCRYPT);
   $phone     = trim($_POST['phone']);
   $role      = 'admin'; // Fixed role
 
   // Check if email is already registered
-  $check = $mysqli->prepare("SELECT * FROM users WHERE email = ?");
-  $check->bind_param("s", $email);
-  $check->execute();
-  $result = $check->get_result();
+  $check = pg_query_params(
+    $conn,
+    "SELECT 1 FROM users WHERE email = $1 LIMIT 1",
+    [$email]
+  );
 
-  if ($result->num_rows > 0) {
+  if (!$check) {
+    $error = "Database error: " . pg_last_error($conn);
+  } elseif (pg_num_rows($check) > 0) {
     $error = "Email is already registered.";
   } else {
-    $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $full_name, $email, $password, $phone, $role);
+    // Insert new admin user
+    $insert = pg_query_params(
+      $conn,
+      "INSERT INTO users (full_name, email, password, phone, role) VALUES ($1, $2, $3, $4, $5)",
+      [$full_name, $email, $password, $phone, $role]
+    );
 
-    if ($stmt->execute()) {
+    if ($insert) {
       $success = "Admin account created successfully.";
     } else {
       $error = "Something went wrong. Please try again.";

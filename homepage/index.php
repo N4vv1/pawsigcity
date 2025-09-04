@@ -1,5 +1,5 @@
 <?php 
-require_once '../conn.php'; 
+require_once '../db.php'; 
 
 // Pagination settings
 $images_per_page = 6; // Number of images per page
@@ -7,13 +7,19 @@ $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $images_per_page;
 
 // Get total number of images
-$total_result = $conn->query("SELECT COUNT(*) as total FROM gallery");
-$total_row = $total_result->fetch_assoc();
+$total_result = pg_query($conn, "SELECT COUNT(*) as total FROM gallery");
+if (!$total_result) {
+    die("Query failed: " . pg_last_error($conn));
+}
+$total_row = pg_fetch_assoc($total_result);
 $total_images = $total_row['total'];
 $total_pages = ceil($total_images / $images_per_page);
 
 // Get images for current page
-$result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
+$result = pg_query($conn, "SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
+if (!$result) {
+    die("Query failed: " . pg_last_error($conn));
+}
 ?>
 
 <!DOCTYPE html>

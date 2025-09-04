@@ -8,36 +8,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $middle_name = trim($_POST['middle_name']);
   $last_name   = trim($_POST['last_name']);
 
-  // Combine into full_name (with optional middle initial)
-  $full_name = $first_name . ' ' . ($middle_name ? $middle_name . ' ' : '') . $last_name;
-
   $email     = trim($_POST['email']);
   $password  = password_hash($_POST['password'], PASSWORD_BCRYPT);
   $phone     = trim($_POST['phone']);
   $role      = 'customer';
 
   // Check if email already exists
-  $check = $mysqli->prepare("SELECT * FROM users WHERE email = ?");
-  $check->bind_param("s", $email);
-  $check->execute();
-  $result = $check->get_result();
+  $check_query = "SELECT 1 FROM users WHERE email = $1";
+  $check_result = pg_query_params($conn, $check_query, [$email]);
 
-  if ($result->num_rows > 0) {
+  if (pg_num_rows($check_result) > 0) {
     $error = "Email is already registered.";
   } else {
-    $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $full_name, $email, $password, $phone, $role);
-    
-    if ($stmt->execute()) {
+    // Insert new user
+    $insert_query = "
+      INSERT INTO users (first_name, middle_name, last_name, email, password, phone, role) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    ";
+    $insert_result = pg_query_params($conn, $insert_query, [
+      $first_name, $middle_name, $last_name, $email, $password, $phone, $role
+    ]);
+
+    if ($insert_result) {
       $_SESSION['success'] = "Registration successful!";
       header("Location: ../login/loginform.php");
       exit;
     } else {
-      $error = "Something went wrong. Please try again.";
+      $error = "Something went wrong: " . pg_last_error($conn);
     }
   }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
