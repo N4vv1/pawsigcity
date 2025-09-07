@@ -4,20 +4,22 @@ require '../db.php';
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-  header('Location: ../login/loginform.php');
-  exit;
+    header('Location: ../login/loginform.php');
+    exit;
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id = intval($_SESSION['user_id']); // sanitize user_id
 
 // Query to get user's pets
-$pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
+$query = "SELECT * FROM pets WHERE user_id = $user_id";
+$pets = pg_query($conn, $query);
 
 if (!$pets) {
-  echo "Query Error: " . $mysqli->error;
-  exit;
+    echo "Query Error: " . pg_last_error($conn);
+    exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

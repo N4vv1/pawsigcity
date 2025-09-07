@@ -1,30 +1,20 @@
 <?php
-require_once '../../db.php';
+require_once '../../db.php'; // $conn = pg_connect(...);
 
-date_default_timezone_set('Asia/Manila'); // Make sure this matches your timezone
+date_default_timezone_set('Asia/Manila'); // Ensure correct timezone
 
-$now = new DateTime();
-
-$query = $mysqli->query("
-  SELECT appointment_id, appointment_date
-  FROM appointments
-  WHERE status = 'confirmed'
+// ✅ Update all "confirmed" appointments where appointment_date + 15min < now
+$result = pg_query($conn, "
+    UPDATE appointments
+    SET status = 'no_show'
+    WHERE status = 'confirmed'
+      AND (appointment_date + INTERVAL '15 minutes') < NOW()
+    RETURNING appointment_id
 ");
 
-$affected = 0;
-
-while ($row = $query->fetch_assoc()) {
-    $appointmentTime = new DateTime($row['appointment_date']);
-    $graceEnd = clone $appointmentTime;
-    $graceEnd->modify('+15 minutes');
-
-    if ($now > $graceEnd) {
-        $id = $row['appointment_id'];
-
-        $mysqli->query("UPDATE appointments SET status = 'no_show' WHERE appointment_id = $id");
-        $affected++;
-    }
-}
+// ✅ Count how many were updated
+$affected = pg_num_rows($result);
 
 header("Location: ../admin_dashboard/home.php?show=appointments&noshows=$affected");
 exit;
+?>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../db.php';
+require '../db.php'; // $conn = pg_connect(...)
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login/loginform.php");
@@ -17,13 +17,18 @@ if (!$appointment_id || !$new_date) {
     exit;
 }
 
-// Update appointment
-$stmt = $mysqli->prepare("UPDATE appointments 
-                          SET appointment_date = ?, status = 'pending', is_approved = 0 
-                          WHERE appointment_id = ? AND user_id = ?");
-$stmt->bind_param("sii", $new_date, $appointment_id, $user_id);
+// ✅ Update appointment with pg_query_params
+$result = pg_query_params(
+    $conn,
+    "UPDATE appointments
+     SET appointment_date = $1,
+         status = 'pending',
+         is_approved = 0
+     WHERE appointment_id = $2 AND user_id = $3",
+    [$new_date, $appointment_id, $user_id]
+);
 
-if ($stmt->execute()) {
+if ($result) {
     $_SESSION['reschedule_success'] = "Appointment successfully rescheduled. Awaiting admin approval.";
     $_SESSION['reopen_modal_id'] = $appointment_id;
 } else {

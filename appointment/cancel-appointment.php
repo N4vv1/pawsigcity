@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../db.php';
+require '../db.php'; // $conn = pg_connect(...);
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login/loginform.php");
@@ -17,17 +17,18 @@ if (!$appointment_id || empty($reason)) {
     exit;
 }
 
-$stmt = $mysqli->prepare("
+$query = "
     UPDATE appointments 
-    SET cancel_reason = ?, 
-        cancel_requested = 1, 
+    SET cancel_reason = $1, 
+        cancel_requested = TRUE, 
         cancel_approved = NULL,
         status = 'cancellation_requested'
-    WHERE appointment_id = ? AND user_id = ?
-");
-$stmt->bind_param("sii", $reason, $appointment_id, $user_id);
+    WHERE appointment_id = $2 AND user_id = $3
+";
 
-if ($stmt->execute()) {
+$result = pg_query_params($conn, $query, [$reason, $appointment_id, $user_id]);
+
+if ($result) {
     $_SESSION['success'] = "Cancellation request submitted.";
 } else {
     $_SESSION['error'] = "Failed to submit cancellation request.";
@@ -35,3 +36,4 @@ if ($stmt->execute()) {
 
 header("Location: http://localhost/purrfect-paws/homepage/appointments.php");
 exit;
+?>

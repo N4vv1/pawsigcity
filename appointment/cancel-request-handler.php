@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../db.php';
+require '../db.php'; // $conn = pg_connect(...);
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login/loginform.php");
@@ -17,17 +17,22 @@ if (!$appointment_id || empty($cancel_reason)) {
     exit;
 }
 
-$stmt = $mysqli->prepare("UPDATE appointments 
-    SET status = 'cancellation_requested', cancel_requested = 1, cancel_reason = ?, cancel_approved = NULL 
-    WHERE appointment_id = ? AND user_id = ?");
-    
-$stmt->bind_param("sii", $cancel_reason, $appointment_id, $user_id);
+$query = "
+    UPDATE appointments 
+    SET status = 'cancellation_requested', 
+        cancel_requested = TRUE, 
+        cancel_reason = $1, 
+        cancel_approved = NULL 
+    WHERE appointment_id = $2 AND user_id = $3
+";
 
-if ($stmt->execute()) {
+$result = pg_query_params($conn, $query, [$cancel_reason, $appointment_id, $user_id]);
+
+if ($result) {
     $_SESSION['cancel_success'] = "Cancellation request submitted. Waiting for admin approval.";
     $_SESSION['reopen_modal_id'] = $appointment_id;
 } else {
-    $_SESSION['error'] = "Failed to submit cancellation request.";
+    $_SESSION['error'] = "Failed to submit cancellation request: " . pg_last_error($conn);
 }
 
 header("Location: ../homepage/appointments.php");

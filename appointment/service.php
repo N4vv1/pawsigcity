@@ -1,3 +1,45 @@
+<?php
+session_start();
+require '../db.php'; // ✅ use the same connection file as others
+
+// Query to fetch packages and their features
+$sql = "
+    SELECT 
+        p.id, 
+        p.name AS package_name, 
+        p.price, 
+        p.description,
+        pf.feature_name
+    FROM packages p
+    LEFT JOIN package_feature_map pfm ON p.id = pfm.package_id
+    LEFT JOIN package_features pf ON pfm.feature_id = pf.id
+    WHERE p.is_active = 1
+    ORDER BY p.id, pf.feature_name
+";
+
+$result = pg_query($conn, $sql);
+
+// Organize results
+$packages = [];
+
+if ($result && pg_num_rows($result) > 0) {
+    while ($row = pg_fetch_assoc($result)) {
+        $pkg_id = $row['id'];
+        if (!isset($packages[$pkg_id])) {
+            $packages[$pkg_id] = [
+                'name' => $row['package_name'],
+                'price' => $row['price'],
+                'description' => $row['description'],
+                'features' => []
+            ];
+        }
+        if (!empty($row['feature_name'])) {
+            $packages[$pkg_id]['features'][] = $row['feature_name'];
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,56 +67,6 @@
   </header>
 
   <h1>Our Grooming Packages</h1>
-
-  <?php
-  // Database connection
-  $host = "localhost";
-  $user = "root";
-  $password = ""; // your password if any
-  $dbname = "pet_grooming_system";
-
-  $conn = new mysqli($host, $user, $password, $dbname);
-
-  // Check connection
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-  }
-
-  // Query to fetch packages and their features
-  $sql = "SELECT 
-              p.id, 
-              p.name AS package_name, 
-              p.price, 
-              p.description,
-              pf.feature_name
-          FROM packages p
-          LEFT JOIN package_feature_map pfm ON p.id = pfm.package_id
-          LEFT JOIN package_features pf ON pfm.feature_id = pf.id
-          WHERE p.is_active = 1
-          ORDER BY p.id, pf.feature_name";
-
-  $result = $conn->query($sql);
-
-  // Organize results
-  $packages = [];
-
-  if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-      $pkg_id = $row['id'];
-      if (!isset($packages[$pkg_id])) {
-        $packages[$pkg_id] = [
-          'name' => $row['package_name'],
-          'price' => $row['price'],
-          'description' => $row['description'],
-          'features' => []
-        ];
-      }
-      if ($row['feature_name']) {
-        $packages[$pkg_id]['features'][] = $row['feature_name'];
-      }
-    }
-  }
-  ?>
 
   <!-- Grooming Packages Section -->
   <section class="page-content">

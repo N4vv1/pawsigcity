@@ -1,32 +1,41 @@
 <?php
-session_start(); // Add this at the top
-require '../db.php';
+session_start();
+require '../db.php'; // $conn = pg_connect(...);
 
 $id = $_GET['id'] ?? null;
 $action = $_GET['action'] ?? null;
 
 if (!$id || !in_array($action, ['approve', 'reject'])) {
-    hheader("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php&cancelled=1");
+    header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php&cancelled=1");
     exit;
 }
 
 if ($action === 'approve') {
     // ✅ Approve cancellation
-    $stmt = $mysqli->prepare("UPDATE appointments 
-        SET cancel_approved = 1, cancel_requested = 0, status = 'cancelled' 
-        WHERE appointment_id = ?");
+    $query = "
+        UPDATE appointments 
+        SET cancel_approved = TRUE, cancel_requested = FALSE, status = 'cancelled'
+        WHERE appointment_id = $1
+    ";
     $_SESSION['cancel_flash'] = '✅ Cancellation approved.';
 } else {
     // ❌ Reject cancellation
-    $stmt = $mysqli->prepare("UPDATE appointments 
-        SET cancel_approved = 0, cancel_requested = 0 
-        WHERE appointment_id = ?");
+    $query = "
+        UPDATE appointments 
+        SET cancel_approved = FALSE, cancel_requested = FALSE
+        WHERE appointment_id = $1
+    ";
     $_SESSION['cancel_flash'] = '❌ Cancellation rejected.';
 }
 
-$stmt->bind_param("i", $id);
-$stmt->execute();
+// Execute query with parameter
+$result = pg_query_params($conn, $query, [$id]);
+
+if (!$result) {
+    $_SESSION['cancel_flash'] = "⚠️ Database error: " . pg_last_error($conn);
+}
 
 // Redirect without query string
 header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?show=appointments&cancelled=1");
 exit;
+?>

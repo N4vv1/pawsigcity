@@ -4,20 +4,21 @@ require '../db.php';
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-  header('Location: ../login/loginform.php');
-  exit;
+    header('Location: ../login/loginform.php');
+    exit;
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id = intval($_SESSION['user_id']); // sanitize
 
-// Query to get user's pets
-$pets = $mysqli->query("SELECT * FROM pets WHERE user_id = $user_id");
+// Query to get user's pets using pg_query_params
+$pets = pg_query_params($conn, "SELECT * FROM pets WHERE user_id = $1", [$user_id]);
 
 if (!$pets) {
-  echo "Query Error: " . $mysqli->error;
-  exit;
+    echo "Query Error: " . pg_last_error($conn);
+    exit;
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -293,12 +294,19 @@ if (!$pets) {
 <div class="profile-card">
   <h2>Pet Profile</h2>
 
-  <?php if ($pets->num_rows > 0): ?>
-    <?php while ($pet = $pets->fetch_assoc()):
-      $pet_id = $pet['pet_id'];
-      $health = $mysqli->query("SELECT * FROM health_info WHERE pet_id = $pet_id")->fetch_assoc();
-      $behavior = $mysqli->query("SELECT * FROM behavior_preferences WHERE pet_id = $pet_id")->fetch_assoc();
+  <?php if (pg_num_rows($pets) > 0): ?>
+    <?php while ($pet = pg_fetch_assoc($pets)):
+        $pet_id = $pet['pet_id'];
+
+        // Get health info
+        $health_result = pg_query_params($conn, "SELECT * FROM health_info WHERE pet_id = $1", [$pet_id]);
+        $health = pg_fetch_assoc($health_result);
+
+        // Get behavior preferences
+        $behavior_result = pg_query_params($conn, "SELECT * FROM behavior_preferences WHERE pet_id = $1", [$pet_id]);
+        $behavior = pg_fetch_assoc($behavior_result);
     ?>
+
     <div class="pet-profile" id="pet-<?= $pet_id ?>">
       <div class="pet-header">
         <img src="../<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>"

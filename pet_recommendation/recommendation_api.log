@@ -82,3 +82,74 @@
 2025-07-27 03:59:39,463 - 127.0.0.1 - - [27/Jul/2025 03:59:39] "POST /recommend HTTP/1.1" 200 -
 2025-07-27 04:01:00,313 - Input: {'breed': 'American Bulldog', 'gender': 'Male', 'age': 1}, Recommended: Bath and Dry
 2025-07-27 04:01:00,314 - 127.0.0.1 - - [27/Jul/2025 04:01:00] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 00:13:58,351 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-09-08 00:13:58,380 - [33mPress CTRL+C to quit[0m
+2025-09-08 00:52:15,252 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 00:52:15,253 - 127.0.0.1 - - [08/Sep/2025 00:52:15] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 00:53:17,920 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 00:53:17,921 - 127.0.0.1 - - [08/Sep/2025 00:53:17] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 00:53:35,987 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 00:53:35,987 - 127.0.0.1 - - [08/Sep/2025 00:53:35] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 01:28:53,741 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 01:28:53,741 - 127.0.0.1 - - [08/Sep/2025 01:28:53] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 01:29:11,971 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 01:29:11,971 - 127.0.0.1 - - [08/Sep/2025 01:29:11] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 01:40:41,706 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 01:40:41,707 - 127.0.0.1 - - [08/Sep/2025 01:40:41] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 01:40:59,917 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 01:40:59,919 - 127.0.0.1 - - [08/Sep/2025 01:40:59] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 01:49:51,090 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 01:49:51,091 - 127.0.0.1 - - [08/Sep/2025 01:49:51] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 01:50:09,310 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 01:50:09,311 - 127.0.0.1 - - [08/Sep/2025 01:50:09] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 01:59:33,351 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 01:59:33,353 - 127.0.0.1 - - [08/Sep/2025 01:59:33] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 01:59:50,725 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 01:59:50,726 - 127.0.0.1 - - [08/Sep/2025 01:59:50] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 02:02:40,495 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:02:40,497 - 127.0.0.1 - - [08/Sep/2025 02:02:40] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:02:58,667 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 02:02:58,668 - 127.0.0.1 - - [08/Sep/2025 02:02:58] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 02:15:01,586 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:15:01,587 - 127.0.0.1 - - [08/Sep/2025 02:15:01] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:29:26,663 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:29:26,664 - 127.0.0.1 - - [08/Sep/2025 02:29:26] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:30:39,581 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:30:39,581 - 127.0.0.1 - - [08/Sep/2025 02:30:39] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:30:56,837 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 02:30:56,838 - 127.0.0.1 - - [08/Sep/2025 02:30:56] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 02:48:30,567 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:48:30,568 - 127.0.0.1 - - [08/Sep/2025 02:48:30] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:48:48,628 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 02:48:48,628 - 127.0.0.1 - - [08/Sep/2025 02:48:48] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 02:49:38,863 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:49:38,864 - 127.0.0.1 - - [08/Sep/2025 02:49:38] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:49:56,414 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 02:49:56,415 - 127.0.0.1 - - [08/Sep/2025 02:49:56] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 02:50:46,519 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:50:46,520 - 127.0.0.1 - - [08/Sep/2025 02:50:46] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:51:04,676 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 02:51:04,676 - 127.0.0.1 - - [08/Sep/2025 02:51:04] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 02:56:26,230 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:56:26,231 - 127.0.0.1 - - [08/Sep/2025 02:56:26] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:56:44,463 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 02:56:44,463 - 127.0.0.1 - - [08/Sep/2025 02:56:44] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 02:58:58,450 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 02:58:58,450 - 127.0.0.1 - - [08/Sep/2025 02:58:58] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 02:59:16,097 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 02:59:16,098 - 127.0.0.1 - - [08/Sep/2025 02:59:16] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 03:00:48,496 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 03:00:48,496 - 127.0.0.1 - - [08/Sep/2025 03:00:48] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 03:01:05,935 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 03:01:05,936 - 127.0.0.1 - - [08/Sep/2025 03:01:05] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 03:01:15,048 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 03:01:15,049 - 127.0.0.1 - - [08/Sep/2025 03:01:15] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 03:01:33,192 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 03:01:33,192 - 127.0.0.1 - - [08/Sep/2025 03:01:33] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 03:02:04,358 - Prediction error: y contains previously unseen labels: 'Unknown'
+2025-09-08 03:02:04,359 - 127.0.0.1 - - [08/Sep/2025 03:02:04] "[35m[1mPOST /recommend HTTP/1.1[0m" 500 -
+2025-09-08 03:02:23,672 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 03:02:23,682 - 127.0.0.1 - - [08/Sep/2025 03:02:23] "POST /recommend HTTP/1.1" 200 -
+2025-09-08 03:04:23,949 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
+2025-09-08 03:04:23,950 - 127.0.0.1 - - [08/Sep/2025 03:04:23] "POST /recommend HTTP/1.1" 200 -

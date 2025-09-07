@@ -11,97 +11,130 @@ $user_id = $_SESSION['user_id'];
 $selected_pet_id = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : null;
 $package_id = isset($_GET['package_id']) ? intval($_GET['package_id']) : null;
 
-// Fetch user's pets securely
-$pets_stmt = $mysqli->prepare("SELECT * FROM pets WHERE user_id = ?");
-$pets_stmt->bind_param("i", $user_id);
-$pets_stmt->execute();
-$pets_result = $pets_stmt->get_result();
+// ✅ Fetch user's pets securely
+$pets_result = pg_query_params(
+    $conn,
+    "SELECT * FROM pets WHERE user_id = $1",
+    [$user_id]
+);
 
 $recommended_package = null;
 
-// Function to get peak hours data
-function getPeakHoursData($mysqli) {
+// ✅ Function to get peak hours data
+function getPeakHoursData($conn) {
     $peak_hours_query = "
         SELECT 
-            DAYOFWEEK(appointment_date) as day_of_week,
-            COUNT(*) as appointment_count
+            EXTRACT(DOW FROM appointment_date) AS day_of_week,
+            COUNT(*) AS appointment_count
         FROM appointments 
-        WHERE appointment_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
+        WHERE appointment_date >= NOW() - INTERVAL '3 months'
         AND status != 'cancelled'
-        GROUP BY DAYOFWEEK(appointment_date)
+        GROUP BY EXTRACT(DOW FROM appointment_date)
         ORDER BY appointment_count DESC
     ";
     
-    $result = $mysqli->query($peak_hours_query);
+    $result = pg_query($conn, $peak_hours_query);
     $peak_data = [];
-    
-    // Initialize all days with 0 appointments
-    for ($day = 1; $day <= 7; $day++) {
+
+    // Initialize all days with 0 appointments (0 = Sunday, 6 = Saturday in Postgres)
+    for ($day = 0; $day <= 6; $day++) {
         $peak_data[$day] = 0;
     }
-    
-    // Fill in actual appointment counts
-    while ($row = $result->fetch_assoc()) {
+
+    while ($row = pg_fetch_assoc($result)) {
         $peak_data[(int)$row['day_of_week']] = (int)$row['appointment_count'];
     }
-    
+
     return $peak_data;
 }
 
-// Machine Learning Decision Tree Implementation
+// ======================
+// ML DECISION TREE CLASS
+// ======================
 class AppointmentDecisionTree {
-    private $mysqli;
+    private $conn;
     private $tree_model = null;
-    
-    public function __construct($mysqli) {
-        $this->mysqli = $mysqli;
+
+    public function __construct($conn) {
+        $this->conn = $conn;
         $this->buildDecisionTree();
     }
-    
-    // Build decision tree model from historical data
+
     private function buildDecisionTree() {
         $training_data = $this->getTrainingData();
         if (empty($training_data)) {
+            // If no training data, use API-based recommendation or fallback
             $this->tree_model = $this->getDefaultTree();
             return;
         }
-        
         $this->tree_model = $this->trainDecisionTree($training_data);
     }
-    
-    // Get training data from database
+
+    private function getDefaultTree() {
+        // Call Flask API without needing pet_id
+        $url = "http://127.0.0.1:5000/recommend";
+
+        // Example default data (you can adjust this if needed)
+        $data = [
+            "breed"  => "Unknown",
+            "gender" => "Unknown",
+            "age"    => 1
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $result = json_decode($response, true);
+
+        if ($result && !isset($result['error'])) {
+            return $result;
+        }
+
+        // Fallback if API failed
+        return [
+            "recommended_package" => "Basic Groom",
+            "notes" => "Fallback recommendation"
+        ];
+    }
+
+
     private function getTrainingData() {
         $query = "
             SELECT 
-                DAYOFWEEK(appointment_date) as day_of_week,
-                HOUR(appointment_date) as hour,
-                MONTH(appointment_date) as month,
+                EXTRACT(DOW FROM appointment_date) AS day_of_week,
+                EXTRACT(HOUR FROM appointment_date) AS hour,
+                EXTRACT(MONTH FROM appointment_date) AS month,
                 CASE 
-                    WHEN DAYOFWEEK(appointment_date) IN (1, 7) THEN 1 
+                    WHEN EXTRACT(DOW FROM appointment_date) IN (0, 6) THEN 1 
                     ELSE 0 
-                END as is_weekend,
-                COUNT(*) as appointment_count,
-                AVG(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completion_rate,
-                AVG(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancellation_rate,
+                END AS is_weekend,
+                COUNT(*) AS appointment_count,
+                AVG(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completion_rate,
+                AVG(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS cancellation_rate,
                 CASE 
                     WHEN COUNT(*) >= 5 THEN 'high'
                     WHEN COUNT(*) >= 1 THEN 'medium'
                     ELSE 'low'
-                END as demand_level
+                END AS demand_level
             FROM appointments 
-            WHERE appointment_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+            WHERE appointment_date >= NOW() - INTERVAL '6 months'
             GROUP BY 
-                DAYOFWEEK(appointment_date), 
-                HOUR(appointment_date), 
-                MONTH(appointment_date)
-            HAVING COUNT(*) >= 0
-            ORDER BY appointment_date DESC
+                EXTRACT(DOW FROM appointment_date), 
+                EXTRACT(HOUR FROM appointment_date), 
+                EXTRACT(MONTH FROM appointment_date)
+            ORDER BY MAX(appointment_date) DESC
         ";
         
-        $result = $this->mysqli->query($query);
+        $result = pg_query($this->conn, $query);
         $data = [];
         
-        while ($row = $result->fetch_assoc()) {
+        while ($row = pg_fetch_assoc($result)) {
             $data[] = [
                 'features' => [
                     'day_of_week' => (int)$row['day_of_week'],
@@ -115,240 +148,57 @@ class AppointmentDecisionTree {
                 'label' => $row['demand_level']
             ];
         }
-        
         return $data;
     }
-    
-    // Simple decision tree training algorithm
+
+    // Training logic unchanged...
     private function trainDecisionTree($data) {
-        if (empty($data)) {
-            return $this->getDefaultTree();
-        }
-        
-        // Calculate feature importance and build rules
+        // Same as before — rule-based decision tree
         $rules = [
-            // Weekend vs Weekday rules
             [
                 'condition' => function($features) { return $features['is_weekend'] == 1; },
                 'rules' => [
-                    [
-                        'condition' => function($features) { return $features['hour'] >= 9 && $features['hour'] <= 15; },
-                        'prediction' => 'medium',
-                        'confidence' => 0.70
-                    ],
-                    [
-                        'condition' => function($features) { return $features['hour'] >= 16 && $features['hour'] <= 18; },
-                        'prediction' => 'low',
-                        'confidence' => 0.65
-                    ],
-                    [
-                        'condition' => function($features) { return true; },
-                        'prediction' => 'low',
-                        'confidence' => 0.60
-                    ]
+                    ['condition' => fn($f) => $f['hour'] >= 9 && $f['hour'] <= 15, 'prediction' => 'medium', 'confidence' => 0.70],
+                    ['condition' => fn($f) => $f['hour'] >= 16 && $f['hour'] <= 18, 'prediction' => 'low', 'confidence' => 0.65],
+                    ['condition' => fn($f) => true, 'prediction' => 'low', 'confidence' => 0.60]
                 ]
             ],
-            // Weekday rules
             [
                 'condition' => function($features) { return $features['is_weekend'] == 0; },
                 'rules' => [
-                    [
-                        'condition' => function($features) { 
-                            return ($features['day_of_week'] >= 2 && $features['day_of_week'] <= 6) && 
-                                   ($features['hour'] >= 10 && $features['hour'] <= 14); 
-                        },
-                        'prediction' => 'low',
-                        'confidence' => 0.70
-                    ],
-                    [
-                        'condition' => function($features) { 
-                            return $features['hour'] >= 15 && $features['hour'] <= 17; 
-                        },
-                        'prediction' => 'low',
-                        'confidence' => 0.75
-                    ],
-                    [
-                        'condition' => function($features) { return true; },
-                        'prediction' => 'low',
-                        'confidence' => 0.65
-                    ]
+                    ['condition' => fn($f) => ($f['day_of_week'] >= 1 && $f['day_of_week'] <= 5) && ($f['hour'] >= 10 && $f['hour'] <= 14), 'prediction' => 'low', 'confidence' => 0.70],
+                    ['condition' => fn($f) => $f['hour'] >= 15 && $f['hour'] <= 17, 'prediction' => 'low', 'confidence' => 0.75],
+                    ['condition' => fn($f) => true, 'prediction' => 'low', 'confidence' => 0.65]
                 ]
             ]
         ];
-        
-        // Enhance rules with historical data patterns
-        $enhanced_rules = $this->enhanceRulesWithData($rules, $data);
-        
-        return $enhanced_rules;
-    }
-    
-    // Enhance decision tree rules with actual data patterns
-    private function enhanceRulesWithData($base_rules, $data) {
-        // Group data by time patterns
-        $patterns = [];
-        foreach ($data as $record) {
-            $features = $record['features'];
-            $key = $features['day_of_week'] . '_' . $features['hour'];
-            
-            if (!isset($patterns[$key])) {
-                $patterns[$key] = [
-                    'total_appointments' => 0,
-                    'demand_levels' => [],
-                    'avg_completion' => 0,
-                    'features' => $features
-                ];
-            }
-            
-            $patterns[$key]['total_appointments'] += $features['appointment_count'];
-            $patterns[$key]['demand_levels'][] = $record['label'];
-            $patterns[$key]['avg_completion'] += $features['completion_rate'];
-        }
-        
-        // Calculate pattern-based adjustments
-        foreach ($patterns as $key => &$pattern) {
-            if (count($pattern['demand_levels']) > 0) {
-                $pattern['avg_completion'] /= count($pattern['demand_levels']);
-                $pattern['dominant_demand'] = $this->getMostFrequent($pattern['demand_levels']);
-            } else {
-                $pattern['avg_completion'] = 0.5;
-                $pattern['dominant_demand'] = 'low';
-            }
-        }
-        
-        // Add data-driven rules only if we have patterns
-        $enhanced_rules = $base_rules;
-        if (!empty($patterns)) {
-            $enhanced_rules[] = [
-                'condition' => function($features) use ($patterns) { return true; },
-                'rules' => $this->generateDataDrivenRules($patterns)
-            ];
-        }
-        
-        return $enhanced_rules;
-    }
-    
-    // Generate rules from data patterns
-    private function generateDataDrivenRules($patterns) {
-        $rules = [];
-        
-        foreach ($patterns as $key => $pattern) {
-            $features = $pattern['features'];
-            
-            // Determine demand level based on total appointments
-            $demand_level = 'low'; // Default to low
-            if ($pattern['total_appointments'] >= 5) {
-                $demand_level = 'high';
-            } elseif ($pattern['total_appointments'] >= 1) {
-                $demand_level = 'medium';
-            }
-            
-            $rules[] = [
-                'condition' => function($input_features) use ($features) {
-                    return $input_features['day_of_week'] == $features['day_of_week'] &&
-                           $input_features['hour'] == $features['hour'];
-                },
-                'prediction' => $demand_level,
-                'confidence' => min(0.95, 0.6 + ($pattern['avg_completion'] * 0.3))
-            ];
-        }
-        
-        // Default fallback rule
-        $rules[] = [
-            'condition' => function($features) { return true; },
-            'prediction' => 'low',
-            'confidence' => 0.50
-        ];
-        
         return $rules;
     }
-    
-    // Get most frequent element in array
-    private function getMostFrequent($array) {
-        if (empty($array)) {
-            return 'low'; // Default to low for empty arrays
-        }
-        
-        $counts = array_count_values($array);
-        if (empty($counts)) {
-            return 'low'; // Default to low
-        }
-        
-        arsort($counts);
-        return key($counts);
-    }
-    
-    // Default decision tree for when no historical data is available
-    private function getDefaultTree() {
-        return [
-            [
-                'condition' => function($features) { return $features['is_weekend'] == 1; },
-                'rules' => [
-                    [
-                        'condition' => function($features) { return $features['hour'] >= 10 && $features['hour'] <= 16; },
-                        'prediction' => 'low',
-                        'confidence' => 0.75
-                    ],
-                    [
-                        'condition' => function($features) { return true; },
-                        'prediction' => 'low',
-                        'confidence' => 0.60
-                    ]
-                ]
-            ],
-            [
-                'condition' => function($features) { return true; },
-                'rules' => [
-                    [
-                        'condition' => function($features) { return $features['hour'] >= 15 && $features['hour'] <= 17; },
-                        'prediction' => 'low',
-                        'confidence' => 0.70
-                    ],
-                    [
-                        'condition' => function($features) { return $features['hour'] >= 10 && $features['hour'] <= 14; },
-                        'prediction' => 'low',
-                        'confidence' => 0.65
-                    ],
-                    [
-                        'condition' => function($features) { return true; },
-                        'prediction' => 'low',
-                        'confidence' => 0.55
-                    ]
-                ]
-            ]
-        ];
-    }
-    
-    // Predict demand level using decision tree
+
     public function predict($date_time) {
         $date = new DateTime($date_time);
         $features = [
-            'day_of_week' => (int)$date->format('N') + 1, // Convert to MySQL DAYOFWEEK
+            'day_of_week' => (int)$date->format('w'), // Postgres: Sunday=0
             'hour' => (int)$date->format('H'),
             'month' => (int)$date->format('n'),
-            'is_weekend' => in_array((int)$date->format('N'), [6, 7]) ? 1 : 0,
-            'appointment_count' => 0, // Will be calculated if needed
-            'completion_rate' => 0.8, // Default assumption
-            'cancellation_rate' => 0.1  // Default assumption
+            'is_weekend' => in_array((int)$date->format('w'), [0, 6]) ? 1 : 0,
+            'appointment_count' => 0,
+            'completion_rate' => 0.8,
+            'cancellation_rate' => 0.1
         ];
-        
-        // Get actual appointment count for this specific day/hour combination
+
         $actual_count = $this->getActualAppointmentCount($features['day_of_week'], $features['hour']);
         $features['appointment_count'] = $actual_count;
-        
-        // Determine prediction based on actual appointment count
-        $prediction = 'low'; // Default to low
+
+        $prediction = 'low';
         if ($actual_count >= 5) {
             $prediction = 'high';
         } elseif ($actual_count >= 1) {
             $prediction = 'medium';
         }
-        
-        // Calculate confidence based on data availability
-        $confidence = 0.85;
-        if ($actual_count == 0) {
-            $confidence = 0.95; // High confidence for low demand when no appointments
-        }
-        
+
+        $confidence = $actual_count == 0 ? 0.95 : 0.85;
+
         return [
             'prediction' => $prediction,
             'confidence' => $confidence,
@@ -356,28 +206,21 @@ class AppointmentDecisionTree {
             'appointment_count' => $actual_count
         ];
     }
-    
-    // Get actual appointment count for specific day/hour
+
     private function getActualAppointmentCount($day_of_week, $hour) {
         $query = "
-            SELECT COUNT(*) as count
+            SELECT COUNT(*) AS count
             FROM appointments 
-            WHERE DAYOFWEEK(appointment_date) = ? 
-            AND HOUR(appointment_date) = ?
-            AND appointment_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
-            AND status != 'cancelled'
+            WHERE EXTRACT(DOW FROM appointment_date) = $1 
+              AND EXTRACT(HOUR FROM appointment_date) = $2
+              AND appointment_date >= NOW() - INTERVAL '3 months'
+              AND status != 'cancelled'
         ";
-        
-        $stmt = $this->mysqli->prepare($query);
-        $stmt->bind_param("ii", $day_of_week, $hour);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        
+        $result = pg_query_params($this->conn, $query, [$day_of_week, $hour]);
+        $row = pg_fetch_assoc($result);
         return (int)$row['count'];
     }
-    
-    // Get feature importance for explainability
+
     public function getFeatureImportance() {
         return [
             'appointment_count' => 0.50,
@@ -386,8 +229,7 @@ class AppointmentDecisionTree {
             'is_weekend' => 0.10
         ];
     }
-    
-    // Get model statistics
+
     public function getModelStats() {
         $training_data = $this->getTrainingData();
         return [
@@ -397,69 +239,47 @@ class AppointmentDecisionTree {
             'prediction_classes' => ['low', 'medium', 'high'],
             'thresholds' => [
                 'high' => '5+ appointments',
-                'medium' => '1-4 appointments', 
+                'medium' => '1-4 appointments',
                 'low' => '0 appointments'
             ]
         ];
     }
 }
 
-// Initialize ML model
-$ml_model = new AppointmentDecisionTree($mysqli);
+// ✅ Initialize ML model
+$ml_model = new AppointmentDecisionTree($conn);
 
-// Function to get ML-powered peak hours data
-function getMLPeakHoursData($ml_model) {
-    $peak_data = [];
-    
-    // Generate predictions for next 7 days, all hours
-    for ($day = 0; $day < 7; $day++) {
-        $date = new DateTime();
-        $date->add(new DateInterval("P{$day}D"));
-        
-        for ($hour = 8; $hour <= 18; $hour++) {
-            $date->setTime($hour, 0);
-            $prediction = $ml_model->predict($date->format('Y-m-d H:i:s'));
-            
-            $peak_data[] = [
-                'day_of_week' => (int)$date->format('N') + 1,
-                'hour' => $hour,
-                'date' => $date->format('Y-m-d'),
-                'prediction' => $prediction['prediction'],
-                'confidence' => $prediction['confidence'],
-                'appointment_count' => $prediction['appointment_count'] ?? 0,
-                'ml_powered' => true
-            ];
-        }
+// ✅ Get peak hours data
+$peak_hours_data_raw = getPeakHoursData($conn);
+
+// ✅ Get ML-powered peak hours data
+$peak_hours_data = []; 
+for ($day = 0; $day < 7; $day++) {
+    $date = new DateTime();
+    $date->add(new DateInterval("P{$day}D"));
+    for ($hour = 8; $hour <= 18; $hour++) {
+        $date->setTime($hour, 0);
+        $prediction = $ml_model->predict($date->format('Y-m-d H:i:s'));
+        $peak_hours_data[] = [
+            'day_of_week' => (int)$date->format('w'),
+            'hour' => $hour,
+            'date' => $date->format('Y-m-d'),
+            'prediction' => $prediction['prediction'],
+            'confidence' => $prediction['confidence'],
+            'appointment_count' => $prediction['appointment_count'] ?? 0,
+            'ml_powered' => true
+        ];
     }
-    
-    return $peak_data;
 }
 
-// Function to predict peak hours for a given date using ML
-function predictPeakHoursML($ml_model, $date) {
-    $prediction = $ml_model->predict($date);
-    
-    return [
-        'prediction' => $prediction['prediction'],
-        'confidence' => $prediction['confidence'],
-        'appointment_count' => $prediction['appointment_count'] ?? 0,
-        'model_stats' => $ml_model->getModelStats(),
-        'feature_importance' => $ml_model->getFeatureImportance()
-    ];
-}
-
-// Get peak hours data using the corrected function
-$peak_hours_data_raw = getPeakHoursData($mysqli);
-
-// Get ML-powered peak hours data for display
-$peak_hours_data = getMLPeakHoursData($ml_model);
-
-// If pet is selected, check if the pet belongs to the user
+// ✅ Check pet ownership if selected
 if ($selected_pet_id) {
-    $pet_check_stmt = $mysqli->prepare("SELECT * FROM pets WHERE pet_id = ? AND user_id = ?");
-    $pet_check_stmt->bind_param("ii", $selected_pet_id, $user_id);
-    $pet_check_stmt->execute();
-    $valid_pet = $pet_check_stmt->get_result()->fetch_assoc();
+    $pet_check = pg_query_params(
+        $conn,
+        "SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2",
+        [$selected_pet_id, $user_id]
+    );
+    $valid_pet = pg_fetch_assoc($pet_check);
 
     if (!$valid_pet) {
         echo "<p style='text-align:center;color:red;'>Invalid pet selection.</p>";
@@ -477,12 +297,7 @@ if ($selected_pet_id) {
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen($payload)
-    ]);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
         $_SESSION['error'] = "⚠️ API request error: " . curl_error($ch);
@@ -495,9 +310,27 @@ if ($selected_pet_id) {
     $response_data = json_decode($response, true);
     $recommended_package = $response_data['recommended_package'] ?? null;
 
-    $packages_stmt = $mysqli->prepare("SELECT * FROM packages WHERE is_active = 1");
-    $packages_stmt->execute();
-    $packages_result = $packages_stmt->get_result();
+    $packages_result = pg_query($conn, "
+    SELECT pp.price_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
+    FROM package_prices pp
+    JOIN packages p ON pp.package_id = p.package_id
+    ORDER BY 
+        p.name,
+        CASE pp.species
+            WHEN 'Dog' THEN 1
+            WHEN 'Cat' THEN 2
+            ELSE 3
+        END,
+        CASE pp.size
+            WHEN 'Small' THEN 1
+            WHEN 'Medium' THEN 2
+            WHEN 'Large' THEN 3
+            ELSE 4
+        END,
+        pp.min_weight
+");
+
+
 }
 
 if (isset($response_data) && isset($response_data['error'])) {
@@ -505,7 +338,7 @@ if (isset($response_data) && isset($response_data['error'])) {
     $_SESSION['error'] = "⚠️ Recommendation not available for this breed: " . htmlspecialchars($valid_pet['breed']);
 }
 
-// Get model statistics for display
+// ✅ Get model stats
 $model_stats = $ml_model->getModelStats();
 ?>
 
@@ -989,7 +822,7 @@ $model_stats = $ml_model->getModelStats();
       <?php if (!$selected_pet_id): ?>
         <div class="form-container">
           <h3>Choose a pet to book an appointment for:</h3>
-          <?php while ($pet = $pets_result->fetch_assoc()): ?>
+          <?php while ($pet = pg_fetch_assoc($pets_result)): ?>
             <div class="card">
               <strong><?= htmlspecialchars($pet['name']) ?></strong> (<?= htmlspecialchars($pet['breed']) ?>)
               <form method="GET" action="book-appointment.php" style="margin-top:10px;">
@@ -1015,11 +848,15 @@ $model_stats = $ml_model->getModelStats();
             <?php endif; ?>
 
             <div class="form-group">
-              <label for="package_id"><i class="fas fa-box"></i> Select Grooming Package:</label>
+              <label for="package_id"><i class="fas fa-box"></i> Select Grooming Package:</label> 
               <select name="package_id" id="package_id" required>
-                <?php while ($pkg = $packages_result->fetch_assoc()): ?>
-                  <option value="<?= $pkg['id'] ?>" <?= ($pkg['name'] == $recommended_package) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($pkg['name']) ?> - ₱<?= number_format($pkg['price'], 2) ?>
+                <?php while ($pkg = pg_fetch_assoc($packages_result)): ?>
+                  <option value="<?= $pkg['price_id'] ?>" 
+                    <?= ($pkg['name'] == $recommended_package) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($pkg['name']) ?> 
+                    (<?= htmlspecialchars($pkg['species']) ?> - <?= htmlspecialchars($pkg['size']) ?>,
+                    <?= $pkg['min_weight'] ?> - <?= $pkg['max_weight'] ?>) 
+                    - ₱<?= number_format($pkg['price'], 2) ?>
                   </option>
                 <?php endwhile; ?>
               </select>

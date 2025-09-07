@@ -8,14 +8,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $user_id = $_SESSION['user_id'];
+    $user_id = intval($_SESSION['user_id']); // sanitize
 
     // Collect pet info
     $name = $_POST['name'] ?? '';
     $breed = $_POST['breed'] ?? '';
     $gender = $_POST['gender'] ?? '';
     $age = $_POST['age'] ?? '';
-    $birthday = $_POST['birthday'] ?? null;
+    $birthday = !empty($_POST['birthday']) ? $_POST['birthday'] : null;
     $color = $_POST['color'] ?? '';
 
     // Collect health info
@@ -44,31 +44,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Insert into pets table
-    $stmt = $mysqli->prepare("INSERT INTO pets (user_id, name, breed, gender, age, birthday, color, photo_url)
-                              VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssssss", $user_id, $name, $breed, $gender, $age, $birthday, $color, $photo_url);
+    // Insert into pets table (returning pet_id)
+    $query = "INSERT INTO pets (user_id, name, breed, gender, age, birthday, color, photo_url)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING pet_id";
+    $result = pg_query_params($conn, $query, [
+        $user_id, $name, $breed, $gender, $age, $birthday, $color, $photo_url
+    ]);
 
-    if ($stmt->execute()) {
-        $pet_id = $stmt->insert_id;
+    if ($result) {
+        $row = pg_fetch_assoc($result);
+        $pet_id = $row['pet_id'];
 
         // Insert into health_info
-        $stmt_health = $mysqli->prepare("INSERT INTO health_info (pet_id, allergies, medications, medical_conditions)
-                                         VALUES (?, ?, ?, ?)");
-        $stmt_health->bind_param("isss", $pet_id, $allergies, $medications, $medical_conditions);
-        $stmt_health->execute();
+        $query_health = "INSERT INTO health_info (pet_id, allergies, medications, medical_conditions)
+                         VALUES ($1, $2, $3, $4)";
+        pg_query_params($conn, $query_health, [$pet_id, $allergies, $medications, $medical_conditions]);
 
         // Insert into behavior_preferences
-        $stmt_behavior = $mysqli->prepare("INSERT INTO behavior_preferences (pet_id, behavior_notes, nail_trimming, haircut_style)
-                                           VALUES (?, ?, ?, ?)");
-        $stmt_behavior->bind_param("isss", $pet_id, $behavior_notes, $nail_trimming, $haircut_style);
-        $stmt_behavior->execute();
+        $query_behavior = "INSERT INTO behavior_preferences (pet_id, behavior_notes, nail_trimming, haircut_style)
+                           VALUES ($1, $2, $3, $4)";
+        pg_query_params($conn, $query_behavior, [$pet_id, $behavior_notes, $nail_trimming, $haircut_style]);
 
         $_SESSION['success'] = "Pet added successfully!";
         header("Location: pet-profile.php");
         exit;
     } else {
-        echo "<p style='color:red;'>Error adding pet: " . $stmt->error . "</p>";
+        echo "<p style='color:red;'>Error adding pet: " . pg_last_error($conn) . "</p>";
     }
 } else {
     echo "<p style='color:red;'>Invalid request.</p>";

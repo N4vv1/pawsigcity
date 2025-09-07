@@ -24,26 +24,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Check if the pet belongs to the logged-in user
-    $check_pet_stmt = $mysqli->prepare("SELECT 1 FROM pets WHERE pet_id = ? AND user_id = ?");
-    $check_pet_stmt->bind_param("ii", $pet_id, $user_id);
-    $check_pet_stmt->execute();
-    $check_pet_stmt->store_result();
+    // ✅ Check if the pet belongs to the logged-in user
+    $check_pet = pg_query_params(
+        $conn,
+        "SELECT 1 FROM pets WHERE pet_id = $1 AND user_id = $2",
+        [$pet_id, $user_id]
+    );
 
-    if ($check_pet_stmt->num_rows === 0) {
+    if (!$check_pet || pg_num_rows($check_pet) === 0) {
         $_SESSION['error'] = "⚠️ Invalid pet or unauthorized access.";
         header("Location: book-appointment.php");
         exit;
     }
 
-    // Insert appointment into database
-    $stmt = $mysqli->prepare("INSERT INTO appointments 
+    // ✅ Insert appointment into database
+    $insert_query = "
+        INSERT INTO appointments 
         (user_id, pet_id, package_id, appointment_date, groomer_name, notes, recommended_package) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("iiissss", $user_id, $pet_id, $package_id, $appointment_date, $groomer_name, $notes, $recommended_package);
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING appointment_id
+    ";
 
-    if ($stmt->execute()) {
-        $appointment_id = $stmt->insert_id;
+    $result = pg_query_params($conn, $insert_query, [
+        $user_id, $pet_id, $package_id, $appointment_date, $groomer_name, $notes, $recommended_package
+    ]);
+
+    if ($result) {
+        $row = pg_fetch_assoc($result);
+        $appointment_id = $row['appointment_id'];
 
         // Run Python script for recommendation (optional, for logging or analysis)
         $pythonPath = "C:\\Users\\Ivan\\AppData\\Local\\Programs\\Python\\Python313\\python.exe";
@@ -57,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: ../homepage/appointments.php?appointment_id=$appointment_id");
         exit;
     } else {
-        $_SESSION['error'] = "❌ Database error: " . $stmt->error;
+        $_SESSION['error'] = "❌ Database error: " . pg_last_error($conn);
         header("Location: book-appointment.php?pet_id=" . urlencode($pet_id));
         exit;
     }
@@ -65,3 +73,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo "Invalid request.";
 }
+?>
