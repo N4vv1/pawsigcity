@@ -221,7 +221,7 @@ $appointments = pg_query($conn, $query);
         <form method="POST">
           <label for="appointment_id">Select Appointment:</label>
           <select name="appointment_id" required>
-            <?php while ($row = $appointments->fetch_assoc()): ?>
+              <?php while ($row = pg_fetch_assoc($appointments)): ?>
               <option value="<?= $row['appointment_id'] ?>">
                 <?= $row['appointment_date'] ?> - <?= htmlspecialchars($row['full_name']) ?> - <?= htmlspecialchars($row['pet_name']) ?> (<?= htmlspecialchars($row['breed']) ?>)
               </option>
