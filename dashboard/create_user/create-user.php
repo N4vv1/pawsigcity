@@ -2,39 +2,44 @@
 session_start();
 require '../../db.php';
 
-//if ($_SESSION['role'] !== 'admin') {
-  //header("Location: ../homepage/main.php");
-  //exit;
-//}
-
+// if ($_SESSION['role'] !== 'admin') {
+//   header("Location: ../homepage/main.php");
+//   exit;
+// }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $full_name = trim($_POST['full_name']);
-  $email     = trim($_POST['email']);
-  $password  = password_hash($_POST['password'], PASSWORD_BCRYPT);
-  $phone     = trim($_POST['phone']);
-  $role      = 'admin'; // Fixed role
+  $first_name  = trim($_POST['first_name']);
+  $middle_name = trim($_POST['middle_name']);
+  $last_name   = trim($_POST['last_name']);
+  $email       = trim($_POST['email']);
+  $password    = password_hash($_POST['password'], PASSWORD_BCRYPT);
+  $phone       = trim($_POST['phone']);
+  $role        = 'admin'; // Fixed role
 
   // Check if email is already registered
-  $check = $mysqli->prepare("SELECT * FROM users WHERE email = ?");
-  $check->bind_param("s", $email);
-  $check->execute();
-  $result = $check->get_result();
+  $checkQuery = "SELECT 1 FROM users WHERE email = $1";
+  $checkResult = pg_query_params($conn, $checkQuery, [$email]);
 
-  if ($result->num_rows > 0) {
+  if (pg_num_rows($checkResult) > 0) {
     $error = "Email is already registered.";
   } else {
-    $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $full_name, $email, $password, $phone, $role);
+    $insertQuery = "
+      INSERT INTO users (first_name, middle_name, last_name, email, password, phone, role) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    ";
+    $insertResult = pg_query_params($conn, $insertQuery, [
+      $first_name, $middle_name, $last_name, $email, $password, $phone, $role
+    ]);
 
-    if ($stmt->execute()) {
+    if ($insertResult) {
       $success = "Admin account created successfully.";
     } else {
-      $error = "Something went wrong. Please try again.";
+      $error = "Something went wrong. Please try again. " . pg_last_error($conn);
     }
   }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

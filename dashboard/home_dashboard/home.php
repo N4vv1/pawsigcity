@@ -1,6 +1,15 @@
 <?php
 session_start();
 require_once '../../db.php';
+// Add this at the very top of your PHP file (after session_start)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+echo "<!-- PHP is working -->"; 
+
+// Also add this before your HTML to catch any PHP errors
+if (pg_connection_status($conn) !== PGSQL_CONNECTION_OK) {
+    die('Database connection failed: ' . pg_last_error());
+}
 // if ($_SESSION['role'] !== 'admin') {
 //   header("Location: ../homepage/main.php");
 //   exit;
@@ -410,6 +419,14 @@ main {
 <main>
 
   <div class="dashboard">
+
+  <!-- Add this temporarily in your main section -->
+<button onclick="alert('Basic JS works!')" style="background: red; color: white; padding: 15px; font-size: 16px; margin: 20px; cursor: pointer;">
+    TEST JS
+</button>
+<button onclick="openModal('users')" style="background: green; color: white; padding: 10px;">
+  TEST MODAL
+</button>
     <div class="card">
       <div class="card-icon">
         <i class='bx bx-user'></i>
@@ -479,12 +496,12 @@ main {
       </thead>
       <tbody>
         <?php
-        $userList = $mysqli->query("SELECT user_id, full_name, email FROM users");
-        while ($user = $userList->fetch_assoc()):
+        $userList = pg_query($conn, "SELECT user_id, first_name, middle_name, last_name, email FROM users");
+        while ($user = pg_fetch_assoc($userList)):
         ?>
           <tr>
-            <td><?= $user['user_id'] ?></td>
-            <td><?= htmlspecialchars($user['full_name']) ?></td>
+            <td><?= htmlspecialchars($user['user_id']) ?></td>
+            <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']) ?></td>
             <td><?= htmlspecialchars($user['email']) ?></td>
           </tr>
         <?php endwhile; ?>
@@ -509,14 +526,14 @@ main {
       </thead>
       <tbody>
         <?php
-        $petList = $mysqli->query("SELECT pet_id, name, breed, user_id FROM pets");
-        while ($pet = $petList->fetch_assoc()):
+        $petList = pg_query($conn, "SELECT pet_id, name, breed, user_id FROM pets");
+        while ($pet = pg_fetch_assoc($petList)):
         ?>
           <tr>
-            <td><?= $pet['pet_id'] ?></td>
+            <td><?= htmlspecialchars($pet['pet_id']) ?></td>
             <td><?= htmlspecialchars($pet['name']) ?></td>
             <td><?= htmlspecialchars($pet['breed']) ?></td>
-            <td><?= $pet['user_id'] ?></td>
+            <td><?= htmlspecialchars($pet['user_id']) ?></td>
           </tr>
         <?php endwhile; ?>
       </tbody>
@@ -542,21 +559,29 @@ main {
       </thead>
       <tbody>
         <?php
-        $pendingList = $mysqli->query("
-          SELECT a.appointment_id, a.user_id, a.pet_id, pk.name AS service, a.appointment_date, a.status
-          FROM appointments a
-          JOIN packages pk ON a.package_id = pk.id
-          WHERE a.status = 'pending'
-        ");
-        while ($row = $pendingList->fetch_assoc()):
+        $pendingQuery = "
+            SELECT a.appointment_id, a.appointment_date, a.status,
+                  p.name AS pet_name, p.breed,
+                  u.first_name, u.middle_name, u.last_name
+            FROM appointments a
+            JOIN pets p ON a.pet_id = p.pet_id
+            JOIN users u ON p.user_id = u.user_id
+            WHERE a.status = 'pending'
+            ORDER BY a.appointment_date DESC
+        ";
+
+        $pendingResult = pg_query($conn, $pendingQuery);
+        if (!$pendingResult) {
+            die("Query Failed: " . pg_last_error($conn));
+        }
         ?>
+        <?php while ($row = pg_fetch_assoc($pendingResult)): ?>
           <tr>
-            <td><?= $row['appointment_id'] ?></td>
-            <td><?= $row['user_id'] ?></td>
-            <td><?= $row['pet_id'] ?></td>
-            <td><?= htmlspecialchars($row['service']) ?></td>
+            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($row['owner_name']) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
-            <td><?= ucfirst($row['status']) ?></td>
+            <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
         <?php endwhile; ?>
       </tbody>
@@ -582,21 +607,28 @@ main {
       </thead>
       <tbody>
         <?php
-        $confirmedList = $mysqli->query("
-          SELECT a.appointment_id, a.user_id, a.pet_id, pk.name AS service, a.appointment_date, a.status
-          FROM appointments a
-          JOIN packages pk ON a.package_id = pk.id
-          WHERE a.status = 'confirmed'
-        ");
-        while ($row = $confirmedList->fetch_assoc()):
+        $confirmedQuery = "
+            SELECT a.appointment_id, a.appointment_date, a.status,
+                  p.name AS pet_name, p.breed,
+                  u.first_name, u.middle_name, u.last_name
+            FROM appointments a
+            JOIN pets p ON a.pet_id = p.pet_id
+            JOIN users u ON p.user_id = u.user_id
+            WHERE a.status = 'confirmed'
+            ORDER BY a.appointment_date DESC
+        ";
+        $confirmedResult = pg_query($conn, $confirmedQuery);
+        if (!$confirmedResult) {
+            die("Query Failed: " . pg_last_error($conn));
+        }
         ?>
+        <?php while ($row = pg_fetch_assoc($confirmedResult)): ?>
           <tr>
-            <td><?= $row['appointment_id'] ?></td>
-            <td><?= $row['user_id'] ?></td>
-            <td><?= $row['pet_id'] ?></td>
-            <td><?= htmlspecialchars($row['service']) ?></td>
+            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($row['owner_name']) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
-            <td><?= ucfirst($row['status']) ?></td>
+            <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
         <?php endwhile; ?>
       </tbody>
@@ -624,21 +656,28 @@ main {
       </thead>
       <tbody>
         <?php
-        $completedList = $mysqli->query("
-          SELECT a.appointment_id, a.user_id, a.pet_id, pk.name AS service, a.appointment_date, a.status
-          FROM appointments a
-          JOIN packages pk ON a.package_id = pk.id
-          WHERE a.status = 'completed'
-        ");
-        while ($row = $completedList->fetch_assoc()):
+        $completedQuery = "
+            SELECT a.appointment_id, a.appointment_date, a.status,
+                  p.name AS pet_name, p.breed,
+                  u.first_name, u.middle_name, u.last_name
+            FROM appointments a
+            JOIN pets p ON a.pet_id = p.pet_id
+            JOIN users u ON p.user_id = u.user_id
+            WHERE a.status = 'completed'
+            ORDER BY a.appointment_date DESC
+        ";
+        $completedResult = pg_query($conn, $completedQuery);
+        if (!$completedResult) {
+            die("Query Failed: " . pg_last_error($conn));
+        }
         ?>
+        <?php while ($row = pg_fetch_assoc($completedResult)): ?>
           <tr>
-            <td><?= $row['appointment_id'] ?></td>
-            <td><?= $row['user_id'] ?></td>
-            <td><?= $row['pet_id'] ?></td>
-            <td><?= htmlspecialchars($row['service']) ?></td>
+            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($row['owner_name']) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
-            <td><?= ucfirst($row['status']) ?></td>
+            <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
         <?php endwhile; ?>
       </tbody>
@@ -670,20 +709,28 @@ main {
       </thead>
       <tbody>
         <?php
-        $appointmentList = $mysqli->query("
-          SELECT a.*, 
-                 u.full_name AS client_name,
-                 u.user_id,
-                 p.name AS pet_name,
-                 p.breed AS pet_breed,
-                 pk.name AS package_name
-          FROM appointments a
-          JOIN users u ON a.user_id = u.user_id
-          JOIN pets p ON a.pet_id = p.pet_id
-          JOIN packages pk ON a.package_id = pk.id
-          ORDER BY a.appointment_date DESC
-        ");
-        while ($row = $appointmentList->fetch_assoc()):
+        $appointmentQuery = "
+            SELECT a.*,
+                  u.first_name,
+                  u.middle_name,
+                  u.last_name,
+                  u.user_id,
+                  p.name AS pet_name,
+                  p.breed AS pet_breed,
+                  pk.name AS package_name
+            FROM appointments a
+            JOIN users u ON a.user_id = u.user_id
+            JOIN pets p ON a.pet_id = p.pet_id
+            JOIN packages pk ON a.package_id = pk.id
+            ORDER BY a.appointment_date DESC
+        ";
+        $appointmentList = pg_query($conn, $appointmentQuery);
+
+        if (!$appointmentList) {
+            die("Query Failed: " . pg_last_error($conn));
+        }
+        ?>
+        <?php while ($row = pg_fetch_assoc($appointmentList)): ?>
         ?>
           <tr>
             <td><?= htmlspecialchars($row['client_name']) ?></td>
@@ -781,116 +828,85 @@ main {
 </main>
 
 <script>
-  const modals = {
-    users: 'usersModal',
-    pets: 'petsModal',
-    pending: 'pendingModal',
-    confirmed: 'confirmedModal',
-    completed: 'completedModal',
-    appointments: 'appointmentsModal',
-    history: 'historyModal'
-  };
+// Define modals object and functions globally (outside DOMContentLoaded)
+const modals = {
+  users: 'usersModal',
+  pets: 'petsModal',
+  pending: 'pendingModal',
+  confirmed: 'confirmedModal',
+  completed: 'completedModal',
+  appointments: 'appointmentsModal',
+  history: 'historyModal'
+};
 
-  function openModal(type) {
-    const modalId = modals[type];
-    if (modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) modal.style.display = 'flex';
+// Global functions that onclick can access
+function openModal(type) {
+  console.log('openModal called with:', type);
+  const modalId = modals[type];
+  if (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'flex';
+      console.log('Modal opened successfully');
+    } else {
+      console.error('Modal element not found:', modalId);
     }
   }
+}
 
-  function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = 'none';
+}
+
+function viewHistory(userId) {
+  openModal('history');
+  const historyContainer = document.getElementById('historyTable');
+  if (historyContainer) {
+    historyContainer.innerHTML = 'Loading...';
+    fetch(`../../appointment/fetch-history.php?user_id=${userId}`)
+      .then(response => response.text())
+      .then(html => historyContainer.innerHTML = html)
+      .catch(() => historyContainer.innerHTML = 'Failed to load history.');
   }
+}
 
+function showToast(message) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = `position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600;`;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+}
+
+// DOMContentLoaded only for initialization
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM ready');
+  
+  // Close modal on outside click
   window.onclick = function(event) {
     Object.values(modals).forEach(id => {
       const modal = document.getElementById(id);
       if (event.target === modal) modal.style.display = 'none';
     });
-  }
+  };
 
-  function viewHistory(userId) {
-    openModal('history');
-    const historyContainer = document.getElementById('historyTable');
-    historyContainer.innerHTML = 'Loading...';
-
-    fetch(`../../appointment/fetch-history.php?user_id=${userId}`)
-      .then(response => response.text())
-      .then(html => {
-        historyContainer.innerHTML = html;
-      })
-      .catch(() => {
-        historyContainer.innerHTML = 'Failed to load history.';
-      });
-  }
-
-  // --- Toast Notification ---
-  function showToast(message) {
-    let toast = document.getElementById('toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'toast';
-      toast.style.cssText = `
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: #4CAF50;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        z-index: 9999;
-        font-weight: 600;
-        font-size: 0.95rem;
-        display: none;
-      `;
-      document.body.appendChild(toast);
-    }
-
-    toast.textContent = message;
-    toast.style.display = 'block';
-
-    setTimeout(() => {
-      toast.style.display = 'none';
-    }, 3000);
-  }
-
-  // Auto-show modal and toast based on query params
-  window.addEventListener('DOMContentLoaded', () => {
+  // Handle URL parameters
   const params = new URLSearchParams(window.location.search);
   const modalToShow = params.get('show');
-
+  
   if (modalToShow && modals[modalToShow]) {
     openModal(modalToShow);
-
-    if (params.get('approved') === '1') {
-      showToast('✅ Appointment approved successfully.');
-    }
-    if (params.get('deleted') === '1') {
-      showToast('🗑️ Appointment deleted successfully.');
-    }
-    if (params.get('completed') === '1') {
-      showToast('🎉 Appointment marked as completed.');
-    }
-    if (params.get('cancelled') === '1') {
-      showToast('❌ Appointment cancelled successfully.');
-    }
+    // ... your toast notifications
   }
-
-  // ✅ This should be here
-  if (params.get('noshows')) {
-    const count = params.get('noshows');
-    showToast(`🚫 ${count} appointment(s) marked as NO SHOW`);
-  }
-
-  // Clean the URL
-  window.history.replaceState({}, document.title, window.location.pathname);
 });
-
-
 </script>
+
 
 
 </body>
