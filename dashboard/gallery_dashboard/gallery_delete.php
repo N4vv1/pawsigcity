@@ -1,5 +1,5 @@
 <?php
-require_once '../../conn.php';
+require_once '../../db.php';
 
 // Validate image ID from query string
 $id = $_GET['id'] ?? null;
@@ -8,16 +8,12 @@ if (!$id || !is_numeric($id)) {
 }
 
 // Fetch image path for deletion
-$stmt = $conn->prepare("SELECT image_path FROM gallery WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
+$result = pg_query_params($conn, "SELECT image_path FROM gallery WHERE id = $1", [$id]);
+if (!$result || pg_num_rows($result) === 0) {
   die("❌ Image not found.");
 }
 
-$row = $result->fetch_assoc();
+$row = pg_fetch_assoc($result);
 $imagePath = "gallery_images/" . $row['image_path'];
 
 // Attempt to delete the image file from the server
@@ -26,11 +22,9 @@ if (file_exists($imagePath)) {
 }
 
 // Delete the image record from the database
-$deleteStmt = $conn->prepare("DELETE FROM gallery WHERE id = ?");
-$deleteStmt->bind_param("i", $id);
-$deleteStmt->execute();
+pg_query_params($conn, "DELETE FROM gallery WHERE id = $1", [$id]);
 
 // Redirect to dashboard with a success flag
-header("Location:../gallery_dashboard/gallery.php?deleted=1");
+header("Location: ../gallery_dashboard/gallery.php?deleted=1");
 exit;
 ?>

@@ -148,8 +148,8 @@ if (!$result) {
       <!-- Gallery Grid -->
       <div class="gallery-grid">
         <ul class="gallery-list" id="gallery-list">
-          <?php if ($result && $result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
+          <?php if ($result && pg_num_rows($result) > 0): ?>
+          <?php while ($row = pg_fetch_assoc($result)): ?>
               <li class="gallery-item">
                 <div class="gallery-image-container">
                   <img src="../dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>"

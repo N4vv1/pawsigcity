@@ -2,15 +2,22 @@
 require '../../db.php';
 session_start();
 
-//if ($_SESSION['role'] !== 'admin') {
-  //header("Location: ../homepage/main.php");
-  //exit;
-//}
+// if ($_SESSION['role'] !== 'admin') {
+//     header("Location: ../homepage/main.php");
+//     exit;
+// }
 
 // Fetch feedback with sentiment
 $query = "
-    SELECT a.appointment_id, u.full_name AS client_name, p.name AS pet_name,
-           a.rating, a.feedback, a.sentiment, a.appointment_date
+    SELECT a.appointment_id, 
+           u.first_name,
+           u.middle_name,
+           u.last_name, 
+           p.name AS pet_name,
+           a.rating, 
+           a.feedback, 
+           a.sentiment, 
+           a.appointment_date
     FROM appointments a
     JOIN users u ON a.user_id = u.user_id
     JOIN pets p ON a.pet_id = p.pet_id
@@ -18,12 +25,12 @@ $query = "
     ORDER BY a.appointment_date DESC
 ";
 
-// Only run the query once and check for errors
-$results = $mysqli->query($query);
+$results = pg_query($conn, $query);
 if (!$results) {
-    die("Query Failed: " . $mysqli->error);
+    die("Query Failed: " . pg_last_error($conn));
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -215,7 +222,7 @@ if (!$results) {
       </tr>
     </thead>
     <tbody>
-      <?php while ($row = $results->fetch_assoc()): ?>
+      <?php while ($row = pg_fetch_assoc($results)): ?>
         <tr>
           <td><?= htmlspecialchars($row['client_name']) ?></td>
           <td><?= htmlspecialchars($row['pet_name']) ?></td>

@@ -7,23 +7,32 @@ require_once '../../db.php';
 // }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $appointment_id = $_POST['appointment_id'];
-  $notes = $mysqli->real_escape_string($_POST['notes']);
-  $mysqli->query("UPDATE appointments SET notes = '$notes' WHERE appointment_id = $appointment_id");
-  echo "Notes saved.";
+    $appointment_id = $_POST['appointment_id'];
+    $notes = pg_escape_string($conn, $_POST['notes']);
+    $query = "UPDATE appointments SET notes = '$notes' WHERE appointment_id = $appointment_id";
+    pg_query($conn, $query);
+    echo "Notes saved.";
 }
 
 // Updated query with joins to get pet and user info
-$appointments = $mysqli->query("
-  SELECT a.appointment_id, DATE(a.appointment_date) AS appointment_date, 
-         p.name AS pet_name, p.breed, 
-         u.full_name 
+$query = "
+  SELECT a.appointment_id, 
+         DATE(a.appointment_date) AS appointment_date, 
+         p.name AS pet_name, 
+         p.breed, 
+         u.first_name,
+         u.middle_name,
+         u.last_name 
   FROM appointments a
   JOIN pets p ON a.pet_id = p.pet_id
   JOIN users u ON p.user_id = u.user_id
   ORDER BY a.appointment_date DESC
-");
+";
+
+$appointments = pg_query($conn, $query);
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">

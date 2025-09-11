@@ -1,5 +1,5 @@
 <?php
-require_once '../../conn.php';
+require_once '../../db.php';
 
 // Set content type to JSON
 header('Content-Type: application/json');
@@ -10,18 +10,19 @@ $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $images_per_page;
 
 // Get total number of images
-$total_result = $conn->query("SELECT COUNT(*) as total FROM gallery");
-$total_row = $total_result->fetch_assoc();
-$total_images = $total_row['total'];
+$total_result = pg_query($conn, "SELECT COUNT(*) as total FROM gallery");
+$total_row = pg_fetch_assoc($total_result);
+$total_images = (int)$total_row['total'];
 $total_pages = ceil($total_images / $images_per_page);
 
 // Get images for current page
-$result = $conn->query("SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
+$query = "SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset";
+$result = pg_query($conn, $query);
 
 // Build HTML for gallery items
 $html = '';
-if ($result && $result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+if ($result && pg_num_rows($result) > 0) {
+    while ($row = pg_fetch_assoc($result)) {
         $html .= '<li class="gallery-item">';
         $html .= '<div class="gallery-image-container">';
         // UPDATED IMAGE PATH — relative from your HTML file (e.g. homepage/index.php)

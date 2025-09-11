@@ -1,18 +1,25 @@
 <?php
-require_once '../../conn.php';
+require_once '../../db.php';
+
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) exit("Invalid ID");
 
-$stmt = $conn->prepare("SELECT image_path FROM gallery WHERE id=?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result()->fetch_assoc();
-$image = "../gallery_images/" . $result['image_path'];
+// Get the image path
+$result = pg_query_params($conn, "SELECT image_path FROM gallery WHERE id = $1", [$id]);
+if (!$result || pg_num_rows($result) === 0) {
+    exit("Image not found.");
+}
 
-if (file_exists($image)) unlink($image);
+$row = pg_fetch_assoc($result);
+$image = "../gallery_images/" . $row['image_path'];
 
-$stmt = $conn->prepare("DELETE FROM gallery WHERE id=?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
+// Delete the image file if it exists
+if (file_exists($image)) {
+    unlink($image);
+}
+
+// Delete the record from the database
+pg_query_params($conn, "DELETE FROM gallery WHERE id = $1", [$id]);
 
 echo "🗑️ Image deleted successfully.";
+?>

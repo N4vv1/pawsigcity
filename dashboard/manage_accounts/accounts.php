@@ -1,68 +1,93 @@
 <?php
 session_start();
 require '../../db.php';
-//if ($_SESSION['role'] !== 'admin') {
-  //header("Location: ../homepage/main.php");
-  //exit;
-//}
+// if ($_SESSION['role'] !== 'admin') {
+//   header("Location: ../homepage/main.php");
+//   exit;
+// }
+
 // Handle new user creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
-  $full_name = trim($_POST['full_name']);
-  $email     = trim($_POST['email']);
-  $password  = password_hash($_POST['password'], PASSWORD_BCRYPT);
-  $phone     = trim($_POST['phone']);
-  $role      = 'admin';
+    $firstname  = trim($_POST['firstname']);
+    $middlename = trim($_POST['middlename']);
+    $lastname   = trim($_POST['lastname']);
+    $email      = trim($_POST['email']);
+    $password   = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $phone      = trim($_POST['phone']);
+    $role       = 'admin';
 
-  $check = $mysqli->prepare("SELECT * FROM users WHERE email = ?");
-  $check->bind_param("s", $email);
-  $check->execute();
-  $result = $check->get_result();
+    // Check if email exists
+    pg_prepare($conn, "check_user", "SELECT * FROM users WHERE email = $1");
+    $check = pg_execute($conn, "check_user", [$email]);
 
-  if ($result->num_rows > 0) {
-    $_SESSION['error'] = "Email is already registered.";
-  } else {
-    $stmt = $mysqli->prepare("INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $full_name, $email, $password, $phone, $role);
-
-    if ($stmt->execute()) {
-      $_SESSION['success'] = "Admin account created successfully.";
+    if (pg_num_rows($check) > 0) {
+        $_SESSION['error'] = "Email is already registered.";
     } else {
-      $_SESSION['error'] = "Something went wrong. Please try again.";
+        pg_prepare(
+            $conn,
+            "insert_user",
+            "INSERT INTO users (firstname, middlename, lastname, email, password, phone, role)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)"
+        );
+        $result = pg_execute($conn, "insert_user", [
+            $firstname, $middlename, $lastname,
+            $email, $password, $phone, $role
+        ]);
+
+        if ($result) {
+            $_SESSION['success'] = "Admin account created successfully.";
+        } else {
+            $_SESSION['error'] = "Something went wrong. Please try again.";
+        }
     }
-  }
-  header("Location: " . $_SERVER['PHP_SELF']);
-  exit;
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 // Handle user update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
-  $id = intval($_POST['user_id']);
-  $full_name = trim($_POST['full_name']);
-  $email     = trim($_POST['email']);
-  $phone     = trim($_POST['phone']);
+    $id         = intval($_POST['user_id']);
+    $firstname  = trim($_POST['first_name']);
+    $middlename = trim($_POST['middle_name']);
+    $lastname   = trim($_POST['last_name']);
+    $email      = trim($_POST['email']);
+    $phone      = trim($_POST['phone']);
 
-  $stmt = $mysqli->prepare("UPDATE users SET full_name=?, email=?, phone=? WHERE user_id=?");
-  $stmt->bind_param("sssi", $full_name, $email, $phone, $id);
+    pg_prepare(
+        $conn,
+        "update_user",
+        "UPDATE users
+         SET firstname=$1, middlename=$2, lastname=$3, email=$4, phone=$5
+         WHERE user_id=$6"
+    );
+    $result = pg_execute($conn, "update_user", [
+        $firstname, $middlename, $lastname,
+        $email, $phone, $id
+    ]);
 
-  if ($stmt->execute()) {
-    $_SESSION['success'] = "User updated successfully.";
-  } else {
-    $_SESSION['error'] = "Failed to update user.";
-  }
-  header("Location: " . $_SERVER['PHP_SELF']);
-  exit;
+    if ($result) {
+        $_SESSION['success'] = "User updated successfully.";
+    } else {
+        $_SESSION['error'] = "Failed to update user.";
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
-$users = $mysqli->query("SELECT * FROM users ORDER BY full_name ASC");
+// Fetch users
+$users = pg_query($conn, "SELECT * FROM users ORDER BY last_name ASC, first_name ASC");
+
+// If editing specific user
 $edit_user = null;
 if (isset($_GET['id'])) {
-  $edit_id = intval($_GET['id']);
-  $edit_stmt = $mysqli->prepare("SELECT * FROM users WHERE user_id = ?");
-  $edit_stmt->bind_param("i", $edit_id);
-  $edit_stmt->execute();
-  $edit_user = $edit_stmt->get_result()->fetch_assoc();
+    $edit_id = intval($_GET['id']);
+    pg_prepare($conn, "get_user", "SELECT * FROM users WHERE user_id = $1");
+    $result = pg_execute($conn, "get_user", [$edit_id]);
+    $edit_user = pg_fetch_assoc($result);
 }
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -425,7 +450,7 @@ if (isset($_GET['id'])) {
       <thead>
         <tr>
           <th>User ID</th>
-          <th>Full Name</th>
+          <th>Name</th>
           <th>Email</th>
           <th>Phone</th>
           <th>Role</th>
@@ -433,10 +458,18 @@ if (isset($_GET['id'])) {
         </tr>
       </thead>
       <tbody>
-        <?php while ($user = $users->fetch_assoc()): ?>
+        <?php while ($user = pg_fetch_assoc($users)): ?>
         <tr>
           <td><?= $user['user_id'] ?></td>
-          <td><?= htmlspecialchars($user['full_name']) ?></td>
+          <td>
+            <?= htmlspecialchars(
+                  trim(
+                    $user['first_name'] . ' ' .
+                    ($user['middle_name'] ? $user['middle_name'] . ' ' : '') .
+                    $user['last_name']
+                  )
+              ) ?>
+          </td>
           <td><?= htmlspecialchars($user['email']) ?></td>
           <td><?= htmlspecialchars($user['phone']) ?></td>
           <td><?= $user['role'] ?></td>

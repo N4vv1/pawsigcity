@@ -1,19 +1,17 @@
 <?php
-require_once '../../conn.php';
+require_once '../../db.php';
 
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) {
   die("No valid image ID provided.");
 }
 
-$stmt = $conn->prepare("SELECT image_path FROM gallery WHERE id = ?");
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-if ($result->num_rows === 0) {
+// Fetch current image
+$result = pg_query_params($conn, "SELECT image_path FROM gallery WHERE id = $1", [$id]);
+if (!$result || pg_num_rows($result) === 0) {
   die("Image not found.");
 }
-$row = $result->fetch_assoc();
+$row = pg_fetch_assoc($result);
 $currentImage = $row['image_path'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
@@ -37,9 +35,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
       unlink($oldImagePath);
     }
 
-    $stmt = $conn->prepare("UPDATE gallery SET image_path = ? WHERE id = ?");
-    $stmt->bind_param("si", $newImageName, $id); // ✅ FIXED: correct type definition string
-    $stmt->execute();
+    pg_query_params(
+      $conn,
+      "UPDATE gallery SET image_path = $1 WHERE id = $2",
+      [$newImageName, $id]
+    );
 
     header("Location: ../gallery_dashboard/gallery.php");
     exit;
@@ -48,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
   }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

@@ -1,33 +1,42 @@
 <?php
-require_once '../../conn.php';
+require_once '../../db.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["image"])) {
-  $folder = "gallery_images/";
-$filename = basename($_FILES["image"]["name"]);
-$targetPath = $folder . $filename;
+    $folder = "gallery_images/";
+    $filename = basename($_FILES["image"]["name"]);
+    $targetPath = $folder . $filename;
 
-$fileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
-$allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+    $fileType = strtolower(pathinfo($targetPath, PATHINFO_EXTENSION));
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
 
-if (!in_array($fileType, $allowedTypes)) {
-  $error = "❌ Only JPG, JPEG, PNG, or GIF files are allowed.";
-} else {
-  if (!is_dir($folder)) {
-    mkdir($folder, 0777, true);
-  }
+    if (!in_array($fileType, $allowedTypes)) {
+        $error = "❌ Only JPG, JPEG, PNG, or GIF files are allowed.";
+    } else {
+        if (!is_dir($folder)) {
+            mkdir($folder, 0777, true);
+        }
 
-  if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
-    $stmt = $conn->prepare("INSERT INTO gallery (image_path) VALUES (?)");
-    $stmt->bind_param("s", $filename);
-    $stmt->execute();
-    header("Location: ../gallery_dashboard/gallery.php");
-    exit;
-  } else {
-    $error = "❌ Failed to upload the image.";
-  }
-}
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
+            // Insert into PostgreSQL
+            $result = pg_query_params(
+                $conn,
+                "INSERT INTO gallery (image_path) VALUES ($1)",
+                [$filename]
+            );
+
+            if ($result) {
+                header("Location: ../gallery_dashboard/gallery.php");
+                exit;
+            } else {
+                $error = "❌ Failed to save image info to the database.";
+            }
+        } else {
+            $error = "❌ Failed to upload the image.";
+        }
+    }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

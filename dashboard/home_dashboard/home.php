@@ -1,29 +1,29 @@
 <?php
 session_start();
 require_once '../../db.php';
-//if ($_SESSION['role'] !== 'admin') {
-  //header("Location: ../homepage/main.php");
-  //exit;
-//}
+// if ($_SESSION['role'] !== 'admin') {
+//   header("Location: ../homepage/main.php");
+//   exit;
+// }
+
 // Count metrics
-$total_users = $mysqli->query("SELECT COUNT(*) AS count FROM users")->fetch_assoc()['count'];
-$total_pets = $mysqli->query("SELECT COUNT(*) AS count FROM pets")->fetch_assoc()['count'];
-$total_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments")->fetch_assoc()['count'];
-$pending_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments WHERE status = 'pending'")->fetch_assoc()['count'];
-$confirmed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments WHERE status = 'confirmed'")->fetch_assoc()['count'];
-$completed_appointments = $mysqli->query("SELECT COUNT(*) AS count FROM appointments WHERE status = 'completed'")->fetch_assoc()['count'];
+$total_users = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM users"), 0, 'count');
+$total_pets = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM pets"), 0, 'count');
+$total_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments"), 0, 'count');
+$confirmed_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'confirmed'"), 0, 'count');
+$completed_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'completed'"), 0, 'count');
 
 date_default_timezone_set('Asia/Manila');
 $now = new DateTime();
 
-$autoCheck = $mysqli->query("
+$autoCheck = pg_query($conn, "
   SELECT appointment_id, appointment_date
   FROM appointments
   WHERE status = 'confirmed'
 ");
 
 $noShowCount = 0;
-while ($row = $autoCheck->fetch_assoc()) {
+while ($row = pg_fetch_assoc($autoCheck)) {
     $appointmentTime = new DateTime($row['appointment_date']);
     $graceEnd = clone $appointmentTime;
     $graceEnd->modify('+15 minutes');
@@ -32,7 +32,7 @@ while ($row = $autoCheck->fetch_assoc()) {
         $id = $row['appointment_id'];
 
         // Only update if it's not already a no_show (just in case)
-        $update = $mysqli->query("UPDATE appointments SET status = 'no_show' WHERE appointment_id = $id");
+        $update = pg_query($conn, "UPDATE appointments SET status = 'no_show' WHERE appointment_id = $id");
         if ($update) {
             $noShowCount++;
         }
@@ -44,9 +44,8 @@ if ($noShowCount > 0) {
     header("Location: home.php?noshows=$noShowCount&show=appointments");
     exit;
 }
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -443,7 +442,7 @@ main {
         <i class='bx bx-time'></i>
       </div>
       <h3>Pending Appointments</h3>
-      <p><?= $pending_appointments ?></p>
+      <p></p>
       <a href="javascript:void(0)" onclick="openModal('pending')">View Pending</a>  
     </div>
 

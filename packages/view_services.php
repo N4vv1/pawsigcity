@@ -1,32 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PURRFECT PAWS | SERVICES</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-  <!-- Navbar Header -->
-  <header>
-    <nav class="navbar section-content">
-      <a href="#" class="navbar-logo">
-        <img src="Logo.jpg" alt="Logo" class="icon" />
-      </a>
-      <ul class="nav-menu">
-        <li class="nav-item"><a href="main.php" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link active">Services</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link">Gallery</a></li>
-        <li class="nav-item"><a href="main.php" class="nav-link">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <h1>Our Grooming Packages</h1>
-
-  <?php
+<?php
   require '../db.php';
 
   // Query to fetch packages and their features
@@ -64,6 +36,34 @@
     }
   }
   ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PURRFECT PAWS | SERVICES</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar Header -->
+  <header>
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="Logo.jpg" alt="Logo" class="icon" />
+      </a>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="main.php" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="main.php" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="main.php" class="nav-link active">Services</a></li>
+        <li class="nav-item"><a href="main.php" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="main.php" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <h1>Our Grooming Packages</h1>
 
   <!-- Grooming Packages Section -->
   <section class="page-content">

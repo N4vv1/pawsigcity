@@ -1,12 +1,12 @@
 <?php
-require_once '../../conn.php';
+require_once '../../db.php';
 
 //if ($_SESSION['role'] !== 'admin') {
   //header("Location: ../homepage/main.php");
   //exit;
 //}
 
-$result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
+$result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 ?>
 
 <!DOCTYPE html>
@@ -285,8 +285,9 @@ $result = $conn->query("SELECT * FROM gallery ORDER BY id ASC");
       </tr>
     </thead>
     <tbody>
-      <?php if ($result->num_rows > 0): ?>
-        <?php while ($row = $result->fetch_assoc()): ?>
+      <?php if (pg_num_rows($result) > 0): ?>
+        <?php while ($row = pg_fetch_assoc($result)): ?>
+
           <tr>
             <td><?php echo $row['id']; ?></td>
             <td><img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
