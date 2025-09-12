@@ -1,5 +1,5 @@
 <?php 
-require_once '../db.php'; 
+require_once 'db.php'; 
 
 // Pagination settings
 $images_per_page = 6; // Number of images per page
@@ -28,9 +28,9 @@ if (!$result) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Purrfect Paws</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="./homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="./images/Logo.jpg">
+  <link rel="icon" type="image/png" href="../homepage/images/Logo.jpg">
 </head>
 <body>
   <!-- Navbar Header -->
@@ -50,7 +50,7 @@ if (!$result) {
           <i class="fas fa-user-circle" style="font-size: 24px;"></i>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="../homepage/login/loginform.php">Login</a></li>
+          <li><a href="./homepage/login/loginform.php">Login</a></li>
         </ul>
       </li>
     </ul>
