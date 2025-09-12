@@ -1,8 +1,10 @@
 # Use PHP with Apache
 FROM php:8.1-apache
 
-# Install PHP extensions for PostgreSQL
-RUN docker-php-ext-install pdo pgsql pdo_pgsql
+# Install dependencies and PHP extensions for PostgreSQL
+RUN apt-get update \
+    && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo pgsql pdo_pgsql
 
 # Copy project files into container
 COPY . /var/www/html/
