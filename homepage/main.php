@@ -226,7 +226,7 @@ if (!$result) {
       <div class="section-content">
         <ul class="contact-info-list">
           <li class="contact-info"><i class="fa-solid fa-location-crosshairs"></i><p>324 DR. SIXTO ANTONIO AVENUE, CANIOGAN, PASIG CITY</p></li>
-          <li class="contact-info"><i class="fa-regular fa-envelope"></i><p>purrfectpaws@gmail.com</p></li>
+          <li class="contact-info"><i class="fa-regular fa-envelope"></i><p>pawsigcity@gmail.com</p></li>
           <li class="contact-info"><i class="fa-solid fa-phone"></i><p>CP num</p></li>
           <li class="contact-info"><i class="fa-solid fa-clock"></i><p>9AM - 8PM ONLY</p></li>
           <li class="contact-info"><i class="fa-solid fa-calendar-check"></i><p>MONDAY TO SUNDAY</p></li>
@@ -273,7 +273,7 @@ if (!$result) {
     </div>
   </div>
   <div class="footer-bottom">
-    <p>&copy; 2025 Purrfect Paws. All rights reserved.</p>
+    <p>&copy; 2025 PAWsig City. All rights reserved.</p>
   </div>
 </footer>
 
