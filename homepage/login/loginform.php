@@ -24,7 +24,7 @@ if (isset($_SESSION['login_error'])) {
 </head>
 <body>
 
-  <a href="../index.php" class="back-button">
+  <a href="../../index.php" class="back-button">
     <i class='bx bx-arrow-back'></i> Back
   </a>
 
