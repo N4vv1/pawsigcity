@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Return to login with error
-    header("Location: login.php");
+    header("Location: http://localhost/pawsigcity/homepage/login/loginform.php");
     exit;
 }
 ?>

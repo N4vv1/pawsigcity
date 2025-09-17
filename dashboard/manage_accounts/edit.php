@@ -2,19 +2,28 @@
 require_once '../../db.php';
 
 $id = intval($_GET['id']);
-$user = $mysqli->query("SELECT * FROM users WHERE user_id = $id")->fetch_assoc();
+
+// Fetch user by ID
+$result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$id]);
+$user = pg_fetch_assoc($result);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $name = $mysqli->real_escape_string($_POST['full_name']);
-  $email = $mysqli->real_escape_string($_POST['email']);
-  $phone = $mysqli->real_escape_string($_POST['phone']);
-  $role = $mysqli->real_escape_string($_POST['role']);
+  $name  = $_POST['full_name'];
+  $email = $_POST['email'];
+  $phone = $_POST['phone'];
+  $role  = $_POST['role'];
 
-  $mysqli->query("UPDATE users SET full_name='$name', email='$email', phone='$phone', role='$role' WHERE user_id=$id");
+  pg_query_params(
+    $conn,
+    "UPDATE users SET full_name = $1, email = $2, phone = $3, role = $4 WHERE user_id = $5",
+    [$name, $email, $phone, $role, $id]
+  );
+
   header("Location: user-management.php");
   exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>

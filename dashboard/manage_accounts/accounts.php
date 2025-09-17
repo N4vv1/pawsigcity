@@ -8,13 +8,13 @@ require '../../db.php';
 
 // Handle new user creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
-    $firstname  = trim($_POST['firstname']);
-    $middlename = trim($_POST['middlename']);
-    $lastname   = trim($_POST['lastname']);
+    $first_name  = trim($_POST['first_name']);
+    $middle_name = trim($_POST['middle_name']);
+    $last_name   = trim($_POST['last_name']);
     $email      = trim($_POST['email']);
     $password   = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $phone      = trim($_POST['phone']);
-    $role       = 'admin';
+    $role       = $_POST['role'];
 
     // Check if email exists
     pg_prepare($conn, "check_user", "SELECT * FROM users WHERE email = $1");
@@ -26,11 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
         pg_prepare(
             $conn,
             "insert_user",
-            "INSERT INTO users (firstname, middlename, lastname, email, password, phone, role)
+            "INSERT INTO users (first_name, middle_name, last_name, email, password, phone, role)
              VALUES ($1, $2, $3, $4, $5, $6, $7)"
         );
         $result = pg_execute($conn, "insert_user", [
-            $firstname, $middlename, $lastname,
+            $first_name, $middle_name, $last_name,
             $email, $password, $phone, $role
         ]);
 
@@ -47,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
 // Handle user update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
     $id         = intval($_POST['user_id']);
-    $firstname  = trim($_POST['first_name']);
-    $middlename = trim($_POST['middle_name']);
-    $lastname   = trim($_POST['last_name']);
+    $first_name  = trim($_POST['first_name']);
+    $middle_name = trim($_POST['middle_name']);
+    $last_name   = trim($_POST['last_name']);
     $email      = trim($_POST['email']);
     $phone      = trim($_POST['phone']);
 
@@ -57,11 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
         $conn,
         "update_user",
         "UPDATE users
-         SET firstname=$1, middlename=$2, lastname=$3, email=$4, phone=$5
+         SET first_name=$1, middle_name=$2, last_name=$3, email=$4, phone=$5
          WHERE user_id=$6"
     );
     $result = pg_execute($conn, "update_user", [
-        $firstname, $middlename, $lastname,
+        $first_name, $middle_name, $last_name,
         $email, $phone, $id
     ]);
 
@@ -461,21 +461,19 @@ if (isset($_GET['id'])) {
         <?php while ($user = pg_fetch_assoc($users)): ?>
         <tr>
           <td><?= $user['user_id'] ?></td>
+
           <td>
-            <?= htmlspecialchars(
-                  trim(
-                    $user['first_name'] . ' ' .
-                    ($user['middle_name'] ? $user['middle_name'] . ' ' : '') .
-                    $user['last_name']
-                  )
-              ) ?>
+            <?= htmlspecialchars($user['first_name']) ?>
+            <?= htmlspecialchars($user['middle_name']) ?>
+            <?= htmlspecialchars($user['last_name']) ?>
           </td>
+
           <td><?= htmlspecialchars($user['email']) ?></td>
           <td><?= htmlspecialchars($user['phone']) ?></td>
           <td><?= $user['role'] ?></td>
+
           <td class="actions">
             <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">Edit</a>
-
             <a href="delete.php?id=<?= $user['user_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
           </td>
         </tr>
@@ -487,7 +485,7 @@ if (isset($_GET['id'])) {
     <div id="userModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal()">&times;</span>
-    <h2>Create Admin Account</h2>
+    <h2>Create Account</h2>
 
     <?php if (isset($error)): ?>
       <p class="message-error"><?= $error ?></p>
@@ -501,8 +499,20 @@ if (isset($_GET['id'])) {
       <input type="hidden" name="create_user" value="1">
 
       <div class="input_box">
-        <input type="text" class="input-field" name="full_name" required />
-        <label class="label">Full Name</label>
+        <input type="text" class="input-field" name="first_name" required />
+        <label class="label">First Name</label>
+        <i class='bx bx-user icon'></i>
+      </div>
+
+      <div class="input_box">
+        <input type="text" class="input-field" name="middle_name" />
+        <label class="label">Middle Name</label>
+        <i class='bx bx-user icon'></i>
+      </div>
+
+      <div class="input_box">
+        <input type="text" class="input-field" name="last_name" required/>
+        <label class="label">Last Name</label>
         <i class='bx bx-user icon'></i>
       </div>
 
@@ -525,8 +535,21 @@ if (isset($_GET['id'])) {
       </div>
 
       <div class="input_box">
-        <input type="submit" class="input-submit" value="Create Admin" />
+        <select class="input-field" name="role" required>
+          <option value="" disabled selected>Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Customer</option>
+          <option value="user">Groomer</option>
+          <option value="user">Receptionist</option>
+        </select>
+        <label class="label">Role</label>
+        <i class='bx bx-id-card icon'></i>
       </div>
+      
+      <div class="input_box">
+        <input type="submit" class="input-submit" value="Create Account" />
+      </div>
+
     </form>
   </div>
 </div>
