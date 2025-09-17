@@ -6,6 +6,7 @@ $query = "
         a.appointment_id,
         a.appointment_date,
         a.status,
+        a.groomer_name,
         p.package_id,
         p.name AS package_name,
         pet.name AS pet_name,
@@ -21,6 +22,14 @@ $result = pg_query($conn, $query);
 if (!$result) {
     die("Query failed: " . pg_last_error($conn));
 }
+
+// Get all groomers for the dropdown
+$groomers_query = "SELECT DISTINCT groomer_name FROM groomer ORDER BY groomer_name";
+$groomers_result = pg_query($conn, $groomers_query);
+
+// Get all packages for the dropdown
+$packages_query = "SELECT package_id, name FROM packages ORDER BY name";
+$packages_result = pg_query($conn, $packages_query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -246,6 +255,21 @@ if (!$result) {
   background-color: #FF4B4B;
 }
 
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
   </style>
 </head>
 <body>
@@ -261,7 +285,6 @@ if (!$result) {
 </aside>
 
 <!-- Main Content -->
-<!-- Main Content -->
 <main class="content">
   <h2>All Appointments</h2>
   <table>
@@ -274,52 +297,52 @@ if (!$result) {
         <th>Pet Name</th>
         <th>Breed</th>
         <th>Status</th>
+        <th>Groomer</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <?php $counter = 1; ?>
-      <?php while ($row = pg_fetch_assoc($result)): ?>
-        <tr>
-          <td><?= $counter++ ?></td>
-          <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-          <td><?= htmlspecialchars($row['appointment_date']) ?></td>
-          <td><?= htmlspecialchars($row['package_name']) ?></td>
-          <td><?= htmlspecialchars($row['pet_name']) ?></td>
-          <td><?= htmlspecialchars($row['pet_breed']) ?></td>
-          <td>
-            <?php
-              $status = strtolower($row['status']);
-              $status_color = match($status) {
-                'confirmed' => '#4CAF50',  // green
-                'completed' => '#2196F3',  // blue
-                'cancelled' => '#FF6B6B',  // red
-                'no_show'  => '#FFC107',   // yellow
-                default => '#ccc',
-              };
-            ?>
-            <span style="color:<?= $status_color ?>; font-weight:600;"><?= ucfirst($status) ?></span>
-          </td>
-          <td style="display:flex; gap:8px; justify-content:center;">
-            <!-- Edit button triggers modal -->
-            <button class="edit-btn" 
-                    data-id="<?= $row['appointment_id'] ?>" 
-                    data-date="<?= $row['appointment_date'] ?>" 
-                    data-package="<?= $row['package_id'] ?>" 
-                    data-status="<?= $row['status'] ?>"
-                    style="padding:6px 12px; border:none; border-radius:8px; background-color:var(--primary-color); color:var(--dark-color); font-weight:600; cursor:pointer;">
-              Edit
-            </button>
-
-            <!-- Cancel button -->
-            <button onclick="if(confirm('Cancel this appointment?')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }" 
-                    style="padding:6px 12px; border:none; border-radius:8px; background-color:#FF6B6B; color:#fff; font-weight:600; cursor:pointer;">
-              Cancel
-            </button>
-          </td>
-        </tr>
-      <?php endwhile; ?>
-    </tbody>
+  <?php $counter = 1; ?>
+  <?php while ($row = pg_fetch_assoc($result)): ?>
+    <tr>
+      <td><?= $counter++ ?></td>
+      <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+      <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+      <td><?= htmlspecialchars($row['package_name']) ?></td>
+      <td><?= htmlspecialchars($row['pet_name']) ?></td>
+      <td><?= htmlspecialchars($row['pet_breed']) ?></td>
+      <td>
+        <?php
+          $status = strtolower($row['status']);
+          $status_color = match($status) {
+            'confirmed' => '#4CAF50',
+            'completed' => '#2196F3',
+            'cancelled' => '#FF6B6B',
+            'no_show'  => '#FFC107',
+            default => '#ccc',
+          };
+        ?>
+        <span style="color:<?= $status_color ?>; font-weight:600;"><?= ucfirst($status) ?></span>
+      </td>
+      <td><?= htmlspecialchars($row['groomer_name']) ?></td>
+      <td style="display:flex; gap:8px; justify-content:center;">
+        <button class="edit-btn"
+                data-id="<?= $row['appointment_id'] ?>"
+                data-date="<?= $row['appointment_date'] ?>"
+                data-package="<?= $row['package_id'] ?>"
+                data-status="<?= $row['status'] ?>"
+                data-groomer="<?= htmlspecialchars($row['groomer_name']) ?>"
+                style="padding:6px 12px; border:none; border-radius:8px; background-color:var(--primary-color); color:var(--dark-color); font-weight:600; cursor:pointer;">
+          Edit
+        </button>
+        <button onclick="if(confirm('Cancel this appointment?')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }"
+                style="padding:6px 12px; border:none; border-radius:8px; background-color:#FF6B6B; color:#fff; font-weight:600; cursor:pointer;">
+          Cancel
+        </button>
+      </td>
+    </tr>
+  <?php endwhile; ?>
+</tbody>
   </table>
 </main>
 
@@ -336,17 +359,29 @@ if (!$result) {
       <input type="datetime-local" name="appointment_date" id="modalDate" required>
 
       <label>Package:</label>
-      <select name="package_id" id="modalPackage">
+      <select name="package_id" id="modalPackage" required>
         <?php
-        $packages = pg_query($conn, "SELECT package_id, name FROM packages");
-        while ($pkg = pg_fetch_assoc($packages)):
+        // Reset the result pointer to beginning
+        pg_result_seek($packages_result, 0);
+        while ($pkg = pg_fetch_assoc($packages_result)):
         ?>
         <option value="<?= $pkg['package_id'] ?>"><?= htmlspecialchars($pkg['name']) ?></option>
         <?php endwhile; ?>
       </select>
 
+      <label>Groomer:</label>
+      <select name="groomer_name" id="modalGroomer" required>
+        <?php
+        // Reset the result pointer to beginning
+        pg_result_seek($groomers_result, 0);
+        while ($g = pg_fetch_assoc($groomers_result)):
+        ?>
+        <option value="<?= htmlspecialchars($g['groomer_name']) ?>"><?= htmlspecialchars($g['groomer_name']) ?></option>
+        <?php endwhile; ?>
+      </select>
+
       <label>Status:</label>
-      <select name="status" id="modalStatus">
+      <select name="status" id="modalStatus" required>
         <option value="confirmed">Confirmed</option>
         <option value="completed">Completed</option>
         <option value="cancelled">Cancelled</option>
@@ -355,41 +390,53 @@ if (!$result) {
 
       <div class="modal-buttons">
         <button type="submit">Update Appointment</button>
-        <button type="button" class="cancel-btn" onclick="modal.style.display='none'">Cancel</button>
+        <button type="button" class="cancel-btn" onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
       </div>
     </form>
   </div>
 </div>
 
-
 <script>
-const modal = document.getElementById("editModal");
-const closeBtn = modal.querySelector(".close");
-const editButtons = document.querySelectorAll(".edit-btn");
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("editModal");
+  const closeBtn = modal.querySelector(".close");
+  const editButtons = document.querySelectorAll(".edit-btn");
 
-editButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    // Populate modal with data
-    document.getElementById("modalAppointmentId").value = btn.dataset.id;
-    document.getElementById("modalDate").value = btn.dataset.date.replace(' ', 'T');
-    document.getElementById("modalPackage").value = btn.dataset.package;
-    document.getElementById("modalStatus").value = btn.dataset.status;
+  editButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Populate modal with data from button's data attributes
+      document.getElementById("modalAppointmentId").value = btn.dataset.id;
+      
+      // Format the date properly for datetime-local input
+      let dateValue = btn.dataset.date;
+      if (dateValue) {
+        // Remove seconds if present and replace space with 'T'
+        dateValue = dateValue.substring(0, 16).replace(' ', 'T');
+      }
+      document.getElementById("modalDate").value = dateValue;
+      
+      document.getElementById("modalPackage").value = btn.dataset.package;
+      document.getElementById("modalStatus").value = btn.dataset.status;
+      document.getElementById("modalGroomer").value = btn.dataset.groomer;
 
-    modal.style.display = "block";
+      // Show the modal
+      modal.style.display = "block";
+    });
+  });
+
+  // Close modal when clicking the close button
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+
+  // Close modal when clicking outside of the modal content
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
   });
 });
-
-closeBtn.onclick = () => {
-  modal.style.display = "none";
-};
-
-window.onclick = (event) => {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-};
 </script>
-
 
 </body>
 </html>

@@ -402,9 +402,11 @@ main {
     <img src="../../homepage/images/Logo.jpg" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="home.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
     <hr>
     <a href="../manage_accounts/accounts.php"><i class='bx bx-camera'></i>User Management</a>
+    <hr>
+    <a href="../groomer_management/groomer_accounts.php" ><i class='bx bx-user'></i>Groomer Management</a>
     <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
