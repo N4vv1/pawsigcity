@@ -1,13 +1,16 @@
-import mysql.connector
+import psycopg2
+import os
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Connect to the database
-conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='',
-    database='pet_grooming_system'
+conn = psycopg2.connect(
+    host=os.getenv("DB_HOST"),
+    dbname=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASS"),
+    port=os.getenv("DB_PORT", "5432")  # fallback to 5432 if not set
 )
+
 cursor = conn.cursor()
 
 # Fetch feedback with NULL sentiment
@@ -25,7 +28,7 @@ for appointment_id, feedback, rating in feedback_data:
     neu = scores['neu']
     neg = scores['neg']
 
-    # Classification logic (based on VADER scoring system)
+    # Classification logic
     if compound >= 0.05:
         sentiment = 'positive'
     elif compound <= -0.05:
@@ -33,7 +36,7 @@ for appointment_id, feedback, rating in feedback_data:
     else:
         sentiment = 'neutral'
 
-    # Example of override logic (aligning with human rating)
+    # Override based on rating if needed
     if rating == 1 and sentiment == 'neutral':
         sentiment = 'negative'
 
