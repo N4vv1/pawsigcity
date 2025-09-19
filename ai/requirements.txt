@@ -1,8 +1,8 @@
 flask
 flask-cors
 gunicorn
-scikit-learn
-pandas
-numpy
 psycopg2-binary
 vaderSentiment
+scikit-learn
+numpy
+pandas
