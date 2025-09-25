@@ -44,10 +44,10 @@ if (!$result) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PAWSig City</title>
+  <title>PAWSig City - Homepage</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="./images/Logo.jpg">
+  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
 
   <style>
     .fade-out {
@@ -61,7 +61,7 @@ if (!$result) {
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+        <img src="../pawsigcity/icons/pawsig.png" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -122,7 +122,11 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
+<<<<<<< HEAD
           <img src="./images/paw.png" alt="Hero" class="image-hero" />
+=======
+          <img src="../pawsigcity/icons/home.png" alt="Hero" class="image-hero" />
+>>>>>>> ee0f582caacf11566c3150d3936384b072da263d
         </div>
       </div>
     </section>
@@ -132,7 +136,7 @@ if (!$result) {
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="../homepage/images/about.jpg" alt="About Our Shop" class="about-image" />
+          <img src="../pawsigcity/homepage/images/about.jpg" alt="About Our Shop" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
@@ -154,21 +158,21 @@ if (!$result) {
         <ul class="service-list">
           <li class="service-item">
             <a href="../appointment/book-appointment.php" class="service-link">
-              <img src="../homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
+              <img src="../pawsigcity/homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
               <h3 class="name">FULL GROOMING</h3>
               <p class="text">Includes bath, dry, haircut, nail trim, brushing, and more.</p>
             </a>
           </li>
           <li class="service-item">
-            <a href="../appointment/book-appointment.php" class="service-link">
-              <img src="../homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
+            <a href="../pawsigcity/appointment/book-appointment.php" class="service-link">
+              <img src="../pawsigcity/homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
               <h3 class="name">SPA BATH</h3>
               <p class="text">Pamper with nano bubble bath, odor eliminator, and paw moisturizer.</p>
             </a>
           </li>
           <li class="service-item">
             <a href="../appointment/book-appointment.php" class="service-link">
-              <img src="../homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
+              <img src="../pawsigcity/homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
               <h3 class="name">BATH AND DRY</h3>
               <p class="text">Quick cleaning — perfect between full grooming sessions.</p>
             </a>
@@ -188,7 +192,7 @@ if (!$result) {
                 <?php while ($row = pg_fetch_assoc($result)): ?>
                   <li class="gallery-item">
                     <div class="gallery-image-container">
-                      <img src="../dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image" class="gallery-image" />
+                      <img src="../pawsigcity/dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image" class="gallery-image" />
                     </div>
                   </li>
                 <?php endwhile; ?>
@@ -241,6 +245,7 @@ if (!$result) {
       </div>
     </section>
 
+<<<<<<< HEAD
      <!-- Footer Section -->
 <footer class="footer-section">
   <div class="section-content footer-container">
@@ -277,6 +282,8 @@ if (!$result) {
   </div>
 </footer>
 
+=======
+>>>>>>> ee0f582caacf11566c3150d3936384b072da263d
   </main>
 
   <!-- JavaScript -->

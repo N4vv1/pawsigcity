@@ -30,7 +30,7 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
   <title>Your Appointments</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../homepage/images/Logo.jpg">
+  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
 
   <style>
   body {
@@ -162,7 +162,7 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
 <header class="appointment-header">
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+        <img src="../pawsigcity/icons/pawsig.png" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
