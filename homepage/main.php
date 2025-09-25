@@ -122,7 +122,7 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../../Purrfect-paws/homepage/images/paw.png" alt="Hero" class="image-hero" />
+          <img src="./images/paw.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -137,7 +137,7 @@ if (!$result) {
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
           <p class="text">
-            Purrfect Paws is a pet grooming shop committed to providing quality, gentle, and professional grooming services for pets of all shapes and sizes. We believe that every pet deserves to feel clean, happy, and loved — and every pet owner deserves a hassle-free booking experience.
+            PAWsig City is a pet grooming shop committed to providing quality, gentle, and professional grooming services for pets of all shapes and sizes. We believe that every pet deserves to feel clean, happy, and loved — and every pet owner deserves a hassle-free booking experience.
           </p>
           <div class="social-link-list">
             <a href="#" class="social-link"><i class="fa-brands fa-facebook"></i></a>
@@ -230,7 +230,7 @@ if (!$result) {
           <li class="contact-info"><i class="fa-solid fa-phone"></i><p>CP num</p></li>
           <li class="contact-info"><i class="fa-solid fa-clock"></i><p>9AM - 8PM ONLY</p></li>
           <li class="contact-info"><i class="fa-solid fa-calendar-check"></i><p>MONDAY TO SUNDAY</p></li>
-          <li class="contact-info"><i class="fa-solid fa-globe"></i><p>Purrfect Paws</p></li>
+          <li class="contact-info"><i class="fa-solid fa-globe"></i><p>PAWsig City</p></li>
         </ul>
         <form action="#" class="contact-form">
           <input type="text" placeholder="Your Name" class="form-input" required />
@@ -245,8 +245,8 @@ if (!$result) {
 <footer class="footer-section">
   <div class="section-content footer-container">
     <div class="footer-logo">
-      <img src="../homepage/images/Logo.jpg" alt="Purrfect Paws Logo" />
-      <h3>Purrfect Paws</h3>
+      <img src="../homepage/images/Logo.jpg" alt="PAWsig City Logo" />
+      <h3>PAWsig City</h3>
     </div>
     <div class="footer-links">
       <h4>Quick Links</h4>
@@ -261,8 +261,8 @@ if (!$result) {
     <div class="footer-contact">
       <h4>Contact Us</h4>
       <p>324 Dr. Sixto Antonio Ave., Caniogan, Pasig City</p>
-      <p>Email: purrfectpaws@gmail.com</p>
-      <p>Phone: 09XX-XXX-XXXX</p>
+      <p>Email: pawsigcity@gmail.com</p>
+      <p>Phone: 09338202892</p>
     </div>
     <div class="footer-socials">
       <h4>Follow Us</h4>

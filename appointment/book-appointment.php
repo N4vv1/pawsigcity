@@ -72,7 +72,7 @@ class AppointmentDecisionTree {
 
     private function getDefaultTree() {
         // Call Flask API without needing pet_id
-        $url = "http://127.0.0.1:5000/recommend";
+        $url = "https://pawsigcity-1.onrender.com/recommend";
 
         // Example default data (you can adjust this if needed)
         $data = [
@@ -287,7 +287,7 @@ if ($selected_pet_id) {
     }
 
     // API call for package recommendation
-    $api_url = "http://127.0.0.1:5000/recommend";
+    $api_url = "https://pawsigcity.onrender.com/recommend";
     $payload = json_encode([
         "breed" => $valid_pet['breed'],
         "gender" => $valid_pet['gender'],
