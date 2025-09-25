@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $scriptPath = "E:\\xampp\\htdocs\\Purrfect-paws\\recommendation\\recommend.py";
         $command = "\"$pythonPath\" \"$scriptPath\" 2>&1";
         $output = shell_exec($command);
-        file_put_contents(__DIR__ . '/recommendation_log.txt', $output); // optional logging
+        // file_put_contents(__DIR__ . './recommendation_log.txt', $output); // optional logging
 
         // Redirect to appointment confirmation page
         $_SESSION['success'] = "✅ Appointment booked successfully!";

@@ -876,7 +876,7 @@ $model_stats = $ml_model->getModelStats();
               <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>
             </div>
 
-            <button type="submit" class="btn submit-btn">Book Appointment (ML Optimized)</button>
+            <button type="submit" class="btn submit-btn">Book Appointment</button>
           </form>
         </div>
       <?php endif; ?>

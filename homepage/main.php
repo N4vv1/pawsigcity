@@ -122,11 +122,8 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-<<<<<<< HEAD
           <img src="./images/paw.png" alt="Hero" class="image-hero" />
-=======
           <img src="../pawsigcity/icons/home.png" alt="Hero" class="image-hero" />
->>>>>>> ee0f582caacf11566c3150d3936384b072da263d
         </div>
       </div>
     </section>
@@ -245,7 +242,6 @@ if (!$result) {
       </div>
     </section>
 
-<<<<<<< HEAD
      <!-- Footer Section -->
 <footer class="footer-section">
   <div class="section-content footer-container">
@@ -282,8 +278,6 @@ if (!$result) {
   </div>
 </footer>
 
-=======
->>>>>>> ee0f582caacf11566c3150d3936384b072da263d
   </main>
 
   <!-- JavaScript -->
