@@ -61,7 +61,7 @@ if (!$result) {
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../pawsigcity/icons/pawsig.png" alt="Logo" class="icon" />
+        <img src="/icons/pawsig.png" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -122,8 +122,7 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="./images/paw.png" alt="Hero" class="image-hero" />
-          <img src="../pawsigcity/icons/home.png" alt="Hero" class="image-hero" />
+          <img src="/icons/home.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -133,7 +132,7 @@ if (!$result) {
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="../pawsigcity/homepage/images/about.jpg" alt="About Our Shop" class="about-image" />
+          <img src="./images/about.jpg" alt="About Our Shop" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
@@ -155,21 +154,21 @@ if (!$result) {
         <ul class="service-list">
           <li class="service-item">
             <a href="../appointment/book-appointment.php" class="service-link">
-              <img src="../pawsigcity/homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
+              <img src="./images/fullgroom.png" alt="Full Grooming" class="service-image" />
               <h3 class="name">FULL GROOMING</h3>
               <p class="text">Includes bath, dry, haircut, nail trim, brushing, and more.</p>
             </a>
           </li>
           <li class="service-item">
             <a href="../pawsigcity/appointment/book-appointment.php" class="service-link">
-              <img src="../pawsigcity/homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
+              <img src="./images/bathdry.png" alt="Spa Bath" class="service-image" />
               <h3 class="name">SPA BATH</h3>
               <p class="text">Pamper with nano bubble bath, odor eliminator, and paw moisturizer.</p>
             </a>
           </li>
           <li class="service-item">
             <a href="../appointment/book-appointment.php" class="service-link">
-              <img src="../pawsigcity/homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
+              <img src="./images/bnd.png" alt="Bath and Dry" class="service-image" />
               <h3 class="name">BATH AND DRY</h3>
               <p class="text">Quick cleaning — perfect between full grooming sessions.</p>
             </a>
