@@ -27,7 +27,7 @@ if (!$result) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Purrfect Paws</title>
+  <title>PAWsig City</title>
   <link rel="stylesheet" href="./homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="icon" type="image/png" href="../homepage/images/Logo.jpg">
@@ -64,7 +64,7 @@ if (!$result) {
     <section class="hero-section" id="home">
       <div class="section-content">
         <div class="hero-details">
-          <h2 class="title">PURRFECT PAWS</h2>
+          <h2 class="title">PAWsig City</h2>
           <h3 class="subtitle">Best Grooming in the Town of Caniogan</h3>
           <p class="description">From Paw-scheduling to Tail-wagging — We’ve Got It Covered.</p>
           <div class="buttons">
@@ -73,7 +73,7 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../../Purrfect-paws/homepage/images/paw.png" alt="Hero" class="image-hero" />
+          <img src="" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -87,7 +87,7 @@ if (!$result) {
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
           <p class="text">
-            Purrfect Paws is a pet grooming shop committed to providing quality, gentle, and professional grooming services for pets of all shapes and sizes. We believe that every pet deserves to feel clean, happy, and loved — and every pet owner deserves a hassle-free booking experience.
+            PAWsig City is a pet grooming shop committed to providing quality, gentle, and professional grooming services for pets of all shapes and sizes. We believe that every pet deserves to feel clean, happy, and loved — and every pet owner deserves a hassle-free booking experience.
           </p>
           <div class="social-link-list">
             <a href="#" class="social-link"><i class="fa-brands fa-facebook"></i></a>
@@ -198,11 +198,11 @@ if (!$result) {
       <div class="section-content">
         <ul class="contact-info-list">
           <li class="contact-info"><i class="fa-solid fa-location-crosshairs"></i><p>324 DR. SIXTO ANTONIO AVENUE., CANIOGAN, PASIG CITY</p></li>
-          <li class="contact-info"><i class="fa-regular fa-envelope"></i><p>purrfectpaws@gmail.com</p></li>
+          <li class="contact-info"><i class="fa-regular fa-envelope"></i><p>pawsigcity@gmail.com</p></li>
           <li class="contact-info"><i class="fa-solid fa-phone"></i><p>CP num</p></li>
           <li class="contact-info"><i class="fa-solid fa-clock"></i><p>9AM - 8PM ONLY</p></li>
           <li class="contact-info"><i class="fa-solid fa-calendar-check"></i><p>MONDAY TO SUNDAY</p></li>
-          <li class="contact-info"><i class="fa-solid fa-globe"></i><p>Purrfect Paws</p></li>
+          <li class="contact-info"><i class="fa-solid fa-globe"></i><p>PAWsig City</p></li>
         </ul>
         <form action="loginform.php" class="contact-form">
           <input type="text" placeholder="Your Name" class="form-input" required />
@@ -217,8 +217,8 @@ if (!$result) {
 <footer class="footer-section">
   <div class="section-content footer-container">
     <div class="footer-logo">
-      <img src="../homepage/images/Logo.jpg" alt="Purrfect Paws Logo" />
-      <h3>Purrfect Paws</h3>
+      <img src="../homepage/images/Logo.jpg" alt="PAWsig City Logo" />
+      <h3>PAWsig City</h3>
     </div>
     <div class="footer-links">
       <h4>Quick Links</h4>
@@ -233,7 +233,7 @@ if (!$result) {
     <div class="footer-contact">
       <h4>Contact Us</h4>
       <p>324 Dr. Sixto Antonio Ave., Caniogan, Pasig City</p>
-      <p>Email: purrfectpaws@gmail.com</p>
+      <p>Email: pawsigcity@gmail.com</p>
       <p>Phone: 09XX-XXX-XXXX</p>
     </div>
     <div class="footer-socials">
@@ -245,7 +245,7 @@ if (!$result) {
     </div>
   </div>
   <div class="footer-bottom">
-    <p>&copy; 2025 Purrfect Paws. All rights reserved.</p>
+    <p>&copy; 2025 PAWsig City. All rights reserved.</p>
   </div>
 </footer>
 
