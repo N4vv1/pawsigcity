@@ -37,10 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Redirect based on role
             switch ($user['role']) {
                 case 'admin':
-                    header("Location: ../../../../dashboard/admin/admin.php");
+                    header("Location: https://pawsigcity.onrender.com/../../../../dashboard/admin/admin.php");
                     break;
                 default: // customer
-                    header("Location: ../../../main.php");
+                    header("Location: https://pawsigcity.onrender.com/../../../main.php");
                     break;
             }
             exit;
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Return to login with error
-    header("Location: http://localhost/pawsigcity/homepage/login/loginform.php");
+    header("Location: https://pawsigcity.onrender.com/homepage/login/loginform.php");
     exit;
 }
 ?>
