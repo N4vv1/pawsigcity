@@ -37,7 +37,7 @@ if (!$result) {
    <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../pawsigcity/icons/pawsig.png" alt="Logo" class="icon" />
+      <img src="/icons/pawsig.png" alt="Logo" class="icon" />
     </a>
     <ul class="nav-menu">
       <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -73,7 +73,7 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../pawsigcity/icons/home.png" alt="Hero" class="image-hero" />
+          <img src="/icons/home.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
@@ -82,7 +82,7 @@ if (!$result) {
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="../pawsigcity/homepage/images/about.jpg" alt="About" class="about-image" />
+          <img src="./homepage/images/about.jpg" alt="About" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
@@ -105,7 +105,7 @@ if (!$result) {
 
       <li class="service-item">
         <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="../pawsigcity/homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
+          <img src="./homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
           <h3 class="name">FULL GROOMING</h3>
           <p class="text">
             Our Full Grooming package includes a warm bath, blow dry, nail trim, tooth brushing, ear cleaning, and a stylish haircut — everything your pet needs to look and feel their best.
@@ -114,7 +114,7 @@ if (!$result) {
       </li>
 
       <li class="service-item">
-        <a href="../homepage/login/loginform.php" class="service-link">
+        <a href="./homepage/images/bathdry.png" class="service-link">
           <img src="../pawsigcity/homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
           <h3 class="name">SPA BATH</h3>
           <p class="text">
@@ -125,7 +125,7 @@ if (!$result) {
 
       <li class="service-item">
         <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="../pawsigcity/homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
+          <img src="./homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
           <h3 class="name">BATH AND DRY</h3>
           <p class="text">
             A quick and refreshing service that includes a full bath and gentle blow dry — ideal for keeping your pet clean between full grooming sessions.
