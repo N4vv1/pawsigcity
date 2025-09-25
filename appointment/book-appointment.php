@@ -348,7 +348,7 @@ $model_stats = $ml_model->getModelStats();
   <title>Book Appointment</title>
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="../homepage/images/Logo.jpg">
+  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
   <!-- Add inside <head> -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -738,7 +738,7 @@ $model_stats = $ml_model->getModelStats();
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../homepage/images/Logo.jpg" alt="Logo" class="icon" />
+        <img src="../pawsigcity/icons/pawsig.png" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>

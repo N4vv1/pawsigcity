@@ -38,7 +38,7 @@ $packages_result = pg_query($conn, $packages_query);
   <title>Receptionist Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../../homepage/images/Logo.jpg">
+  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
   <style>
     :root {
       --white-color: #fff;
@@ -280,7 +280,7 @@ $packages_result = pg_query($conn, $packages_query);
     <img src="../../homepage/images/Logo.jpg" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="receptionist_home.php" class="active"><i class='bx bx-home'></i>All Appointments</a>
+    <a href="../pawsigcity/icons/pawsig.png" class="active"><i class='bx bx-home'></i>All Appointments</a>
   </nav>
 </aside>
 
