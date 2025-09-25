@@ -37,10 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Redirect based on role
             switch ($user['role']) {
                 case 'admin':
-                    header("Location: https://pawsigcity.onrender.com/../../../../dashboard/admin/admin.php");
+                    header("Location: https://pawsigcity.onrender.com/dashboard/admin/admin.php");
                     break;
                 default: // customer
-                    header("Location: https://pawsigcity.onrender.com/../../../main.php");
+                    header("Location: https://pawsigcity.onrender.com/homepage/main.php");
                     break;
             }
             exit;
