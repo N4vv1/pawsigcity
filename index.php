@@ -216,8 +216,8 @@ if (!$result) {
    
 <h3>Image Path Test</h3>
 <ul>
-  <li>Logo: <img src="../icons/pawsig.png" alt="Logo test" width="80"></li>
-  <li>Home: <img src="../icons/home.png" alt="Home test" width="80"></li>
+  <li>Logo: <img src="/icons/pawsig.png" alt="Logo test" width="80"></li>
+  <li>Home: <img src="/icons/home.png" alt="Home test" width="80"></li>
 </ul>
 
   </main>
