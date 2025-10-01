@@ -300,19 +300,15 @@ if ($selected_pet_id) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
-        //$_SESSION['error'] = "⚠️ API request error: " . curl_error($ch);
-        //curl_close($ch);
-        //header("Location: book-appointment.php");
-        //exit;
+        $_SESSION['error'] = "⚠️ API request error: " . curl_error($ch);
+        curl_close($ch);
+        header("Location: book-appointment.php");
+        exit;
         echo "<p style='color:red;'>API request error: " . curl_error($ch) . "</p>";
     }
     curl_close($ch);
 
     $response_data = json_decode($response, true);
-
-    echo "<pre>API Response:\n";
-    print_r($response_data);
-    echo "</pre>";
     $recommended_package = $response_data['recommended_package'] ?? null;
 
     $packages_result = pg_query($conn, "

@@ -37,7 +37,7 @@ if (!$result) {
    <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="/icons/pawsig.png" alt="Logo" class="icon" />
+      <img src="../PAWsig-City/icons/pawsig.png" alt="Logo" class="icon" />
     </a>
     <ul class="nav-menu">
       <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -73,7 +73,7 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="/icons/home.png" alt="Hero" class="image-hero" />
+          <img src="../PAWsig-City/icons/home.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
