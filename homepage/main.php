@@ -47,7 +47,7 @@ if (!$result) {
   <title>PAWSig City - Homepage</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+  <link rel="icon" type="image/png" href="../icons/pawsig.png">
 
   <style>
     .fade-out {
@@ -241,41 +241,6 @@ if (!$result) {
       </div>
     </section>
 
-     <!-- Footer Section -->
-<footer class="footer-section">
-  <div class="section-content footer-container">
-    <div class="footer-logo">
-      <img src="../icons/pawsig.png" alt="PAWsig City Logo" />
-      <h3>PAWsig City</h3>
-    </div>
-    <div class="footer-links">
-      <h4>Quick Links</h4>
-      <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#service">Services</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </div>
-    <div class="footer-contact">
-      <h4>Contact Us</h4>
-      <p>324 Dr. Sixto Antonio Ave., Caniogan, Pasig City</p>
-      <p>Email: pawsigcity@gmail.com</p>
-      <p>Phone: 09338202892</p>
-    </div>
-    <div class="footer-socials">
-      <h4>Follow Us</h4>
-      <div class="social-icons">
-        <a href="#"><i class="fa-brands fa-facebook"></i></a>
-        <a href="#"><i class="fa-brands fa-instagram"></i></a>
-      </div>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>&copy; 2025 PAWsig City. All rights reserved.</p>
-  </div>
-</footer>
 
   </main>
 

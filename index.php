@@ -30,14 +30,14 @@ if (!$result) {
   <title>PAWsig City</title>
   <link rel="stylesheet" href="./homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+  <link rel="icon" type="image/png" href="./icons/pawsig.png">
 </head>
 <body>
   <!-- Navbar Header -->
    <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../PAWsig-City/icons/pawsig.png" alt="Logo" class="icon" />
+      <img src="./icons/home.png" alt="Logo" class="icon" />
     </a>
     <ul class="nav-menu">
       <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -115,7 +115,7 @@ if (!$result) {
 
       <li class="service-item">
         <a href="./homepage/images/bathdry.png" class="service-link">
-          <img src="../pawsigcity/homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
+          <img src="./homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
           <h3 class="name">SPA BATH</h3>
           <p class="text">
             Pamper your pet with our luxurious Spa Bath, which features a nano bubble bath, gentle massage, blow dry, nail trim, tooth brushing, and ear cleaning. This package also includes a stylish haircut, odor eliminator, and paw moisturizer for a complete spa experience.
