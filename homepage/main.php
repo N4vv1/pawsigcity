@@ -122,7 +122,7 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="/icons/pawsig.png" alt="Hero" class="image-hero" />
+          <img src="../icons/home.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
