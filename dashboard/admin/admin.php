@@ -6,14 +6,13 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 echo "<!-- PHP is working -->"; 
 
-// Also add this before your HTML to catch any PHP errors
 if (pg_connection_status($conn) !== PGSQL_CONNECTION_OK) {
     die('Database connection failed: ' . pg_last_error());
 }
-// if ($_SESSION['role'] !== 'admin') {
-//   header("Location: ../homepage/main.php");
-//   exit;
-// }
+ if ($_SESSION['role'] !== 'admin') {
+   header("Location: ../homepage/main.php");
+   exit;
+ }
 
 // Count metrics
 $total_users = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM users"), 0, 'count');
@@ -414,7 +413,7 @@ main {
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="#"><i class='bx bx-log-out'></i>Logout</a>
+    <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>
 

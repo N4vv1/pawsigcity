@@ -97,7 +97,7 @@ if (isset($_GET['id'])) {
   <title>User Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
   <style>
     :root {
       --white-color: #fff;
@@ -565,7 +565,17 @@ if (isset($_GET['id'])) {
       <form method="POST">
         <input type="hidden" name="user_id" value="<?= $edit_user['user_id'] ?>">
         <div class="input_box">
-          <input type="text" name="full_name" class="input-field" value="<?= htmlspecialchars($edit_user['full_name']) ?>" required>
+          <input type="text" name="first_name" class="input-field" value="<?= htmlspecialchars($edit_user['first_name']) ?>" required>
+          <label class="label">Full Name</label>
+          <i class='bx bx-user icon'></i>
+        </div>
+        <div class="input_box">
+          <input type="text" name="middle_name" class="input-field" value="<?= htmlspecialchars($edit_user['middle_name']) ?>" required>
+          <label class="label">Full Name</label>
+          <i class='bx bx-user icon'></i>
+        </div>
+        <div class="input_box">
+          <input type="text" name="last_name" class="input-field" value="<?= htmlspecialchars($edit_user['last_name']) ?>" required>
           <label class="label">Full Name</label>
           <i class='bx bx-user icon'></i>
         </div>
@@ -578,6 +588,16 @@ if (isset($_GET['id'])) {
           <input type="text" name="phone" class="input-field" value="<?= htmlspecialchars($edit_user['phone']) ?>" required>
           <label class="label">Phone</label>
           <i class='bx bx-phone icon'></i>
+        </div>
+        <div class="input_box">
+          <select name="role" class="input-field" required>
+            <option value="admin" <?= ($edit_user['role'] === 'admin') ? 'selected' : '' ?>>Admin</option>
+            <option value="customer" <?= ($edit_user['role'] === 'customer') ? 'selected' : '' ?>>Customer</option>
+            <option value="groomer" <?= ($edit_user['role'] === 'groomer') ? 'selected' : '' ?>>Groomer</option>
+            <option value="receptionist" <?= ($edit_user['role'] === 'receptionist') ? 'selected' : '' ?>>Receptionisst</option>
+          </select>
+          <label class="label">Role</label>
+          <i class='bx bx-user icon'></i>
         </div>
         <div class="input_box">
           <input type="submit" name="update_user" class="input-submit" value="Update User">
