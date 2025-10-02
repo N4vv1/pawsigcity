@@ -197,7 +197,7 @@ $appointments = pg_query($conn, $query);
   <!-- Sidebar -->
    <aside class="sidebar">
   <div class="logo">
-    <img src="../pawsigcity/icons/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
