@@ -779,47 +779,6 @@ $model_stats = $ml_model->getModelStats();
         <?php unset($_SESSION['error']); ?>
       <?php endif; ?>
 
-      <!-- ML-Powered Peak Hours Information -->
-      <div class="peak-hours-container">
-        <div class="peak-hours-title">
-          <i class="fas fa-brain"></i>
-          Purrfect Hours
-          <span class="ml-badge">
-            <i class="fas fa-robot"></i>
-            Machine Learning
-          </span>
-        </div>
-        
-        <div class="peak-info">
-          <strong>Purrfect Predictions:</strong> Our machine learning decision tree analyzes historical appointment data to predict optimal booking slots. Days with 0 appointments are marked as <strong>Low Demand</strong>, 1-4 appointments as <strong>Moderate</strong>, and 5+ appointments as <strong>High Demand</strong>.
-          <br><br>
-          <strong>Business Hours:</strong> Appointments available from 9:00 AM to 6:00 PM daily.
-          
-          <div class="model-stats">
-            <strong>📊 Model Info:</strong> 
-            Trained on <?= $model_stats['training_samples'] ?> historical appointments | 
-            Algorithm: <?= $model_stats['model_type'] ?> | 
-            Thresholds: <?= implode(' | ', $model_stats['thresholds']) ?> |
-            Operating Hours: 9 AM - 6 PM
-          </div>
-        </div>
-        
-        <div class="peak-legend">
-          <div class="legend-item">
-            <div class="legend-color high"></div>
-            <span>High Demand (5+ appointments)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color medium"></div>
-            <span>Moderate Demand (1-4 appointments)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color low"></div>
-            <span>Low Demand (0 appointments - Best Choice)</span>
-          </div>
-        </div>
-      </div>
-
       <?php if (!$selected_pet_id): ?>
         <div class="form-container">
           <h3>Choose a pet to book an appointment for:</h3>
