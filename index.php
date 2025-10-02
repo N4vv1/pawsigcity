@@ -30,14 +30,14 @@ if (!$result) {
   <title>PAWsig City</title>
   <link rel="stylesheet" href="./homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="./icons/pawsig.png">
+  <link rel="icon" type="image/png" href="./homepage/images/pawsig.png">
 </head>
 <body>
   <!-- Navbar Header -->
    <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="./icons/home.png" alt="Logo" class="icon" />
+      <img src="./homepage/images/pawsig.png" alt="Logo" class="icon" />
     </a>
     <ul class="nav-menu">
       <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -73,7 +73,7 @@ if (!$result) {
           </div>
         </div>
         <div class="hero-image-wrapper">
-          <img src="../PAWsig-City/icons/home.png" alt="Hero" class="image-hero" />
+          <img src="./homepage/images/home.png" alt="Hero" class="image-hero" />
         </div>
       </div>
     </section>
