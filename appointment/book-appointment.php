@@ -303,7 +303,7 @@ if ($selected_pet_id) {
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    // ✅ FIXED: Better error handling
+    // Better error handling
     if ($curl_error) {
         error_log("API Error: " . $curl_error);
         $_SESSION['error'] = "⚠️ Could not connect to recommendation service.";
@@ -318,7 +318,7 @@ if ($selected_pet_id) {
         if (isset($response_data['recommended_package'])) {
             $recommended_package = $response_data['recommended_package'];
             
-            // ✅ FIXED: Verify the package exists in database
+            // Verify the package exists in database
             $package_verify = pg_query_params(
                 $conn,
                 "SELECT p.name FROM packages p WHERE LOWER(p.name) = LOWER($1) LIMIT 1",
@@ -333,11 +333,10 @@ if ($selected_pet_id) {
         } elseif (isset($response_data['error'])) {
             $_SESSION['error'] = "⚠️ " . htmlspecialchars($response_data['error']);
             $recommended_package = null;
+        } else {
+            $recommended_package = null;
         }
     }
-
-    $response_data = json_decode($response, true);
-    $recommended_package = $response_data['recommended_package'] ?? null;
 
     // Fetch packages for dropdown
     $packages_result = pg_query($conn, "
@@ -358,13 +357,7 @@ if ($selected_pet_id) {
                 ELSE 4
             END,
             pp.min_weight
-    ");}
-
-
-if (isset($response_data) && isset($response_data['error'])) {
-    $recommended_package = null;
-    $_SESSION['error'] = "⚠️ Recommendation not available for this breed: " . htmlspecialchars($valid_pet['breed']);
-}
+    ");
 
 // ✅ Get model stats
 $model_stats = $ml_model->getModelStats();
