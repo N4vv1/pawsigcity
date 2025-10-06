@@ -321,7 +321,7 @@ if ($selected_pet_id) {
             // ✅ FIXED: Verify the package exists in database
             $package_verify = pg_query_params(
                 $conn,
-                "SELECT p.name FROM packages p WHERE LOWER(p.name) = LOWER($1) LIMIT 1",
+                "SELECT p.name FROM packages p WHERE p.name ILIKE '%' || $1 || '%' LIMIT 1",
                 [$recommended_package]
             );
             
