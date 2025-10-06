@@ -290,8 +290,6 @@ if ($selected_pet_id) {
     $api_url = "https://pawsigcity-1.onrender.com/recommend";
     $payload = json_encode([
         "breed" => $valid_pet['breed'],
-        "gender" => $valid_pet['gender'],
-        "age" => (int)$valid_pet['age']
     ]);
 
     $ch = curl_init($api_url);
@@ -335,9 +333,6 @@ if ($selected_pet_id) {
             $recommended_package = null;
         }
     }
-
-    $response_data = json_decode($response, true);
-    $recommended_package = $response_data['recommended_package'] ?? null;
 
     // Fetch packages for dropdown
     $packages_result = pg_query($conn, "
