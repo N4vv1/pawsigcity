@@ -287,7 +287,7 @@ if ($selected_pet_id) {
     }
 
     // API call for package recommendation
-    $api_url = "https://pawsigcity.onrender.com/recommend";
+    $api_url = "https://pawsigcity-1.onrender.com/recommend";
     $payload = json_encode([
         "breed" => $valid_pet['breed'],
         "gender" => $valid_pet['gender'],
@@ -299,40 +299,67 @@ if ($selected_pet_id) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
     $response = curl_exec($ch);
-    if (curl_errno($ch)) {
-        $_SESSION['error'] = "⚠️ API request error: " . curl_error($ch);
-        curl_close($ch);
-        header("Location: book-appointment.php");
-        exit;
-        echo "<p style='color:red;'>API request error: " . curl_error($ch) . "</p>";
-    }
+    $curl_error = curl_error($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+
+    // ✅ FIXED: Better error handling
+    if ($curl_error) {
+        error_log("API Error: " . $curl_error);
+        $_SESSION['error'] = "⚠️ Could not connect to recommendation service.";
+        $recommended_package = null;
+    } elseif ($http_code !== 200) {
+        error_log("API HTTP Error: " . $http_code . " Response: " . $response);
+        $_SESSION['error'] = "⚠️ Recommendation service unavailable.";
+        $recommended_package = null;
+    } else {
+        $response_data = json_decode($response, true);
+        
+        if (isset($response_data['recommended_package'])) {
+            $recommended_package = $response_data['recommended_package'];
+            
+            // ✅ FIXED: Verify the package exists in database
+            $package_verify = pg_query_params(
+                $conn,
+                "SELECT p.name FROM packages p WHERE LOWER(p.name) = LOWER($1) LIMIT 1",
+                [$recommended_package]
+            );
+            
+            if (!pg_fetch_assoc($package_verify)) {
+                error_log("Recommended package not found in DB: " . $recommended_package);
+                $_SESSION['error'] = "⚠️ Recommended package '{$recommended_package}' not available.";
+                $recommended_package = null;
+            }
+        } elseif (isset($response_data['error'])) {
+            $_SESSION['error'] = "⚠️ " . htmlspecialchars($response_data['error']);
+            $recommended_package = null;
+        }
+    }
 
     $response_data = json_decode($response, true);
     $recommended_package = $response_data['recommended_package'] ?? null;
 
+    // Fetch packages for dropdown
     $packages_result = pg_query($conn, "
-    SELECT pp.price_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
-    FROM package_prices pp
-    JOIN packages p ON pp.package_id = p.package_id
-    ORDER BY 
-        p.name,
-        CASE pp.species
-            WHEN 'Dog' THEN 1
-            WHEN 'Cat' THEN 2
-            ELSE 3
-        END,
-        CASE pp.size
-            WHEN 'Small' THEN 1
-            WHEN 'Medium' THEN 2
-            WHEN 'Large' THEN 3
-            ELSE 4
-        END,
-        pp.min_weight
-");
+        SELECT pp.price_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
+        FROM package_prices pp
+        JOIN packages p ON pp.package_id = p.package_id
+        ORDER BY 
+            p.name,
+            CASE pp.species
+                WHEN 'Dog' THEN 1
+                WHEN 'Cat' THEN 2
+                ELSE 3
+            END,
+            CASE pp.size
+                WHEN 'Small' THEN 1
+                WHEN 'Medium' THEN 2
+                WHEN 'Large' THEN 3
+                ELSE 4
+            END,
+            pp.min_weight
+    ");}
 
-
-}
 
 if (isset($response_data) && isset($response_data['error'])) {
     $recommended_package = null;
@@ -835,6 +862,17 @@ $model_stats = $ml_model->getModelStats();
               <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
               <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>
             </div>
+
+            <?php if ($selected_pet_id): ?>
+                <!-- Debugging info (remove after fixing) -->
+                <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                    <strong>Debug Info:</strong><br>
+                    Pet: <?= htmlspecialchars($valid_pet['name']) ?><br>
+                    Breed: <?= htmlspecialchars($valid_pet['breed']) ?><br>
+                    Recommended Package: <?= $recommended_package ? htmlspecialchars($recommended_package) : 'None' ?><br>
+                    API Response: <?= isset($response) ? htmlspecialchars(substr($response, 0, 200)) : 'No response' ?>
+                </div>
+            <?php endif; ?>
 
             <button type="submit" class="btn submit-btn">Book Appointment</button>
           </form>
