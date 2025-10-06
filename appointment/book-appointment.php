@@ -358,7 +358,7 @@ if ($selected_pet_id) {
             END,
             pp.min_weight
     ");
-
+  }
 // ✅ Get model stats
 $model_stats = $ml_model->getModelStats();
 ?>
