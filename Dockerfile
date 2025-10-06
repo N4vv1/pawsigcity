@@ -9,7 +9,6 @@ RUN apt-get update \
 # Copy project files into container
 COPY . /var/www/html/
 COPY homepage /var/www/html/homepage
-COPY icons /var/www/html/icons
 
 
 # Expose port 80 for web traffic
