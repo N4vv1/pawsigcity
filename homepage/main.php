@@ -54,7 +54,137 @@ if (!$result) {
       opacity: 0;
       transition: opacity 0.3s ease-in-out;
     }
-  </style>
+  /* ===== Hero Section Enhanced ===== */
+.hero-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;             /* full viewport height */
+  min-height: unset;         /* remove forced extra height */
+  padding: 0 20px;           /* keep only side padding */
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  overflow: hidden;
+}
+
+/* subtle paw background */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('../homepage/images/paw-bg.png') repeat;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+/* overlay effect */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: #A8E6CF;
+  backdrop-filter: blur(2px);
+}
+
+.hero-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  z-index: 1;
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 0;  /* optional spacing for balance */
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #333;
+}
+
+.hero-title span {
+  color: #FFE4A3;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  margin: 15px 0;
+  color: #444;
+  font-weight: 600;
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;  /* centers buttons */
+  gap: 15px;
+  margin-top: 20px;         /* space from description */
+}
+
+.hero-buttons .button {
+  padding: 12px 25px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.book-now {
+  background: #A8E6CF;
+  color: #fff;
+    border: 2px solid #252525;
+
+}
+
+.book-now:hover {
+  background: #FFE4A3;
+  transform: translateY(-2px);
+}
+
+.contact-us {
+  background: #FFE4A3;
+  border: 2px solid #252525;
+  color: #252525;
+}
+
+.contact-us:hover {
+  background: #A8E6CF;
+  color: #fff;
+}
+
+/* Hero Image */
+.hero-image-wrapper {
+  flex: 1;
+  text-align: center;
+}
+
+.hero-image {
+  width: 350px;
+  max-width: 100%;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+</style>
 </head>
 <body>
   <!-- Navbar Header -->
@@ -78,7 +208,7 @@ if (!$result) {
             <li><a href="../pets/add-pet.php">Add Pet</a></li>
             <li><a href="../appointment/book-appointment.php">Book</a></li>
             <li><a href="../homepage/appointments.php">Appointments</a></li>
-            <li><a href="../../Purrfect-paws/ai/chatbot/index.html">Help Center</a></li>
+            <li><a href="../ai/templates/index.html">Help Center</a></li>
             <li><a href="../homepage/logout/logout.php">Logout</a></li>
           </ul>
         </li>
@@ -110,22 +240,27 @@ if (!$result) {
 
   <!-- Hero Section -->
   <main>
-    <section class="hero-section" id="home">
-      <div class="section-content">
-        <div class="hero-details">
-          <h2 class="title">PAWSig City</h2>
-          <h3 class="subtitle">Best Grooming in the Town of Caniogan</h3>
-          <p class="description">From Paw-scheduling to Tail-wagging — We’ve Got It Covered.</p>
-          <div class="buttons">
-            <a href="../homepage/login/loginform.php" class="button book-now">Book Now</a>
-            <a href="#contact" class="button contact-us">Contact Us</a>
-          </div>
-        </div>
-        <div class="hero-image-wrapper">
-          <img src="../icons/home.png" alt="Hero" class="image-hero" />
-        </div>
+      
+<section class="hero-section" id="home">
+  <div class="hero-overlay"></div>
+  <div class="section-content hero-content">
+    <div class="hero-text">
+      <h1 class="hero-title">Welcome to <span>PAWsig City</span></h1>
+      <h3 class="hero-subtitle">Where Grooming Meets Love & Care</h3>
+      <p class="hero-description">
+        From Paw-scheduling to Tail-wagging — We’ve Got It Covered.  
+        Treat your pets with the best grooming experience in Pasig City.
+      </p>
+      <div class="hero-buttons">
+        <a href="../homepage/login/loginform.php" class="button book-now"> Book Now</a>
+        <a href="#contact" class="button contact-us"> Contact Us</a>
       </div>
-    </section>
+    </div>
+    <div class="hero-image-wrapper">
+      <img src="./icons/home.png" alt="Happy Pet" class="hero-image" />
+    </div>
+  </div>
+</section>
 
 
     <!-- About Section -->
