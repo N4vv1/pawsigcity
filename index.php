@@ -37,7 +37,7 @@ if (!$result) {
    <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="./icons/home.png" alt="Logo" class="icon" />
+      <img src="./homepage/images/pawsig.png" alt="Logo" class="icon" />
     </a>
     <ul class="nav-menu">
       <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>

@@ -448,7 +448,7 @@
     </a>
     
     <div class="brand-content">
-      <h1>Welcome PAWsig City!</h1>
+      <h1>This is PAWsig City!</h1>
       <p>We care for your pets when they need it most.</p>
       
       <div class="brand-features">
@@ -534,8 +534,8 @@
             </div>
 
             <div class="input-box">
-              <input type="text" class="input-field" name="middle_name" />
-              <label class="label">Middle Name (optional)</label>
+              <input type="text" class="input-field" name="middle_name" required/>
+              <label class="label">Middle Name</label>
               <i class='bx bx-user icon'></i>
             </div>
 
@@ -552,7 +552,7 @@
             </div>
 
             <div class="input-box">
-              <input type="text" class="input-field" name="phone" />
+              <input type="text" class="input-field" name="phone"  required/>
               <label class="label">Phone Number</label>
               <i class='bx bx-phone icon'></i>
             </div>
