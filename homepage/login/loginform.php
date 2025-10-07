@@ -441,7 +441,7 @@
 </head>
 <body>
 
-    <!-- Left Side - Branding -->
+  <!-- Left Side - Branding -->
   <div class="brand-side">
     <a href="../../index.php" class="back-button">
       <i class='bx bx-arrow-back'></i> Back

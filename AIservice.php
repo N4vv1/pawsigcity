@@ -11,7 +11,7 @@
  */
 
 class AIService {
-    private $baseUrl = "https://pawsigcity-ai.onrender.com"; // change if needed
+    private $baseUrl = "https://pawsigcity-1.onrender.com"; // change if needed
 
     /**
      * Internal function to make a POST request
@@ -52,11 +52,9 @@ class AIService {
     /**
      * Get grooming package recommendation
      */
-    public function recommendPackage($breed, $gender, $age) {
+    public function recommendPackage($breed) {
         return $this->callAPI("/recommend", [
-            "breed"  => $breed,
-            "gender" => $gender,
-            "age"    => $age
+            "breed"  => $breed
         ]);
     }
 

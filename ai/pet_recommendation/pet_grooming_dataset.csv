@@ -1,65 +1,125 @@
 Breed,Package
-Pomeranian,Full Grooming
-Doberman,Bath and Dry
-Chihuahua,Nail Trim
-Beagle,Bath and Dry
-Mini Pinscher,Bath and Dry
-Aspin,Bath and Dry
-Golden Retriever,Bath and Dry
-Poodle,Full Grooming
-French Bulldog,Bath and Dry
-Poodle,Full Grooming
-German Shepherd,Bath and Dry
-Golden Retriever,Bath and Dry
-Siberian Husky,Spa Bath
-Doberman,Bath and Dry
-Jack Russell Terrier,Bath and Dry
-Belgian Malinois,Spa Bath
-Border Collie,Full Grooming
-French Bulldog,Bath and Dry
-Labrador Retriever,Spa Bath
-Poodle,Full Grooming
-Mini Pinscher,Bath and Dry
-French Bulldog,Bath and Dry
-Belgian Malinois,Spa Bath
-French Bulldog,Bath and Dry
-Aspin,Bath and Dry
-Chihuahua,Nail Trim
-Pitbull,Bath and Dry
-Chihuahua,Nail Trim
-Doberman,Bath and Dry
-Border Collie,Full Grooming
-Jack Russell Terrier,Bath and Dry
-Labrador Retriever,Spa Bath
-Beagle,Bath and Dry
-Chihuahua,Nail Trim
-Beagle,Bath and Dry
-Belgian Malinois,Spa Bath
-Dachshund,Bath and Dry
-Jack Russell Terrier,Bath and Dry
-Belgian Malinois,Spa Bath
-Dachshund,Bath and Dry
-Border Collie,Full Grooming
-Golden Retriever,Bath and Dry
-Shih Tzu,Full Grooming
-Golden Retriever,Bath and Dry
-Labrador Retriever,Spa Bath
-Dachshund,Bath and Dry
-Boxer,Spa Bath
-French Bulldog,Bath and Dry
-Jack Russell Terrier,Bath and Dry
-Doberman,Bath and Dry
-American Bulldog,Bath and Dry
-Shih Tzu (Princess Type),Full Grooming
-Pomeranian (Teacup),Full Grooming
-Siberian Husky,Bath and Dry
-Beagle,Bath and Dry
-Aspin,Bath and Dry
-Golden Retriever,Full Grooming
-Labrador,Full Grooming
-Dachshund,Full Grooming
-English Bulldog,Spa Bath
-Yorkie,Full Grooming
-Poodle,Full Grooming
-Shih Tzu (Choco Liver),Full Grooming
-Pekingese,Full Grooming
+# 🐶 Dog Breeds
+Pomeranian,Full Groom
+Doberman,Basic Groom
+Chihuahua,Basic Groom
+Beagle,Basic Groom
+Mini Pinscher,Basic Groom
+Aspin,Basic Groom
+Golden Retriever,Full Groom
+Poodle,Full Groom
+French Bulldog,Basic Groom
+German Shepherd,Full Groom
+Siberian Husky,Full Groom
+Jack Russell Terrier,Basic Groom
+Belgian Malinois,Basic Groom
+Border Collie,Full Groom
+Labrador Retriever,Basic Groom
+Dachshund,Basic Groom
+Boxer,Basic Groom
+American Bulldog,Basic Groom
+Shih Tzu,Full Groom
+Shih Tzu (Princess Type),Full Groom
+Pomeranian (Teacup),Full Groom
+Pitbull,Basic Groom
+Golden Retriever,Full Groom
+Labrador,Full Groom
+Dachshund,Full Groom
+English Bulldog,Basic Groom
+Yorkie,Full Groom
+Poodle,Full Groom
+Shih Tzu (Choco Liver),Full Groom
+Pekingese,Full Groom
+Cocker Spaniel,Full Groom
+Maltese,Full Groom
+Samoyed,Full Groom
+Rottweiler,Basic Groom
+Great Dane,Basic Groom
+Boston Terrier,Basic Groom
+Corgi,Full Groom
+Bichon Frise,Full Groom
+Pug,Basic Groom
+Shar Pei,Basic Groom
+Akita,Full Groom
+Border Terrier,Basic Groom
+Bullmastiff,Basic Groom
+Chow Chow,Full Groom
+Lhasa Apso,Full Groom
+Cavalier King Charles Spaniel,Full Groom
+Miniature Schnauzer,Full Groom
+West Highland White Terrier,Full Groom
+Yorkshire Terrier,Full Groom
+Alaskan Malamute,Full Groom
+
+# 🐶 Designer / Mixed Dog Breeds
+Labradoodle,Full Groom
+Goldendoodle,Full Groom
+Maltipoo,Full Groom
+Cavapoo,Full Groom
+Cockapoo,Full Groom
+Pomsky,Full Groom
+Puggle,Basic Groom
+Shorkie,Full Groom
+Chiweenie,Basic Groom
+Morkie,Full Groom
+Schnoodle,Full Groom
+Havapoo,Full Groom
+Yorkipoo,Full Groom
+Bullmatian,Basic Groom
+Shepadoodle,Full Groom
+Corgipoo,Full Groom
+Aussiedoodle,Full Groom
+Beaglier,Basic Groom
+Boxerdoodle,Full Groom
+Dorgi,Basic Groom
+Chug,Basic Groom
+Jackapoo,Full Groom
+Frenchton,Basic Groom
+
+# 🐱 Cat Breeds
+Persian,Full Groom
+Maine Coon,Full Groom
+Siamese,Basic Groom
+Ragdoll,Full Groom
+British Shorthair,Basic Groom
+Scottish Fold,Basic Groom
+Bengal,Basic Groom
+Sphynx,Basic Groom
+Norwegian Forest,Full Groom
+Himalayan,Full Groom
+American Shorthair,Basic Groom
+Russian Blue,Basic Groom
+Exotic Shorthair,Basic Groom
+Abyssinian,Basic Groom
+Birman,Full Groom
+Oriental Shorthair,Basic Groom
+Turkish Angora,Full Groom
+Savannah,Basic Groom
+Somali,Full Groom
+Balinese,Full Groom
+Ragamuffin,Full Groom
+Tonkinese,Basic Groom
+Snowshoe,Basic Groom
+Devon Rex,Basic Groom
+Cornish Rex,Basic Groom
+Pixie-Bob,Basic Groom
+Nebelung,Full Groom
+LaPerm,Full Groom
+Chausie,Basic Groom
+Burmese,Basic Groom
+American Curl,Basic Groom
+Selkirk Rex,Full Groom
+Manx,Basic Groom
+Ocicat,Basic Groom
+Khao Manee,Basic Groom
+Singapura,Basic Groom
+
+# 🐱 Hybrid / Designer Cat Breeds
+Bengal-Siamese Mix (Snow Bengal),Full Groom
+Persian-Ragdoll Mix,Full Groom
+Sphynx-Devon Rex Mix,Basic Groom
+Maine Coon-Norwegian Mix,Full Groom
+Scottish Fold-British Shorthair Mix,Basic Groom
+Savannah-Bengal Hybrid,Full Groom
+Ragdoll-Birman Mix,Full Groom
+Oriental-Siamese Mix,Basic Groom

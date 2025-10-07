@@ -47,7 +47,7 @@ if (!$result) {
   <title>PAWSig City - Homepage</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="../icons/pawsig.png">
+  <link rel="icon" type="image/png" href="./images/pawsig.png">
 
   <style>
     .fade-out {
@@ -191,7 +191,7 @@ if (!$result) {
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="../icons/pawsig.png" alt="Logo" class="icon" />
+        <img src="./images/pawsig.png" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -240,7 +240,7 @@ if (!$result) {
 
   <!-- Hero Section -->
   <main>
-      
+   <!-- Hero Section -->
 <section class="hero-section" id="home">
   <div class="hero-overlay"></div>
   <div class="section-content hero-content">
@@ -252,8 +252,8 @@ if (!$result) {
         Treat your pets with the best grooming experience in Pasig City.
       </p>
       <div class="hero-buttons">
-        <a href="../homepage/login/loginform.php" class="button book-now"> Book Now</a>
-        <a href="#contact" class="button contact-us"> Contact Us</a>
+        <a href="../homepage/login/loginform.php" class="button book-now">🐾 Book Now</a>
+        <a href="#contact" class="button contact-us">📞 Contact Us</a>
       </div>
     </div>
     <div class="hero-image-wrapper">
@@ -261,6 +261,7 @@ if (!$result) {
     </div>
   </div>
 </section>
+
 
 
     <!-- About Section -->

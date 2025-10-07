@@ -153,3 +153,29 @@
 2025-09-08 03:02:23,682 - 127.0.0.1 - - [08/Sep/2025 03:02:23] "POST /recommend HTTP/1.1" 200 -
 2025-09-08 03:04:23,949 - Input: {'breed': 'Pomeranian', 'gender': 'Male', 'age': 1}, Recommended: Full Grooming
 2025-09-08 03:04:23,950 - 127.0.0.1 - - [08/Sep/2025 03:04:23] "POST /recommend HTTP/1.1" 200 -
+2025-10-06 21:33:58,096 - Failed to load model or encoders: [Errno 2] No such file or directory: 'grooming_model.pkl'
+2025-10-06 21:35:47,046 - \u274c Failed to load model or encoders: [Errno 2] No such file or directory: 'E:\\xampp\\htdocs\\PAWSigCity\\ai\\pet_recommendation\\models\\grooming_model.pkl'
+2025-10-06 21:37:25,448 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-10-06 21:37:25,449 - [33mPress CTRL+C to quit[0m
+2025-10-06 21:41:06,539 - Input: {'breed': 'Pomeranian', 'age': 3}, Recommended: Full Groom
+2025-10-06 21:41:06,540 - 127.0.0.1 - - [06/Oct/2025 21:41:06] "POST /recommend HTTP/1.1" 200 -
+2025-10-06 21:42:13,632 - Input: {'breed': 'Persian Cat', 'age': 2}, Recommended: Full Groom
+2025-10-06 21:42:13,632 - 127.0.0.1 - - [06/Oct/2025 21:42:13] "POST /recommend HTTP/1.1" 200 -
+2025-10-06 21:42:39,311 - Input: {'breed': 'Persian Cat', 'age': 2}, Recommended: Full Groom
+2025-10-06 21:42:39,312 - 127.0.0.1 - - [06/Oct/2025 21:42:39] "POST /recommend HTTP/1.1" 200 -
+2025-10-06 21:44:27,635 - Unknown breed: Siamese
+2025-10-06 21:44:27,635 - 127.0.0.1 - - [06/Oct/2025 21:44:27] "[31m[1mPOST /recommend HTTP/1.1[0m" 400 -
+2025-10-06 21:44:41,059 - Unknown breed: Siamese
+2025-10-06 21:44:41,060 - 127.0.0.1 - - [06/Oct/2025 21:44:41] "[31m[1mPOST /recommend HTTP/1.1[0m" 400 -
+2025-10-06 21:45:38,335 - Unknown breed: Siamese
+2025-10-06 21:45:38,335 - 127.0.0.1 - - [06/Oct/2025 21:45:38] "[31m[1mPOST /recommend HTTP/1.1[0m" 400 -
+2025-10-06 21:46:21,076 - Input: {'breed': 'Siamese Cat', 'age': 2}, Recommended: Basic Groom
+2025-10-06 21:46:21,076 - 127.0.0.1 - - [06/Oct/2025 21:46:21] "POST /recommend HTTP/1.1" 200 -
+2025-10-06 21:48:12,106 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-10-06 21:48:12,106 - [33mPress CTRL+C to quit[0m
+2025-10-06 21:48:41,258 - Unknown breed: Siamese Cat
+2025-10-06 21:48:41,259 - 127.0.0.1 - - [06/Oct/2025 21:48:41] "[31m[1mPOST /recommend HTTP/1.1[0m" 400 -
+2025-10-06 21:49:03,362 - Input: {'breed': 'Siamese', 'age': 2}, Recommended: Basic Groom
+2025-10-06 21:49:03,362 - 127.0.0.1 - - [06/Oct/2025 21:49:03] "POST /recommend HTTP/1.1" 200 -

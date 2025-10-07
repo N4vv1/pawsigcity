@@ -6,14 +6,13 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 echo "<!-- PHP is working -->"; 
 
-// Also add this before your HTML to catch any PHP errors
 if (pg_connection_status($conn) !== PGSQL_CONNECTION_OK) {
     die('Database connection failed: ' . pg_last_error());
 }
-// if ($_SESSION['role'] !== 'admin') {
-//   header("Location: ../homepage/main.php");
-//   exit;
-// }
+ if ($_SESSION['role'] !== 'admin') {
+   header("Location: ../homepage/main.php");
+   exit;
+ }
 
 // Count metrics
 $total_users = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM users"), 0, 'count');
@@ -64,7 +63,7 @@ if ($noShowCount > 0) {
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
    <style>
     :root {
   --white-color: #fff;
@@ -399,7 +398,7 @@ main {
 <!-- Sidebar Only -->
 <aside class="sidebar">
   <div class="logo">
-    <img src="../pawsigcity/icons/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
@@ -414,21 +413,13 @@ main {
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="#"><i class='bx bx-log-out'></i>Logout</a>
+    <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>
 
 <main>
 
   <div class="dashboard">
-
-  <!-- Add this temporarily in your main section -->
-<button onclick="alert('Basic JS works!')" style="background: red; color: white; padding: 15px; font-size: 16px; margin: 20px; cursor: pointer;">
-    TEST JS
-</button>
-<button onclick="openModal('users')" style="background: green; color: white; padding: 10px;">
-  TEST MODAL
-</button>
     <div class="card">
       <div class="card-icon">
         <i class='bx bx-user'></i>

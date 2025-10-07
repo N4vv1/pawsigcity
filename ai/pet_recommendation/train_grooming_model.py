@@ -13,15 +13,13 @@ print("Columns in dataset:", df.columns.tolist())
 
 # Encode categorical features
 le_breed = LabelEncoder()
-le_gender = LabelEncoder()
 le_package = LabelEncoder()
 
 df["breed_encoded"] = le_breed.fit_transform(df["Breed"])
-df["gender_encoded"] = le_gender.fit_transform(df["Gender"])
 df["package_encoded"] = le_package.fit_transform(df["Package"])
 
 # Features and target
-X = df[["breed_encoded", "gender_encoded"]].assign(age=df["Age"])
+X = df[["breed_encoded"]]   # Only breed as feature
 y = df["package_encoded"]
 
 # Train model
@@ -35,10 +33,7 @@ with open("grooming_model.pkl", "wb") as f:
 with open("le_breed.pkl", "wb") as f:
     pickle.dump(le_breed, f)
 
-with open("le_gender.pkl", "wb") as f:
-    pickle.dump(le_gender, f)
-
 with open("le_package.pkl", "wb") as f:
     pickle.dump(le_package, f)
 
-print("Model and encoders saved.")
+print("✅ Model trained and saved successfully — using only Breed as input.")

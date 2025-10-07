@@ -20,7 +20,7 @@ logging.basicConfig(
 # Load models (from ai/models/)
 # --------------------------------------------------------
 base_dir = os.path.dirname(os.path.abspath(__file__))
-models_dir = os.path.join(base_dir, "models")
+models_dir = os.path.join(base_dir, "pet_recommendation")
 
 # Grooming recommendation model
 try:
@@ -28,8 +28,6 @@ try:
         grooming_model = pickle.load(f)
     with open(os.path.join(models_dir, "le_breed.pkl"), "rb") as f:
         le_breed = pickle.load(f)
-    with open(os.path.join(models_dir, "le_gender.pkl"), "rb") as f:
-        le_gender = pickle.load(f)
     with open(os.path.join(models_dir, "le_package.pkl"), "rb") as f:
         le_package = pickle.load(f)
 except Exception as e:
@@ -58,18 +56,14 @@ def recommend_package():
 
     data = request.get_json()
     breed = data.get("breed")
-    gender = data.get("gender")
-    age = data.get("age")
 
-    if not breed or not gender or age is None:
-        return jsonify({"error": "Missing breed, gender, or age."}), 400
+    if not breed:
+        return jsonify({"error": "Missing breed."}), 400
 
     try:
         breed_encoded = le_breed.transform([breed])[0]
-        gender_encoded = le_gender.transform([gender])[0]
-        age = int(age)
 
-        prediction = grooming_model.predict([[breed_encoded, gender_encoded, age]])
+        prediction = grooming_model.predict([[breed_encoded]])
         recommended = le_package.inverse_transform(prediction)[0]
 
         logging.info(f"Input: {data}, Recommended: {recommended}")

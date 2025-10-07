@@ -39,7 +39,7 @@ if (!$results) {
   <title>Feedback Reports</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
   <style>
     :root {
       --white-color: #fff;
@@ -179,7 +179,7 @@ if (!$results) {
 
 <aside class="sidebar">
   <div class="logo">
-    <img src="../pawsigcity/icons/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
