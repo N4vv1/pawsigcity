@@ -252,8 +252,8 @@ if (!$result) {
         Treat your pets with the best grooming experience in Pasig City.
       </p>
       <div class="hero-buttons">
-        <a href="../homepage/login/loginform.php" class="button book-now">🐾 Book Now</a>
-        <a href="#contact" class="button contact-us">📞 Contact Us</a>
+        <a href="../homepage/login/loginform.php" class="button book-now"> Book Now</a>
+        <a href="#contact" class="button contact-us"> Contact Us</a>
       </div>
     </div>
     <div class="hero-image-wrapper">
