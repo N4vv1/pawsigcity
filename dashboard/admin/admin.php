@@ -830,8 +830,8 @@ main {
 </main>
 
 <script>
-// Define modals object and functions globally (outside DOMContentLoaded)
-const modals = {
+// ✅ Define modal mapping globally
+window.modals = {
   users: 'usersModal',
   pets: 'petsModal',
   pending: 'pendingModal',
@@ -841,8 +841,8 @@ const modals = {
   history: 'historyModal'
 };
 
-// Global functions that onclick can access
-function openModal(type) {
+// ✅ Ensure all functions are attached to window (global scope)
+window.openModal = function(type) {
   console.log('openModal called with:', type);
   const modalId = modals[type];
   if (modalId) {
@@ -853,15 +853,17 @@ function openModal(type) {
     } else {
       console.error('Modal element not found:', modalId);
     }
+  } else {
+    console.error('Unknown modal type:', type);
   }
-}
+};
 
-function closeModal(id) {
+window.closeModal = function(id) {
   const modal = document.getElementById(id);
   if (modal) modal.style.display = 'none';
-}
+};
 
-function viewHistory(userId) {
+window.viewHistory = function(userId) {
   openModal('history');
   const historyContainer = document.getElementById('historyTable');
   if (historyContainer) {
@@ -871,26 +873,45 @@ function viewHistory(userId) {
       .then(html => historyContainer.innerHTML = html)
       .catch(() => historyContainer.innerHTML = 'Failed to load history.');
   }
-}
+};
 
-function showToast(message) {
+// ✅ Simple reusable toast
+window.showToast = function(message) {
   let toast = document.getElementById('toast');
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'toast';
-    toast.style.cssText = `position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600;`;
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      z-index: 9999;
+      font-weight: 600;
+      display: none;
+    `;
     document.body.appendChild(toast);
   }
   toast.textContent = message;
   toast.style.display = 'block';
   setTimeout(() => toast.style.display = 'none', 3000);
-}
+};
 
-// DOMContentLoaded only for initialization
+// ✅ Dropdown toggle
+window.toggleDropdown = function(event) {
+  event.preventDefault();
+  const menu = event.currentTarget.nextElementSibling;
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
+};
+
+// ✅ Initialize behaviors after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM ready');
-  
-  // Close modal on outside click
+
+  // Close modal when clicking outside
   window.onclick = function(event) {
     Object.values(modals).forEach(id => {
       const modal = document.getElementById(id);
@@ -898,22 +919,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   };
 
-  // Handle URL parameters
+  // Auto-open modals if ?show= parameter is present
   const params = new URLSearchParams(window.location.search);
   const modalToShow = params.get('show');
-  
   if (modalToShow && modals[modalToShow]) {
     openModal(modalToShow);
-    // ... your toast notifications
   }
 });
-
-function toggleDropdown(event) {
-  event.preventDefault();
-  const menu = event.currentTarget.nextElementSibling;
-  menu.style.display = (menu.style.display === "block") ? "none" : "block";
-  }
 </script>
+
 
 
 
