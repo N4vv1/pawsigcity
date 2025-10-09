@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = bin2hex(random_bytes(32));
     $expires = date("Y-m-d H:i:s", strtotime('+1 hour'));
 
-    $check = pg_query_params($conn, "SELECT id FROM users WHERE email = $1", [$email]);
+    $check = pg_query_params($conn, "SELECT user_id FROM users WHERE email = $1", [$email]);
     if (pg_num_rows($check) > 0) {
         // Save token
         pg_query_params($conn, "INSERT INTO password_resets (email, token, expires_at) VALUES ($1, $2, $3)", [$email, $token, $expires]);
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Forgot Password | PAWsig City</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+  <link rel="icon" type="image/png" href="../images/pawsig.png">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit">Send Reset Link</button>
     </form>
 
-    <a href="login.php" class="back"><i class='bx bx-arrow-back'></i> Back to Login</a>
+    <a href="loginform.php" class="back"><i class='bx bx-arrow-back'></i> Back to Login</a>
   </div>
 </body>
 </html>
