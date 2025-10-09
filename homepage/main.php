@@ -174,7 +174,7 @@ if (!$result) {
 }
 
 .hero-image {
-  width: 350px;
+  width: 550px;
   max-width: 100%;
   animation: float 4s ease-in-out infinite;
 }
