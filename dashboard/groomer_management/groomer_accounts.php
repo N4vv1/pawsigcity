@@ -78,6 +78,28 @@ if (isset($_GET['id'])) {
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+
+  <script>
+    function toggleDropdown(event) {
+      event.preventDefault();
+      const dropdown = event.currentTarget.nextElementSibling;
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdown if clicked outside
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropdown-toggle')) {
+        const dropdowns = document.getElementsByClassName("dropdown-menu");
+        for (let i = 0; i < dropdowns.length; i++) {
+          const openDropdown = dropdowns[i];
+          if (openDropdown.style.display === 'block') {
+            openDropdown.style.display = 'none';
+          }
+        }
+      }
+    };
+  </script>
+
 <style>
 :root {
   --white-color: #fff;
@@ -166,6 +188,42 @@ body {
 .menu a.active {
   background-color: var(--secondary-color);
   color: var(--dark-color);
+}
+
+/* Dropdown styles */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--dark-color);
+      border-radius: var(--border-radius-s);
+      transition: background 0.3s, color 0.3s;
+      font-weight: var(--font-weight-semi-bold);
+      cursor: pointer;
+}
+
+.dropdown-toggle:hover {
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
+}
+
+.dropdown-menu {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: 20px;
+      margin-top: 5px;
+}
+
+.dropdown-menu a {
+      padding: 8px 12px;
+      font-size: 0.9rem;
 }
 
 /* Main content */
@@ -357,7 +415,7 @@ th {
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
     <!-- USERS DROPDOWN -->
@@ -369,7 +427,6 @@ th {
       <div class="dropdown-menu">
         <a href="../manage_accounts/accounts.php"><i class='bx bx-user-circle'></i> All Users</a>
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
-        <a href="../../receptionist_dashboard/receptionist_home.php"><i class='bx bx-id-card'></i> Receptionists</a>
       </div>
     </div>
 

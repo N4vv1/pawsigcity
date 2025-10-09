@@ -543,7 +543,6 @@ if ($noShowCount > 0) {
       <div class="dropdown-menu">
         <a href="../manage_accounts/accounts.php"><i class='bx bx-user-circle'></i> All Users</a>
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
-        <a href="../../receptionist_dashboard/receptionist_home.php"><i class='bx bx-id-card'></i> Receptionists</a>
       </div>
     </div>
 
