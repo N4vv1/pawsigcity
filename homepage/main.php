@@ -191,7 +191,7 @@ if (!$result) {
   <header>
     <nav class="navbar section-content">
       <a href="#" class="navbar-logo">
-        <img src="./homepage/images/pawsig.png" alt="Logo" class="icon" />
+        <img src="./images/pawsig.png" alt="Logo" class="icon" />
       </a>
       <ul class="nav-menu">
         <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
@@ -257,7 +257,7 @@ if (!$result) {
       </div>
     </div>
     <div class="hero-image-wrapper">
-      <img src="./icons/home.png" alt="Happy Pet" class="hero-image" />
+      <img src="./images/asd.png" alt="Happy Pet" class="hero-image" />
     </div>
   </div>
 </section>

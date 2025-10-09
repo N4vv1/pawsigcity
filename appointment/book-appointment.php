@@ -365,7 +365,8 @@ $model_stats = $ml_model->getModelStats();
   <title>Book Appointment</title>
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
+  <link rel="icon" type="image/png" href="../homepage/images/pawsig.png">
+  
   <!-- Add inside <head> -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
