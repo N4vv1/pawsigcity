@@ -403,11 +403,19 @@ main {
   <nav class="menu">
     <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
     <hr>
-    <a href="../manage_accounts/accounts.php"><i class='bx bx-user'></i>Users</a>
-    <hr>
-    <a href="../groomer_management/groomer_accounts.php" ><i class='bx bx-user'></i>Groomers</a>
-    <hr>
-    <a href="../../receptionist_dashboard/receptionist_home.php" ><i class='bx bx-user'></i>Receptionist</a>
+
+    <!-- USERS DROPDOWN MENU -->
+    <div class="dropdown">
+      <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">
+        <i class='bx bx-user'></i> Users <i class='bx bx-chevron-down' style="float: right;"></i>
+      </a>
+      <div class="dropdown-menu" style="display: none; margin-left: 20px;">
+        <a href="../manage_accounts/accounts.php"><i class='bx bx-user-circle'></i> All Users</a>
+        <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
+        <a href="../../receptionist_dashboard/receptionist_home.php"><i class='bx bx-id-card'></i> Receptionists</a>
+      </div>
+    </div>
+
     <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
@@ -900,6 +908,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // ... your toast notifications
   }
 });
+
+function toggleDropdown(event) {
+  event.preventDefault();
+  const menu = event.currentTarget.nextElementSibling;
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  }
 </script>
 
 
