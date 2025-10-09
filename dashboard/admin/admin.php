@@ -1,26 +1,27 @@
 <?php
 session_start();
 require_once '../../db.php';
-// Add this at the very top of your PHP file (after session_start)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-echo "<!-- PHP is working -->"; 
 
 if (pg_connection_status($conn) !== PGSQL_CONNECTION_OK) {
     die('Database connection failed: ' . pg_last_error());
 }
- if ($_SESSION['role'] !== 'admin') {
+
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
    header("Location: ../homepage/main.php");
    exit;
- }
+}
 
 // Count metrics
 $total_users = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM users"), 0, 'count');
 $total_pets = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM pets"), 0, 'count');
 $total_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments"), 0, 'count');
+$pending_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'pending'"), 0, 'count');
 $confirmed_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'confirmed'"), 0, 'count');
 $completed_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'completed'"), 0, 'count');
 
+// Auto check for no-shows
 date_default_timezone_set('Asia/Manila');
 $now = new DateTime();
 
@@ -38,8 +39,6 @@ while ($row = pg_fetch_assoc($autoCheck)) {
 
     if ($now > $graceEnd) {
         $id = $row['appointment_id'];
-
-        // Only update if it's not already a no_show (just in case)
         $update = pg_query($conn, "UPDATE appointments SET status = 'no_show' WHERE appointment_id = $id");
         if ($update) {
             $noShowCount++;
@@ -48,8 +47,7 @@ while ($row = pg_fetch_assoc($autoCheck)) {
 }
 
 if ($noShowCount > 0) {
-    // Redirect to show toast
-    header("Location: home.php?noshows=$noShowCount&show=appointments");
+    header("Location: admin.php?noshows=$noShowCount&show=appointments");
     exit;
 }
 ?>
@@ -59,357 +57,402 @@ if ($noShowCount > 0) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin</title>
+  <title>Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
-   <style>
+  <style>
     :root {
-  --white-color: #fff;
-  --dark-color: #252525;
-  --primary-color: #A8E6CF;
-  --secondary-color: #FFE29D;
-  --light-pink-color: #faf4f5;
-  --medium-gray-color: #ccc;
-  --font-size-s: 0.9rem;
-  --font-size-n: 1rem;
-  --font-size-l: 1.5rem;
-  --font-size-xl: 2rem;
-  --font-weight-semi-bold: 600;
-  --font-weight-bold: 700;
-  --border-radius-s: 14px;
-  --border-radius-circle: 50%;
-  --site-max-width: 1300px;
-  --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
-  --transition-speed: 0.3s;
-}
+      --white-color: #fff;
+      --dark-color: #252525;
+      --primary-color: #A8E6CF;
+      --secondary-color: #FFE29D;
+      --light-pink-color: #faf4f5;
+      --medium-gray-color: #ccc;
+      --font-size-s: 0.9rem;
+      --font-size-n: 1rem;
+      --font-size-l: 1.5rem;
+      --font-size-xl: 2rem;
+      --font-weight-semi-bold: 600;
+      --font-weight-bold: 700;
+      --border-radius-s: 14px;
+      --border-radius-circle: 50%;
+      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+      --transition-speed: 0.3s;
+    }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Montserrat", sans-serif;
+    }
 
-body {
-  background: var(--light-pink-color);
-  display: flex;
-  min-height: 100vh;
-}
+    body {
+      background: var(--light-pink-color);
+      display: flex;
+      min-height: 100vh;
+    }
 
-/* --- SIDEBAR --- */
-.sidebar {
-  width: 260px;
-  height: 100vh;
-  background-color: var(--primary-color);
-  padding: 30px 20px;
-  position: fixed;
-  left: 0;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: var(--shadow-light);
-}
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background-color: var(--primary-color);
+      padding: 30px 20px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: var(--shadow-light);
+      overflow-y: auto;
+    }
 
-.sidebar .logo {
-  text-align: center;
-  margin-bottom: 20px;
-}
+    .sidebar .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-.sidebar .logo img {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--border-radius-circle);
-}
+    .sidebar .logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--border-radius-circle);
+    }
 
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.menu a {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  text-decoration: none;
-  color: var(--dark-color);
-  border-radius: var(--border-radius-s);
-  transition: background 0.3s, color 0.3s;
-  font-weight: var(--font-weight-semi-bold);
-}
+    .menu a {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--dark-color);
+      border-radius: var(--border-radius-s);
+      transition: background 0.3s, color 0.3s;
+      font-weight: var(--font-weight-semi-bold);
+    }
 
-.menu a i {
-  margin-right: 10px;
-  font-size: 20px;
-}
+    .menu a i {
+      margin-right: 10px;
+      font-size: 20px;
+    }
 
-.menu a:hover,
-.menu a.active {
-  background-color: var(--secondary-color);
-  color: var(--dark-color);
-}
+    .menu a:hover,
+    .menu a.active {
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
+    }
 
-.menu hr {
-  border: none;
-  border-top: 1px solid var(--secondary-color);
-  margin: 9px 0;
-}
+    .menu hr {
+      border: none;
+      border-top: 1px solid var(--secondary-color);
+      margin: 9px 0;
+    }
 
-/* --- MAIN CONTENT --- */
-main {
-  margin-left: 260px;
-  padding: 40px;
-  width: calc(100% - 260px);
-}
+    /* Dropdown styles */
+    .dropdown {
+      position: relative;
+    }
 
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 50px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding-top: 150px;
-}
+    .dropdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--dark-color);
+      border-radius: var(--border-radius-s);
+      transition: background 0.3s, color 0.3s;
+      font-weight: var(--font-weight-semi-bold);
+      cursor: pointer;
+    }
 
-/* --- CARDS --- */
-.card {
-  background: var(--white-color);
-  padding: 30px;
-  border-radius: var(--border-radius-s);
-  box-shadow: var(--shadow-light);
-  transition: var(--transition-speed);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  text-align: center;
-  min-height: 230px;
-  position: relative;
-}
+    .dropdown-toggle:hover {
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
+    }
 
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-}
+    .dropdown-menu {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: 20px;
+      margin-top: 5px;
+    }
 
-.card-icon {
-  font-size: 2.5rem;
-  color: var(--secondary-color);
-  margin-bottom: 10px;
-}
+    .dropdown-menu a {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
 
-.card h3 {
-  font-size: 1.1rem;
-  font-weight: var(--font-weight-semi-bold);
-  color: var(--dark-color);
-  margin-bottom: 8px;
-}
+    /* MAIN CONTENT */
+    main {
+      margin-left: 260px;
+      padding: 40px;
+      width: calc(100% - 260px);
+    }
 
-.card p {
-  font-size: 2rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--primary-color);
-}
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 50px;
+    }
 
-.card a {
-  margin-top: 20px;
-  font-size: var(--font-size-n);
-  text-decoration: none;
-  color: var(--dark-color);
-  background-color: var(--secondary-color);
-  padding: 10px 18px;
-  border-radius: var(--border-radius-s);
-  border: none;
-  transition: var(--transition-speed);
-}
+    /* CARDS */
+    .card {
+      background: var(--white-color);
+      padding: 30px;
+      border-radius: var(--border-radius-s);
+      box-shadow: var(--shadow-light);
+      transition: var(--transition-speed);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      min-height: 230px;
+      position: relative;
+    }
 
-.card a:hover {
-  background-color: var(--primary-color);
-  color: var(--white-color);
-}
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
 
-/* --- MODALS --- */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 200;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-  align-items: center;
-  justify-content: center;
-}
+    .card-icon {
+      font-size: 2.5rem;
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+    }
 
-.modal-content {
-  background-color: var(--white-color);
-  padding: 25px 30px;
-  border-radius: var(--border-radius-s);
-  width: 90%;
-  max-width: 800px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
-  animation: fadeIn 0.3s ease-in-out;
-}
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: var(--font-weight-semi-bold);
+      color: var(--dark-color);
+      margin-bottom: 8px;
+    }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
+    .card p {
+      font-size: 2rem;
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-color);
+    }
 
-.modal-content h2 {
-  margin-bottom: 18px;
-  color: var(--dark-color);
-  font-size: var(--font-size-l);
-}
+    .card a {
+      margin-top: 20px;
+      font-size: var(--font-size-n);
+      text-decoration: none;
+      color: var(--dark-color);
+      background-color: var(--secondary-color);
+      padding: 10px 18px;
+      border-radius: var(--border-radius-s);
+      border: none;
+      transition: var(--transition-speed);
+      display: inline-block;
+    }
 
-.modal-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
+    .card a:hover {
+      background-color: var(--primary-color);
+      color: var(--white-color);
+    }
 
-.modal-content table th,
-.modal-content table td {
-  padding: 12px 10px;
-  text-align: left;
-  border-bottom: 1px solid var(--medium-gray-color);
-  font-size: var(--font-size-s);
-}
+    /* MODALS */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 200;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      align-items: center;
+      justify-content: center;
+    }
 
-.modal-content table th {
-  background-color: var(--primary-color);
-  color: var(--dark-color);
-}
+    .modal-content {
+      background-color: var(--white-color);
+      padding: 25px 30px;
+      border-radius: var(--border-radius-s);
+      width: 90%;
+      max-width: 1000px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease-in-out;
+    }
 
-.modal-content button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: var(--primary-color);
-  color: var(--dark-color);
-  border: none;
-  border-radius: var(--border-radius-s);
-  cursor: pointer;
-  transition: var(--transition-speed);
-  font-weight: var(--font-weight-semi-bold);
-}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
 
-.modal-content button:hover {
-  background-color: var(--secondary-color);
-}
+    .modal-content h2 {
+      margin-bottom: 18px;
+      color: var(--dark-color);
+      font-size: var(--font-size-l);
+    }
 
-.feedback-box {
-  padding: 0;
-  margin: 0;
-  background: none;
-  border: none;
-  box-shadow: none;
-  font-size: inherit;
-  display: block;
-}
+    .modal-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
 
+    .modal-content table th,
+    .modal-content table td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--medium-gray-color);
+      font-size: var(--font-size-s);
+    }
 
-.feedback-box:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
-}
+    .modal-content table th {
+      background-color: var(--primary-color);
+      color: var(--dark-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-.feedback-stars {
-  color: #FFD700;
-  font-size: 1rem;
-  display: flex;
-  gap: 2px;
-}
+    .modal-content button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: var(--dark-color);
+      border: none;
+      border-radius: var(--border-radius-s);
+      cursor: pointer;
+      transition: var(--transition-speed);
+      font-weight: var(--font-weight-semi-bold);
+    }
 
+    .modal-content button:hover {
+      background-color: var(--secondary-color);
+    }
 
-.feedback-comment {
-  color: #333;
-  line-height: 1.3;
-  font-style: italic;
-  word-wrap: break-word;
-}
+    /* Feedback styling */
+    .feedback-box {
+      padding: 0;
+      margin: 0;
+      background: none;
+      border: none;
+      box-shadow: none;
+      font-size: inherit;
+      display: block;
+    }
 
-.feedback-user {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #888;
-}
+    .feedback-stars {
+      color: #FFD700;
+      font-size: 1rem;
+      display: flex;
+      gap: 2px;
+      margin-bottom: 5px;
+    }
 
-.feedback-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+    .feedback-comment {
+      color: #333;
+      line-height: 1.3;
+      font-style: italic;
+      word-wrap: break-word;
+    }
 
+    .feedback-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-/* Action buttons group */
-.action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
 
-/* Button style refinements */
-.button {
-  padding: 7px 12px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  text-decoration: none;
-  color: #252525;
-  background: #A8E6CF;
-  font-weight: 600;
-  transition: 0.2s;
-}
+    .button {
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      color: #252525;
+      background: #A8E6CF;
+      font-weight: 600;
+      transition: 0.2s;
+      display: inline-block;
+    }
 
-.button:hover {
-  background: #80d1b8;
-  color: #000;
-}
+    .button:hover {
+      background: #80d1b8;
+      color: #000;
+    }
 
-.button.danger {
-  background-color: #FFB6B6;
-}
+    .button.danger {
+      background-color: #FFB6B6;
+    }
 
-.button.danger:hover {
-  background-color: #e67d7d;
-}
+    .button.danger:hover {
+      background-color: #e67d7d;
+    }
 
-.button.secondary {
-  background-color: #FFE29D;
-}
+    .button.secondary {
+      background-color: #FFE29D;
+    }
 
-.button.secondary:hover {
-  background-color: #f8d775;
-}
+    .button.secondary:hover {
+      background-color: #f8d775;
+    }
 
-.button.view-history {
-  background-color: #dcdcdc;
-}
+    .button.view-history {
+      background-color: #dcdcdc;
+    }
 
-.button.view-history:hover {
-  background-color: #c0c0c0;
-}
-   </style>
+    .button.view-history:hover {
+      background-color: #c0c0c0;
+    }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      z-index: 9999;
+      font-weight: 600;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Sidebar Only -->
+<!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
-    <!-- USERS DROPDOWN MENU -->
+    <!-- USERS DROPDOWN -->
     <div class="dropdown">
-      <a href="#" class="dropdown-toggle" onclick="toggleDropdown(event)">
-        <i class='bx bx-user'></i> Users <i class='bx bx-chevron-down' style="float: right;"></i>
+      <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+        <span><i class='bx bx-user'></i> Users</span>
+        <i class='bx bx-chevron-down'></i>
       </a>
-      <div class="dropdown-menu" style="display: none; margin-left: 20px;">
+      <div class="dropdown-menu">
         <a href="../manage_accounts/accounts.php"><i class='bx bx-user-circle'></i> All Users</a>
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
         <a href="../../receptionist_dashboard/receptionist_home.php"><i class='bx bx-id-card'></i> Receptionists</a>
@@ -417,7 +460,7 @@ main {
     </div>
 
     <hr>
-    <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
+    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
@@ -428,57 +471,44 @@ main {
 </aside>
 
 <main>
-
   <div class="dashboard">
     <div class="card">
-      <div class="card-icon">
-        <i class='bx bx-user'></i>
-      </div>
+      <div class="card-icon"><i class='bx bx-user'></i></div>
       <h3>Total Users</h3>
       <p><?= $total_users ?></p>
       <a href="javascript:void(0)" onclick="openModal('users')">View Users</a>
     </div>
 
     <div class="card">
-      <div class="card-icon">
-        <i class='bx bx-heart'></i>
-      </div>
+      <div class="card-icon"><i class='bx bx-heart'></i></div>
       <h3>Total Pets</h3>
       <p><?= $total_pets ?></p>
       <a href="javascript:void(0)" onclick="openModal('pets')">View Pets</a>
     </div>
 
     <div class="card">
-      <div class="card-icon">
-        <i class='bx bx-calendar'></i>
-      </div>
+      <div class="card-icon"><i class='bx bx-calendar'></i></div>
       <h3>Total Appointments</h3>
       <p><?= $total_appointments ?></p>
       <a href="javascript:void(0)" onclick="openModal('appointments')">Manage Appointments</a>
     </div>
 
     <div class="card">
-      <div class="card-icon">
-        <i class='bx bx-time'></i>
-      </div>
+      <div class="card-icon"><i class='bx bx-time'></i></div>
       <h3>Pending Appointments</h3>
-      <p></p>
+      <p><?= $pending_appointments ?></p>
       <a href="javascript:void(0)" onclick="openModal('pending')">View Pending</a>  
     </div>
 
     <div class="card">
-      <div class="card-icon">
-        <i class='bx bx-check-circle'></i>
-      </div>
+      <div class="card-icon"><i class='bx bx-check-circle'></i></div>
       <h3>Confirmed Appointments</h3>
       <p><?= $confirmed_appointments ?></p>
       <a href="javascript:void(0)" onclick="openModal('confirmed')">View Confirmed</a>
     </div>
 
     <div class="card">
-      <div class="card-icon">
-        <i class='bx bx-badge-check'></i>
-      </div>
+      <div class="card-icon"><i class='bx bx-badge-check'></i></div>
       <h3>Completed Appointments</h3>
       <p><?= $completed_appointments ?></p>
       <a href="javascript:void(0)" onclick="openModal('completed')">View Completed</a>
@@ -501,10 +531,11 @@ main {
         <?php
         $userList = pg_query($conn, "SELECT user_id, first_name, middle_name, last_name, email FROM users");
         while ($user = pg_fetch_assoc($userList)):
+          $fullName = trim($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']);
         ?>
           <tr>
             <td><?= htmlspecialchars($user['user_id']) ?></td>
-            <td><?= htmlspecialchars($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']) ?></td>
+            <td><?= htmlspecialchars($fullName) ?></td>
             <td><?= htmlspecialchars($user['email']) ?></td>
           </tr>
         <?php endwhile; ?>
@@ -553,9 +584,8 @@ main {
       <thead>
         <tr>
           <th>Appointment ID</th>
-          <th>User ID</th>
-          <th>Pet ID</th>
-          <th>Service</th>
+          <th>Pet Name</th>
+          <th>Owner Name</th>
           <th>Date</th>
           <th>Status</th>
         </tr>
@@ -572,17 +602,14 @@ main {
             WHERE a.status = 'pending'
             ORDER BY a.appointment_date DESC
         ";
-
         $pendingResult = pg_query($conn, $pendingQuery);
-        if (!$pendingResult) {
-            die("Query Failed: " . pg_last_error($conn));
-        }
+        while ($row = pg_fetch_assoc($pendingResult)): 
+          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
-        <?php while ($row = pg_fetch_assoc($pendingResult)): ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['owner_name']) ?></td>
+            <td><?= htmlspecialchars($ownerName) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
@@ -601,9 +628,8 @@ main {
       <thead>
         <tr>
           <th>Appointment ID</th>
-          <th>User ID</th>
-          <th>Pet ID</th>
-          <th>Service</th>
+          <th>Pet Name</th>
+          <th>Owner Name</th>
           <th>Date</th>
           <th>Status</th>
         </tr>
@@ -621,15 +647,13 @@ main {
             ORDER BY a.appointment_date DESC
         ";
         $confirmedResult = pg_query($conn, $confirmedQuery);
-        if (!$confirmedResult) {
-            die("Query Failed: " . pg_last_error($conn));
-        }
+        while ($row = pg_fetch_assoc($confirmedResult)): 
+          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
-        <?php while ($row = pg_fetch_assoc($confirmedResult)): ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['owner_name']) ?></td>
+            <td><?= htmlspecialchars($ownerName) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
@@ -640,8 +664,6 @@ main {
   </div>
 </div>
 
-
-
 <!-- COMPLETED APPOINTMENTS MODAL -->
 <div id="completedModal" class="modal">
   <div class="modal-content">
@@ -650,9 +672,8 @@ main {
       <thead>
         <tr>
           <th>Appointment ID</th>
-          <th>User ID</th>
-          <th>Pet ID</th>
-          <th>Service</th>
+          <th>Pet Name</th>
+          <th>Owner Name</th>
           <th>Date</th>
           <th>Status</th>
         </tr>
@@ -670,15 +691,13 @@ main {
             ORDER BY a.appointment_date DESC
         ";
         $completedResult = pg_query($conn, $completedQuery);
-        if (!$completedResult) {
-            die("Query Failed: " . pg_last_error($conn));
-        }
+        while ($row = pg_fetch_assoc($completedResult)): 
+          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
-        <?php while ($row = pg_fetch_assoc($completedResult)): ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['owner_name']) ?></td>
+            <td><?= htmlspecialchars($ownerName) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
@@ -728,14 +747,12 @@ main {
             ORDER BY a.appointment_date DESC
         ";
         $appointmentList = pg_query($conn, $appointmentQuery);
-
-        if (!$appointmentList) {
-            die("Query Failed: " . pg_last_error($conn));
-        }
         ?>
-        <?php while ($row = pg_fetch_assoc($appointmentList)): ?>
+        <?php while ($row = pg_fetch_assoc($appointmentList)): 
+          $clientName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        ?>
           <tr>
-            <td><?= htmlspecialchars($row['client_name']) ?></td>
+            <td><?= htmlspecialchars($clientName) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_breed']) ?></td>
             <td><?= htmlspecialchars($row['package_name']) ?></td>
@@ -781,33 +798,32 @@ main {
             <?php endif; ?>
           </td>
             <td>
-            <div class="action-buttons">
-            <?php
-              $status = strtolower($row['status']);
-              $appointmentId = $row['appointment_id'];
-              $isApproved = !empty($row['is_approved']);
-            ?>
+              <div class="action-buttons">
+                <?php
+                  $status = strtolower($row['status']);
+                  $appointmentId = $row['appointment_id'];
+                  $isApproved = !empty($row['is_approved']);
+                ?>
 
-            <?php if ($status === 'pending' && !$isApproved): ?>
-              <a href="../../admin/approve/approve-handler.php?id=<?= $appointmentId ?>" class="button">Approve</a>
-              <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+                <?php if ($status === 'pending' && !$isApproved): ?>
+                  <a href="../../admin/approve/approve-handler.php?id=<?= $appointmentId ?>" class="button">Approve</a>
+                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
 
-            <?php elseif ($status === 'confirmed'): ?>
-              <a href="../../appointment/mark-completed.php?id=<?= $appointmentId ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">Complete</a>
-              <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+                <?php elseif ($status === 'confirmed'): ?>
+                  <a href="../../appointment/mark-completed.php?id=<?= $appointmentId ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">Complete</a>
+                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
 
-            <?php elseif ($status === 'cancelled' || $status === 'no_show' || $status === 'completed'): ?>
-              <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
-            <?php endif; ?>
+                <?php elseif ($status === 'cancelled' || $status === 'no_show' || $status === 'completed'): ?>
+                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+                <?php endif; ?>
 
-            <?php if (!empty($row['cancel_requested']) && $status !== 'cancelled'): ?>
-              <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger">Cancel</a>
-            <?php endif; ?>
+                <?php if (!empty($row['cancel_requested']) && $status !== 'cancelled'): ?>
+                  <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger">Cancel</a>
+                <?php endif; ?>
 
-            <a href="javascript:void(0)" class="button view-history" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
-          </div>
-
-          </td>
+                <a href="javascript:void(0)" class="button view-history" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
+              </div>
+            </td>
           </tr>
         <?php endwhile; ?>
       </tbody>
@@ -816,7 +832,7 @@ main {
   </div>
 </div>
 
-<!-- History Modal -->
+<!-- HISTORY MODAL -->
 <div id="historyModal" class="modal">
   <div class="modal-content" id="historyContent">
     <h3>📖 Appointment History</h3>
@@ -825,111 +841,136 @@ main {
   </div>
 </div>
 
-
-
 </main>
 
 <script>
-// ✅ Define modal mapping globally
-window.modals = {
-  users: 'usersModal',
-  pets: 'petsModal',
-  pending: 'pendingModal',
-  confirmed: 'confirmedModal',
-  completed: 'completedModal',
-  appointments: 'appointmentsModal',
-  history: 'historyModal'
-};
+// Define all functions immediately in global scope
+(function() {
+  'use strict';
 
-// ✅ Ensure all functions are attached to window (global scope)
-window.openModal = function(type) {
-  console.log('openModal called with:', type);
-  const modalId = modals[type];
-  if (modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.style.display = 'flex';
-      console.log('Modal opened successfully');
-    } else {
-      console.error('Modal element not found:', modalId);
-    }
-  } else {
-    console.error('Unknown modal type:', type);
-  }
-};
-
-window.closeModal = function(id) {
-  const modal = document.getElementById(id);
-  if (modal) modal.style.display = 'none';
-};
-
-window.viewHistory = function(userId) {
-  openModal('history');
-  const historyContainer = document.getElementById('historyTable');
-  if (historyContainer) {
-    historyContainer.innerHTML = 'Loading...';
-    fetch(`../../appointment/fetch-history.php?user_id=${userId}`)
-      .then(response => response.text())
-      .then(html => historyContainer.innerHTML = html)
-      .catch(() => historyContainer.innerHTML = 'Failed to load history.');
-  }
-};
-
-// ✅ Simple reusable toast
-window.showToast = function(message) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: #4CAF50;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 10px;
-      z-index: 9999;
-      font-weight: 600;
-      display: none;
-    `;
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 3000);
-};
-
-// ✅ Dropdown toggle
-window.toggleDropdown = function(event) {
-  event.preventDefault();
-  const menu = event.currentTarget.nextElementSibling;
-  menu.style.display = (menu.style.display === "block") ? "none" : "block";
-};
-
-// ✅ Initialize behaviors after DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM ready');
-
-  // Close modal when clicking outside
-  window.onclick = function(event) {
-    Object.values(modals).forEach(id => {
-      const modal = document.getElementById(id);
-      if (event.target === modal) modal.style.display = 'none';
-    });
+  // Modal mapping
+  const modals = {
+    users: 'usersModal',
+    pets: 'petsModal',
+    pending: 'pendingModal',
+    confirmed: 'confirmedModal',
+    completed: 'completedModal',
+    appointments: 'appointmentsModal',
+    history: 'historyModal'
   };
 
-  // Auto-open modals if ?show= parameter is present
-  const params = new URLSearchParams(window.location.search);
-  const modalToShow = params.get('show');
-  if (modalToShow && modals[modalToShow]) {
-    openModal(modalToShow);
-  }
-});
+  // Open modal function
+  window.openModal = function(type) {
+    console.log('openModal called with:', type);
+    const modalId = modals[type];
+    if (modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        console.log('Modal opened successfully');
+      } else {
+        console.error('Modal element not found:', modalId);
+      }
+    } else {
+      console.error('Unknown modal type:', type);
+    }
+  };
+
+  // Close modal function
+  window.closeModal = function(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
+  };
+
+  // View history function
+  window.viewHistory = function(userId) {
+    openModal('history');
+    const historyContainer = document.getElementById('historyTable');
+    if (historyContainer) {
+      historyContainer.innerHTML = 'Loading...';
+      fetch(`../../appointment/fetch-history.php?user_id=${userId}`)
+        .then(response => response.text())
+        .then(html => historyContainer.innerHTML = html)
+        .catch(() => historyContainer.innerHTML = 'Failed to load history.');
+    }
+  };
+
+  // Toast notification
+  window.showToast = function(message) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #4CAF50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        z-index: 9999;
+        font-weight: 600;
+        display: none;
+      `;
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  };
+
+  // Dropdown toggle function
+  window.toggleDropdown = function(event) {
+    event.preventDefault();
+    const menu = event.currentTarget.nextElementSibling;
+    if (menu && menu.classList.contains('dropdown-menu')) {
+      const isVisible = menu.style.display === 'block';
+      // Close all dropdowns first
+      document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+      // Toggle current dropdown
+      menu.style.display = isVisible ? 'none' : 'block';
+    }
+  };
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM ready - initializing...');
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      // Close modals if clicking on backdrop
+      Object.values(modals).forEach(id => {
+        const modal = document.getElementById(id);
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+
+      // Close dropdowns if clicking outside
+      if (!event.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.style.display = 'none';
+        });
+      }
+    };
+
+    // Auto-open modals if ?show= parameter is present
+    const params = new URLSearchParams(window.location.search);
+    const modalToShow = params.get('show');
+    if (modalToShow && modals[modalToShow]) {
+      openModal(modalToShow);
+    }
+
+    // Show toast if noshows parameter exists
+    const noshows = params.get('noshows');
+    if (noshows) {
+      showToast(`${noshows} appointment(s) marked as no-show.`);
+    }
+  });
+
+})();
 </script>
-
-
-
 
 </body>
 </html>
