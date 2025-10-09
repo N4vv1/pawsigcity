@@ -1,7 +1,7 @@
 <?php
 session_start();
 require '../../db.php';
-require_once '../check_admin.php';
+require_once '../admin/check_admin.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $appointment_id = $_POST['appointment_id'];

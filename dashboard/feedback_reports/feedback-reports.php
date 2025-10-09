@@ -1,7 +1,7 @@
 <?php
 session_start();
 require '../../db.php';
-require_once '../check_admin.php';
+require_once '../admin/check_admin.php';
 // Fetch feedback with sentiment
 $query = "
     SELECT a.appointment_id, 

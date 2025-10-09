@@ -1,7 +1,7 @@
 <?php
 session_start();
 require '../../db.php';
-require_once '../check_admin.php';
+require_once '../admin/check_admin.php';
 
 // Handle new groomer creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_groomer'])) {
