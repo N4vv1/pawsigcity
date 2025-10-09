@@ -26,7 +26,7 @@ if (!$pets) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pet Profile</title>
+  <title>PAWsig City | Pet Profile</title>
   <link rel="stylesheet" href="../homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -57,58 +57,57 @@ if (!$pets) {
       background-color: #56b67e;
     }
 
-    .profile-card {
-      max-width: 850px;
-      margin: 120px auto 60px;
-      background-color: #fff;
-      padding: 40px;
-      border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s ease-in-out;
-    }
+   .profile-card {
+  max-width: 1200px;      /* wider container */
+  margin: 120px auto 60px;
+  background-color: #fff;
+  padding: 50px 60px;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-in-out;
+}
 
-    .profile-card h2 {
-      text-align: center;
-      color: #2a2a2a;
-      font-size: 28px;
-      margin-bottom: 35px;
-    }
+.profile-card h2 {
+  text-align: center;
+  color: #2a2a2a;
+  font-size: 32px;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
 
-    .pet-profile {
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #ddd;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 40px;
-      background: #fff;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    }
+/* Each pet profile card */
+.pet-profile {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 30px;
+  margin-bottom: 40px;
+  background: #fafafa;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
 
-    .pet-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 24px;
-    }
+.pet-profile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
 
-    .pet-header img {
-      border-radius: 50%;
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border: 3px solid #eee;
-    }
+.pet-header img {
+  border-radius: 50%;
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border: 4px solid #f0f0f0;
+}
 
-    .pet-details {
-      flex-grow: 1;
-    }
+.pet-details h3 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #333;
+}
 
-    .pet-details h3 {
-      margin: 0;
-      font-size: 24px;
-      color: #2c3e50;
-    }
 
     .pet-meta {
       margin-top: 8px;
@@ -208,57 +207,98 @@ if (!$pets) {
     }
 
     .form-wrapper {
-      background-color: #F1FAEE;
-      padding: 20px;
-      border-radius: 12px;
-      margin-top: 15px;
-      border: 2px dashed #A8DADC;
-    }
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 14px;
+  margin-top: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  position: relative;
+}
 
-    .form-wrapper input,
-    .form-wrapper select {
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-      margin-bottom: 10px;
-    }
+/* Gradient header bar like add-pet form */
+.form-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 6px;
+  width: 100%;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(to right, #A8E6CF, #FFE29D, #FFB6B9);
+}
 
-    .form-submit-btn {
-      background-color: #FFE29D;
-      padding: 8px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #333;
-    }
+/* Grid layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
 
-    .form-submit-btn:hover {
-      background-color: #fdd87c;
-    }
+/* Inputs & Select */
+.form-grid input,
+.form-grid select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  font-size: 14px;
+  background: #fcfcfc;
+  transition: all 0.3s ease;
+}
 
-    hr {
-      border: none;
-      border-top: 1px solid #ddd;
-      margin: 25px 0;
-    }
+.form-grid input:focus,
+.form-grid select:focus {
+  border-color: #91dbc3;
+  box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.3);
+  outline: none;
+}
 
-    @media (max-width: 600px) {
-      .pet-header {
-        flex-direction: column;
-        text-align: center;
-      }
+/* File input */
+.form-grid input[type="file"]::file-selector-button {
+  background-color: #A8E6CF;
+  border: none;
+  color: #333;
+  padding: 8px 14px;
+  border-radius: 6px;
+  margin-right: 10px;
+  cursor: pointer;
+}
 
-      .pet-header img {
-        width: 80px;
-        height: 80px;
-      }
+.form-grid input[type="file"]::file-selector-button:hover {
+  background-color: #91dbc3;
+}
 
-      .section {
-        grid-template-columns: 1fr;
-      }
-    }
+/* Submit Button */
+.form-submit-btn {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #FFE29D, #FFB6B9);
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+}
+
+.form-submit-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -292,7 +332,6 @@ if (!$pets) {
 
 <div style="height: 60px;"></div>
 <div class="profile-card">
-  <h2>Pet Profile</h2>
 
   <?php if (pg_num_rows($pets) > 0): ?>
     <?php while ($pet = pg_fetch_assoc($pets)):
@@ -329,22 +368,47 @@ if (!$pets) {
         </div>
       </div>
 
-      <div id="edit-form-<?= $pet_id ?>" class="form-wrapper" style="display:none;">
-        <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
-          <input type="text" name="name" value="<?= htmlspecialchars($pet['name']) ?>" placeholder="Pet Name" required>
-          <input type="text" name="breed" value="<?= htmlspecialchars($pet['breed']) ?>" placeholder="Breed" required>
-          <input type="number" name="age" value="<?= htmlspecialchars($pet['age']) ?>" placeholder="Age" required>
-          <input type="text" name="color" value="<?= htmlspecialchars($pet['color']) ?>" placeholder="Color" required>
-          <select name="gender" required>
-            <option value="Male" <?= $pet['gender'] == 'Male' ? 'selected' : '' ?>>Male</option>
-            <option value="Female" <?= $pet['gender'] == 'Female' ? 'selected' : '' ?>>Female</option>
-          </select>
-          <input type="date" name="birthday" value="<?= htmlspecialchars($pet['birthday']) ?>" required>
-          <input type="file" name="photo_url">
-          <button type="submit" class="form-submit-btn">Update Pet</button>
-        </form>
-      </div>
+     <div id="edit-form-<?= $pet_id ?>" class="form-wrapper" style="display:none;">
+  <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
+
+    <div class="form-grid">
+      <label>Name:
+        <input type="text" name="name" value="<?= htmlspecialchars($pet['name']) ?>" required>
+      </label>
+
+      <label>Breed:
+        <input type="text" name="breed" value="<?= htmlspecialchars($pet['breed']) ?>" required>
+      </label>
+
+      <label>Age:
+        <input type="number" name="age" value="<?= htmlspecialchars($pet['age']) ?>" required>
+      </label>
+
+      <label>Color:
+        <input type="text" name="color" value="<?= htmlspecialchars($pet['color']) ?>" required>
+      </label>
+
+      <label>Gender:
+        <select name="gender" required>
+          <option value="Male" <?= $pet['gender'] == 'Male' ? 'selected' : '' ?>>Male</option>
+          <option value="Female" <?= $pet['gender'] == 'Female' ? 'selected' : '' ?>>Female</option>
+        </select>
+      </label>
+
+      <label>Birthday:
+        <input type="date" name="birthday" value="<?= htmlspecialchars($pet['birthday']) ?>" required>
+      </label>
+
+      <label>Photo:
+        <input type="file" name="photo_url">
+      </label>
+
+      <button type="submit" class="form-submit-btn">Update Pet</button>
+    </div>
+  </form>
+</div>
+
 
       <div class="tabs">
         <div class="tab active" data-tab="health-<?= $pet_id ?>">Health Info</div>

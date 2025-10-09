@@ -760,12 +760,12 @@ $model_stats = $ml_model->getModelStats();
       <ul class="nav-menu">
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Services</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
         <li class="nav-item dropdown">
-          <a href="#" class="nav-link profile-icon">
-            <i class="fas fa-user-circle"></i>
+          <a href="#" class="nav-link profile-icon active">
+            <i class="fas fa-user"></i>
           </a>
           <ul class="dropdown-menu">
             <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>

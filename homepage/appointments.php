@@ -27,7 +27,7 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Your Appointments</title>
+  <title>PAWsig City | Appointments</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
@@ -36,8 +36,8 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
   body {
     font-family: 'Segoe UI', sans-serif;
     background-color: #f2f2f2;
-    margin: 0;
-    padding-top: 90px; /* offset for fixed navbar */
+    margin: 0;  
+    padding-top: 90px; /* offset for fixed navbar */  
   }
 
   .section-content {
@@ -52,11 +52,33 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
     font-size: 28px;
   }
 
-  .container {
-    max-width: 1100px;
-    margin: auto;
-    padding: 20px;
-  }
+ .container {
+  width: 100%;
+  padding: 20px 40px 30px;
+  box-sizing: border-box;
+}
+
+
+
+.table-container {
+  width: 100%;
+  background: #fff;
+  border-radius: 14px; /* same radius as add-pet */
+  box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+  padding: 50px 60px;
+  position: relative;
+}
+
+.table-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 8px;
+  width: 100%;
+  border-radius: 14px 14px 0 0;
+  background: linear-gradient(to right, #A8E6CF, #FFE29D, #FFB6B9); /* same top border strip */
+}
 
   .button {
     padding: 8px 14px;
@@ -156,6 +178,30 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
   z-index: 1000;
 }
 
+.back-button {
+  position: absolute;
+  top: 100px;
+  left: 30px;
+  background: none;      /* remove gray background */
+  border: none;          /* remove border */
+  color: var(--dark);    /* keep your theme color */
+  font-size: 22px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: var(--primary-dark); /* hover color */
+  transform: translateX(-3px);
+}
+
+@media (max-width: 768px) {
+  .back-button {
+    top: 80px;
+    left: 20px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -167,11 +213,11 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
       <ul class="nav-menu">
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Home</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">About</a></li>
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link active">Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Services</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Gallery</a></li>
         <li class="nav-item"><a href="../homepage/main.php" class="nav-link">Contact</a></li>
         <li class="nav-item dropdown">
-          <a href="#" class="nav-link profile-icon">
+          <a href="#" class="nav-link profile-icon active">
             <i class="fas fa-user-circle"></i>
           </a>
           <ul class="dropdown-menu">
@@ -188,67 +234,72 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
   </header>
 
 <div class="container">
+
   <?php if (isset($_SESSION['success'])): ?>
     <p class="success-message"><?= $_SESSION['success']; unset($_SESSION['success']); ?></p>
   <?php endif; ?>
 
- <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 20px;">
-  <a href="main.php" class="button" style="background-color: #d4d4d4;">⬅ Back</a>
-  <div style="width: 80px;"></div>
-</div>
+  <!-- Back Button -->
+  <div class="section-header" style="display: flex; justify-content: flex-start; margin-top: 40px; margin-bottom: 20px;">
+    <a href="main.php" class="back-button"><i class="fas fa-arrow-left"> BACK</i></a>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Pet</th>
-        <th>Service</th>
-        <th>Date & Time</th>
-        <th>Recommended</th>
-        <th>Approval</th>
-        <th>Status</th>
-        <th>Session Notes</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php while ($row = pg_fetch_assoc($appointments)): ?>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <table>
+      <thead>
         <tr>
-          <td><?= htmlspecialchars($row['pet_name']) ?></td>
-          <td><?= htmlspecialchars($row['package_name']) ?></td>
-          <td><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?></td>
-          <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
-          <td>
-            <?php if ($row['status'] === 'cancelled'): ?>
-              <span class="badge cancelled">Cancelled</span>
-            <?php elseif ($row['is_approved']): ?>
-              <span class="badge approved">Approved</span>
-            <?php else: ?>
-              <span class="badge pending">Waiting</span>
-            <?php endif; ?>
-          </td>
-          <td><?= ucfirst($row['status']) ?></td>
-          <td><?= !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : '<em>No notes yet.</em>' ?></td>
-          <td>
-            <?php if ($row['status'] !== 'completed' && $row['status'] !== 'cancelled'): ?>
-             <button class="button" type="button" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">Reschedule</button>
-              <button class="button" type="button" onclick="openCancelModal(<?= $row['appointment_id'] ?>)">Cancel</button>
-
-            <?php endif; ?>
-
-            <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
-              <button class="button" type="button" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">⭐ Feedback</button>
-            <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
-              <div class="feedback">
-                ⭐ <?= $row['rating'] ?>/5<br>
-                <?= !empty($row['feedback']) ? htmlspecialchars($row['feedback']) : '<em>No comment.</em>' ?>
-              </div>
-            <?php endif; ?>
-          </td>
+          <th>Pet</th>
+          <th>Service</th>
+          <th>Date & Time</th>
+          <th>Recommended</th>
+          <th>Approval</th>
+          <th>Status</th>
+          <th>Session Notes</th>
+          <th>Actions</th>
         </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <?php while ($row = pg_fetch_assoc($appointments)): ?>
+          <tr>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($row['package_name']) ?></td>
+            <td><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?></td>
+            <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
+            <td>
+              <?php if ($row['status'] === 'cancelled'): ?>
+                <span class="badge cancelled">Cancelled</span>
+              <?php elseif ($row['is_approved']): ?>
+                <span class="badge approved">Approved</span>
+              <?php else: ?>
+                <span class="badge pending">Waiting</span>
+              <?php endif; ?>
+            </td>
+            <td><?= ucfirst($row['status']) ?></td>
+            <td><?= !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : '<em>No notes yet.</em>' ?></td>
+            <td>
+              <?php if ($row['status'] !== 'completed' && $row['status'] !== 'cancelled'): ?>
+                <button class="button" type="button" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">Reschedule</button>
+                <button class="button" type="button" onclick="openCancelModal(<?= $row['appointment_id'] ?>)">Cancel</button>
+              <?php endif; ?>
+
+              <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
+                <button class="button" type="button" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">⭐ Feedback</button>
+              <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
+                <div class="feedback">
+                  ⭐ <?= $row['rating'] ?>/5<br>
+                  <?= !empty($row['feedback']) ? htmlspecialchars($row['feedback']) : '<em>No comment.</em>' ?>
+                </div>
+              <?php endif; ?>
+            </td>
+          </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
+
             
             
 <!-- Cancel Modal -->
