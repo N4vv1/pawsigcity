@@ -1,11 +1,6 @@
 <?php
 require_once '../../db.php';
 
-if ($_SESSION['role'] !== 'admin') {
-  header("Location: ../homepage/main.php");
-  exit;
-}
-
 $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 ?>
 

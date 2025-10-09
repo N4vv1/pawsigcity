@@ -2,11 +2,6 @@
 session_start();
 require '../../db.php';
 
-if ($_SESSION['role'] !== 'admin') {
-   header("Location: ../homepage/main.php");
-   exit;
- }
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $first_name  = trim($_POST['first_name']);
   $middle_name = trim($_POST['middle_name']);

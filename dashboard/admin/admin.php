@@ -77,6 +77,78 @@ if ($noShowCount > 0) {
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
+  
+  <script>
+  // Define functions IMMEDIATELY in global scope before page loads
+  window.openModal = function(type) {
+    const modals = {
+      users: 'usersModal',
+      pets: 'petsModal',
+      pending: 'pendingModal',
+      cancelled: 'cancelledModal',
+      noshow: 'noshowModal',
+      confirmed: 'confirmedModal',
+      completed: 'completedModal',
+      appointments: 'appointmentsModal',
+      history: 'historyModal'
+    };
+    
+    console.log('openModal called with:', type);
+    const modalId = modals[type];
+    if (modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'flex';
+        console.log('Modal opened successfully');
+      } else {
+        console.error('Modal element not found:', modalId);
+      }
+    } else {
+      console.error('Unknown modal type:', type);
+    }
+  };
+
+  window.closeModal = function(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
+  };
+
+  window.viewHistory = function(userId) {
+    openModal('history');
+    const historyContainer = document.getElementById('historyTable');
+    if (historyContainer) {
+      historyContainer.innerHTML = 'Loading...';
+      fetch('../../appointment/fetch-history.php?user_id=' + userId)
+        .then(response => response.text())
+        .then(html => historyContainer.innerHTML = html)
+        .catch(() => historyContainer.innerHTML = 'Failed to load history.');
+    }
+  };
+
+  window.showToast = function(message) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: none;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  };
+
+  window.toggleDropdown = function(event) {
+    event.preventDefault();
+    const menu = event.currentTarget.nextElementSibling;
+    if (menu && menu.classList.contains('dropdown-menu')) {
+      const isVisible = menu.style.display === 'block';
+      document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+      menu.style.display = isVisible ? 'none' : 'block';
+    }
+  };
+  </script>
+  
   <style>
     :root {
       --white-color: #fff;
@@ -954,11 +1026,10 @@ if ($noShowCount > 0) {
 </main>
 
 <script>
-// Define all functions immediately in global scope
-(function() {
-  'use strict';
+// DOM initialization - runs after page loads
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM ready - initializing event listeners...');
 
-  // Modal mapping
   const modals = {
     users: 'usersModal',
     pets: 'petsModal',
@@ -971,117 +1042,36 @@ if ($noShowCount > 0) {
     history: 'historyModal'
   };
 
-  // Open modal function
-  window.openModal = function(type) {
-    console.log('openModal called with:', type);
-    const modalId = modals[type];
-    if (modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        modal.style.display = 'flex';
-        console.log('Modal opened successfully');
-      } else {
-        console.error('Modal element not found:', modalId);
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    Object.values(modals).forEach(id => {
+      const modal = document.getElementById(id);
+      if (event.target === modal) {
+        modal.style.display = 'none';
       }
-    } else {
-      console.error('Unknown modal type:', type);
-    }
-  };
+    });
 
-  // Close modal function
-  window.closeModal = function(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
-  };
-
-  // View history function
-  window.viewHistory = function(userId) {
-    openModal('history');
-    const historyContainer = document.getElementById('historyTable');
-    if (historyContainer) {
-      historyContainer.innerHTML = 'Loading...';
-      fetch(`../../appointment/fetch-history.php?user_id=${userId}`)
-        .then(response => response.text())
-        .then(html => historyContainer.innerHTML = html)
-        .catch(() => historyContainer.innerHTML = 'Failed to load history.');
-    }
-  };
-
-  // Toast notification
-  window.showToast = function(message) {
-    let toast = document.getElementById('toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'toast';
-      toast.style.cssText = `
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: #4CAF50;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        z-index: 9999;
-        font-weight: 600;
-        display: none;
-      `;
-      document.body.appendChild(toast);
-    }
-    toast.textContent = message;
-    toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 3000);
-  };
-
-  // Dropdown toggle function
-  window.toggleDropdown = function(event) {
-    event.preventDefault();
-    const menu = event.currentTarget.nextElementSibling;
-    if (menu && menu.classList.contains('dropdown-menu')) {
-      const isVisible = menu.style.display === 'block';
-      // Close all dropdowns first
-      document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-      // Toggle current dropdown
-      menu.style.display = isVisible ? 'none' : 'block';
-    }
-  };
-
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM ready - initializing...');
-
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      // Close modals if clicking on backdrop
-      Object.values(modals).forEach(id => {
-        const modal = document.getElementById(id);
-        if (event.target === modal) {
-          modal.style.display = 'none';
-        }
+    // Close dropdowns if clicking outside
+    if (!event.target.closest('.dropdown')) {
+      document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.style.display = 'none';
       });
-
-      // Close dropdowns if clicking outside
-      if (!event.target.closest('.dropdown')) {
-        document.querySelectorAll('.dropdown-menu').forEach(menu => {
-          menu.style.display = 'none';
-        });
-      }
-    };
-
-    // Auto-open modals if ?show= parameter is present
-    const params = new URLSearchParams(window.location.search);
-    const modalToShow = params.get('show');
-    if (modalToShow && modals[modalToShow]) {
-      openModal(modalToShow);
     }
+  };
 
-    // Show toast if noshows parameter exists
-    const noshows = params.get('noshows');
-    if (noshows) {
-      showToast(`${noshows} appointment(s) marked as no-show.`);
-    }
-  });
+  // Auto-open modals if ?show= parameter is present
+  const params = new URLSearchParams(window.location.search);
+  const modalToShow = params.get('show');
+  if (modalToShow && modals[modalToShow]) {
+    openModal(modalToShow);
+  }
 
-})();
+  // Show toast if noshows parameter exists
+  const noshows = params.get('noshows');
+  if (noshows) {
+    showToast(noshows + ' appointment(s) marked as no-show.');
+  }
+});
 </script>
 
 </body>

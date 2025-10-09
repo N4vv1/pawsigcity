@@ -2,11 +2,6 @@
 require '../../db.php';
 session_start();
 
-if ($_SESSION['role'] !== 'admin') {
-     header("Location: ../homepage/main.php");
-    exit;
- }
-
 // Fetch feedback with sentiment
 $query = "
     SELECT a.appointment_id, 

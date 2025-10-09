@@ -2,11 +2,6 @@
 session_start();
 require '../../db.php';
 
-if ($_SESSION['role'] !== 'admin') {
-   header("Location: ../homepage/main.php");
-   exit;
- }
-
 // Handle new groomer creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_groomer'])) {
     $groomer_name = trim($_POST['groomer_name']);
