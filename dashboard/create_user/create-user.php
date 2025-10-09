@@ -2,10 +2,10 @@
 session_start();
 require '../../db.php';
 
-// if ($_SESSION['role'] !== 'admin') {
-//   header("Location: ../homepage/main.php");
-//   exit;
-// }
+if ($_SESSION['role'] !== 'admin') {
+   header("Location: ../homepage/main.php");
+   exit;
+ }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $first_name  = trim($_POST['first_name']);
@@ -364,7 +364,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="#"><i class='bx bx-log-out'></i>Logout</a>
+    <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>
 

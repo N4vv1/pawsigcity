@@ -212,7 +212,7 @@ $appointments = pg_query($conn, $query);
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="#"><i class='bx bx-log-out'></i>Logout</a>
+    <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>
 

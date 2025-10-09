@@ -1,10 +1,11 @@
 <?php
 session_start();
 require '../../db.php';
-// if ($_SESSION['role'] !== 'admin') {
-//   header("Location: ../homepage/main.php");
-//   exit;
-// }
+
+ if ($_SESSION['role'] !== 'admin') {
+   header("Location: ../homepage/main.php");
+   exit;
+}
 
 // Handle new user creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
@@ -97,7 +98,7 @@ if (isset($_GET['id'])) {
   <title>User Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/Logo.jpg">
   <style>
     :root {
       --white-color: #fff;
@@ -420,14 +421,12 @@ if (isset($_GET['id'])) {
   <!-- Sidebar -->
  <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/Logo.jpg" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
+    <a href="../home_dashboard/home.php"><i class='bx bx-home'></i>Home</a>
     <hr>
     <a href="../manage_accounts/accounts.php" class="active"><i class='bx bx-camera'></i>User Management</a>
-    <hr>
-    <a href="../groomer_management/groomer_accounts.php" ><i class='bx bx-user'></i>Groomer Management</a>
     <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
@@ -513,7 +512,7 @@ if (isset($_GET['id'])) {
       </div>
 
       <div class="input_box">
-        <input type="text" class="input-field" name="last_name" required/>
+        <input type="text" class="input-field" name="last_name" required />
         <label class="label">Last Name</label>
         <i class='bx bx-user icon'></i>
       </div>
@@ -565,17 +564,7 @@ if (isset($_GET['id'])) {
       <form method="POST">
         <input type="hidden" name="user_id" value="<?= $edit_user['user_id'] ?>">
         <div class="input_box">
-          <input type="text" name="first_name" class="input-field" value="<?= htmlspecialchars($edit_user['first_name']) ?>" required>
-          <label class="label">Full Name</label>
-          <i class='bx bx-user icon'></i>
-        </div>
-        <div class="input_box">
-          <input type="text" name="middle_name" class="input-field" value="<?= htmlspecialchars($edit_user['middle_name']) ?>" required>
-          <label class="label">Full Name</label>
-          <i class='bx bx-user icon'></i>
-        </div>
-        <div class="input_box">
-          <input type="text" name="last_name" class="input-field" value="<?= htmlspecialchars($edit_user['last_name']) ?>" required>
+          <input type="text" name="full_name" class="input-field" value="<?= htmlspecialchars($edit_user['full_name']) ?>" required>
           <label class="label">Full Name</label>
           <i class='bx bx-user icon'></i>
         </div>
@@ -588,16 +577,6 @@ if (isset($_GET['id'])) {
           <input type="text" name="phone" class="input-field" value="<?= htmlspecialchars($edit_user['phone']) ?>" required>
           <label class="label">Phone</label>
           <i class='bx bx-phone icon'></i>
-        </div>
-        <div class="input_box">
-          <select name="role" class="input-field" required>
-            <option value="admin" <?= ($edit_user['role'] === 'admin') ? 'selected' : '' ?>>Admin</option>
-            <option value="customer" <?= ($edit_user['role'] === 'customer') ? 'selected' : '' ?>>Customer</option>
-            <option value="groomer" <?= ($edit_user['role'] === 'groomer') ? 'selected' : '' ?>>Groomer</option>
-            <option value="receptionist" <?= ($edit_user['role'] === 'receptionist') ? 'selected' : '' ?>>Receptionisst</option>
-          </select>
-          <label class="label">Role</label>
-          <i class='bx bx-user icon'></i>
         </div>
         <div class="input_box">
           <input type="submit" name="update_user" class="input-submit" value="Update User">

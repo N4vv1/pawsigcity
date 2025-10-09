@@ -177,7 +177,7 @@ if (!$result) {
 }
 
 .hero-image {
-  width: 350px;
+  width: 550px;
   max-width: 100%;
   animation: float 4s ease-in-out infinite;
 }
@@ -209,7 +209,7 @@ if (!$result) {
       </div>
     </div>
     <div class="hero-image-wrapper">
-      <img src="./icons/home.png" alt="Happy Pet" class="hero-image" />
+      <img src="./homepage/images/asd.png" alt="Happy Pet" class="hero-image" />
     </div>
   </div>
 </section>

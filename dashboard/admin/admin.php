@@ -403,9 +403,11 @@ main {
   <nav class="menu">
     <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
     <hr>
-    <a href="../manage_accounts/accounts.php"><i class='bx bx-camera'></i>User Management</a>
+    <a href="../manage_accounts/accounts.php"><i class='bx bx-user'></i>Users</a>
     <hr>
-    <a href="../groomer_management/groomer_accounts.php" ><i class='bx bx-user'></i>Groomer Management</a>
+    <a href="../groomer_management/groomer_accounts.php" ><i class='bx bx-user'></i>Groomers</a>
+    <hr>
+    <a href="../../receptionist_dashboard/receptionist_home.php" ><i class='bx bx-user'></i>Receptionist</a>
     <hr>
     <a href="../session_notes.php/notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>

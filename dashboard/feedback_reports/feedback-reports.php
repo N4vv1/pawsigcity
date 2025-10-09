@@ -2,10 +2,10 @@
 require '../../db.php';
 session_start();
 
-// if ($_SESSION['role'] !== 'admin') {
-//     header("Location: ../homepage/main.php");
-//     exit;
-// }
+if ($_SESSION['role'] !== 'admin') {
+     header("Location: ../homepage/main.php");
+    exit;
+ }
 
 // Fetch feedback with sentiment
 $query = "
@@ -194,12 +194,12 @@ if (!$results) {
     <hr>
     <a href="../feedback_reports/feedback-reports.php" class="active"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="#"><i class='bx bx-log-out'></i>Logout</a>
+    <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>
 
 <main class="content">
-  <h2>📊 Feedback Reports</h2>
+  <h2>Feedback Reports</h2>
   <form action="reanalyze_sentiment.php" method="POST">
   <button type="submit" style="
       padding: 8px 14px;
@@ -209,7 +209,7 @@ if (!$results) {
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
-    ">🔁 Reanalyze Sentiment</button>
+    ">Reanalyze Sentiment</button>
   </form> <br>
 
   <table>

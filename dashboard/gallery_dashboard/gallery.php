@@ -1,10 +1,10 @@
 <?php
 require_once '../../db.php';
 
-//if ($_SESSION['role'] !== 'admin') {
-  //header("Location: ../homepage/main.php");
-  //exit;
-//}
+if ($_SESSION['role'] !== 'admin') {
+  header("Location: ../homepage/main.php");
+  exit;
+}
 
 $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 ?>
@@ -271,7 +271,7 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="#"><i class='bx bx-log-out'></i>Logout</a>
+    <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>
 
