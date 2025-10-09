@@ -506,7 +506,7 @@
                 <label for="remember">Remember me</label>
               </div>
               <div class="forgot">
-                <a href="#">Forgot password?</a>
+                <a href="forgot_password.php">Forgot password?</a>
               </div>
             </div>
 

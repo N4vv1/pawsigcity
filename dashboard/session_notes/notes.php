@@ -256,7 +256,7 @@ $appointments = pg_query($conn, $query);
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
     <!-- USERS DROPDOWN -->
