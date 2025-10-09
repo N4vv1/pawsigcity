@@ -734,7 +734,6 @@ main {
         }
         ?>
         <?php while ($row = pg_fetch_assoc($appointmentList)): ?>
-        ?>
           <tr>
             <td><?= htmlspecialchars($row['client_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
