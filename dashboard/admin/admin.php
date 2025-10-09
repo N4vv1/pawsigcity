@@ -13,13 +13,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
    exit;
 }
 
-// Count metrics
-$total_users = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM users"), 0, 'count');
-$total_pets = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM pets"), 0, 'count');
-$total_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments"), 0, 'count');
-$pending_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'pending'"), 0, 'count');
-$confirmed_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'confirmed'"), 0, 'count');
-$completed_appointments = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'completed'"), 0, 'count');
+// Count metrics with error handling
+$total_users_result = pg_query($conn, "SELECT COUNT(*) AS count FROM users");
+$total_users = $total_users_result ? pg_fetch_result($total_users_result, 0, 'count') : 0;
+
+$total_pets_result = pg_query($conn, "SELECT COUNT(*) AS count FROM pets");
+$total_pets = $total_pets_result ? pg_fetch_result($total_pets_result, 0, 'count') : 0;
+
+$total_appointments_result = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments");
+$total_appointments = $total_appointments_result ? pg_fetch_result($total_appointments_result, 0, 'count') : 0;
+
+// Count by actual status values from your ENUM
+$confirmed_query = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'confirmed'");
+$confirmed_appointments = $confirmed_query ? pg_fetch_result($confirmed_query, 0, 'count') : 0;
+
+$completed_query = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'completed'");
+$completed_appointments = $completed_query ? pg_fetch_result($completed_query, 0, 'count') : 0;
+
+$cancelled_query = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'cancelled'");
+$cancelled_appointments = $cancelled_query ? pg_fetch_result($cancelled_query, 0, 'count') : 0;
+
+$noshow_query = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'no_show'");
+$noshow_appointments = $noshow_query ? pg_fetch_result($noshow_query, 0, 'count') : 0;
 
 // Auto check for no-shows
 date_default_timezone_set('Asia/Manila');
@@ -495,9 +510,16 @@ if ($noShowCount > 0) {
 
     <div class="card">
       <div class="card-icon"><i class='bx bx-time'></i></div>
-      <h3>Pending Appointments</h3>
-      <p><?= $pending_appointments ?></p>
-      <a href="javascript:void(0)" onclick="openModal('pending')">View Pending</a>  
+      <h3>Cancelled Appointments</h3>
+      <p><?= $cancelled_appointments ?></p>
+      <a href="javascript:void(0)" onclick="openModal('cancelled')">View Cancelled</a>  
+    </div>
+
+    <div class="card">
+      <div class="card-icon"><i class='bx bx-x-circle'></i></div>
+      <h3>No-Show Appointments</h3>
+      <p><?= $noshow_appointments ?></p>
+      <a href="javascript:void(0)" onclick="openModal('noshow')">View No-Shows</a>
     </div>
 
     <div class="card">
@@ -573,6 +595,94 @@ if ($noShowCount > 0) {
       </tbody>
     </table>
     <button onclick="closeModal('petsModal')">Close</button>
+  </div>
+</div>
+
+<!-- CANCELLED APPOINTMENTS MODAL -->
+<div id="cancelledModal" class="modal">
+  <div class="modal-content">
+    <h2>❌ Cancelled Appointments</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Appointment ID</th>
+          <th>Pet Name</th>
+          <th>Owner Name</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $cancelledQuery = "
+            SELECT a.appointment_id, a.appointment_date, a.status,
+                  p.name AS pet_name, p.breed,
+                  u.first_name, u.middle_name, u.last_name
+            FROM appointments a
+            JOIN pets p ON a.pet_id = p.pet_id
+            JOIN users u ON p.user_id = u.user_id
+            WHERE a.status = 'cancelled'
+            ORDER BY a.appointment_date DESC
+        ";
+        $cancelledResult = pg_query($conn, $cancelledQuery);
+        while ($row = pg_fetch_assoc($cancelledResult)): 
+          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        ?>
+          <tr>
+            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($ownerName) ?></td>
+            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+            <td><?= htmlspecialchars($row['status']) ?></td>
+          </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+    <button onclick="closeModal('cancelledModal')">Close</button>
+  </div>
+</div>
+
+<!-- NO-SHOW APPOINTMENTS MODAL -->
+<div id="noshowModal" class="modal">
+  <div class="modal-content">
+    <h2>🚫 No-Show Appointments</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Appointment ID</th>
+          <th>Pet Name</th>
+          <th>Owner Name</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $noshowQuery = "
+            SELECT a.appointment_id, a.appointment_date, a.status,
+                  p.name AS pet_name, p.breed,
+                  u.first_name, u.middle_name, u.last_name
+            FROM appointments a
+            JOIN pets p ON a.pet_id = p.pet_id
+            JOIN users u ON p.user_id = u.user_id
+            WHERE a.status = 'no_show'
+            ORDER BY a.appointment_date DESC
+        ";
+        $noshowResult = pg_query($conn, $noshowQuery);
+        while ($row = pg_fetch_assoc($noshowResult)): 
+          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        ?>
+          <tr>
+            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= htmlspecialchars($ownerName) ?></td>
+            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+            <td><?= htmlspecialchars($row['status']) ?></td>
+          </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+    <button onclick="closeModal('noshowModal')">Close</button>
   </div>
 </div>
 
@@ -853,6 +963,8 @@ if ($noShowCount > 0) {
     users: 'usersModal',
     pets: 'petsModal',
     pending: 'pendingModal',
+    cancelled: 'cancelledModal',
+    noshow: 'noshowModal',
     confirmed: 'confirmedModal',
     completed: 'completedModal',
     appointments: 'appointmentsModal',
