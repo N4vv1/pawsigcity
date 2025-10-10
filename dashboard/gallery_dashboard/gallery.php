@@ -316,7 +316,7 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
     <!-- USERS DROPDOWN -->
@@ -332,9 +332,9 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
     </div>
 
     <hr>
-    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Session Notes</a>
+    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
     <hr>
-    <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
+    <a href="../gallery_dashboard/gallery.php" class="active"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>

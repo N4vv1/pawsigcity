@@ -477,12 +477,12 @@ if (isset($_GET['id'])) {
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
     <!-- USERS DROPDOWN -->
     <div class="dropdown">
-      <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+      <a href="javascript:void(0)" class="dropdown-toggle active" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
         <i class='bx bx-chevron-down'></i>
       </a>
@@ -493,7 +493,7 @@ if (isset($_GET['id'])) {
     </div>
 
     <hr>
-    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Session Notes</a>
+    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>

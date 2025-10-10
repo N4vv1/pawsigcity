@@ -547,7 +547,7 @@ if ($noShowCount > 0) {
     </div>
 
     <hr>
-    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Session Notes</a>
+    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>

@@ -256,7 +256,7 @@ $appointments = pg_query($conn, $query);
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
     <!-- USERS DROPDOWN -->
@@ -272,7 +272,7 @@ $appointments = pg_query($conn, $query);
     </div>
 
     <hr>
-    <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Session Notes</a>
+    <a href="../session_notes/notes.php" class="active"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
