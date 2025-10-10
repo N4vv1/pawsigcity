@@ -34,13 +34,8 @@ if (!$pets) {
   <title>PAWsig City | Pet Profile</title>
   <link rel="stylesheet" href="../homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<<<<<<< HEAD
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="../homepage/images/pawsig.png">
-=======
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
->>>>>>> bb7c5a1dd38fd4367653b66a5bb7ad4c87666d88
+  <link rel="icon" type="image/png" href="../homepage/images/pawsig.png">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
