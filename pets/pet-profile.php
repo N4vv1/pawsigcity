@@ -43,7 +43,7 @@ if (!$pets) {
       margin: 0;
       padding: 0;
       min-height: 100vh;
-      padding-top: 85px;
+      padding-top: 140px;
     }
 
     header {

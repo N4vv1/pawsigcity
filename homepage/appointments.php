@@ -9,6 +9,14 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// ✅ Debug: Check connection
+if (!$conn) {
+    die("Database connection failed: " . pg_last_error());
+}
+
+// ✅ Debug: Check user_id
+error_log("User ID: " . $user_id);
+
 // ✅ PostgreSQL query using pg_query_params
 $query = "
     SELECT a.*, 
@@ -22,6 +30,15 @@ $query = "
 ";
 
 $appointments = pg_query_params($conn, $query, [$user_id]);
+
+// ✅ Debug: Check query execution
+if (!$appointments) {
+    die("Query failed: " . pg_last_error($conn));
+}
+
+// ✅ Debug: Check row count
+$row_count = pg_num_rows($appointments);
+error_log("Number of appointments found: " . $row_count);
 ?>
 
 <!DOCTYPE html>
@@ -37,7 +54,7 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
     font-family: 'Segoe UI', sans-serif;
     background-color: #f2f2f2;
     margin: 0;  
-    padding-top: 90px; /* offset for fixed navbar */  
+    padding-top: 90px;
   }
 
   .section-content {
@@ -52,33 +69,31 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
     font-size: 28px;
   }
 
- .container {
-  width: 100%;
-  padding: 20px 40px 30px;
-  box-sizing: border-box;
-}
+  .container {
+    width: 100%;
+    padding: 20px 40px 30px;
+    box-sizing: border-box;
+  }
 
+  .table-container {
+    width: 100%;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+    padding: 50px 60px;
+    position: relative;
+  }
 
-
-.table-container {
-  width: 100%;
-  background: #fff;
-  border-radius: 14px; /* same radius as add-pet */
-  box-shadow: 0 25px 45px rgba(0,0,0,0.15);
-  padding: 50px 60px;
-  position: relative;
-}
-
-.table-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 8px;
-  width: 100%;
-  border-radius: 14px 14px 0 0;
-  background: linear-gradient(to right, #A8E6CF, #FFE29D, #FFB6B9); /* same top border strip */
-}
+  .table-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 8px;
+    width: 100%;
+    border-radius: 14px 14px 0 0;
+    background: linear-gradient(to right, #A8E6CF, #FFE29D, #FFB6B9);
+  }
 
   .button {
     padding: 8px 14px;
@@ -171,38 +186,63 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
   }
 
   .appointment-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.back-button {
-  position: absolute;
-  top: 100px;
-  left: 30px;
-  background: none;      /* remove gray background */
-  border: none;          /* remove border */
-  color: var(--dark);    /* keep your theme color */
-  font-size: 22px;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.back-button:hover {
-  color: var(--primary-dark); /* hover color */
-  transform: translateX(-3px);
-}
-
-@media (max-width: 768px) {
-  .back-button {
-    top: 80px;
-    left: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
   }
-}
 
-</style>
+  .back-button {
+    position: absolute;
+    top: 100px;
+    left: 30px;
+    background: none;
+    border: none;
+    color: var(--dark);
+    font-size: 22px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .back-button:hover {
+    color: var(--primary-dark);
+    transform: translateX(-3px);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+  }
+
+  .empty-state i {
+    font-size: 64px;
+    color: #ccc;
+    margin-bottom: 20px;
+  }
+
+  .empty-state h3 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .debug-info {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 8px;
+    font-family: monospace;
+  }
+
+  @media (max-width: 768px) {
+    .back-button {
+      top: 80px;
+      left: 20px;
+    }
+  }
+  </style>
 </head>
 <body>
 <header class="appointment-header">
@@ -239,69 +279,83 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
     <p class="success-message"><?= $_SESSION['success']; unset($_SESSION['success']); ?></p>
   <?php endif; ?>
 
+  <!-- Debug Information (REMOVE IN PRODUCTION) -->
+  <div class="debug-info">
+    <strong>Debug Info:</strong><br>
+    User ID: <?= $user_id ?><br>
+    Appointments Found: <?= $row_count ?><br>
+    Database Connected: <?= $conn ? 'Yes' : 'No' ?>
+  </div>
+
   <!-- Back Button -->
   <div class="section-header" style="display: flex; justify-content: flex-start; margin-top: 40px; margin-bottom: 20px;">
     <a href="main.php" class="back-button"><i class="fas fa-arrow-left"> BACK</i></a>
-
   </div>
 
   <!-- Table Container -->
   <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Pet</th>
-          <th>Service</th>
-          <th>Date & Time</th>
-          <th>Recommended</th>
-          <th>Approval</th>
-          <th>Status</th>
-          <th>Session Notes</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($row = pg_fetch_assoc($appointments)): ?>
+    <?php if ($row_count > 0): ?>
+      <table>
+        <thead>
           <tr>
-            <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['package_name']) ?></td>
-            <td><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?></td>
-            <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
-            <td>
-              <?php if ($row['status'] === 'cancelled'): ?>
-                <span class="badge cancelled">Cancelled</span>
-              <?php elseif ($row['is_approved']): ?>
-                <span class="badge approved">Approved</span>
-              <?php else: ?>
-                <span class="badge pending">Waiting</span>
-              <?php endif; ?>
-            </td>
-            <td><?= ucfirst($row['status']) ?></td>
-            <td><?= !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : '<em>No notes yet.</em>' ?></td>
-            <td>
-              <?php if ($row['status'] !== 'completed' && $row['status'] !== 'cancelled'): ?>
-                <button class="button" type="button" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">Reschedule</button>
-                <button class="button" type="button" onclick="openCancelModal(<?= $row['appointment_id'] ?>)">Cancel</button>
-              <?php endif; ?>
-
-              <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
-                <button class="button" type="button" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">⭐ Feedback</button>
-              <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
-                <div class="feedback">
-                  ⭐ <?= $row['rating'] ?>/5<br>
-                  <?= !empty($row['feedback']) ? htmlspecialchars($row['feedback']) : '<em>No comment.</em>' ?>
-                </div>
-              <?php endif; ?>
-            </td>
+            <th>Pet</th>
+            <th>Service</th>
+            <th>Date & Time</th>
+            <th>Recommended</th>
+            <th>Approval</th>
+            <th>Status</th>
+            <th>Session Notes</th>
+            <th>Actions</th>
           </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <?php while ($row = pg_fetch_assoc($appointments)): ?>
+            <tr>
+              <td><?= htmlspecialchars($row['pet_name']) ?></td>
+              <td><?= htmlspecialchars($row['package_name']) ?></td>
+              <td><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?></td>
+              <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
+              <td>
+                <?php if ($row['status'] === 'cancelled'): ?>
+                  <span class="badge cancelled">Cancelled</span>
+                <?php elseif ($row['is_approved']): ?>
+                  <span class="badge approved">Approved</span>
+                <?php else: ?>
+                  <span class="badge pending">Waiting</span>
+                <?php endif; ?>
+              </td>
+              <td><?= ucfirst($row['status']) ?></td>
+              <td><?= !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : '<em>No notes yet.</em>' ?></td>
+              <td>
+                <?php if ($row['status'] !== 'completed' && $row['status'] !== 'cancelled'): ?>
+                  <button class="button" type="button" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">Reschedule</button>
+                  <button class="button" type="button" onclick="openCancelModal(<?= $row['appointment_id'] ?>)">Cancel</button>
+                <?php endif; ?>
+
+                <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
+                  <button class="button" type="button" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">⭐ Feedback</button>
+                <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
+                  <div class="feedback">
+                    ⭐ <?= $row['rating'] ?>/5<br>
+                    <?= !empty($row['feedback']) ? htmlspecialchars($row['feedback']) : '<em>No comment.</em>' ?>
+                  </div>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
+    <?php else: ?>
+      <div class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <h3>No Appointments Found</h3>
+        <p>You don't have any appointments yet. Book your first appointment!</p>
+        <a href="../appointment/book-appointment.php" class="button" style="margin-top: 20px;">Book Now</a>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
 
-            
-            
 <!-- Cancel Modal -->
 <div id="cancelModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
   <div style="background:#fff; padding:30px; border-radius:12px; width:400px; position:relative;">
@@ -373,8 +427,6 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
   </div>
 </div>
 
-
-
 <script>
   function openCancelModal(id) {
     document.getElementById('cancel_appointment_id').value = id;
@@ -403,7 +455,6 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
     document.getElementById('feedbackModal').style.display = 'none';
   }
 
-  // Close any modal if background is clicked
   window.onclick = function(event) {
     const modals = document.querySelectorAll('.modal');
     modals.forEach(modal => {
@@ -413,10 +464,8 @@ $appointments = pg_query_params($conn, $query, [$user_id]);
     });
   }
 
-  // Validate feedback (optional but encouraged)
   function validateFeedback() {
-  const feedback = document.getElementById('feedback_text').value.trim(); // ✅ This matches your form
-
+    const feedback = document.getElementById('feedback_text').value.trim();
     if (feedback !== '') {
       const wordCount = feedback.split(/\s+/).length;
       if (wordCount < 5) {

@@ -64,11 +64,11 @@ if (!$pets) {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   }
 
-    .back-button {
+  .back-button {
     position: absolute;
-    top: 100px;
+    top: 120px;
     left: 30px;
-    background: none; /* remove box */
+    background: none;
     color: var(--dark);
     padding: 6px;
     font-size: 20px;
@@ -81,10 +81,10 @@ if (!$pets) {
     color: var(--primary-dark);
   }
 
-    .add-pet-container {
-      width: 100%;
-      padding: 140px 60px 40px; /* top padding accounts for fixed header */
-      box-sizing: border-box;
+  .add-pet-container {
+    width: 100%;
+    padding: 160px 60px 40px;
+    box-sizing: border-box;
   }
 
   .form-wrapper {
@@ -119,7 +119,7 @@ if (!$pets) {
   /* GRID FORM LAYOUT */
   .form-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 👉 change to 4 for 4 columns */
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
 
@@ -167,14 +167,14 @@ if (!$pets) {
 
   /* TEXTAREAS SPAN FULL WIDTH */
   .form-grid textarea {
-    grid-column: span 3; /* match column count → span all */
+    grid-column: span 3;
     resize: vertical;
     min-height: 90px;
   }
 
   /* SECTION TITLE */
   .form-section-title {
-    grid-column: 1 / -1; /* span all columns */
+    grid-column: 1 / -1;
     font-size: 18px;
     font-weight: bold;
     color: #00796B;
@@ -187,7 +187,7 @@ if (!$pets) {
 
   /* SUBMIT BUTTON */
   .submit-button {
-    grid-column: 1 / -1; /* span all columns */
+    grid-column: 1 / -1;
     padding: 14px;
     background: linear-gradient(135deg, var(--secondary), var(--accent));
     color: var(--dark);
@@ -258,11 +258,14 @@ if (!$pets) {
       grid-column: 1 / -1;
     }
     .back-button {
-      top: 80px;
+      top: 100px;
       left: 20px;
     }
     .form-wrapper {
       padding: 20px;
+    }
+    .add-pet-container {
+      padding: 140px 20px 40px;
     }
   }
 </style>
@@ -300,7 +303,6 @@ if (!$pets) {
     </nav>
   </header>
 
-  <a href="pet-profile.php" class="back-button"><i class="fas fa-arrow-left"> BACK TO PETS</i></a>
 
   
   <div class="add-pet-container">

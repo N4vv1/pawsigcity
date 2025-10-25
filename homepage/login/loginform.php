@@ -518,7 +518,7 @@
         <div id="register-form" class="form-section">
           <div id="register-alerts"></div>
           
-          <form action="register-handler.php" method="post">
+          <form action="../login/register-handler.php" method="post">
             <div class="row-inputs">
               <div class="input-box">
                 <input type="text" class="input-field" name="first_name" required />

@@ -34,11 +34,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['email']     = $user['email'];
             $_SESSION['role']      = $user['role'];
 
-            // Redirect based on role
+            // ✅ Redirect based on role
             switch ($user['role']) {
                 case 'admin':
                     header("Location: https://pawsigcity.onrender.com/dashboard/admin/admin.php");
                     break;
+
+                case 'groomer':
+                    header("Location: https://pawsigcity.onrender.com/groomer_dashboard/home_groomer.php");
+                    break;
+
+                case 'receptionist':
+                    header("Location: https://pawsigcity.onrender.com/receptionist_dashboard/receptionist_home.php");
+                    break;
+
                 default: // customer
                     header("Location: https://pawsigcity.onrender.com/homepage/main.php");
                     break;
