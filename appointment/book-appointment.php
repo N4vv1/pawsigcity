@@ -20,257 +20,38 @@ $pets_result = pg_query_params(
 
 $recommended_package = null;
 
-// ✅ Function to get peak hours data
-function getPeakHoursData($conn) {
-    $peak_hours_query = "
+// ✅ Function to get appointment counts by date and hour (SIMPLIFIED - NO ML)
+function getAppointmentCounts($conn) {
+    $query = "
         SELECT 
-            EXTRACT(DOW FROM appointment_date) AS day_of_week,
+            DATE(appointment_date) as date,
+            EXTRACT(HOUR FROM appointment_date) AS hour,
             COUNT(*) AS appointment_count
         FROM appointments 
-        WHERE appointment_date >= NOW() - INTERVAL '3 months'
+        WHERE appointment_date >= NOW()
         AND status != 'cancelled'
-        GROUP BY EXTRACT(DOW FROM appointment_date)
-        ORDER BY appointment_count DESC
+        GROUP BY DATE(appointment_date), EXTRACT(HOUR FROM appointment_date)
     ";
     
-    $result = pg_query($conn, $peak_hours_query);
-    $peak_data = [];
-
-    // Initialize all days with 0 appointments (0 = Sunday, 6 = Saturday in Postgres)
-    for ($day = 0; $day <= 6; $day++) {
-        $peak_data[$day] = 0;
-    }
+    $result = pg_query($conn, $query);
+    $counts = [];
 
     while ($row = pg_fetch_assoc($result)) {
-        $peak_data[(int)$row['day_of_week']] = (int)$row['appointment_count'];
-    }
-
-    return $peak_data;
-}
-
-// ======================
-// ML DECISION TREE CLASS
-// ======================
-class AppointmentDecisionTree {
-    private $conn;
-    private $tree_model = null;
-
-    public function __construct($conn) {
-        $this->conn = $conn;
-        $this->buildDecisionTree();
-    }
-
-    private function buildDecisionTree() {
-        $training_data = $this->getTrainingData();
-        if (empty($training_data)) {
-            // If no training data, use API-based recommendation or fallback
-            $this->tree_model = $this->getDefaultTree();
-            return;
-        }
-        $this->tree_model = $this->trainDecisionTree($training_data);
-    }
-
-    private function getDefaultTree() {
-        // Call Flask API without needing pet_id
-        $url = "https://pawsigcity-1.onrender.com/recommend";
-
-        // Example default data (you can adjust this if needed)
-        $data = [
-            "breed"  => "Unknown",
-            "gender" => "Unknown",
-            "age"    => 1
-        ];
-
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-
-        if ($result && !isset($result['error'])) {
-            return $result;
-        }
-
-        // Fallback if API failed
-        return [
-            "recommended_package" => "Basic Groom",
-            "notes" => "Fallback recommendation"
-        ];
-    }
-
-
-    private function getTrainingData() {
-        $query = "
-            SELECT 
-                EXTRACT(DOW FROM appointment_date) AS day_of_week,
-                EXTRACT(HOUR FROM appointment_date) AS hour,
-                EXTRACT(MONTH FROM appointment_date) AS month,
-                CASE 
-                    WHEN EXTRACT(DOW FROM appointment_date) IN (0, 6) THEN 1 
-                    ELSE 0 
-                END AS is_weekend,
-                COUNT(*) AS appointment_count,
-                AVG(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completion_rate,
-                AVG(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS cancellation_rate,
-                CASE 
-                    WHEN COUNT(*) >= 5 THEN 'high'
-                    WHEN COUNT(*) >= 1 THEN 'medium'
-                    ELSE 'low'
-                END AS demand_level
-            FROM appointments 
-            WHERE appointment_date >= NOW() - INTERVAL '6 months'
-            GROUP BY 
-                EXTRACT(DOW FROM appointment_date), 
-                EXTRACT(HOUR FROM appointment_date), 
-                EXTRACT(MONTH FROM appointment_date)
-            ORDER BY MAX(appointment_date) DESC
-        ";
+        $date = $row['date'];
+        $hour = (int)$row['hour'];
+        $count = (int)$row['appointment_count'];
         
-        $result = pg_query($this->conn, $query);
-        $data = [];
-        
-        while ($row = pg_fetch_assoc($result)) {
-            $data[] = [
-                'features' => [
-                    'day_of_week' => (int)$row['day_of_week'],
-                    'hour' => (int)$row['hour'],
-                    'month' => (int)$row['month'],
-                    'is_weekend' => (int)$row['is_weekend'],
-                    'appointment_count' => (int)$row['appointment_count'],
-                    'completion_rate' => (float)$row['completion_rate'],
-                    'cancellation_rate' => (float)$row['cancellation_rate']
-                ],
-                'label' => $row['demand_level']
-            ];
+        if (!isset($counts[$date])) {
+            $counts[$date] = [];
         }
-        return $data;
+        $counts[$date][$hour] = $count;
     }
 
-    // Training logic unchanged...
-    private function trainDecisionTree($data) {
-        // Same as before — rule-based decision tree
-        $rules = [
-            [
-                'condition' => function($features) { return $features['is_weekend'] == 1; },
-                'rules' => [
-                    ['condition' => fn($f) => $f['hour'] >= 9 && $f['hour'] <= 15, 'prediction' => 'medium', 'confidence' => 0.70],
-                    ['condition' => fn($f) => $f['hour'] >= 16 && $f['hour'] <= 18, 'prediction' => 'low', 'confidence' => 0.65],
-                    ['condition' => fn($f) => true, 'prediction' => 'low', 'confidence' => 0.60]
-                ]
-            ],
-            [
-                'condition' => function($features) { return $features['is_weekend'] == 0; },
-                'rules' => [
-                    ['condition' => fn($f) => ($f['day_of_week'] >= 1 && $f['day_of_week'] <= 5) && ($f['hour'] >= 10 && $f['hour'] <= 14), 'prediction' => 'low', 'confidence' => 0.70],
-                    ['condition' => fn($f) => $f['hour'] >= 15 && $f['hour'] <= 17, 'prediction' => 'low', 'confidence' => 0.75],
-                    ['condition' => fn($f) => true, 'prediction' => 'low', 'confidence' => 0.65]
-                ]
-            ]
-        ];
-        return $rules;
-    }
-
-    public function predict($date_time) {
-        $date = new DateTime($date_time);
-        $features = [
-            'day_of_week' => (int)$date->format('w'), // Postgres: Sunday=0
-            'hour' => (int)$date->format('H'),
-            'month' => (int)$date->format('n'),
-            'is_weekend' => in_array((int)$date->format('w'), [0, 6]) ? 1 : 0,
-            'appointment_count' => 0,
-            'completion_rate' => 0.8,
-            'cancellation_rate' => 0.1
-        ];
-
-        $actual_count = $this->getActualAppointmentCount($features['day_of_week'], $features['hour']);
-        $features['appointment_count'] = $actual_count;
-
-        $prediction = 'low';
-        if ($actual_count >= 5) {
-            $prediction = 'high';
-        } elseif ($actual_count >= 1) {
-            $prediction = 'medium';
-        }
-
-        $confidence = $actual_count == 0 ? 0.95 : 0.85;
-
-        return [
-            'prediction' => $prediction,
-            'confidence' => $confidence,
-            'features_used' => $features,
-            'appointment_count' => $actual_count
-        ];
-    }
-
-    private function getActualAppointmentCount($day_of_week, $hour) {
-        $query = "
-            SELECT COUNT(*) AS count
-            FROM appointments 
-            WHERE EXTRACT(DOW FROM appointment_date) = $1 
-              AND EXTRACT(HOUR FROM appointment_date) = $2
-              AND appointment_date >= NOW() - INTERVAL '3 months'
-              AND status != 'cancelled'
-        ";
-        $result = pg_query_params($this->conn, $query, [$day_of_week, $hour]);
-        $row = pg_fetch_assoc($result);
-        return (int)$row['count'];
-    }
-
-    public function getFeatureImportance() {
-        return [
-            'appointment_count' => 0.50,
-            'hour' => 0.25,
-            'day_of_week' => 0.15,
-            'is_weekend' => 0.10
-        ];
-    }
-
-    public function getModelStats() {
-        $training_data = $this->getTrainingData();
-        return [
-            'training_samples' => count($training_data),
-            'model_type' => 'Decision Tree (Count-Based)',
-            'features' => array_keys($this->getFeatureImportance()),
-            'prediction_classes' => ['low', 'medium', 'high'],
-            'thresholds' => [
-                'high' => '5+ appointments',
-                'medium' => '1-4 appointments',
-                'low' => '0 appointments'
-            ]
-        ];
-    }
+    return $counts;
 }
 
-// ✅ Initialize ML model
-$ml_model = new AppointmentDecisionTree($conn);
-
-// ✅ Get peak hours data
-$peak_hours_data_raw = getPeakHoursData($conn);
-
-// ✅ Get ML-powered peak hours data
-$peak_hours_data = []; 
-for ($day = 0; $day < 7; $day++) {
-    $date = new DateTime();
-    $date->add(new DateInterval("P{$day}D"));
-    for ($hour = 8; $hour <= 18; $hour++) {
-        $date->setTime($hour, 0);
-        $prediction = $ml_model->predict($date->format('Y-m-d H:i:s'));
-        $peak_hours_data[] = [
-            'day_of_week' => (int)$date->format('w'),
-            'hour' => $hour,
-            'date' => $date->format('Y-m-d'),
-            'prediction' => $prediction['prediction'],
-            'confidence' => $prediction['confidence'],
-            'appointment_count' => $prediction['appointment_count'] ?? 0,
-            'ml_powered' => true
-        ];
-    }
-}
+// ✅ Get appointment counts (NO ML PREDICTIONS - JUST REAL DATA)
+$appointment_counts = getAppointmentCounts($conn);
 
 // ✅ Check pet ownership if selected
 if ($selected_pet_id) {
@@ -353,10 +134,8 @@ if ($selected_pet_id) {
                 ELSE 4
             END,
             pp.min_weight
-    ");}
-
-// ✅ Get model stats
-$model_stats = $ml_model->getModelStats();
+    ");
+}
 ?>
 
 <!DOCTYPE html>
@@ -559,196 +338,99 @@ $model_stats = $ml_model->getModelStats();
     color: #2c80b4;
   }
 
-  /* ML-Enhanced Peak Hours Matching Theme Styles */
-.peak-hours-container {
-  background: #f4f7f8;
-  color: #2c3e50;
-  padding: 24px;
-  border-radius: 16px;
-  margin: 20px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #ddd;
-}
+  .submit-btn:disabled {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  
+  .submit-btn:disabled:hover {
+    background-color: #ccc !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
 
-.peak-hours-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #34495e;
-}
+  /* SIMPLIFIED AVAILABILITY INDICATOR (NO ML) */
+  .availability-indicator {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ccc;
+    color: white;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+  }
 
-.peak-info {
-  background-color: #ffffff;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #e2e2e2;
-  font-size: 0.95rem;
-  line-height: 1.4;
-  margin-bottom: 16px;
-}
+  .availability-indicator.show {
+    opacity: 1;
+  }
 
-.ml-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-left: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
+  .availability-indicator.full {
+    background: #e57373;
+  }
 
-.model-stats {
-  background-color: #f8f9ff;
-  border: 1px solid #e1e5ff;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 12px;
-  font-size: 0.85rem;
-  color: #555;
-}
+  .availability-indicator.available {
+    background: #81c784;
+  }
 
-.peak-legend {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 16px;
-  font-size: 0.9rem;
-}
+  .datetime-container {
+    position: relative;
+  }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+  /* CALENDAR LEGEND */
+  .legend-container {
+    background-color: #f4f7f8;
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
 
-.legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
-}
+  .legend-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 8px;
+  }
 
-.legend-color.high {
-  background-color: #ffcccc;
-}
+  .legend-items {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
 
-.legend-color.medium {
-  background-color: #fff3cd;
-}
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+  }
 
-.legend-color.low {
-  background-color: #d4edda;
-}
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+  }
 
-.peak-hours-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
-  margin-top: 16px;
-}
+  .legend-color.available {
+    background-color: #e8f5e8;
+  }
 
-.peak-hour-item {
-  background-color: #ffffff;
-  padding: 12px;
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-}
+  .legend-color.busy {
+    background-color: #fff3e0;
+  }
 
-.peak-hour-item.high {
-  background-color: #ffefef;
-  border-color: #f8d7da;
-}
-
-.peak-hour-item.medium {
-  background-color: #fffbea;
-  border-color: #ffeeba;
-}
-
-.peak-hour-item.low {
-  background-color: #ecfdf3;
-  border-color: #c3e6cb;
-}
-
-.hour-time {
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.hour-level {
-  font-size: 0.9rem;
-  margin-top: 4px;
-  color: #666;
-}
-
-.confidence-indicator {
-  font-size: 0.75rem;
-  color: #888;
-  margin-top: 2px;
-}
-
-    .submit-btn:disabled {
-      background-color: #ccc !important;
-      color: #666 !important;
-      cursor: not-allowed !important;
-      opacity: 0.6 !important;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-    
-    .submit-btn:disabled:hover {
-      background-color: #ccc !important;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-.peak-indicator {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: #ccc;
-  color: white;
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-weight: 600;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 10;
-}
-
-.peak-indicator.show {
-  opacity: 1;
-}
-
-.peak-indicator.high {
-  background: #e57373;
-}
-
-.peak-indicator.medium {
-  background: #f0ad4e;
-  color: #333;
-}
-
-.peak-indicator.low {
-  background: #81c784;
-}
-
-.datetime-container {
-  position: relative;
-}
-
-.ml-confidence {
-  font-size: 0.7rem;
-  opacity: 0.8;
-  margin-left: 4px;
-}
+  .legend-color.full {
+    background-color: #ffebee;
+  }
 </style>
 
 </head>
@@ -843,26 +525,31 @@ $model_stats = $ml_model->getModelStats();
               <label for="appointment_date"><i class="fas fa-calendar-alt"></i> Appointment Date and Time:</label>
               <div class="datetime-container">
                 <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
-                <div class="peak-indicator" id="peakIndicator">Select date/time</div>
+                <div class="availability-indicator" id="availabilityIndicator">Select date/time</div>
               </div>
-              <small style="color: #666; margin-top: 5px;">AI-powered demand prediction based on actual appointment counts</small>
+              <div class="legend-container">
+                <div class="legend-title">📅 Calendar Legend:</div>
+                <div class="legend-items">
+                  <div class="legend-item">
+                    <span class="legend-color available"></span>
+                    <span>Available (0-2 bookings)</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color busy"></span>
+                    <span>Busy (3-4 bookings)</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color full"></span>
+                    <span>Full (5+ bookings - unavailable)</span>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div class="form-group">
               <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
               <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>
             </div>
-
-            <?php if ($selected_pet_id): ?>
-                <!-- Debugging info (remove after fixing) -->
-                <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
-                    <strong>Debug Info:</strong><br>
-                    Pet: <?= htmlspecialchars($valid_pet['name']) ?><br>
-                    Breed: <?= htmlspecialchars($valid_pet['breed']) ?><br>
-                    Recommended Package: <?= $recommended_package ? htmlspecialchars($recommended_package) : 'None' ?><br>
-                    API Response: <?= isset($response) ? htmlspecialchars(substr($response, 0, 200)) : 'No response' ?>
-                </div>
-            <?php endif; ?>
 
             <button type="submit" class="btn submit-btn">Book Appointment</button>
           </form>
@@ -872,72 +559,40 @@ $model_stats = $ml_model->getModelStats();
   </div>
 
   <script>
-  // Peak hours data from PHP (corrected to show actual appointment counts)
-  const peakHoursData = <?= json_encode($peak_hours_data_raw) ?>;
-  const mlPeakHoursData = <?= json_encode($peak_hours_data) ?>;
-  const modelStats = <?= json_encode($model_stats) ?>;
+  // =====================================================
+  // SIMPLIFIED BOOKING SYSTEM (NO ML PREDICTIONS)
+  // Just shows real appointment counts from database
+  // =====================================================
+  
+  const appointmentCounts = <?= json_encode($appointment_counts) ?>;
+  const MAX_APPOINTMENTS = 5; // Maximum appointments per time slot
 
-  // Fixed function to get peak level based on appointment count
-  function getPeakLevel(count) {
-    if (count >= 5) return 'high';      // 5 or more appointments = high demand
-    if (count >= 1) return 'medium';    // 1-4 appointments = moderate demand
-    return 'low';                       // 0 appointments = low demand
+  // Get actual appointment count for specific date and hour
+  function getAppointmentCount(date, hour) {
+    const dateStr = date.toISOString().split('T')[0];
+    if (appointmentCounts[dateStr] && appointmentCounts[dateStr][hour] !== undefined) {
+      return appointmentCounts[dateStr][hour];
+    }
+    return 0;
   }
 
-  // Create a comprehensive map for ML predictions with actual appointment counts
-  const mlPredictionMap = {};
-  mlPeakHoursData.forEach(item => {
-    const key = `${item.day_of_week}_${item.hour}`;
-    mlPredictionMap[key] = {
-      prediction: item.prediction,
-      confidence: item.confidence,
-      appointment_count: item.appointment_count || 0,
-      ml_powered: true
-    };
-  });
-
-  // Enhanced ML prediction function with corrected logic
-  function getMLPrediction(date, hour) {
-    const dayOfWeek = date.getDay() + 1; // Convert to MySQL DAYOFWEEK
-    const key = `${dayOfWeek}_${hour}`;
-    
-    if (mlPredictionMap[key]) {
-      return mlPredictionMap[key];
-    }
-    
-    // Fallback prediction - default to low demand (0 appointments)
-    const isBusinessHours = hour >= 9 && hour <= 18;
-    
-    // Return null for outside business hours
-    if (!isBusinessHours) {
-      return { 
-        prediction: 'unavailable', 
-        confidence: 1.0, 
-        appointment_count: 0,
-        ml_powered: true 
-      };
-    }
-    
-    // Default to low demand for times without historical data
-    return { 
-      prediction: 'low', 
-      confidence: 0.95, 
-      appointment_count: 0,
-      ml_powered: true 
-    };
+  // Check if slot is available (not full)
+  function isSlotAvailable(date, hour) {
+    const count = getAppointmentCount(date, hour);
+    return count < MAX_APPOINTMENTS;
   }
 
-  // Function to update ML-powered peak indicator with corrected logic
-  function updateMLPeakIndicator() {
+  // Update availability indicator when date/time is selected
+  function updateAvailabilityIndicator() {
     const dateInput = document.getElementById('appointment_date');
-    const indicator = document.getElementById('peakIndicator');
+    const indicator = document.getElementById('availabilityIndicator');
     const submitBtn = document.querySelector('.submit-btn');
 
     if (!dateInput.value) {
-      indicator.className = 'peak-indicator';
+      indicator.className = 'availability-indicator';
       indicator.textContent = 'Select date/time';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Book Appointment (ML Optimized)';
+      submitBtn.textContent = 'Book Appointment';
       submitBtn.style.cursor = 'pointer';
       submitBtn.style.backgroundColor = '';
       submitBtn.style.opacity = '';
@@ -947,9 +602,9 @@ $model_stats = $ml_model->getModelStats();
     const selectedDate = new Date(dateInput.value);
     const hour = selectedDate.getHours();
     
-    // Check if time is within business hours
+    // Check if time is within business hours (9 AM - 6 PM)
     if (hour < 9 || hour > 18) {
-      indicator.className = 'peak-indicator show high';
+      indicator.className = 'availability-indicator show full';
       indicator.innerHTML = '⛔ Outside Business Hours';
       submitBtn.disabled = true;
       submitBtn.innerHTML = 'Outside Business Hours (9 AM - 6 PM Only)';
@@ -959,74 +614,35 @@ $model_stats = $ml_model->getModelStats();
       return;
     }
     
-    const mlResult = getMLPrediction(selectedDate, hour);
-    const peakLevel = mlResult.prediction;
-    const confidence = Math.round(mlResult.confidence * 100);
-    const appointmentCount = mlResult.appointment_count || 0;
+    const appointmentCount = getAppointmentCount(selectedDate, hour);
+    const available = isSlotAvailable(selectedDate, hour);
 
-    // Update peak indicator with ML results
-    indicator.className = `peak-indicator show ${peakLevel}`;
-
-    let text = '';
-    let icon = '';
-    switch (peakLevel) {
-      case 'high':
-        text = `High Demand (${appointmentCount} appointments)`;
-        icon = '🔴';
-        break;
-      case 'medium':
-        text = `Moderate (${appointmentCount} appointments)`;
-        icon = '🟡';
-        break;
-      case 'low':
-        text = `Low Demand (${appointmentCount} appointments)`;
-        icon = '🟢';
-        break;
-      case 'unavailable':
-        text = `Outside Hours`;
-        icon = '⛔';
-        break;
-    }
-    
-    indicator.innerHTML = `
-      ${icon} ${text}
-      <span class="ml-confidence">(${confidence}% confidence)</span>
-    `;
-
-    // Enhanced booking logic - only disable high demand slots (5+ appointments)
-    if (peakLevel === 'high' || peakLevel === 'unavailable') {
-      submitBtn.disabled = true;
-      const message = peakLevel === 'unavailable' ? 
-        'Outside Business Hours (9 AM - 6 PM Only)' : 
-        `Unavailable (High Demand - ${appointmentCount} appointments)`;
-      submitBtn.innerHTML = message;
-      submitBtn.style.cursor = 'not-allowed';
-      submitBtn.style.backgroundColor = '#ccc';
-      submitBtn.style.opacity = '0.6';
-    } else {
+    // Update indicator based on availability
+    if (available) {
+      indicator.className = 'availability-indicator show available';
+      indicator.innerHTML = `✓ Available (${appointmentCount}/${MAX_APPOINTMENTS} booked)`;
       submitBtn.disabled = false;
-      let buttonText;
-      if (peakLevel === 'low') {
-        buttonText = appointmentCount === 0 ? 
-          'Book Appointment (Perfect Time - No Conflicts!)' : 
-          'Book Appointment (Low Demand - Great Choice!)';
-      } else {
-        buttonText = `Book Appointment (${appointmentCount} other appointments)`;
-      }
-      submitBtn.innerHTML = buttonText;
+      submitBtn.innerHTML = 'Book Appointment';
       submitBtn.style.cursor = 'pointer';
       submitBtn.style.backgroundColor = '#A8E6CF';
       submitBtn.style.opacity = '1';
+    } else {
+      indicator.className = 'availability-indicator show full';
+      indicator.innerHTML = `✕ Full (${appointmentCount}/${MAX_APPOINTMENTS} booked)`;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = 'Time Slot Full - Please Choose Another';
+      submitBtn.style.cursor = 'not-allowed';
+      submitBtn.style.backgroundColor = '#ccc';
+      submitBtn.style.opacity = '0.6';
     }
   }
 
-  // Set up ML-enhanced event listeners
+  // Initialize event listeners
   document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('appointment_date');
     if (dateInput) {
-      // Manual event listeners
-      dateInput.addEventListener('change', updateMLPeakIndicator);
-      dateInput.addEventListener('input', updateMLPeakIndicator);
+      dateInput.addEventListener('change', updateAvailabilityIndicator);
+      dateInput.addEventListener('input', updateAvailabilityIndicator);
 
       // Set minimum date to today
       const now = new Date();
@@ -1034,18 +650,9 @@ $model_stats = $ml_model->getModelStats();
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
     }
-
-    // Display corrected ML model information
-    console.group('🧠 Machine Learning Model Information (Corrected)');
-    console.log('Model Type:', modelStats.model_type);
-    console.log('Training Samples:', modelStats.training_samples);
-    console.log('Demand Thresholds:', modelStats.thresholds);
-    console.log('Business Hours: 9 AM - 6 PM');
-    console.log('Logic: 0 appointments = Low, 1-4 = Moderate, 5+ = High (disabled)');
-    console.groupEnd();
   });
 
-  // Enhanced Flatpickr with corrected ML integration
+  // Initialize Flatpickr calendar with color-coded availability
   flatpickr("#appointment_date", {
     enableTime: true,
     dateFormat: "Y-m-d H:i",
@@ -1058,18 +665,9 @@ $model_stats = $ml_model->getModelStats();
     allowInput: true,
     clickOpens: true,
     onChange: function(selectedDates, dateStr, instance) {
-      updateMLPeakIndicator();
-      
-      // Log appointment count for debugging
-      if (selectedDates.length > 0) {
-        const mlResult = getMLPrediction(selectedDates[0], selectedDates[0].getHours());
-        console.log(`Selected time has ${mlResult.appointment_count} existing appointments - ${mlResult.prediction} demand`);
-      }
+      updateAvailabilityIndicator();
     },
-    onReady: function(selectedDates, dateStr, instance) {
-      console.log('Flatpickr initialized with corrected appointment counting logic');
-    },
-    // Only disable high demand times (5+ appointments)
+    // Disable full time slots (5+ bookings) and outside business hours
     disable: [
       function(date) {
         const hour = date.getHours();
@@ -1080,83 +678,45 @@ $model_stats = $ml_model->getModelStats();
           return false;
         }
         
-        // If it's a specific time, check business hours and appointment count
+        // Check business hours and availability
         if (hour < 9 || hour > 18) {
-          return true;
+          return true; // Disable outside business hours
         }
         
-        const prediction = getMLPrediction(date, hour);
-        // Only disable if there are 5 or more appointments (high demand)
-        return prediction.appointment_count >= 5;
+        return !isSlotAvailable(date, hour); // Disable if full
       }
     ],
-    // Enhanced day visualization
+    // Color-code calendar days based on average bookings
     onDayCreate: function(dObj, dStr, fp, dayElem) {
       const date = dayElem.dateObj;
       if (date) {
-        // Check average appointment count for this day (business hours 9-18)
         let totalAppointments = 0;
         let hoursChecked = 0;
         
+        // Check all business hours for this day (9 AM - 6 PM)
         for (let h = 9; h <= 18; h++) {
           const testDate = new Date(date);
           testDate.setHours(h);
-          const pred = getMLPrediction(testDate, h);
-          totalAppointments += pred.appointment_count;
+          totalAppointments += getAppointmentCount(testDate, h);
           hoursChecked++;
         }
         
         const avgAppointments = totalAppointments / hoursChecked;
         
-        if (avgAppointments >= 5) {
-          dayElem.style.backgroundColor = '#ffebee';
-          dayElem.title = `High demand day - avg ${avgAppointments.toFixed(1)} appointments per hour`;
-        } else if (avgAppointments >= 1) {
-          dayElem.style.backgroundColor = '#fff3e0';
-          dayElem.title = `Moderate demand day - avg ${avgAppointments.toFixed(1)} appointments per hour`;
+        // Color code based on average bookings per hour
+        if (avgAppointments >= 4) {
+          dayElem.style.backgroundColor = '#ffebee'; // Red - Busy/Full
+          dayElem.title = `Busy day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
+        } else if (avgAppointments >= 2) {
+          dayElem.style.backgroundColor = '#fff3e0'; // Yellow - Moderate
+          dayElem.title = `Moderate day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
         } else {
-          dayElem.style.backgroundColor = '#e8f5e8';
-          dayElem.title = `Low demand day - avg ${avgAppointments.toFixed(1)} appointments per hour (Best choice!)`;
+          dayElem.style.backgroundColor = '#e8f5e8'; // Green - Available
+          dayElem.title = `Available day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
         }
       }
     }
   });
-
-  // Display corrected weekly pattern analysis
-  function displayCorrectedWeeklyPattern() {
-    console.group('📊 Corrected ML Weekly Demand Pattern (9 AM - 6 PM)');
-    console.log('Logic: 0 appointments = Low, 1-4 = Moderate, 5+ = High (booking disabled)');
-    
-    const weeklyPattern = {};
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
-    for (let day = 1; day <= 7; day++) {
-      const dayName = dayNames[day - 1];
-      weeklyPattern[dayName] = {};
-      
-      for (let hour = 9; hour <= 18; hour++) {
-        const testDate = new Date();
-        testDate.setDate(testDate.getDate() + (day - testDate.getDay()));
-        testDate.setHours(hour, 0, 0, 0);
-        
-        const prediction = getMLPrediction(testDate, hour);
-        weeklyPattern[dayName][`${hour}:00`] = {
-          demand: prediction.prediction,
-          appointments: prediction.appointment_count,
-          confidence: Math.round(prediction.confidence * 100)
-        };
-      }
-    }
-    
-    console.table(weeklyPattern);
-    console.groupEnd();
-  }
-
-  // Initialize corrected analytics
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(displayCorrectedWeeklyPattern, 1000);
-  });
-
   </script>
 
 </body>

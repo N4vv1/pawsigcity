@@ -1,0 +1,40 @@
+{
+  "leaf": false,
+  "feature": 0,
+  "threshold": 3.0,
+  "left": {
+    "leaf": false,
+    "feature": 2,
+    "threshold": 9.0,
+    "left": {
+      "leaf": false,
+      "feature": 1,
+      "threshold": 10.0,
+      "left": {
+        "leaf": true,
+        "value": 1
+      },
+      "right": {
+        "leaf": false,
+        "feature": 2,
+        "threshold": 7.0,
+        "left": {
+          "leaf": true,
+          "value": 1
+        },
+        "right": {
+          "leaf": true,
+          "value": 0
+        }
+      }
+    },
+    "right": {
+      "leaf": true,
+      "value": 0
+    }
+  },
+  "right": {
+    "leaf": true,
+    "value": 1
+  }
+}

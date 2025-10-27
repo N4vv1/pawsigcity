@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Peak Hours and No Shows Prediction</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -36,6 +37,7 @@
     body {
       background: var(--light-pink-color);
       display: flex;
+      min-height: 100vh;
     }
 
     .sidebar {
@@ -50,6 +52,7 @@
       flex-direction: column;
       gap: 20px;
       overflow-y: auto;
+      z-index: 100;
     }
 
     .sidebar .logo {
@@ -122,101 +125,151 @@
 
     .content {
       margin-left: 260px;
-      padding: 15px;
+      padding: 20px;
       width: calc(100% - 260px);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .header {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     .header h1 {
       color: var(--dark-color);
-      font-size: 1.6rem;
-      margin-bottom: 3px;
+      font-size: 1.8rem;
+      margin-bottom: 5px;
     }
 
     .header p {
       color: #666;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
 
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .card {
-      background: var(--white-color);
+    .model-status {
+      background: linear-gradient(135deg, #d4edda, #c3e6cb);
+      padding: 15px 20px;
+      margin-bottom: 20px;
       border-radius: var(--border-radius-s);
-      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    .card h3 {
+    .model-status.error {
+      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    }
+
+    .model-status i {
+      font-size: 28px;
+    }
+
+    .model-info {
+      flex: 1;
+    }
+
+    .model-info h4 {
+      margin: 0 0 5px 0;
+      font-size: 1rem;
       color: var(--dark-color);
+    }
+
+    .model-info p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .retrain-btn {
+      background: var(--primary-color);
+      color: var(--dark-color);
+      border: none;
+      padding: 10px 18px;
+      border-radius: var(--border-radius-s);
+      font-weight: var(--font-weight-semi-bold);
+      cursor: pointer;
       font-size: 0.9rem;
-      margin-bottom: 8px;
+      transition: all 0.3s;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
+    .retrain-btn:hover {
+      background: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--white-color);
+      border-radius: var(--border-radius-s);
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      color: var(--dark-color);
+      font-size: 1rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .card-icon {
-      width: 28px;
-      height: 28px;
+      width: 35px;
+      height: 35px;
       background: var(--primary-color);
       border-radius: var(--border-radius-s);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 18px;
     }
 
     .stat-value {
-      font-size: 1.6rem;
+      font-size: 2rem;
       font-weight: var(--font-weight-bold);
       color: var(--primary-color);
-      margin: 3px 0;
+      margin: 8px 0;
     }
 
     .stat-label {
       color: #666;
-      font-size: 0.7rem;
+      font-size: 0.85rem;
     }
 
     .calendar-container {
       background: var(--white-color);
       border-radius: var(--border-radius-s);
-      padding: 15px;
+      padding: 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
     }
 
     .calendar-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
       border-bottom: 2px solid var(--light-pink-color);
     }
 
     .calendar-header h2 {
       color: var(--dark-color);
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .calendar-nav {
@@ -228,11 +281,12 @@
     .calendar-nav button {
       background: var(--primary-color);
       border: none;
-      padding: 8px 15px;
+      padding: 10px 18px;
       border-radius: var(--border-radius-s);
       cursor: pointer;
       font-weight: var(--font-weight-semi-bold);
       transition: background 0.3s;
+      font-size: 0.9rem;
     }
 
     .calendar-nav button:hover {
@@ -240,56 +294,44 @@
     }
 
     .calendar-nav select {
-      padding: 8px 12px;
+      padding: 10px 15px;
       border-radius: var(--border-radius-s);
       border: 1px solid var(--medium-gray-color);
       background: white;
       cursor: pointer;
       font-weight: var(--font-weight-semi-bold);
-    }
-
-    .calendar-nav span {
-      font-size: var(--font-size-l);
-      font-weight: var(--font-weight-semi-bold);
-      min-width: 150px;
-      text-align: center;
+      font-size: 0.9rem;
     }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      grid-template-rows: auto repeat(6, 1fr);
-      gap: 6px;
-      flex: 1;
-      min-height: 0;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     .calendar-day-header {
       text-align: center;
       font-weight: var(--font-weight-bold);
-      padding: 10px 5px;
+      padding: 12px 8px;
       color: var(--white-color);
       background: linear-gradient(135deg, var(--primary-color), #8DD9B4);
       border-radius: var(--border-radius-s);
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 0.9rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .calendar-day {
       border: 2px solid #e8e8e8;
       border-radius: var(--border-radius-s);
-      padding: 6px;
+      padding: 10px;
+      min-height: 100px;
       position: relative;
       cursor: pointer;
       transition: all 0.3s;
       background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-      font-size: 0.75rem;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
@@ -320,62 +362,63 @@
     }
 
     .day-number {
-      font-size: 0.95rem;
+      font-size: 1.1rem;
       font-weight: var(--font-weight-bold);
       color: var(--dark-color);
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
 
     .day-stats {
-      font-size: 0.68rem;
-      margin-top: 3px;
+      font-size: 0.75rem;
+      margin-top: 5px;
     }
 
     .appointments-count {
       display: inline-block;
       background: linear-gradient(135deg, var(--primary-color), #95DCBE);
-      padding: 2px 6px;
-      border-radius: 10px;
+      padding: 3px 8px;
+      border-radius: 12px;
       font-weight: var(--font-weight-semi-bold);
-      margin-bottom: 2px;
-      font-size: 0.68rem;
+      margin-bottom: 4px;
+      font-size: 0.75rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       color: var(--dark-color);
     }
 
     .noshow-badge {
       display: inline-block;
-      padding: 2px 6px;
-      border-radius: 10px;
+      padding: 3px 8px;
+      border-radius: 12px;
       font-weight: var(--font-weight-semi-bold);
-      font-size: 0.62rem;
-      margin-top: 2px;
+      font-size: 0.7rem;
+      margin-top: 3px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .peak-level {
       position: absolute;
-      top: 4px;
-      right: 4px;
-      width: 12px;
-      height: 12px;
+      top: 6px;
+      right: 6px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .peak-level.high {
       background: #ff6b6b;
-      box-shadow: 0 0 8px #ff6b6b;
+      box-shadow: 0 0 10px #ff6b6b;
     }
 
     .peak-level.medium {
       background: #ffd43b;
-      box-shadow: 0 0 8px #ffd43b;
+      box-shadow: 0 0 10px #ffd43b;
     }
 
     .peak-level.low {
       background: #51cf66;
-      box-shadow: 0 0 8px #51cf66;
+      box-shadow: 0 0 10px #51cf66;
     }
 
     .noshow-high {
@@ -395,29 +438,28 @@
 
     .legend {
       display: flex;
-      gap: 12px;
-      margin-top: 10px;
-      padding: 10px;
-      border-top: 2px solid var(--light-pink-color);
+      gap: 15px;
+      padding: 15px;
       flex-wrap: wrap;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
       background: var(--light-pink-color);
       border-radius: var(--border-radius-s);
+      align-items: center;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.75rem;
-      padding: 3px 8px;
+      gap: 6px;
+      font-size: 0.85rem;
+      padding: 5px 10px;
       background: var(--white-color);
       border-radius: 15px;
     }
 
     .legend-color {
-      width: 13px;
-      height: 13px;
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
@@ -429,7 +471,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -443,10 +485,11 @@
       background: var(--white-color);
       border-radius: var(--border-radius-s);
       padding: 30px;
-      max-width: 500px;
+      max-width: 600px;
       width: 90%;
-      max-height: 80vh;
+      max-height: 85vh;
       overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
 
     .modal-header {
@@ -461,14 +504,16 @@
     .modal-header h3 {
       margin: 0;
       color: var(--dark-color);
+      font-size: 1.3rem;
     }
 
     .close-modal {
       background: none;
       border: none;
-      font-size: 24px;
+      font-size: 28px;
       cursor: pointer;
       color: #999;
+      line-height: 1;
     }
 
     .close-modal:hover {
@@ -478,8 +523,8 @@
     .detail-row {
       display: flex;
       justify-content: space-between;
-      padding: 12px;
-      margin: 8px 0;
+      padding: 14px;
+      margin: 10px 0;
       background: var(--light-pink-color);
       border-radius: var(--border-radius-s);
     }
@@ -497,12 +542,17 @@
       margin-top: 20px;
     }
 
+    .hourly-breakdown h4 {
+      margin-bottom: 12px;
+      color: var(--dark-color);
+    }
+
     .hour-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px;
-      margin: 5px 0;
+      padding: 12px;
+      margin: 6px 0;
       background: #f9f9f9;
       border-radius: var(--border-radius-s);
       border-left: 4px solid var(--primary-color);
@@ -510,18 +560,61 @@
 
     .algorithm-info {
       background: #e3f2fd;
-      padding: 12px;
+      padding: 14px;
       border-radius: var(--border-radius-s);
-      margin-top: 12px;
-      font-size: 0.8rem;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+      .content {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .calendar-grid {
+        gap: 5px;
+      }
+      .calendar-day {
+        min-height: 80px;
+        padding: 6px;
+      }
     }
   </style>
 </head>
 <body>
 
+<?php
+// Load trained models
+$peakHourModel = null;
+$noshowModel = null;
+$modelStatus = 'not_trained';
+$trainingMetadata = null;
+
+$peakModelPath = __DIR__ . '/models/peak_hour_model.json';
+$noshowModelPath = __DIR__ . '/models/noshow_model.json';
+$metadataPath = __DIR__ . '/models/training_metadata.json';
+
+if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
+    $peakHourModel = json_decode(file_get_contents($peakModelPath), true);
+    $noshowModel = json_decode(file_get_contents($noshowModelPath), true);
+    $modelStatus = 'trained';
+    
+    if (file_exists($metadataPath)) {
+        $trainingMetadata = json_decode(file_get_contents($metadataPath), true);
+    }
+}
+?>
+
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig.png" alt="Pawsig City Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
@@ -537,7 +630,7 @@
       </div>
     </div>
     <hr>
-    <a href="../session_notes/notes.php" class="active"><i class='bx bx-note'></i>Analytics</a>
+    <a href="notes.php" class="active"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
@@ -548,8 +641,7 @@
 </aside>
 
 <main class="content">
-  <div class="header">
-  </div>
+
 
   <div class="dashboard-grid">
     <div class="card">
@@ -582,6 +674,7 @@
 
   <div class="calendar-container">
     <div class="calendar-header">
+      <h2><i class='bx bx-calendar-week'></i> Booking Calendar</h2>
       <div class="calendar-nav">
         <button onclick="changeMonth(-1)">← Prev</button>
         <select id="monthSelect" onchange="updateCalendar()">
@@ -602,10 +695,10 @@
           <option value="2024">2024</option>
           <option value="2025">2025</option>
           <option value="2026">2026</option>
-          <option value="2026">2027</option>
-          <option value="2026">2028</option>
-          <option value="2026">2029</option>
-          <option value="2026">2030</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
         </select>
         <button onclick="changeMonth(1)">Next →</button>
       </div>
@@ -629,13 +722,13 @@
       </div>
       <div style="font-weight: bold; margin-left: 20px;">No-Show Risk:</div>
       <div class="legend-item">
-        <span style="background: #ffe0e0; padding: 2px 6px; border-radius: 5px; font-size: 0.7rem;">High</span>
+        <span style="background: #ffe0e0; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">High</span>
       </div>
       <div class="legend-item">
-        <span style="background: #fff3bf; padding: 2px 6px; border-radius: 5px; font-size: 0.7rem;">Medium</span>
+        <span style="background: #fff3bf; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">Medium</span>
       </div>
       <div class="legend-item">
-        <span style="background: #d3f9d8; padding: 2px 6px; border-radius: 5px; font-size: 0.7rem;">Low</span>
+        <span style="background: #d3f9d8; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">Low</span>
       </div>
     </div>
   </div>
@@ -652,144 +745,44 @@
 </main>
 
 <script>
-  class DecisionTreeNode {
-    constructor(value = null) {
-      this.feature = null;
-      this.threshold = null;
-      this.left = null;
-      this.right = null;
-      this.value = value;
-      this.is_leaf = value !== null;
-    }
-  }
-  
-  class DecisionTree {
-    constructor(max_depth = 5, min_samples_split = 2) {
-      this.max_depth = max_depth;
-      this.min_samples_split = min_samples_split;
-      this.root = null;
-    }
-    
-    gini_impurity(labels) {
-      const total = labels.length;
-      if (total === 0) return 0;
-      const counts = {};
-      labels.forEach(label => counts[label] = (counts[label] || 0) + 1);
-      let impurity = 1.0;
-      Object.values(counts).forEach(count => {
-        const prob = count / total;
-        impurity -= prob * prob;
-      });
-      return impurity;
-    }
-    
-    split_data(X, y, feature, threshold) {
-      const left_X = [], left_y = [], right_X = [], right_y = [];
-      X.forEach((row, i) => {
-        if (row[feature] <= threshold) {
-          left_X.push(row);
-          left_y.push(y[i]);
-        } else {
-          right_X.push(row);
-          right_y.push(y[i]);
-        }
-      });
-      return [left_X, left_y, right_X, right_y];
-    }
-    
-    find_best_split(X, y) {
-      let best_gain = -1, best_feature = null, best_threshold = null;
-      const n_features = X[0].length;
-      const parent_impurity = this.gini_impurity(y);
-      
-      for (let feature = 0; feature < n_features; feature++) {
-        const unique_values = [...new Set(X.map(row => row[feature]))];
-        unique_values.forEach(threshold => {
-          const [left_X, left_y, right_X, right_y] = this.split_data(X, y, feature, threshold);
-          if (left_y.length === 0 || right_y.length === 0) return;
-          
-          const n = y.length;
-          const weighted_impurity = (left_y.length / n) * this.gini_impurity(left_y) + (right_y.length / n) * this.gini_impurity(right_y);
-          const gain = parent_impurity - weighted_impurity;
-          
-          if (gain > best_gain) {
-            best_gain = gain;
-            best_feature = feature;
-            best_threshold = threshold;
-          }
-        });
-      }
-      return [best_feature, best_threshold, best_gain];
-    }
-    
-    build_tree(X, y, depth = 0) {
-      const n_samples = y.length;
-      const n_labels = new Set(y).size;
-      
-      if (depth >= this.max_depth || n_labels === 1 || n_samples < this.min_samples_split) {
-        const counts = {};
-        y.forEach(label => counts[label] = (counts[label] || 0) + 1);
-        return new DecisionTreeNode(parseInt(Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b)));
-      }
-      
-      const [best_feature, best_threshold] = this.find_best_split(X, y);
-      if (best_feature === null) {
-        const counts = {};
-        y.forEach(label => counts[label] = (counts[label] || 0) + 1);
-        return new DecisionTreeNode(parseInt(Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b)));
-      }
-      
-      const [left_X, left_y, right_X, right_y] = this.split_data(X, y, best_feature, best_threshold);
-      const node = new DecisionTreeNode();
-      node.feature = best_feature;
-      node.threshold = best_threshold;
-      node.left = this.build_tree(left_X, left_y, depth + 1);
-      node.right = this.build_tree(right_X, right_y, depth + 1);
-      return node;
-    }
-    
-    fit(X, y) {
-      this.root = this.build_tree(X, y);
-    }
-    
-    predict_single(x) {
-      let node = this.root;
-      while (!node.is_leaf) {
-        node = x[node.feature] <= node.threshold ? node.left : node.right;
-      }
-      return node.value;
-    }
-  }
+  // Load trained models from PHP
+  const MODELS_LOADED = <?php echo $modelStatus === 'trained' ? 'true' : 'false'; ?>;
+  const peakHourModel = <?php echo $peakHourModel ? json_encode($peakHourModel) : 'null'; ?>;
+  const noshowModel = <?php echo $noshowModel ? json_encode($noshowModel) : 'null'; ?>;
+
+  console.log('Models loaded:', MODELS_LOADED);
 
   let appointments = [];
-  let peakHourTree = null;
-  let noshowTree = null;
   let currentYear = new Date().getFullYear();
   let currentMonth = new Date().getMonth() + 1;
 
-  function trainModels() {
-    if (appointments.length < 3) return;
-    
-    const X_peak = [], y_peak = [];
-    appointments.forEach(apt => {
-      const date = new Date(apt.appointment_date);
-      X_peak.push([date.getDay(), date.getDate(), date.getMonth() + 1]);
-      y_peak.push(date.getHours());
-    });
-    peakHourTree = new DecisionTree(3, 2);
-    peakHourTree.fit(X_peak, y_peak);
-    
-    const X_noshow = [], y_noshow = [];
-    appointments.forEach(apt => {
-      const date = new Date(apt.appointment_date);
-      const dayOfWeek = date.getDay();
-      const hour = date.getHours();
-      const dayOfMonth = date.getDate();
-      X_noshow.push([dayOfWeek, hour, dayOfMonth]);
-      y_noshow.push(apt.status === 'no_show' ? 1 : 0);
-    });
-    noshowTree = new DecisionTree(3, 2);
-    noshowTree.fit(X_noshow, y_noshow);
+  function predictWithTree(tree, features) {
+    if (!tree) return 0;
+    let node = tree;
+    while (!node.leaf) {
+      if (features[node.feature] <= node.threshold) {
+        node = node.left;
+      } else {
+        node = node.right;
+      }
+    }
+    return node.value;
+  }
+
+  function showTrainingInstructions() {
+    alert('📚 Training Instructions:\n\n' +
+          '1. Open your terminal/command prompt\n' +
+          '2. Navigate to: ' + window.location.pathname.replace('/notes.php', '') + '\n' +
+          '3. Run: python train_analytics.py\n' +
+          '4. Wait for training visualization to complete\n' +
+          '5. Refresh this page\n\n' +
+          'Models will be saved in the models/ folder.');
+  }
+
+  function showRetrainInstructions() {
+    if (confirm('Retrain ML models with latest data?\n\nThis will:\n• Fetch latest appointments\n• Train new models\n• Show training visualizations\n\nContinue?')) {
+      showTrainingInstructions();
+    }
   }
 
   function updateDashboard() {
@@ -806,9 +799,12 @@
       const hour = new Date(apt.appointment_date).getHours();
       hourCounts[hour] = (hourCounts[hour] || 0) + 1;
     });
-    const peakHour = Object.keys(hourCounts).reduce((a, b) => hourCounts[a] > hourCounts[b] ? a : b, 10);
-    document.getElementById('peakHour').textContent = peakHour + ':00';
-    document.getElementById('peakHourCount').textContent = (hourCounts[peakHour] || 0) + ' appointments';
+    
+    if (Object.keys(hourCounts).length > 0) {
+      const peakHour = Object.keys(hourCounts).reduce((a, b) => hourCounts[a] > hourCounts[b] ? a : b);
+      document.getElementById('peakHour').textContent = peakHour + ':00';
+      document.getElementById('peakHourCount').textContent = hourCounts[peakHour] + ' appointments';
+    }
   }
 
   function renderCalendar() {
@@ -856,30 +852,24 @@
       const isPastDate = currentDate < today;
       
       if (total > 0) {
-        // ACTUAL DATA ONLY - No predictions when there are real bookings
         let peakClass = '';
-        let noshowClass = '';
         
-        // Calculate peak level based on actual volume vs month average
         if (avgPerDay > 0) {
           const ratio = total / avgPerDay;
           if (ratio >= 1.5) peakClass = 'high';
           else if (ratio >= 1.0) peakClass = 'medium';
           else peakClass = 'low';
         } else {
-          // First bookings in the month
           if (total >= 3) peakClass = 'high';
           else if (total >= 2) peakClass = 'medium';
           else peakClass = 'low';
         }
 
-        // Calculate no-show rate based on ACTUAL outcomes only
         const noshowPct = Math.round((actualNoshows / total) * 100);
+        let noshowClass = 'noshow-low';
         if (noshowPct >= 50) noshowClass = 'noshow-high';
         else if (noshowPct >= 25) noshowClass = 'noshow-medium';
-        else noshowClass = 'noshow-low';
 
-        // Display actual data
         let content = `<div class="day-number">${day}</div>`;
         content += `<span class="peak-level ${peakClass}"></span>`;
         content += `<div class="day-stats">`;
@@ -889,56 +879,38 @@
         
         dayEl.innerHTML = content;
         dayEl.onclick = () => showDayDetail(dateStr, total, actualNoshows, dayAppointments);
-      } else if (!isPastDate && appointments.length >= 5) {
-        // PREDICTIONS - Future days without bookings
-        const dayOfWeek = currentDate.getDay();
+      } else if (!isPastDate && appointments.length >= 5 && MODELS_LOADED) {
+        const dayOfWeek = (currentDate.getDay() + 6) % 7;
         
-        // Get historical data for this day of week
         const sameDayAppointments = appointments.filter(apt => {
           const aptDate = new Date(apt.appointment_date);
-          return aptDate.getDay() === dayOfWeek;
+          return ((aptDate.getDay() + 6) % 7) === dayOfWeek;
         });
         
-        // Calculate expected appointments based on day of week pattern
+        const features = [dayOfWeek, day, currentMonth];
+        const predictedHour = predictWithTree(peakHourModel, features);
+        
+        const noshowFeatures = [dayOfWeek, predictedHour, day];
+        const noshowPrediction = predictWithTree(noshowModel, noshowFeatures);
+        
         const avgForThisDay = sameDayAppointments.length > 0 ? 
           sameDayAppointments.length / (appointments.length / 30) : avgPerDay;
         
-        // Predict peak hour using ML or fallback to historical average
-        let predictedHour = 10; // default
-        if (peakHourTree && sameDayAppointments.length > 0) {
-          predictedHour = peakHourTree.predict_single([dayOfWeek, day, currentMonth]);
-        } else if (sameDayAppointments.length > 0) {
-          const hourCounts = {};
-          sameDayAppointments.forEach(apt => {
-            const h = new Date(apt.appointment_date).getHours();
-            hourCounts[h] = (hourCounts[h] || 0) + 1;
-          });
-          predictedHour = parseInt(Object.keys(hourCounts).reduce((a, b) => hourCounts[a] > hourCounts[b] ? a : b, 10));
-        }
-        
-        // Determine peak level based on expected volume
+        let peakClass = 'medium';
         if (avgPerDay > 0) {
           if (avgForThisDay > avgPerDay * 1.5) peakClass = 'high';
           else if (avgForThisDay > avgPerDay * 0.8) peakClass = 'medium';
           else peakClass = 'low';
-        } else {
-          peakClass = 'medium';
         }
         
-        // Calculate no-show risk based on historical patterns
         const sameDayNoshows = sameDayAppointments.filter(apt => apt.status === 'no_show').length;
         const historicalNoshowRate = sameDayAppointments.length > 0 ? 
           (sameDayNoshows / sameDayAppointments.length) * 100 : 30;
         
-        // Use ML prediction if available
-        let predictedNoshow = 0;
-        if (noshowTree) {
-          predictedNoshow = noshowTree.predict_single([dayOfWeek, predictedHour, day]);
-        }
+        const noshowPct = Math.round(historicalNoshowRate);
+        let noshowClass = 'noshow-medium';
         
-        noshowPct = Math.round(historicalNoshowRate);
-        
-        if (historicalNoshowRate >= 40 || predictedNoshow === 1) noshowClass = 'noshow-high';
+        if (historicalNoshowRate >= 40 || noshowPrediction === 1) noshowClass = 'noshow-high';
         else if (historicalNoshowRate >= 20) noshowClass = 'noshow-medium';
         else noshowClass = 'noshow-low';
 
@@ -953,8 +925,11 @@
         dayEl.innerHTML = content;
         dayEl.onclick = () => showPredictionDetail(dateStr, dayOfWeek, predictedHour, noshowPct, peakClass, expectedCount, sameDayAppointments.length);
       } else {
-        // Not enough data or past date
         dayEl.innerHTML = `<div class="day-number">${day}</div>`;
+        if (!isPastDate && !MODELS_LOADED) {
+          dayEl.style.opacity = '0.5';
+          dayEl.title = 'Run train_analytics.py to enable predictions';
+        }
       }
 
       grid.appendChild(dayEl);
@@ -981,7 +956,6 @@
       riskColor = '#ffd43b';
     }
 
-    // Get hourly breakdown from ACTUAL appointments
     const hours = {};
     let peakHour = '--';
     let peakHourCount = 0;
@@ -995,7 +969,7 @@
       }
     });
 
-    let hourlyBreakdown = '<div class="hourly-breakdown"><h4>Hourly Distribution (Actual):</h4>';
+    let hourlyBreakdown = '<div class="hourly-breakdown"><h4>Hourly Distribution:</h4>';
     const sortedHours = Object.entries(hours).sort((a, b) => b[1] - a[1]);
     
     if (sortedHours.length > 0) {
@@ -1047,12 +1021,12 @@
         <span class="detail-value"><strong style="color: ${riskColor};">${riskLevel} Risk</strong></span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Peak Hour (Actual):</span>
+        <span class="detail-label">Peak Hour:</span>
         <span class="detail-value"><strong>${peakHour}:00</strong> (${peakHourCount} apt${peakHourCount > 1 ? 's' : ''})</span>
       </div>
       ${hourlyBreakdown}
       <div class="algorithm-info">
-        <strong>📊 100% Actual Data:</strong> All statistics shown are based on real bookings for this specific day. No predictions or estimates are included.
+        <strong>📊 Actual Data:</strong> All statistics are based on real bookings for this day.
       </div>
       <div class="algorithm-info">
         <strong>💡 Recommendation:</strong> ${recommendation}
@@ -1068,8 +1042,6 @@
     
     const date = new Date(dateStr);
     const formattedDate = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     
     let riskLevel = 'Low';
     let riskColor = '#51cf66';
@@ -1112,10 +1084,10 @@
         <span class="detail-value"><strong style="color: ${riskColor};">${noshowPct}% (${riskLevel})</strong></span>
       </div>
       <div class="algorithm-info">
+        <strong>🤖 ML Prediction:</strong> Based on trained decision tree models using ${historicalCount} historical appointments for this day of week.
       </div>
       <div class="algorithm-info">
-
-      <div class="algorithm-info">
+        <strong>💡 Recommendation:</strong> ${recommendation}
       </div>
     `;
 
@@ -1157,7 +1129,10 @@
     menu.classList.toggle('show');
   }
 
+  // Fetch appointments and initialize
   window.addEventListener('DOMContentLoaded', async () => {
+    console.log('Page loaded, fetching appointments...');
+    
     try {
       const SUPABASE_URL = 'https://pgapbbukmyitwuvfbgho.supabase.co';
       const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A';
@@ -1171,8 +1146,9 @@
       
       if (response.ok) {
         appointments = await response.json();
+        console.log('Appointments loaded:', appointments.length);
       } else {
-        console.error('Error fetching appointments');
+        console.error('Error fetching appointments:', response.status);
         appointments = [];
       }
     } catch (error) {
@@ -1182,9 +1158,11 @@
 
     document.getElementById('monthSelect').value = currentMonth;
     document.getElementById('yearSelect').value = currentYear;
-    trainModels();
+    
     updateDashboard();
     renderCalendar();
+    
+    console.log('Dashboard initialized');
   });
 </script>
 

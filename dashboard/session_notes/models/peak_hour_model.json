@@ -1,0 +1,67 @@
+{
+  "leaf": false,
+  "feature": 1,
+  "threshold": 26.0,
+  "left": {
+    "leaf": false,
+    "feature": 0,
+    "threshold": 4.0,
+    "left": {
+      "leaf": false,
+      "feature": 0,
+      "threshold": 1.0,
+      "left": {
+        "leaf": false,
+        "feature": 1,
+        "threshold": 7.0,
+        "left": {
+          "leaf": true,
+          "value": 11
+        },
+        "right": {
+          "leaf": true,
+          "value": 10
+        }
+      },
+      "right": {
+        "leaf": true,
+        "value": 11
+      }
+    },
+    "right": {
+      "leaf": true,
+      "value": 10
+    }
+  },
+  "right": {
+    "leaf": false,
+    "feature": 0,
+    "threshold": 1.0,
+    "left": {
+      "leaf": false,
+      "feature": 0,
+      "threshold": 0.0,
+      "left": {
+        "leaf": true,
+        "value": 10
+      },
+      "right": {
+        "leaf": true,
+        "value": 9
+      }
+    },
+    "right": {
+      "leaf": false,
+      "feature": 0,
+      "threshold": 3.0,
+      "left": {
+        "leaf": true,
+        "value": 10
+      },
+      "right": {
+        "leaf": true,
+        "value": 10
+      }
+    }
+  }
+}
