@@ -4,5 +4,5 @@ session_unset(); // Clear all session variables
 session_destroy(); // Destroy the session
 
 // Redirect to login page
-header("Location: ../../index.php"); 
+header("Location: ../pawsigcity/homepage/login/loginform.php"); 
 exit;

@@ -20,6 +20,7 @@
       display: flex;
       margin: 0;
       overflow-x: hidden;
+      position: relative;
     }
 
     body::before {
@@ -32,6 +33,7 @@
       top: -250px;
       right: -250px;
       animation: float 6s ease-in-out infinite;
+      z-index: 0;
     }
 
     body::after {
@@ -44,6 +46,7 @@
       bottom: -200px;
       left: -200px;
       animation: float 8s ease-in-out infinite reverse;
+      z-index: 0;
     }
 
     /* Left Side - Branding */
@@ -54,9 +57,10 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 60px;
+      padding: 60px 40px;
       position: relative;
       overflow: hidden;
+      min-height: 100vh;
     }
 
     .brand-side::before {
@@ -88,6 +92,7 @@
       z-index: 1;
       color: #2d5f4a;
       text-align: center;
+      max-width: 500px;
     }
 
     .brand-content h1 {
@@ -102,6 +107,7 @@
       line-height: 1.6;
       opacity: 0.9;
       max-width: 400px;
+      margin: 0 auto;
     }
 
     .brand-features {
@@ -109,6 +115,8 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
+      width: 100%;
+      max-width: 350px;
     }
 
     .feature-item {
@@ -138,8 +146,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px;
+      padding: 40px 20px;
       position: relative;
+      min-height: 100vh;
     }
 
     @keyframes float {
@@ -160,20 +169,22 @@
       font-size: 15px;
       padding: 10px 20px;
       border-radius: 50px;
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(168, 230, 207, 0.3);
       backdrop-filter: blur(10px);
       transition: all 0.3s ease;
       z-index: 10;
     }
 
     .back-button:hover {
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(168, 230, 207, 0.5);
       transform: translateX(-5px);
     }
 
     .container {
       width: 100%;
       max-width: 500px;
+      position: relative;
+      z-index: 1;
     }
 
     .form-container {
@@ -345,6 +356,8 @@
       align-items: center;
       margin-bottom: 25px;
       font-size: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .remember-me {
@@ -394,36 +407,93 @@
       transform: translateY(0);
     }
 
+    /* Tablet and below - Stack vertically */
     @media (max-width: 968px) {
       body {
         flex-direction: column;
       }
 
       .brand-side {
-        padding: 40px 20px;
-        min-height: 300px;
+        min-height: 40vh;
+        padding: 40px 30px;
       }
 
       .brand-content h1 {
         font-size: 36px;
       }
 
+      .brand-content p {
+        font-size: 16px;
+      }
+
       .brand-features {
-        display: none;
+        margin-top: 30px;
+        gap: 15px;
+      }
+
+      .feature-item {
+        padding: 12px 20px;
+      }
+
+      .feature-item i {
+        font-size: 20px;
+      }
+
+      .feature-item span {
+        font-size: 14px;
       }
 
       .form-side {
-        padding: 40px 20px;
+        min-height: 60vh;
+        padding: 40px 30px;
+      }
+
+      .back-button {
+        top: 20px;
+        left: 20px;
+      }
+
+      .container {
+        max-width: 600px;
       }
     }
 
-    @media (max-width: 480px) {
+    /* Mobile devices */
+    @media (max-width: 640px) {
+      .brand-side {
+        min-height: 35vh;
+        padding: 30px 20px;
+      }
+
       .brand-content h1 {
         font-size: 28px;
+        margin-bottom: 12px;
       }
 
       .brand-content p {
-        font-size: 16px;
+        font-size: 14px;
+      }
+
+      .brand-features {
+        margin-top: 20px;
+        gap: 12px;
+        max-width: 100%;
+      }
+
+      .feature-item {
+        padding: 10px 15px;
+      }
+
+      .feature-item i {
+        font-size: 18px;
+      }
+
+      .feature-item span {
+        font-size: 13px;
+      }
+
+      .form-side {
+        padding: 30px 20px;
       }
 
       .back-button {
@@ -433,8 +503,136 @@
         font-size: 14px;
       }
 
+      .logo-section h2 {
+        font-size: 24px;
+      }
+
+      .logo-section p {
+        font-size: 13px;
+      }
+
+      .tab-buttons {
+        margin-bottom: 25px;
+      }
+
+      .tab-btn {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .input-field {
+        padding: 12px 40px 12px 12px;
+        font-size: 14px;
+      }
+
+      .label {
+        font-size: 14px;
+        top: 12px;
+        left: 12px;
+      }
+
+      .icon {
+        right: 12px;
+        top: 12px;
+        font-size: 18px;
+      }
+
       .row-inputs {
         grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .input-box {
+        margin-bottom: 20px;
+      }
+
+      .remember-forgot {
+        font-size: 13px;
+        margin-bottom: 20px;
+      }
+
+      .submit-btn {
+        padding: 13px;
+        font-size: 15px;
+      }
+    }
+
+    /* Very small mobile devices */
+    @media (max-width: 380px) {
+      .brand-side {
+        padding: 25px 15px;
+      }
+
+      .brand-content h1 {
+        font-size: 24px;
+      }
+
+      .brand-content p {
+        font-size: 13px;
+      }
+
+      .brand-features {
+        gap: 10px;
+      }
+
+      .feature-item {
+        padding: 8px 12px;
+        gap: 10px;
+      }
+
+      .feature-item i {
+        font-size: 16px;
+      }
+
+      .feature-item span {
+        font-size: 12px;
+      }
+
+      .form-side {
+        padding: 25px 15px;
+      }
+
+      .back-button {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .logo-section h2 {
+        font-size: 22px;
+      }
+
+      .container {
+        padding: 0 10px;
+      }
+    }
+
+    /* Large tablets in landscape */
+    @media (min-width: 969px) and (max-width: 1200px) {
+      .brand-content h1 {
+        font-size: 42px;
+      }
+
+      .brand-features {
+        max-width: 320px;
+      }
+    }
+
+    /* Extra large screens */
+    @media (min-width: 1400px) {
+      .brand-content h1 {
+        font-size: 56px;
+      }
+
+      .brand-content p {
+        font-size: 20px;
+      }
+
+      .brand-features {
+        max-width: 400px;
+      }
+
+      .container {
+        max-width: 550px;
       }
     }
   </style>
