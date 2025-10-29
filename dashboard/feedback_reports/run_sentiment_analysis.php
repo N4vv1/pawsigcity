@@ -23,7 +23,7 @@ $return_var = 0;
 
 // Try python3 first, then python
 // Adjust the command based on your server setup
-$python_command = 'python3'; // Change to 'python' if python3 doesn't work
+$python_command = 'python'; // Change to 'python' if python3 doesn't work
 
 // Execute Python script
 $command = $python_command . " " . escapeshellarg($python_script) . " 2>&1";

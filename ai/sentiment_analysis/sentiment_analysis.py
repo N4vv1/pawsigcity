@@ -50,9 +50,9 @@ for feedback_id, comment, rating in feedback_data:
         elif rating >= 4 and sentiment == 'negative':
             sentiment = 'positive'
     
-    # Update database
+    # Update database - FIXED: Use feedback_id instead of appointment_id
     cursor.execute(
-        "UPDATE feedback SET sentiment = %s WHERE id = %s",
+        "UPDATE appointments SET sentiment = %s WHERE appointment_id = %s",
         (sentiment, feedback_id)
     )
     
