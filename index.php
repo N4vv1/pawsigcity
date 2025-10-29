@@ -33,187 +33,61 @@ if (!$result) {
   <link rel="icon" type="image/png" href="./homepage/images/pawsig.png">
 </head>
 <body>
-  <!-- Navbar Header -->
-   <header>
-  <nav class="navbar section-content">
-    <a href="#" class="navbar-logo">
-      <img src="./homepage/images/pawsig.png" alt="Logo" class="icon" />
-    </a>
-    <ul class="nav-menu">
-      <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
-      <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-      <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
-      <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
-      <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-      <li class="nav-item dropdown">
-        <a href="#" class="nav-link profile-icon">
-          <i class="fas fa-user-circle" style="font-size: 24px;"></i>
-        </a>
-        <ul class="dropdown-menu">
-          <li><a href="./homepage/login/loginform.php">Login</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
-<style>
-  /* ===== Hero Section Enhanced ===== */
-.hero-section {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;             /* full viewport height */
-  min-height: unset;         /* remove forced extra height */
-  padding: 0 20px;           /* keep only side padding */
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  overflow: hidden;
-}
+  <!-- Navbar Header with Burger Menu -->
+  <header>
+    <nav class="navbar section-content">
+      <div class="nav-logo">
+        <img src="./homepage/images/pawsig.png" alt="Logo" class="icon" />
+        <span class="logo-text">PAWsig City</span>
+      </div>
 
-/* subtle paw background */
-.hero-section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url('../homepage/images/paw-bg.png') repeat;
-  opacity: 0.07;
-  pointer-events: none;
-}
+      <!-- Burger Menu Icon -->
+      <div class="burger-menu" id="burger-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
 
-/* overlay effect */
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: #A8E6CF;
-  backdrop-filter: blur(2px);
-}
-
-.hero-content {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-  flex-wrap: wrap;
-  z-index: 1;
-  max-width: 1200px;
-  margin: auto;
-  padding: 40px 0;  /* optional spacing for balance */
-}
-
-.hero-text {
-  flex: 1;
-  max-width: 600px;
-}
-
-.hero-title {
-  font-size: 3rem;
-  font-weight: 800;
-  line-height: 1.2;
-  color: #333;
-}
-
-.hero-title span {
-  color: #FFE4A3;
-}
-
-.hero-subtitle {
-  font-size: 1.5rem;
-  margin: 15px 0;
-  color: #444;
-  font-weight: 600;
-}
-
-.hero-description {
-  font-size: 1.1rem;
-  margin-bottom: 25px;
-  color: #555;
-  line-height: 1.6;
-}
-
-.hero-buttons {
-  display: flex;
-  justify-content: center;  /* centers buttons */
-  gap: 15px;
-  margin-top: 20px;         /* space from description */
-}
-
-.hero-buttons .button {
-  padding: 12px 25px;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-.book-now {
-  background: #A8E6CF;
-  color: #fff;
-    border: 2px solid #252525;
-
-}
-
-.book-now:hover {
-  background: #FFE4A3;
-  transform: translateY(-2px);
-}
-
-.contact-us {
-  background: #FFE4A3;
-  border: 2px solid #252525;
-  color: #252525;
-}
-
-.contact-us:hover {
-  background: #A8E6CF;
-  color: #fff;
-}
-
-/* Hero Image */
-.hero-image-wrapper {
-  flex: 1;
-  text-align: center;
-}
-
-.hero-image {
-  width: 550px;
-  max-width: 100%;
-  animation: float 4s ease-in-out infinite;
-}
-
-/* Floating animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
-}
-</style>
-
+      <!-- Navigation Menu -->
+      <ul class="nav-menu" id="nav-menu">
+        <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="#service" class="nav-link">Services</a></li>
+        <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
+        <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link profile-icon">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="./homepage/login/loginform.php">Login</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
   <!-- Hero Section -->
   <main>
-   <!-- Hero Section -->
-<section class="hero-section" id="home">
-  <div class="hero-overlay"></div>
-  <div class="section-content hero-content">
-    <div class="hero-text">
-      <h1 class="hero-title">Welcome to <span>PAWsig City</span></h1>
-      <h3 class="hero-subtitle">Where Grooming Meets Love & Care</h3>
-      <p class="hero-description">
-        From Paw-scheduling to Tail-wagging — We’ve Got It Covered.  
-        Treat your pets with the best grooming experience in Pasig City.
-      </p>
-      <div class="hero-buttons">
-        <a href="../homepage/login/loginform.php" class="button book-now"> Book Now</a>
-        <a href="#contact" class="button contact-us"> Contact Us</a>
+    <section class="hero-section" id="home">
+      <div class="section-content">
+        <div class="hero-details">
+          <h1 class="title">Welcome to PAWsig City</h1>
+          <h3 class="subtitle">Where Grooming Meets Love & Care</h3>
+          <p class="description">
+            From Paw-scheduling to Tail-wagging — We've Got It Covered.  
+            Treat your pets with the best grooming experience in Pasig City.
+          </p>
+          <div class="buttons">
+            <a href="./homepage/login/loginform.php" class="button">Book Now</a>
+            <a href="#contact" class="contact-us">Contact Us</a>
+          </div>
+        </div>
+        <div class="hero-image-wrapper">
+          <img src="./homepage/images/asd.png" alt="Happy Pet" />
+        </div>
       </div>
-    </div>
-    <div class="hero-image-wrapper">
-      <img src="./homepage/images/asd.png" alt="Happy Pet" class="hero-image" />
-    </div>
-  </div>
-</section>
-
+    </section>
 
     <!-- About Section -->
     <section class="about-section" id="about">
@@ -235,112 +109,115 @@ if (!$result) {
     </section>
     
     <!-- Services Section -->
-<section class="service-section" id="service">
-  <h2 class="section-title">Our Services</h2>
-  <div class="section-content">
-    <ul class="service-list">
+    <section class="service-section" id="service">
+      <h2 class="section-title">Our Services</h2>
+      <div class="section-content">
+        <ul class="service-list">
+          <li class="service-item">
+            <a href="./homepage/login/loginform.php" style="text-decoration: none; color: inherit; display: contents;">
+              <img src="./homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
+              <h3 class="name">FULL GROOMING</h3>
+              <p class="text">
+                Our Full Grooming package includes a warm bath, blow dry, nail trim, tooth brushing, ear cleaning, and a stylish haircut — everything your pet needs to look and feel their best.
+              </p>
+            </a>
+          </li>
 
-      <li class="service-item">
-        <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="./homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
-          <h3 class="name">FULL GROOMING</h3>
-          <p class="text">
-            Our Full Grooming package includes a warm bath, blow dry, nail trim, tooth brushing, ear cleaning, and a stylish haircut — everything your pet needs to look and feel their best.
-          </p>
-        </a>
-      </li>
+          <li class="service-item">
+            <a href="./homepage/login/loginform.php" style="text-decoration: none; color: inherit; display: contents;">
+              <img src="./homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
+              <h3 class="name">SPA BATH</h3>
+              <p class="text">
+                Pamper your pet with our luxurious Spa Bath, which features a nano bubble bath, gentle massage, blow dry, nail trim, tooth brushing, and ear cleaning. This package also includes a stylish haircut, odor eliminator, and paw moisturizer for a complete spa experience.
+              </p>
+            </a>
+          </li>
 
-      <li class="service-item">
-        <a href="./homepage/images/bathdry.png" class="service-link">
-          <img src="./homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
-          <h3 class="name">SPA BATH</h3>
-          <p class="text">
-            Pamper your pet with our luxurious Spa Bath, which features a nano bubble bath, gentle massage, blow dry, nail trim, tooth brushing, and ear cleaning. This package also includes a stylish haircut, odor eliminator, and paw moisturizer for a complete spa experience.
-          </p>
-        </a>
-      </li>
+          <li class="service-item">
+            <a href="./homepage/login/loginform.php" style="text-decoration: none; color: inherit; display: contents;">
+              <img src="./homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
+              <h3 class="name">BATH AND DRY</h3>
+              <p class="text">
+                A quick and refreshing service that includes a full bath and gentle blow dry — ideal for keeping your pet clean between full grooming sessions.
+              </p>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
 
-      <li class="service-item">
-        <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="./homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
-          <h3 class="name">BATH AND DRY</h3>
-          <p class="text">
-            A quick and refreshing service that includes a full bath and gentle blow dry — ideal for keeping your pet clean between full grooming sessions.
-          </p>
-        </a>
-      </li>
-
-    </ul>
-  </div>
-</section>
-
-
-    <!-- Gallery Section with Pagination -->
-<section class="gallery-section" id="gallery">
-  <h2 class="section-title">Gallery</h2>
-  <div class="section-content">
-    
-    <!-- Gallery Container with Pagination Controls -->
-    <div class="gallery-container">
-      <!-- Gallery Grid -->
-      <div class="gallery-grid">
+    <!-- Gallery Section with PHP -->
+    <section class="gallery-section" id="gallery">
+      <h2 class="section-title">Gallery</h2>
+      <div class="section-content">
         <ul class="gallery-list" id="gallery-list">
           <?php if ($result && pg_num_rows($result) > 0): ?>
-          <?php while ($row = pg_fetch_assoc($result)): ?>
+            <?php while ($row = pg_fetch_assoc($result)): ?>
               <li class="gallery-item">
-                <div class="gallery-image-container">
-                  <img src="../pawsigcity/dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>"
-                       alt="Gallery Image" 
-                       class="gallery-image" />
-                </div>
+                <img src="../pawsigcity/dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>"
+                     alt="Gallery Image" 
+                     class="gallery-image" />
               </li>
             <?php endwhile; ?>
           <?php else: ?>
-            <li class="gallery-item no-images">
+            <li class="gallery-item" style="grid-column: 1/-1; text-align: center; padding: 40px;">
               <p>No images found in the gallery.</p>
             </li>
           <?php endif; ?>
         </ul>
+
+        <!-- Pagination -->
+        <div class="gallery-pagination">
+          <?php if ($current_page > 1): ?>
+            <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page - 1; ?>)" class="pagination-btn">&laquo;</a>
+          <?php endif; ?>
+
+          <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <a href="javascript:void(0)"
+               onclick="loadGalleryPage(<?php echo $i; ?>)"
+               class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>">
+               <?php echo $i; ?>
+            </a>
+          <?php endfor; ?>
+
+          <?php if ($current_page < $total_pages): ?>
+            <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page + 1; ?>)" class="pagination-btn">&raquo;</a>
+          <?php endif; ?>
+        </div>
       </div>
-
-      <!-- Numbered Pagination -->
-      <div class="gallery-pagination">
-        <?php if ($current_page > 1): ?>
-          <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page - 1; ?>)" class="pagination-btn">&laquo;</a>
-        <?php endif; ?>
-
-        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-          <a href="javascript:void(0)"
-             onclick="loadGalleryPage(<?php echo $i; ?>)"
-             class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>">
-             <?php echo $i; ?>
-          </a>
-        <?php endfor; ?>
-
-        <?php if ($current_page < $total_pages): ?>
-          <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page + 1; ?>)" class="pagination-btn">&raquo;</a>
-        <?php endif; ?>
-      </div>
-
-    </div>
-
-
-  </div>
-</section>
-
+    </section>
 
     <!-- Contact Us Section -->
     <section class="contact-section" id="contact">
       <h2 class="section-title">Contact Us</h2>
       <div class="section-content">
-        <ul class="contact-info-list">
-          <li class="contact-info"><i class="fa-solid fa-location-crosshairs"></i><p>324 DR. SIXTO ANTONIO AVENUE., CANIOGAN, PASIG CITY</p></li>
-          <li class="contact-info"><i class="fa-regular fa-envelope"></i><p>pawsigcity@gmail.com</p></li>
-          <li class="contact-info"><i class="fa-solid fa-phone"></i><p>CP num</p></li>
-          <li class="contact-info"><i class="fa-solid fa-clock"></i><p>9AM - 8PM ONLY</p></li>
-          <li class="contact-info"><i class="fa-solid fa-calendar-check"></i><p>MONDAY TO SUNDAY</p></li>
-          <li class="contact-info"><i class="fa-solid fa-globe"></i><p>PAWsig City</p></li>
-        </ul>
+        <div class="contact-info-list">
+          <div class="contact-info">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            <p>324 DR. SIXTO ANTONIO AVENUE., CANIOGAN, PASIG CITY</p>
+          </div>
+          <div class="contact-info">
+            <i class="fa-regular fa-envelope"></i>
+            <p>pawsigcity@gmail.com</p>
+          </div>
+          <div class="contact-info">
+            <i class="fa-solid fa-phone"></i>
+            <p>CP num</p>
+          </div>
+          <div class="contact-info">
+            <i class="fa-solid fa-clock"></i>
+            <p>9AM - 8PM ONLY</p>
+          </div>
+          <div class="contact-info">
+            <i class="fa-solid fa-calendar-check"></i>
+            <p>MONDAY TO SUNDAY</p>
+          </div>
+          <div class="contact-info">
+            <i class="fa-solid fa-globe"></i>
+            <p>PAWsig City</p>
+          </div>
+        </div>
+
         <form action="loginform.php" class="contact-form">
           <input type="text" placeholder="Your Name" class="form-input" required />
           <input type="email" placeholder="Email" class="form-input" required />
@@ -349,92 +226,144 @@ if (!$result) {
         </form>
       </div>
     </section>
-
-  
-
   </main>
 
+  <!-- Footer -->
+  <footer class="footer-section">
+    <div class="footer-container section-content">
+      <div class="footer-logo">
+        <img src="./homepage/images/pawsig.png" alt="PAWsig City Logo" />
+        <h3>PAWsig City</h3>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#service">Services</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Contact Info</h4>
+        <p>324 DR. SIXTO ANTONIO AVENUE</p>
+        <p>CANIOGAN, PASIG CITY</p>
+        <p>pawsigcity@gmail.com</p>
+      </div>
+
+      <div class="footer-socials">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2025 PAWsig City. All Rights Reserved.</p>
+    </div>
+  </footer>
+
   <script>
-  const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll(".nav-link");
+    // Burger Menu Toggle
+    const burger = document.getElementById('burger-menu');
+    const navMenu = document.getElementById('nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
 
-  // Highlight nav link based on scroll
-  window.addEventListener("scroll", () => {
-    let scrollY = window.pageYOffset + 130;
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
 
-    sections.forEach((section) => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      const sectionId = section.getAttribute("id");
+    // Close menu when clicking a link
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        burger.classList.remove('active');
+        navMenu.classList.remove('active');
+      });
+    });
 
-      if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-        navLinks.forEach((link) => {
-          link.classList.remove("active");
-          if (link.getAttribute("href") === `#${sectionId}`) {
-            link.classList.add("active");
-          }
-        });
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!burger.contains(e.target) && !navMenu.contains(e.target)) {
+        burger.classList.remove('active');
+        navMenu.classList.remove('active');
       }
     });
-  });
 
-  // Load gallery page with smooth fade transition
-  function loadGalleryPage(page) {
-    const galleryList = document.getElementById('gallery-list');
-    galleryList.classList.add('fade-out');
+    // Active Nav Link on Scroll
+    const sections = document.querySelectorAll("section[id]");
 
-    setTimeout(() => {
-      fetch(`../dashboard/gallery_dashboard/gallery_load.php?page=${page}`)
-        .then(response => response.json())
-        .then(data => {
-          // Update gallery content
-          galleryList.innerHTML = data.html;
+    window.addEventListener("scroll", () => {
+      let scrollY = window.pageYOffset + 150;
 
-          // Update pagination controls
-          document.querySelector('.gallery-pagination').innerHTML = data.pagination;
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionId = section.getAttribute("id");
 
-          // Update page info if exists
-          const pageInfo = document.querySelector('.gallery-page-info');
-          if (pageInfo) {
-            pageInfo.innerHTML = `
-              <span>Page ${data.current_page} of ${data.total_pages}</span>
-              <span>(${data.total_images} total images)</span>
-            `;
-          }
+        if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+          navLinks.forEach((link) => {
+            link.classList.remove("active");
+            if (link.getAttribute("href") === `#${sectionId}`) {
+              link.classList.add("active");
+            }
+          });
+        }
+      });
+    });
 
-          galleryList.classList.remove('fade-out');
-        })
-        .catch(error => {
-          console.error('Error loading gallery page:', error);
-        });
-    }, 300); // Match this with CSS transition duration
-  }
+    // Gallery Page Loading with fade transition
+    function loadGalleryPage(page) {
+      const galleryList = document.getElementById('gallery-list');
+      galleryList.classList.add('fade-out');
 
-  // (Optional) Update next/prev arrows if you're using them
-  function updateArrows(currentPage, totalPages) {
-    const leftArrow = document.querySelector('.gallery-arrow-left');
-    const rightArrow = document.querySelector('.gallery-arrow-right');
+      setTimeout(() => {
+        fetch(`../dashboard/gallery_dashboard/gallery_load.php?page=${page}`)
+          .then(response => response.json())
+          .then(data => {
+            // Update gallery content
+            galleryList.innerHTML = data.html;
 
-    if (leftArrow) {
-      if (currentPage > 1) {
-        leftArrow.onclick = () => loadGalleryPage(currentPage - 1);
-        leftArrow.classList.remove('disabled');
-      } else {
-        leftArrow.onclick = null;
-        leftArrow.classList.add('disabled');
-      }
+            // Update pagination controls
+            document.querySelector('.gallery-pagination').innerHTML = data.pagination;
+
+            // Update page info if exists
+            const pageInfo = document.querySelector('.gallery-page-info');
+            if (pageInfo) {
+              pageInfo.innerHTML = `
+                <span>Page ${data.current_page} of ${data.total_pages}</span>
+                <span>(${data.total_images} total images)</span>
+              `;
+            }
+
+            galleryList.classList.remove('fade-out');
+          })
+          .catch(error => {
+            console.error('Error loading gallery page:', error);
+            galleryList.classList.remove('fade-out');
+          });
+      }, 300); // Match this with CSS transition duration
     }
 
-    if (rightArrow) {
-      if (currentPage < totalPages) {
-        rightArrow.onclick = () => loadGalleryPage(currentPage + 1);
-        rightArrow.classList.remove('disabled');
-      } else {
-        rightArrow.onclick = null;
-        rightArrow.classList.add('disabled');
-      }
-    }
-  }
-</script>
+    // Smooth Scroll for Anchor Links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
