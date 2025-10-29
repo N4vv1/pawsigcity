@@ -1643,7 +1643,8 @@ if ($selected_pet_id) {
       }
     }
   });
-// Hamburger Menu Toggle
+
+ // Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
 const navOverlay = document.getElementById('nav-overlay');
@@ -1661,39 +1662,30 @@ navOverlay.addEventListener('click', function() {
   hamburger.classList.remove('active');
   navMenu.classList.remove('active');
   navOverlay.classList.remove('active');
+  profileDropdown.classList.remove('active');
   document.body.style.overflow = '';
 });
 
-// Close menu when clicking on a nav link (except dropdown)
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', function(e) {
-    if (!this.classList.contains('profile-icon')) {
-      hamburger.classList.remove('active');
-      navMenu.classList.remove('active');
-      navOverlay.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-});
-
-// Handle dropdown - ONLY for mobile (click to toggle)
-if (window.innerWidth <= 1024) {
-  profileDropdown.addEventListener('click', function(e) {
-    e.preventDefault();
-    this.classList.toggle('active');
-  });
-}
-
-// Re-check on window resize
-window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) {
-    // Remove mobile classes on desktop
+// Close menu when clicking on regular nav links
+document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+  link.addEventListener('click', function() {
     hamburger.classList.remove('active');
     navMenu.classList.remove('active');
     navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
     document.body.style.overflow = '';
+  });
+});
+
+// Handle profile dropdown - ONLY for mobile (click to toggle)
+profileDropdown.addEventListener('click', function(e) {
+  if (window.innerWidth <= 1024) {
+    // Only prevent default and toggle on mobile
+    if (e.target.closest('.profile-icon')) {
+      e.preventDefault();
+      this.classList.toggle('active');
+    }
   }
+  // On desktop, do nothing - CSS :hover handles it
 });
 
 // Close menu when clicking dropdown items
@@ -1702,9 +1694,20 @@ document.querySelectorAll('.dropdown-menu a').forEach(link => {
     hamburger.classList.remove('active');
     navMenu.classList.remove('active');
     navOverlay.classList.remove('active');
-    document.body.style.overflow = '';
     profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
   });
+});
+
+// Reset on window resize
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 1024) {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 });
   </script>
 </body>
