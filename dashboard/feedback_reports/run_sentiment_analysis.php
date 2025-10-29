@@ -11,7 +11,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // Path to your Python script
 // From: dashboard/admin/feedback_reports/run_sentiment_analysis.php
 // To: ai/sentiment_analysis/vader_sentiment_analysis.py
-$python_script = __DIR__ . '../../ai/sentiment_analysis/sentiment_analysis.py';
+$python_script = __DIR__ . '/ai/sentiment_analysis/sentiment_analysis.py';
 
 // Check if Python script exists
 if (!file_exists($python_script)) {
