@@ -8,78 +8,58 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Path to your Python script
-$python_script = __DIR__ . '/../../ai/sentiment_analysis/sentiment_analysis.py';
+// Your Flask API URL on Render
+$api_url = 'https://pawsigcity-1.onrender.com/api/analyze-sentiment';
 
-// Check if Python script exists
-if (!file_exists($python_script)) {
-    echo json_encode(['success' => false, 'message' => 'Python script not found at: ' . $python_script]);
+// Initialize cURL
+$ch = curl_init($api_url);
+
+// Set cURL options
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json',
+]);
+curl_setopt($ch, CURLOPT_TIMEOUT, 60); // 60 seconds timeout
+
+// Execute request
+$response = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curl_error = curl_error($ch);
+
+curl_close($ch);
+
+// Check for cURL errors
+if ($curl_error) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to connect to sentiment analysis API: ' . $curl_error
+    ]);
     exit;
 }
 
-// Run Python script
-$output = [];
-$return_var = 0;
-
-// Try python3 first, then python
-// Adjust the command based on your server setup
-$python_command = 'python'; // Change to 'python' if python3 doesn't work
-
-// Execute Python script
-$command = $python_command . " " . escapeshellarg($python_script) . " 2>&1";
-exec($command, $output, $return_var);
-
-// Check if execution was successful
-if ($return_var === 0) {
-    // Count how many were analyzed (look for success message in output)
-    $output_text = implode("\n", $output);
-    
-    // Extract number of analyzed feedback from output
-    if (preg_match('/Found (\d+) feedback/', $output_text, $matches)) {
-        $count = $matches[1];
-        echo json_encode([
-            'success' => true, 
-            'message' => "Successfully analyzed {$count} feedback(s)!",
-            'output' => $output_text
-        ]);
-    } else if (preg_match('/analyzed (\d+) feedback/', $output_text, $matches)) {
-        // Alternative pattern
-        $count = $matches[1];
-        echo json_encode([
-            'success' => true, 
-            'message' => "Successfully analyzed {$count} feedback(s)!",
-            'output' => $output_text
-        ]);
-    } else {
-        echo json_encode([
-            'success' => true, 
-            'message' => 'Sentiment analysis completed successfully!',
-            'output' => $output_text
-        ]);
-    }
-} else {
-    // Error occurred - provide detailed error information
-    $error_output = implode("\n", $output);
-    
-    // Check for common errors
-    $error_message = 'Error running sentiment analysis.';
-    
-    if (empty($error_output)) {
-        $error_message .= ' Python command may not be found. Try checking if python3 is installed.';
-    } else if (strpos($error_output, 'ModuleNotFoundError') !== false || strpos($error_output, 'No module named') !== false) {
-        $error_message .= ' Required Python libraries are missing. Please install: pip3 install vaderSentiment psycopg2-binary';
-    } else if (strpos($error_output, 'command not found') !== false) {
-        $error_message .= ' Python is not installed or not in PATH.';
-    } else if (strpos($error_output, 'Permission denied') !== false) {
-        $error_message .= ' Permission denied. Check file permissions.';
-    }
-    
+// Check HTTP status
+if ($http_code !== 200) {
     echo json_encode([
-        'success' => false, 
-        'message' => $error_message,
-        'error' => $error_output,
-        'return_code' => $return_var,
-        'command' => $command // Show the command that was executed
+        'success' => false,
+        'message' => 'API returned error status: ' . $http_code,
+        'response' => $response
     ]);
+    exit;
 }
+
+// Decode and return the response
+$data = json_decode($response, true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid JSON response from API',
+        'raw_response' => $response
+    ]);
+    exit;
+}
+
+// Return the API response
+echo json_encode($data);
 ?>
