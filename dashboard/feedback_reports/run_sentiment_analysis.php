@@ -9,8 +9,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Path to your Python script
-// From: dashboard/admin/feedback_reports/run_sentiment_analysis.php
-// To: ai/sentiment_analysis/vader_sentiment_analysis.py
 $python_script = __DIR__ . '/../../ai/sentiment_analysis/sentiment_analysis.py';
 
 // Check if Python script exists
@@ -23,8 +21,12 @@ if (!file_exists($python_script)) {
 $output = [];
 $return_var = 0;
 
-// Execute Python script (adjust python path if needed: python, python3, or full path)
-$command = "python " . escapeshellarg($python_script) . " 2>&1";
+// Try python3 first, then python
+// Adjust the command based on your server setup
+$python_command = 'python3'; // Change to 'python' if python3 doesn't work
+
+// Execute Python script
+$command = $python_command . " " . escapeshellarg($python_script) . " 2>&1";
 exec($command, $output, $return_var);
 
 // Check if execution was successful
@@ -40,6 +42,14 @@ if ($return_var === 0) {
             'message' => "Successfully analyzed {$count} feedback(s)!",
             'output' => $output_text
         ]);
+    } else if (preg_match('/analyzed (\d+) feedback/', $output_text, $matches)) {
+        // Alternative pattern
+        $count = $matches[1];
+        echo json_encode([
+            'success' => true, 
+            'message' => "Successfully analyzed {$count} feedback(s)!",
+            'output' => $output_text
+        ]);
     } else {
         echo json_encode([
             'success' => true, 
@@ -48,11 +58,28 @@ if ($return_var === 0) {
         ]);
     }
 } else {
-    // Error occurred
+    // Error occurred - provide detailed error information
+    $error_output = implode("\n", $output);
+    
+    // Check for common errors
+    $error_message = 'Error running sentiment analysis.';
+    
+    if (empty($error_output)) {
+        $error_message .= ' Python command may not be found. Try checking if python3 is installed.';
+    } else if (strpos($error_output, 'ModuleNotFoundError') !== false || strpos($error_output, 'No module named') !== false) {
+        $error_message .= ' Required Python libraries are missing. Please install: pip3 install vaderSentiment psycopg2-binary';
+    } else if (strpos($error_output, 'command not found') !== false) {
+        $error_message .= ' Python is not installed or not in PATH.';
+    } else if (strpos($error_output, 'Permission denied') !== false) {
+        $error_message .= ' Permission denied. Check file permissions.';
+    }
+    
     echo json_encode([
         'success' => false, 
-        'message' => 'Error running sentiment analysis. Check if Python and required libraries are installed.',
-        'error' => implode("\n", $output)
+        'message' => $error_message,
+        'error' => $error_output,
+        'return_code' => $return_var,
+        'command' => $command // Show the command that was executed
     ]);
 }
 ?>
