@@ -653,16 +653,33 @@ function runSentimentAnalysis() {
   fetch('run_sentiment_analysis.php')
     .then(response => response.json())
     .then(data => {
+      console.log('Full response:', data); // Debug: log full response
+      
       if (data.success) {
         showToast('✅ ' + data.message);
         setTimeout(() => location.reload(), 2000);
       } else {
+        // Show detailed error
+        let errorDetails = data.message;
+        if (data.error) {
+          errorDetails += '\n\nError output:\n' + data.error;
+        }
+        if (data.command) {
+          errorDetails += '\n\nCommand: ' + data.command;
+        }
+        if (data.return_code) {
+          errorDetails += '\n\nReturn code: ' + data.return_code;
+        }
+        
+        console.error('Error details:', errorDetails);
+        alert(errorDetails); // Show full error in alert
         showToast('❌ ' + data.message, true);
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     })
     .catch(error => {
+      console.error('Fetch error:', error);
       showToast('❌ Error running analysis: ' + error.message, true);
       btn.disabled = false;
       btn.innerHTML = originalText;
