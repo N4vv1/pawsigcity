@@ -3,6 +3,8 @@ from flask_cors import CORS
 import pickle
 import os
 import logging
+import psycopg2
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 app = Flask(__name__)
 CORS(app)
@@ -100,6 +102,105 @@ def sentiment_analysis():
         logging.error(f"Sentiment error: {str(e)}")
         return jsonify({"error": f"Could not analyze sentiment: {str(e)}"}), 500
 
+# Batch Sentiment Analysis for Admin Dashboard
+@app.route("/api/analyze-sentiment", methods=["POST"])
+def analyze_all_sentiments():
+    """
+    Analyzes all pending feedback in the database using VADER.
+    Updates the sentiment column in appointments table.
+    """
+    try:
+        # Connect to Supabase database
+        conn = psycopg2.connect(
+            host="aws-0-us-east-2.pooler.supabase.com",
+            port="6543",
+            dbname="postgres",
+            user="postgres.pgapbbukmyitwuvfbgho",
+            password="pawsigcity2025",
+            sslmode="require"
+        )
+        cursor = conn.cursor()
+        
+        # Fetch feedback where sentiment is NULL or invalid
+        cursor.execute("""
+            SELECT appointment_id, feedback, rating 
+            FROM appointments 
+            WHERE feedback IS NOT NULL 
+            AND (sentiment IS NULL OR sentiment IN ('pending', '', ' '))
+        """)
+        feedback_data = cursor.fetchall()
+        
+        if len(feedback_data) == 0:
+            cursor.close()
+            conn.close()
+            return jsonify({
+                'success': True,
+                'message': 'No pending feedback to analyze',
+                'count': 0
+            })
+        
+        # Initialize VADER analyzer
+        analyzer = SentimentIntensityAnalyzer()
+        
+        # Analyze each feedback
+        analyzed_count = 0
+        results = []
+        
+        for appointment_id, feedback_text, rating in feedback_data:
+            # Get VADER scores
+            scores = analyzer.polarity_scores(feedback_text)
+            compound = scores['compound']
+            
+            # Classification logic based on compound score
+            if compound >= 0.05:
+                sentiment = 'positive'
+            elif compound <= -0.05:
+                sentiment = 'negative'
+            else:
+                sentiment = 'neutral'
+            
+            # Optional: Override based on rating if available
+            if rating is not None:
+                if rating <= 2 and sentiment == 'positive':
+                    sentiment = 'negative'
+                elif rating >= 4 and sentiment == 'negative':
+                    sentiment = 'positive'
+            
+            # Update database
+            cursor.execute(
+                "UPDATE appointments SET sentiment = %s WHERE appointment_id = %s",
+                (sentiment, appointment_id)
+            )
+            
+            analyzed_count += 1
+            results.append({
+                'appointment_id': appointment_id,
+                'sentiment': sentiment,
+                'compound_score': compound
+            })
+            
+            logging.info(f"Analyzed appointment #{appointment_id}: {sentiment} (compound: {compound:.3f})")
+        
+        # Commit changes
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        logging.info(f"Successfully analyzed {analyzed_count} feedback(s)")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Successfully analyzed {analyzed_count} feedback(s)',
+            'count': analyzed_count,
+            'results': results[:10]  # Return first 10 for preview
+        })
+        
+    except Exception as e:
+        logging.error(f"Sentiment analysis error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error analyzing sentiments: {str(e)}'
+        }), 500
 
 # Chatbot (placeholder)
 @app.route("/ask", methods=["POST"])
