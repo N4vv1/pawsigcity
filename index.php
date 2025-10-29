@@ -35,6 +35,29 @@ if (!$result) {
 <body>
   <style>
     /* Base navbar styles */
+    .navbar, header {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  backdrop-filter: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+/* Alternative: If you want a green navbar to match */
+.navbar, header {
+  background: #A8E6CF !important;
+  background-color: #A8E6CF !important;
+  backdrop-filter: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -371,7 +394,7 @@ if (!$result) {
   <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
+      <img src="../pawsigcity/homepage/images/pawsig.png" alt="Logo" class="icon" />
     </a>
     
     <!-- Hamburger Menu Button -->
@@ -385,153 +408,542 @@ if (!$result) {
     <div class="nav-overlay" id="nav-overlay"></div>
 
     <ul class="nav-menu" id="nav-menu">
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
+      <li class="nav-item"><a href="#home" class="nav-link active"><i class="fas fa-home"></i> Home</a></li>
+      <li class="nav-item"><a href="#about" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
+      <li class="nav-item"><a href="#service" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
+      <li class="nav-item"><a href="#gallery" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
+      <li class="nav-item"><a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
       <li class="nav-item dropdown" id="profile-dropdown">
-        <a href="#" class="nav-link profile-icon active">
+        <a href="#" class="nav-link profile-icon">
           <i class="fas fa-user"></i>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="../homepage/login/loginform.php">Login</a></li>
+          <li><a href="../pawsigcity/homepage/login/loginform.php">Login</a></li>
         </ul>
       </li>
     </ul>
   </nav>
 </header>
 <style>
-  /* ===== Hero Section Enhanced ===== */
+ /* ===== Enhanced Hero Section - Centered with Green Background ===== */
 .hero-section {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;             /* full viewport height */
-  min-height: unset;         /* remove forced extra height */
-  padding: 0 20px;           /* keep only side padding */
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  min-height: 100vh;
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #52de97 0%, #A8E6CF 50%, #7ed6ad 100%);
   overflow: hidden;
 }
 
-/* subtle paw background */
+/* Animated particles floating */
 .hero-section::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background: url('../homepage/images/paw-bg.png') repeat;
-  opacity: 0.07;
-  pointer-events: none;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 228, 163, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  top: -200px;
+  right: -200px;
+  animation: pulse 8s ease-in-out infinite;
 }
 
-/* overlay effect */
+.hero-section::after {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  bottom: -150px;
+  left: -150px;
+  animation: pulse 6s ease-in-out infinite reverse;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+/* Floating paw prints */
+.paw-print {
+  position: absolute;
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.2);
+  animation: float-paw 12s ease-in-out infinite;
+  z-index: 1;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.paw-print:nth-child(1) {
+  top: 15%;
+  left: 10%;
+  animation-delay: 0s;
+  font-size: 2.5rem;
+}
+
+.paw-print:nth-child(2) {
+  top: 65%;
+  left: 12%;
+  animation-delay: 2s;
+  font-size: 2rem;
+}
+
+.paw-print:nth-child(3) {
+  top: 25%;
+  right: 15%;
+  animation-delay: 4s;
+  font-size: 3rem;
+}
+
+.paw-print:nth-child(4) {
+  top: 75%;
+  right: 10%;
+  animation-delay: 6s;
+  font-size: 2.2rem;
+}
+
+.paw-print:nth-child(5) {
+  top: 45%;
+  left: 5%;
+  animation-delay: 8s;
+  font-size: 1.8rem;
+}
+
+.paw-print:nth-child(6) {
+  top: 55%;
+  right: 8%;
+  animation-delay: 10s;
+  font-size: 2.8rem;
+}
+
+@keyframes float-paw {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-40px) rotate(90deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-35px) rotate(270deg);
+    opacity: 0.5;
+  }
+}
+
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: #A8E6CF;
-  backdrop-filter: blur(2px);
+  background: transparent;
+  backdrop-filter: blur(0px);
 }
 
 .hero-content {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  text-align: center;
   gap: 40px;
-  flex-wrap: wrap;
-  z-index: 1;
-  max-width: 1200px;
+  z-index: 10;
+  max-width: 900px;
   margin: auto;
-  padding: 40px 0;  /* optional spacing for balance */
+  padding: 60px 20px;
+  animation: fadeInUp 1.2s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-text {
   flex: 1;
-  max-width: 600px;
+  max-width: 100%;
+  animation: zoomIn 1s ease-out;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .hero-title {
-  font-size: 3rem;
-  font-weight: 800;
+  font-size: 4rem;
+  font-weight: 900;
   line-height: 1.2;
-  color: #333;
+  color: #ffffff;
+  margin-bottom: 25px;
+  text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+  letter-spacing: -2px;
+  animation: titlePulse 3s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
 
 .hero-title span {
   color: #FFE4A3;
+  display: inline-block;
+  animation: glow 2s ease-in-out infinite;
+  position: relative;
+  text-shadow: 0 0 30px rgba(255, 228, 163, 0.8),
+               0 0 60px rgba(255, 228, 163, 0.5),
+               4px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(255, 228, 163, 0.6),
+                 0 0 40px rgba(255, 228, 163, 0.4),
+                 4px 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 40px rgba(255, 228, 163, 1),
+                 0 0 80px rgba(255, 228, 163, 0.7),
+                 4px 4px 12px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
-  margin: 15px 0;
-  color: #444;
-  font-weight: 600;
+  font-size: 2rem;
+  margin: 25px 0;
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+  animation: slideIn 1.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .hero-description {
-  font-size: 1.1rem;
-  margin-bottom: 25px;
-  color: #555;
-  line-height: 1.6;
+  font-size: 1.3rem;
+  margin-bottom: 40px;
+  color: #ffffff;
+  line-height: 1.9;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: fadeIn 1.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .hero-buttons {
   display: flex;
-  justify-content: center;  /* centers buttons */
-  gap: 15px;
-  margin-top: 20px;         /* space from description */
+  gap: 25px;
+  margin-top: 35px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .hero-buttons .button {
-  padding: 12px 25px;
+  padding: 18px 45px;
   border-radius: 50px;
-  font-weight: bold;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  font-weight: 800;
+  font-size: 1.15rem;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hero-buttons .button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  z-index: -1;
+}
+
+.hero-buttons .button:hover::before {
+  width: 350px;
+  height: 350px;
+}
+
+.hero-buttons .button i {
+  font-size: 1.3rem;
+  transition: transform 0.3s ease;
+}
+
+.hero-buttons .button:hover i {
+  transform: scale(1.2) rotate(10deg);
 }
 
 .book-now {
-  background: #A8E6CF;
-  color: #fff;
-    border: 2px solid #252525;
+  background: linear-gradient(135deg, #FFE4A3 0%, #ffd97d 100%);
+  color: #2c3e50;
+  border: 4px solid #ffffff;
+  animation: bounce 2s ease-in-out infinite;
+}
 
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .book-now:hover {
-  background: #FFE4A3;
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #ffd97d 0%, #ffcc5c 100%);
+  transform: translateY(-8px) scale(1.1);
+  box-shadow: 0 15px 40px rgba(255, 228, 163, 0.6);
+  border-color: #FFE4A3;
 }
 
 .contact-us {
-  background: #FFE4A3;
-  border: 2px solid #252525;
-  color: #252525;
+  background: transparent;
+  border: 4px solid #ffffff;
+  color: #ffffff;
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
 }
 
 .contact-us:hover {
-  background: #A8E6CF;
-  color: #fff;
+  background: #ffffff;
+  color: #16a085;
+  transform: translateY(-8px) scale(1.1);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.5);
 }
 
-/* Hero Image */
+/* Hero Image - Hidden for centered layout */
 .hero-image-wrapper {
-  flex: 1;
-  text-align: center;
+  display: none;
 }
 
-.hero-image {
-  width: 550px;
-  max-width: 100%;
-  animation: float 4s ease-in-out infinite;
+/* Feature badges with impact */
+.feature-badges {
+  display: flex;
+  gap: 20px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 1.8s ease-out;
 }
 
-/* Floating animation */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+.badge {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 12px 25px;
+  border-radius: 30px;
+  color: #16a085;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 3px solid #ffffff;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
+
+.badge:hover {
+  background: #FFE4A3;
+  transform: translateY(-8px) scale(1.15);
+  box-shadow: 0 12px 30px rgba(255, 228, 163, 0.5);
+  border-color: #FFE4A3;
+}
+
+.badge i {
+  color: #16a085;
+  font-size: 1.2rem;
+  animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.badge:hover i {
+  animation: bounce-icon 0.5s ease;
+}
+
+@keyframes bounce-icon {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+.hero-content::after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-image: url('../pawsigcity/homepage/images/pawsig.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0;
+  animation: sparkle 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(100px, -50px) scale(1);
+  }
+  50% {
+    opacity: 0;
+    transform: translate(200px, -100px) scale(0.5);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-100px, -80px) scale(1.2);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.6rem;
+  }
+
+  .hero-description {
+    font-size: 1.15rem;
+  }
+
+  .hero-buttons .button {
+    padding: 16px 35px;
+    font-size: 1rem;
+  }
+
+  .badge {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.2rem;
+    letter-spacing: -1px;
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .hero-buttons .button {
+    padding: 14px 30px;
+    font-size: 0.95rem;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .feature-badges {
+    gap: 12px;
+  }
+
+  .badge {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+
+  .paw-print {
+    font-size: 1.5rem !important;
+  }
+}
+
+
 </style>
 
 
@@ -552,9 +964,6 @@ if (!$result) {
         <a href="../homepage/login/loginform.php" class="button book-now"> Book Now</a>
         <a href="#contact" class="button contact-us"> Contact Us</a>
       </div>
-    </div>
-    <div class="hero-image-wrapper">
-      <img src="./homepage/images/asd.png" alt="Happy Pet" class="hero-image" />
     </div>
   </div>
 </section>

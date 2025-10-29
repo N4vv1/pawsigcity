@@ -64,18 +64,81 @@ error_log("Number of appointments found: " . $row_count);
 
   .container {
     width: 100%;
-    padding: 20px 40px 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 140px 40px 60px;
     box-sizing: border-box;
+    min-height: calc(100vh - 80px);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .page-header h1 {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .page-header p {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin: 0;
+  }
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    margin-bottom: 50px;
+  }
+
+  .stat-card {
+    background: #fff;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: all 0.3s ease;
+    border-left: 4px solid #A8E6CF;
+    margin-top: 50px;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+  }
+
+  .stat-card i {
+    font-size: 2.5rem;
+    color: #A8E6CF;
+    margin-bottom: 15px;
+  }
+
+  .stat-card h3 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin: 10px 0;
+    font-weight: 700;
+  }
+
+  .stat-card p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 500;
   }
 
   .table-container {
     width: 100%;
     background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 25px 45px rgba(0,0,0,0.15);
-    padding: 50px 60px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 40px;
     position: relative;
-    margin-top: 150px;
   }
 
   .table-container::before {
@@ -83,38 +146,43 @@ error_log("Number of appointments found: " . $row_count);
     position: absolute;
     top: 0;
     left: 0;
-    height: 8px;
+    height: 6px;
     width: 100%;
-    border-radius: 14px 14px 0 0;
+    border-radius: 16px 16px 0 0;
     background: linear-gradient(to right, #A8E6CF, #FFE29D, #FFB6B9);
   }
 
   .button {
-    padding: 8px 14px;
+    padding: 10px 16px;
     background-color: #A8E6CF;
-    color: #252525;
+    color: #2c3e50;
     text-decoration: none;
     border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 600;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
     margin: 5px 3px;
     display: inline-block;
+    border: none;
+    cursor: pointer;
   }
 
   .button:hover {
     background-color: #87d7b7;
+    transform: translateY(-1px);
+  }
+
+  .button:active {
+    transform: translateY(0);
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
     background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     border-radius: 12px;
     overflow: hidden;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    margin-top: 0;
   }
 
   th, td {
@@ -188,37 +256,49 @@ error_log("Number of appointments found: " . $row_count);
   }
 
   .back-button {
-    position: absolute;
-    top: 100px;
+    position: fixed;
+    top: 90px;
     left: 30px;
     background: none;
     border: none;
-    color: var(--dark);
-    font-size: 22px;
+    color: #2c3e50;
+    font-size: 18px;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    z-index: 100;
+    font-weight: 600;
   }
 
   .back-button:hover {
-    color: var(--primary-dark);
+    color: #16a085;
     transform: translateX(-3px);
   }
 
   .empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 80px 20px;
     color: #666;
+    animation: fadeIn 0.6s ease;
   }
 
   .empty-state i {
-    font-size: 64px;
-    color: #ccc;
-    margin-bottom: 20px;
+    font-size: 80px;
+    color: #A8E6CF;
+    margin-bottom: 25px;
+    opacity: 0.7;
   }
 
   .empty-state h3 {
-    color: #333;
-    margin-bottom: 10px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  .empty-state p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
   }
 
   .debug-info {
@@ -230,12 +310,166 @@ error_log("Number of appointments found: " . $row_count);
     font-family: monospace;
   }
 
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
   @media (max-width: 768px) {
     .back-button {
       top: 80px;
       left: 20px;
+      font-size: 16px;
+    }
+
+    .container {
+      padding: 120px 20px 40px;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+    }
+
+    .page-header p {
+      font-size: 0.95rem;
+    }
+
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .stat-card {
+      padding: 20px 15px;
+    }
+
+    .stat-card i {
+      font-size: 1.5rem;
+    }
+
+    .stat-card h3 {
+      font-size: 1.5rem;
+    }
+
+    .stat-card p {
+      font-size: 0.85rem;
+    }
+
+    .table-container {
+      padding: 25px 15px;
+      border-radius: 16px;
+      overflow-x: auto;
+    }
+
+    table {
+      min-width: 800px;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      font-size: 0.85rem;
+    }
+
+    th {
+      font-size: 0.75rem;
+    }
+
+    .button {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      margin: 3px 2px;
+    }
+
+    .badge {
+      padding: 5px 8px;
+      font-size: 0.75rem;
+    }
+
+    .feedback {
+      padding: 8px 10px;
+      font-size: 0.85rem;
+    }
+
+    .empty-state {
+      padding: 60px 20px;
+    }
+
+    .empty-state i {
+      font-size: 60px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
     }
   }
+
+  @media (max-width: 480px) {
+    .stats-container {
+      grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .table-container {
+      padding: 20px 10px;
+    }
+
+    table {
+      min-width: 700px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+      padding: 130px 30px 50px;
+    }
+
+    .stats-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .table-container {
+      padding: 35px 25px;
+    }
+
+    th, td {
+      padding: 16px 15px;
+    }
+  }
+
   /* Base navbar styles */
 .navbar {
   display: flex;
@@ -612,10 +846,52 @@ error_log("Number of appointments found: " . $row_count);
 
 <div class="container">
 
-  <!-- Back Button -->
-  <div class="section-header" style="display: flex; justify-content: flex-start; margin-top: 40px; margin-bottom: 20px;">
-    <a href="main.php" class="back-button"><i class="fas fa-arrow-left"> BACK</i></a>
-  </div>
+  <?php if ($row_count > 0): ?>
+    <!-- Stats Overview -->
+    <div class="stats-container">
+      <?php
+        // Calculate stats
+        $total = $row_count;
+        $approved = 0;
+        $pending = 0;
+        $completed = 0;
+        $cancelled = 0;
+        
+        pg_result_seek($appointments, 0); // Reset pointer
+        while ($row = pg_fetch_assoc($appointments)) {
+          if ($row['status'] === 'cancelled') $cancelled++;
+          elseif ($row['status'] === 'completed') $completed++;
+          elseif ($row['is_approved']) $approved++;
+          else $pending++;
+        }
+        pg_result_seek($appointments, 0); // Reset pointer again
+      ?>
+      
+      <div class="stat-card">
+        <i class="fas fa-clipboard-list"></i>
+        <h3><?= $total ?></h3>
+        <p>Total Appointments</p>
+      </div>
+      
+      <div class="stat-card">
+        <i class="fas fa-check-circle"></i>
+        <h3><?= $approved ?></h3>
+        <p>Approved</p>
+      </div>
+      
+      <div class="stat-card">
+        <i class="fas fa-clock"></i>
+        <h3><?= $pending ?></h3>
+        <p>Pending</p>
+      </div>
+      
+      <div class="stat-card">
+        <i class="fas fa-star"></i>
+        <h3><?= $completed ?></h3>
+        <p>Completed</p>
+      </div>
+    </div>
+  <?php endif; ?>
 
   <!-- Table Container -->
   <div class="table-container">
@@ -682,12 +958,12 @@ error_log("Number of appointments found: " . $row_count);
 </div>
 
 <!-- Cancel Modal -->
-<div id="cancelModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
-  <div style="background:#fff; padding:30px; border-radius:12px; width:400px; position:relative;">
+<div id="cancelModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000;">
+  <div style="background:#fff; padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative;">
     <h3>Cancel Appointment</h3>
     <form action="../appointment/cancel-appointment.php" method="POST">
       <input type="hidden" name="appointment_id" id="cancel_appointment_id">
-      <textarea name="cancel_reason" required placeholder="Reason for cancellation..." style="width:100%; padding:10px; border-radius:8px; margin:15px 0;"></textarea>
+      <textarea name="cancel_reason" required placeholder="Reason for cancellation..." style="width:100%; padding:10px; border-radius:8px; margin:15px 0; border:1px solid #ddd;"></textarea>
       <div style="text-align:right;">
         <button type="button" onclick="closeCancelModal()" style="margin-right:10px; background:#ccc;" class="button">Close</button>
         <button type="submit" class="button">Submit</button>
@@ -697,13 +973,13 @@ error_log("Number of appointments found: " . $row_count);
 </div>
 
 <!-- Reschedule Modal -->
-<div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
-  <div style="background:#fff; padding:30px; border-radius:12px; width:400px; position:relative;">
+<div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000;">
+  <div style="background:#fff; padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative;">
     <h3>Reschedule Appointment</h3>
     <form action="../appointment/rescheduler-handler.php" method="POST">
       <input type="hidden" name="appointment_id" id="reschedule_appointment_id">
       <label for="appointment_date">New Date & Time:</label>
-      <input type="datetime-local" name="appointment_date" required style="width:100%; padding:10px; margin:10px 0; border-radius:8px;">
+      <input type="datetime-local" name="appointment_date" required style="width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #ddd;">
       <div style="text-align:right;">
         <button type="button" onclick="closeRescheduleModal()" style="margin-right:10px; background:#ccc;" class="button">Close</button>
         <button type="submit" class="button">Submit</button>
@@ -713,8 +989,8 @@ error_log("Number of appointments found: " . $row_count);
 </div>
 
 <!-- Feedback Modal -->
-<div id="feedbackModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
-  <div style="background:#fff; padding:30px; border-radius:16px; width:420px; position:relative;">
+<div id="feedbackModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000;">
+  <div style="background:#fff; padding:30px; border-radius:16px; width:90%; max-width:420px; position:relative;">
     <h3 style="color:#2a9d8f; margin-bottom:10px;">Rate Your Appointment</h3>
     <p style="font-size:14px; color:#555;">Please rate your experience. <strong>Tell us what you liked or what we can improve!</strong></p>
     
@@ -734,7 +1010,7 @@ error_log("Number of appointments found: " . $row_count);
       <input type="hidden" name="appointment_id" id="feedback_appointment_id">
 
       <label style="font-weight: 600; margin-top: 15px;">Rating:</label>
-      <select name="rating" required style="width:100%; padding:10px; border-radius:8px; font-size:14px;">
+      <select name="rating" required style="width:100%; padding:10px; border-radius:8px; font-size:14px; border:1px solid #ddd;">
         <option value="">Choose</option>
         <?php for ($i = 1; $i <= 5; $i++): ?>
           <option value="<?= $i ?>"><?= $i ?> star<?= $i > 1 ? 's' : '' ?></option>
@@ -742,7 +1018,7 @@ error_log("Number of appointments found: " . $row_count);
       </select>
 
       <label style="font-weight: 600; margin-top: 15px;">Comments <small>(minimum 5 words)</small>:</label>
-      <textarea name="feedback" id="feedback_text" required placeholder="E.g. I loved how gentle the groomer was with my dog." style="width:100%; padding:10px; border-radius:8px; margin:10px 0;"></textarea>
+      <textarea name="feedback" id="feedback_text" required placeholder="E.g. I loved how gentle the groomer was with my dog." style="width:100%; padding:10px; border-radius:8px; margin:10px 0; border:1px solid #ddd;"></textarea>
 
       <div style="text-align:right;">
         <button type="button" onclick="closeFeedbackModal()" style="margin-right:10px; background:#ccc;" class="button">Close</button>
