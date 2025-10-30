@@ -20,257 +20,38 @@ $pets_result = pg_query_params(
 
 $recommended_package = null;
 
-// ✅ Function to get peak hours data
-function getPeakHoursData($conn) {
-    $peak_hours_query = "
+// ✅ Function to get appointment counts by date and hour (SIMPLIFIED - NO ML)
+function getAppointmentCounts($conn) {
+    $query = "
         SELECT 
-            EXTRACT(DOW FROM appointment_date) AS day_of_week,
+            DATE(appointment_date) as date,
+            EXTRACT(HOUR FROM appointment_date) AS hour,
             COUNT(*) AS appointment_count
         FROM appointments 
-        WHERE appointment_date >= NOW() - INTERVAL '3 months'
+        WHERE appointment_date >= NOW()
         AND status != 'cancelled'
-        GROUP BY EXTRACT(DOW FROM appointment_date)
-        ORDER BY appointment_count DESC
+        GROUP BY DATE(appointment_date), EXTRACT(HOUR FROM appointment_date)
     ";
     
-    $result = pg_query($conn, $peak_hours_query);
-    $peak_data = [];
-
-    // Initialize all days with 0 appointments (0 = Sunday, 6 = Saturday in Postgres)
-    for ($day = 0; $day <= 6; $day++) {
-        $peak_data[$day] = 0;
-    }
+    $result = pg_query($conn, $query);
+    $counts = [];
 
     while ($row = pg_fetch_assoc($result)) {
-        $peak_data[(int)$row['day_of_week']] = (int)$row['appointment_count'];
-    }
-
-    return $peak_data;
-}
-
-// ======================
-// ML DECISION TREE CLASS
-// ======================
-class AppointmentDecisionTree {
-    private $conn;
-    private $tree_model = null;
-
-    public function __construct($conn) {
-        $this->conn = $conn;
-        $this->buildDecisionTree();
-    }
-
-    private function buildDecisionTree() {
-        $training_data = $this->getTrainingData();
-        if (empty($training_data)) {
-            // If no training data, use API-based recommendation or fallback
-            $this->tree_model = $this->getDefaultTree();
-            return;
-        }
-        $this->tree_model = $this->trainDecisionTree($training_data);
-    }
-
-    private function getDefaultTree() {
-        // Call Flask API without needing pet_id
-        $url = "https://pawsigcity-1.onrender.com/recommend";
-
-        // Example default data (you can adjust this if needed)
-        $data = [
-            "breed"  => "Unknown",
-            "gender" => "Unknown",
-            "age"    => 1
-        ];
-
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-
-        if ($result && !isset($result['error'])) {
-            return $result;
-        }
-
-        // Fallback if API failed
-        return [
-            "recommended_package" => "Basic Groom",
-            "notes" => "Fallback recommendation"
-        ];
-    }
-
-
-    private function getTrainingData() {
-        $query = "
-            SELECT 
-                EXTRACT(DOW FROM appointment_date) AS day_of_week,
-                EXTRACT(HOUR FROM appointment_date) AS hour,
-                EXTRACT(MONTH FROM appointment_date) AS month,
-                CASE 
-                    WHEN EXTRACT(DOW FROM appointment_date) IN (0, 6) THEN 1 
-                    ELSE 0 
-                END AS is_weekend,
-                COUNT(*) AS appointment_count,
-                AVG(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completion_rate,
-                AVG(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS cancellation_rate,
-                CASE 
-                    WHEN COUNT(*) >= 5 THEN 'high'
-                    WHEN COUNT(*) >= 1 THEN 'medium'
-                    ELSE 'low'
-                END AS demand_level
-            FROM appointments 
-            WHERE appointment_date >= NOW() - INTERVAL '6 months'
-            GROUP BY 
-                EXTRACT(DOW FROM appointment_date), 
-                EXTRACT(HOUR FROM appointment_date), 
-                EXTRACT(MONTH FROM appointment_date)
-            ORDER BY MAX(appointment_date) DESC
-        ";
+        $date = $row['date'];
+        $hour = (int)$row['hour'];
+        $count = (int)$row['appointment_count'];
         
-        $result = pg_query($this->conn, $query);
-        $data = [];
-        
-        while ($row = pg_fetch_assoc($result)) {
-            $data[] = [
-                'features' => [
-                    'day_of_week' => (int)$row['day_of_week'],
-                    'hour' => (int)$row['hour'],
-                    'month' => (int)$row['month'],
-                    'is_weekend' => (int)$row['is_weekend'],
-                    'appointment_count' => (int)$row['appointment_count'],
-                    'completion_rate' => (float)$row['completion_rate'],
-                    'cancellation_rate' => (float)$row['cancellation_rate']
-                ],
-                'label' => $row['demand_level']
-            ];
+        if (!isset($counts[$date])) {
+            $counts[$date] = [];
         }
-        return $data;
+        $counts[$date][$hour] = $count;
     }
 
-    // Training logic unchanged...
-    private function trainDecisionTree($data) {
-        // Same as before — rule-based decision tree
-        $rules = [
-            [
-                'condition' => function($features) { return $features['is_weekend'] == 1; },
-                'rules' => [
-                    ['condition' => fn($f) => $f['hour'] >= 9 && $f['hour'] <= 15, 'prediction' => 'medium', 'confidence' => 0.70],
-                    ['condition' => fn($f) => $f['hour'] >= 16 && $f['hour'] <= 18, 'prediction' => 'low', 'confidence' => 0.65],
-                    ['condition' => fn($f) => true, 'prediction' => 'low', 'confidence' => 0.60]
-                ]
-            ],
-            [
-                'condition' => function($features) { return $features['is_weekend'] == 0; },
-                'rules' => [
-                    ['condition' => fn($f) => ($f['day_of_week'] >= 1 && $f['day_of_week'] <= 5) && ($f['hour'] >= 10 && $f['hour'] <= 14), 'prediction' => 'low', 'confidence' => 0.70],
-                    ['condition' => fn($f) => $f['hour'] >= 15 && $f['hour'] <= 17, 'prediction' => 'low', 'confidence' => 0.75],
-                    ['condition' => fn($f) => true, 'prediction' => 'low', 'confidence' => 0.65]
-                ]
-            ]
-        ];
-        return $rules;
-    }
-
-    public function predict($date_time) {
-        $date = new DateTime($date_time);
-        $features = [
-            'day_of_week' => (int)$date->format('w'), // Postgres: Sunday=0
-            'hour' => (int)$date->format('H'),
-            'month' => (int)$date->format('n'),
-            'is_weekend' => in_array((int)$date->format('w'), [0, 6]) ? 1 : 0,
-            'appointment_count' => 0,
-            'completion_rate' => 0.8,
-            'cancellation_rate' => 0.1
-        ];
-
-        $actual_count = $this->getActualAppointmentCount($features['day_of_week'], $features['hour']);
-        $features['appointment_count'] = $actual_count;
-
-        $prediction = 'low';
-        if ($actual_count >= 5) {
-            $prediction = 'high';
-        } elseif ($actual_count >= 1) {
-            $prediction = 'medium';
-        }
-
-        $confidence = $actual_count == 0 ? 0.95 : 0.85;
-
-        return [
-            'prediction' => $prediction,
-            'confidence' => $confidence,
-            'features_used' => $features,
-            'appointment_count' => $actual_count
-        ];
-    }
-
-    private function getActualAppointmentCount($day_of_week, $hour) {
-        $query = "
-            SELECT COUNT(*) AS count
-            FROM appointments 
-            WHERE EXTRACT(DOW FROM appointment_date) = $1 
-              AND EXTRACT(HOUR FROM appointment_date) = $2
-              AND appointment_date >= NOW() - INTERVAL '3 months'
-              AND status != 'cancelled'
-        ";
-        $result = pg_query_params($this->conn, $query, [$day_of_week, $hour]);
-        $row = pg_fetch_assoc($result);
-        return (int)$row['count'];
-    }
-
-    public function getFeatureImportance() {
-        return [
-            'appointment_count' => 0.50,
-            'hour' => 0.25,
-            'day_of_week' => 0.15,
-            'is_weekend' => 0.10
-        ];
-    }
-
-    public function getModelStats() {
-        $training_data = $this->getTrainingData();
-        return [
-            'training_samples' => count($training_data),
-            'model_type' => 'Decision Tree (Count-Based)',
-            'features' => array_keys($this->getFeatureImportance()),
-            'prediction_classes' => ['low', 'medium', 'high'],
-            'thresholds' => [
-                'high' => '5+ appointments',
-                'medium' => '1-4 appointments',
-                'low' => '0 appointments'
-            ]
-        ];
-    }
+    return $counts;
 }
 
-// ✅ Initialize ML model
-$ml_model = new AppointmentDecisionTree($conn);
-
-// ✅ Get peak hours data
-$peak_hours_data_raw = getPeakHoursData($conn);
-
-// ✅ Get ML-powered peak hours data
-$peak_hours_data = []; 
-for ($day = 0; $day < 7; $day++) {
-    $date = new DateTime();
-    $date->add(new DateInterval("P{$day}D"));
-    for ($hour = 8; $hour <= 18; $hour++) {
-        $date->setTime($hour, 0);
-        $prediction = $ml_model->predict($date->format('Y-m-d H:i:s'));
-        $peak_hours_data[] = [
-            'day_of_week' => (int)$date->format('w'),
-            'hour' => $hour,
-            'date' => $date->format('Y-m-d'),
-            'prediction' => $prediction['prediction'],
-            'confidence' => $prediction['confidence'],
-            'appointment_count' => $prediction['appointment_count'] ?? 0,
-            'ml_powered' => true
-        ];
-    }
-}
+// ✅ Get appointment counts (NO ML PREDICTIONS - JUST REAL DATA)
+$appointment_counts = getAppointmentCounts($conn);
 
 // ✅ Check pet ownership if selected
 if ($selected_pet_id) {
@@ -353,10 +134,8 @@ if ($selected_pet_id) {
                 ELSE 4
             END,
             pp.min_weight
-    ");}
-
-// ✅ Get model stats
-$model_stats = $ml_model->getModelStats();
+    ");
+}
 ?>
 
 <!DOCTYPE html>
@@ -366,22 +145,29 @@ $model_stats = $ml_model->getModelStats();
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="icon" type="image/png" href="../homepage/images/pawsig.png">
-  
-  <!-- Add inside <head> -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
  <style>
   * {
     box-sizing: border-box;
   }
 
+  
+  /* Add these styles to fix the navbar at the top */
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
+  }
+
+  /* Adjust body padding to prevent content from hiding under navbar */
   body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0;
+    padding-top: 80px; /* Adjust this value based on your navbar height */
   }
 
   .header-wrapper {
@@ -390,48 +176,418 @@ $model_stats = $ml_model->getModelStats();
   }
 
   .form-wrapper {
-    margin-top: 100px;
+    margin-top: 80px;
+    padding: 20px;
+    min-height: calc(100vh - 100px);
   }
 
   .page-content {
-    max-width: 800px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 40px;
-    background-color: #fff;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* Pet Profile Card - Left Side */
+  .pet-profile-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 100px;
+  }
+
+  .pet-image-container {
+    width: 100%;
+    height: 280px;
     border-radius: 20px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease-in-out;
-  }
-
-  h2, h3 {
-    color: #2c3e50;
-    text-align: center;
+    overflow: hidden;
     margin-bottom: 24px;
-    font-weight: 700;
+    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(168, 230, 207, 0.3);
   }
 
-  .form-container {
+  .pet-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pet-placeholder {
+    font-size: 120px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .pet-info {
+    text-align: center;
+  }
+
+  .pet-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+  }
+
+  .pet-breed {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    margin: 0 0 20px 0;
+    font-weight: 500;
+  }
+
+  .pet-details {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+  }
+
+  .pet-detail-item {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    align-items: center;
+    gap: 6px;
   }
 
-  .card {
-    background-color: #f4f7f8;
+  .pet-detail-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .pet-detail-label {
+    font-size: 0.75rem;
+    color: #95a5a6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .pet-detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  /* Booking Form - Right Side */
+  .booking-section {
+    background: #fff;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    min-height: 600px;
+  }
+
+  h2 {
+    color: #2c3e50;
+    margin: 0 0 32px 0;
+    font-weight: 700;
+    font-size: 2rem;
+  }
+
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+  }
+
+  label i {
+    color: #A8E6CF;
+    font-size: 1.1rem;
+  }
+
+  select,
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: #f8f9fa;
+    color: #333;
+    transition: all 0.3s ease;
+  }
+
+  select:focus,
+  input[type="text"]:focus,
+  textarea:focus {
+    border-color: #A8E6CF;
+    box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.2);
+    outline: none;
+    background-color: #fff;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .recommendation-box {
+    background: linear-gradient(135deg, #e8fff3 0%, #d4f5e5 100%);
+    border-left: 5px solid #A8E6CF;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    box-shadow: 0 4px 12px rgba(168, 230, 207, 0.2);
   }
 
-  .card strong {
+  .recommend {
+    color: #16a085;
+    font-weight: bold;
     font-size: 1.1rem;
-    color: #34495e;
   }
 
-  .btn, .submit-btn {
-    background-color: #A8E6CF;
+  .submit-btn {
+    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
     border: none;
-    padding: 12px 20px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    color: #252525;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
+  }
+
+  .submit-btn:disabled {
+    background: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .alert-success,
+  .alert-error {
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-weight: 500;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+  }
+
+  .alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+  }
+
+  .availability-indicator {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ccc;
+    color: white;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .availability-indicator.show {
+    opacity: 1;
+  }
+
+  .availability-indicator.full {
+    background: #e57373;
+  }
+
+  .availability-indicator.available {
+    background: #81c784;
+  }
+
+  .datetime-container {
+    position: relative;
+  }
+
+  .legend-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 12px;
+    border: 2px solid #e0e0e0;
+  }
+
+  .legend-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 12px;
+  }
+
+  .legend-items {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+
+  .legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+  }
+
+  .legend-color.available {
+    background-color: #e8f5e8;
+  }
+
+  .legend-color.busy {
+    background-color: #fff3e0;
+  }
+
+  .legend-color.full {
+    background-color: #ffebee;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #3498db;
+    font-weight: 600;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #f0f8ff;
+  }
+
+  .back-link:hover {
+    background: #3498db;
+    color: white;
+    transform: translateX(-4px);
+  }
+
+  /* Pet Selection Cards */
+  .pets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .pet-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .pet-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .pet-card-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pet-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pet-card-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 4px;
+  }
+
+  .pet-card-breed {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin-bottom: 16px;
+  }
+
+  .pet-card .btn {
+    width: 100%;
+    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+    border: none;
+    padding: 12px 24px;
     border-radius: 10px;
     font-weight: 600;
     color: #252525;
@@ -440,612 +596,995 @@ $model_stats = $ml_model->getModelStats();
     font-size: 1rem;
   }
 
-  .btn:hover, .submit-btn:hover {
-    background-color: #87d7b7;
+  .pet-card .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
   }
 
-  select,
-  input[type="datetime-local"],
-  input[type="text"],
-  textarea {
-    width: 100%;
-    padding: 12px 16px;
-    margin-top: 6px;
-    font-size: 1rem;
-    font-family: inherit;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #fff;
-    color: #333;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-    transition: all 0.25s ease-in-out;
-  }
-
-  select:focus,
-  input[type="datetime-local"]:focus,
-  input[type="text"]:focus,
-  textarea:focus {
-    border-color: #A8E6CF;
-    box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.4);
-    outline: none;
-    background-color: #fcfffc;
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 100px;
-  }
-
-  label {
-    font-weight: 600;
-    color: #333;
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  label i {
-    color: #A8E6CF;
-  }
-
-  .alert-success,
-  .alert-error {
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-weight: 500;
-    margin-bottom: 20px;
-  }
-
-  .alert-success {
-    background-color: #e0fce0;
-    color: #2e7d32;
-    border: 1px solid #b2dfdb;
-  }
-
-  .alert-error {
-    background-color: #ffe3e3;
-    color: #c62828;
-    border: 1px solid #ffcdd2;
-  }
-
-  .booking-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    background: #fafafa;
-    border: 1px solid #eee;
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.03);
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .recommendation-box {
-    background-color: #e8fff3;
-    border-left: 5px solid #A8E6CF;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #2c3e50;
-  }
-
-  .recommend {
-    color: #16a085;
-    font-weight: bold;
-  }
-
-  .back-link {
-    display: inline-block;
-    color: #3498db;
-    font-weight: 600;
-    margin-bottom: 16px;
-    transition: color 0.3s ease;
-  }
-
-  a, a:hover {
-    text-decoration: none;
-    color: #3498db;
-  }
-
-  a:hover {
-    color: #2c80b4;
-  }
-
-  /* ML-Enhanced Peak Hours Matching Theme Styles */
-.peak-hours-container {
-  background: #f4f7f8;
-  color: #2c3e50;
-  padding: 24px;
-  border-radius: 16px;
-  margin: 20px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #ddd;
-}
-
-.peak-hours-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #34495e;
-}
-
-.peak-info {
-  background-color: #ffffff;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #e2e2e2;
-  font-size: 0.95rem;
-  line-height: 1.4;
-  margin-bottom: 16px;
-}
-
-.ml-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-left: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.model-stats {
-  background-color: #f8f9ff;
-  border: 1px solid #e1e5ff;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 12px;
-  font-size: 0.85rem;
-  color: #555;
-}
-
-.peak-legend {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 16px;
-  font-size: 0.9rem;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
-}
-
-.legend-color.high {
-  background-color: #ffcccc;
-}
-
-.legend-color.medium {
-  background-color: #fff3cd;
-}
-
-.legend-color.low {
-  background-color: #d4edda;
-}
-
-.peak-hours-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.peak-hour-item {
-  background-color: #ffffff;
-  padding: 12px;
-  border-radius: 10px;
-  text-align: center;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-}
-
-.peak-hour-item.high {
-  background-color: #ffefef;
-  border-color: #f8d7da;
-}
-
-.peak-hour-item.medium {
-  background-color: #fffbea;
-  border-color: #ffeeba;
-}
-
-.peak-hour-item.low {
-  background-color: #ecfdf3;
-  border-color: #c3e6cb;
-}
-
-.hour-time {
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.hour-level {
-  font-size: 0.9rem;
-  margin-top: 4px;
-  color: #666;
-}
-
-.confidence-indicator {
-  font-size: 0.75rem;
-  color: #888;
-  margin-top: 2px;
-}
-
-    .submit-btn:disabled {
-      background-color: #ccc !important;
-      color: #666 !important;
-      cursor: not-allowed !important;
-      opacity: 0.6 !important;
-      transform: none !important;
-      box-shadow: none !important;
+  @media (max-width: 1200px) {
+    .content-grid {
+      grid-template-columns: 1fr;
     }
-    
-    .submit-btn:disabled:hover {
-      background-color: #ccc !important;
-      transform: none !important;
-      box-shadow: none !important;
+
+    .pet-profile-card {
+      position: relative;
+      top: 0;
     }
-.peak-indicator {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: #ccc;
-  color: white;
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-weight: 600;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 10;
-}
+  }
 
-.peak-indicator.show {
-  opacity: 1;
-}
+  @media (max-width: 768px) {
+    .form-wrapper {
+      padding: 12px;
+    }
 
-.peak-indicator.high {
-  background: #e57373;
-}
+    .booking-section {
+      padding: 24px;
+    }
 
-.peak-indicator.medium {
-  background: #f0ad4e;
-  color: #333;
-}
+    .pet-profile-card {
+      padding: 24px;
+    }
 
-.peak-indicator.low {
-  background: #81c784;
-}
+    .pets-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 
-.datetime-container {
+/* Burger Menu Styles */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px;
+  z-index: 1001;
+  width: 40px;
+  height: 40px;
   position: relative;
 }
 
-.ml-confidence {
-  font-size: 0.7rem;
-  opacity: 0.8;
-  margin-left: 4px;
+.hamburger span {
+  width: 28px;
+  height: 3px;
+  background-color: #2c3e50;
+  transition: all 0.3s ease;
+  border-radius: 3px;
+  display: block;
+  position: relative;
+}
+
+/* Hamburger animation when active */
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg);
+  position: absolute;
+  top: 50%;
+  margin-top: -1.5px;
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg);
+  position: absolute;
+  top: 50%;
+  margin-top: -1.5px;
+}
+
+/* Mobile Menu Styles */
+@media (max-width: 1024px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-menu {
+    position: fixed;
+    right: -100%;
+    top: 0;
+    flex-direction: column;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    width: 320px;
+    text-align: left;
+    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+    padding: 100px 0 30px 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 999;
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  .nav-item {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    padding: 18px 30px;
+    display: block;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
+    padding-left: 40px;
+    color: #16a085;
+  }
+
+  .nav-link i {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    color: #A8E6CF;
+  }
+
+  .profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .profile-icon::after {
+    content: 'Profile Menu';
+    font-size: 1rem;
+  }
+
+  /* Dropdown adjustments for mobile */
+  .dropdown-menu {
+    position: relative;
+    display: none;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    box-shadow: none;
+    background-color: #f1f3f5;
+    margin: 0;
+    border-radius: 0;
+    padding: 8px 0;
+  }
+
+  .dropdown.active .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-menu li {
+    margin: 0;
+    border-bottom: none;
+  }
+
+  .dropdown-menu a {
+    padding: 14px 30px 14px 50px;
+    font-size: 0.95rem;
+    color: #495057;
+    display: block;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .dropdown-menu a::before {
+    content: '•';
+    position: absolute;
+    left: 35px;
+    color: #A8E6CF;
+    font-size: 1.2rem;
+  }
+
+  .dropdown-menu a:hover {
+    background-color: #e9ecef;
+    padding-left: 55px;
+    color: #16a085;
+  }
+
+  /* Overlay for mobile menu */
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-overlay.active {
+    display: block;
+    opacity: 1;
+  }
+}
+@media (min-width: 1025px) {
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px); /* Position it below with small gap */
+    right: 0;
+    background: white;
+    min-width: 220px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    padding: 8px 0;
+    z-index: 1000;
+    pointer-events: none; /* Prevents menu from blocking hover */
+  }
+
+  /* Show dropdown on hover */
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto; /* Enable interactions when visible */
+  }
+
+  /* Keep dropdown visible when hovering over it */
+  .dropdown-menu:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-menu li {
+    margin: 0;
+    list-style: none;
+  }
+
+  .dropdown-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    white-space: nowrap;
+  }
+
+  .dropdown-menu a:hover {
+    background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
+    border-left-color: #A8E6CF;
+    padding-left: 24px;
+    color: #16a085;
+  }
+
+  /* Arrow indicator for dropdown */
+  .profile-icon::after {
+    content: '\f078'; /* FontAwesome down arrow */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.7rem;
+    margin-left: 6px;
+    transition: transform 0.3s ease;
+  }
+
+  .dropdown:hover .profile-icon::after {
+    transform: rotate(180deg);
+  }
+
+  /* Make sure profile icon doesn't block dropdown */
+  .profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+}
+
+/* Mobile Dropdown Styles - Keep as click-based */
+@media (max-width: 1024px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-menu {
+    position: fixed;
+    right: -100%;
+    top: 0;
+    flex-direction: column;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    width: 320px;
+    text-align: left;
+    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+    padding: 100px 0 30px 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 999;
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  .nav-item {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    padding: 18px 30px;
+    display: block;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
+    padding-left: 40px;
+    color: #16a085;
+  }
+
+  .nav-link i {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    color: #A8E6CF;
+  }
+
+  .profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .profile-icon::after {
+    content: 'Profile Menu';
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1rem;
+  }
+
+  /* Base navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  position: relative;
+  z-index: 100;
+}
+
+/* Desktop nav menu - visible by default */
+.nav-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 5px;
+}
+
+.nav-item {
+  position: relative;
+  list-style: none;
+}
+
+.nav-link {
+  text-decoration: none;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  color: #2c3e50;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.nav-link:hover {
+  background-color: rgba(168, 230, 207, 0.1);
+  color: #16a085;
+}
+
+.nav-link.active {
+  background-color: rgba(168, 230, 207, 0.15);
+  color: #16a085;
+}
+
+/* Hide hamburger by default (desktop) */
+.hamburger {
+  display: none;
+}
+
+/* ========================================
+   DESKTOP DROPDOWN (Hover-based)
+   ======================================== */
+@media (min-width: 1025px) {
+  /* Dropdown container */
+  .dropdown {
+    position: relative;
+  }
+
+  /* Dropdown menu - hidden by default */
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    min-width: 220px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    padding: 8px 0;
+    z-index: 1000;
+    list-style: none;
+    pointer-events: none;
+  }
+
+  /* Show dropdown on hover */
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Keep dropdown visible when hovering over menu items */
+  .dropdown-menu:hover {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Dropdown menu items */
+  .dropdown-menu li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dropdown-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    white-space: nowrap;
+  }
+
+  .dropdown-menu a:hover {
+    background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
+    border-left-color: #A8E6CF;
+    padding-left: 24px;
+    color: #16a085;
+  }
+
+  /* Profile icon styling */
+  .profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Arrow indicator */
+  .profile-icon::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.7rem;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+  }
+
+  .dropdown:hover .profile-icon::after {
+    transform: rotate(180deg);
+  }
+}
+
+/* ========================================
+   MOBILE STYLES (Click-based)
+   ======================================== */
+@media (max-width: 1024px) {
+  /* Show hamburger on mobile */
+  .hamburger {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-around;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 8px;
+    z-index: 1001;
+    width: 40px;
+    height: 40px;
+    position: relative;
+  }
+
+  .hamburger span {
+    width: 28px;
+    height: 3px;
+    background-color: #2c3e50;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+    display: block;
+    position: relative;
+  }
+
+  .hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+    position: absolute;
+    top: 50%;
+    margin-top: -1.5px;
+  }
+
+  .hamburger.active span:nth-child(2) {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    position: absolute;
+    top: 50%;
+    margin-top: -1.5px;
+  }
+
+  .nav-menu {
+    position: fixed;
+    right: -100%;
+    top: 0;
+    flex-direction: column;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    width: 320px;
+    text-align: left;
+    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+    padding: 100px 0 30px 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 999;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  .nav-item {
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid #e9ecef;
+    position: relative;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    padding: 18px 30px;
+    display: block;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    width: 100%;
+  }
+
+  .nav-link:hover {
+    background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
+    padding-left: 40px;
+    color: #16a085;
+  }
+
+  .nav-link i {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    color: #A8E6CF;
+  }
+
+  .profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .profile-icon::after {
+    content: 'Profile Menu';
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1rem;
+  }
+
+  /* Mobile dropdown */
+  .dropdown-menu {
+    position: relative;
+    display: none;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    box-shadow: none;
+    background-color: #f1f3f5;
+    margin: 0;
+    border-radius: 0;
+    padding: 8px 0;
+    list-style: none;
+  }
+
+  .dropdown.active .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-menu li {
+    margin: 0;
+    border-bottom: none;
+    list-style: none;
+  }
+
+  .dropdown-menu a {
+    padding: 14px 30px 14px 50px;
+    font-size: 0.95rem;
+    color: #495057;
+    display: block;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .dropdown-menu a::before {
+    content: '•';
+    position: absolute;
+    left: 35px;
+    color: #A8E6CF;
+    font-size: 1.2rem;
+  }
+
+  .dropdown-menu a:hover {
+    padding-left: 55px;
+    color: #16a085;
+  }
+
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-overlay.active {
+    display: block;
+    opacity: 1;
+  }
+}
+
+/* Hide hamburger on desktop */
+@media (min-width: 1025px) {
+  .hamburger {
+    display: none !important;
+  }
+  
+  .nav-overlay {
+    display: none !important;
+  }
+  
+  /* Ensure nav menu is visible on desktop */
+  .nav-menu {
+    display: flex !important;
+    position: static !important;
+    flex-direction: row !important;
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  
+  .nav-item {
+    border-bottom: none !important;
+  }
 }
 </style>
 
 </head>
 <body>
   <header>
-    <nav class="navbar section-content">
-      <a href="#" class="navbar-logo">
-        <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
-      </a>
-      <ul class="nav-menu">
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"> Home</a></li>
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"> About</a></li>
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"> Services</a></li>
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"> Gallery</a></li>
-        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"> Contact</a></li>
-        <li class="nav-item dropdown">
-          <a href="#" class="nav-link profile-icon active">
-            <i class="fas fa-user"></i>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-            <li><a href="../pets/add-pet.php">Add Pet</a></li>
-            <li><a href="../appointment/book-appointment.php">Book</a></li>
-            <li><a href="../homepage/appointments.php">Appointments</a></li>
-            <li><a href="../../Purrfect-paws/ai/chatbot/index.html">Help Center</a></li>
-            <li><a href="../homepage/logout/logout.php">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </header>
+  <nav class="navbar section-content">
+    <a href="#" class="navbar-logo">
+      <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
+    </a>
+    
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
 
-<div style="height: 60px;"></div>
+    <!-- Overlay for mobile -->
+    <div class="nav-overlay" id="nav-overlay"></div>
+
+    <ul class="nav-menu" id="nav-menu">
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i>Home</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i>About</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i>Services</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i>Gallery</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i>Contact</a></li>
+      <li class="nav-item dropdown" id="profile-dropdown">
+        <a href="#" class="nav-link profile-icon active">
+          <i class="fas fa-user"></i>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+          <li><a href="../pets/add-pet.php">Add Pet</a></li>
+          <li><a href="../appointment/book-appointment.php">Book</a></li>
+          <li><a href="../homepage/appointments.php">Appointments</a></li>
+          <li><a href="../ai/templates/index.html">Help Center</a></li>
+          <li><a href="../homepage/logout/logout.php">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+
   <div class="form-wrapper">
     <div class="page-content">
-      <h2>Book a Grooming Appointment</h2>
-
+      
       <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert-success"><?= $_SESSION['success'] ?></div>
+        <div class="alert-success">
+          <i class="fas fa-check-circle"></i>
+          <?= $_SESSION['success'] ?>
+        </div>
         <?php unset($_SESSION['success']); ?>
       <?php endif; ?>
 
       <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert-error"><?= $_SESSION['error'] ?></div>
+        <div class="alert-error">
+          <i class="fas fa-exclamation-circle"></i>
+          <?= $_SESSION['error'] ?>
+        </div>
         <?php unset($_SESSION['error']); ?>
       <?php endif; ?>
 
       <?php if (!$selected_pet_id): ?>
-        <div class="form-container">
-          <h3>Choose a pet to book an appointment for:</h3>
-          <?php while ($pet = pg_fetch_assoc($pets_result)): ?>
-            <div class="card">
-              <strong><?= htmlspecialchars($pet['name']) ?></strong> (<?= htmlspecialchars($pet['breed']) ?>)
-              <form method="GET" action="book-appointment.php" style="margin-top:10px;">
-                <input type="hidden" name="pet_id" value="<?= $pet['pet_id'] ?>">
-                <button class="btn" type="submit">Book for this Pet</button>
-              </form>
-            </div>
-          <?php endwhile; ?>
+        <div class="booking-section">
+          <h2>Choose Your Pet</h2>
+          <div class="pets-grid">
+            <?php while ($pet = pg_fetch_assoc($pets_result)): ?>
+              <div class="pet-card">
+                <div class="pet-card-image">
+                  <?php if (!empty($pet['photo_url'])): ?>
+                    <img src="../pets/<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>">
+                  <?php else: ?>
+                    <i class="fas fa-paw pet-placeholder"></i>
+                  <?php endif; ?>
+                </div>
+                <div class="pet-card-name"><?= htmlspecialchars($pet['name']) ?></div>
+                <div class="pet-card-breed"><?= htmlspecialchars($pet['breed']) ?></div>
+                <form method="GET" action="book-appointment.php">
+                  <input type="hidden" name="pet_id" value="<?= $pet['pet_id'] ?>">
+                  <button class="btn" type="submit">Book for <?= htmlspecialchars($pet['name']) ?></button>
+                </form>
+              </div>
+            <?php endwhile; ?>
+          </div>
         </div>
       <?php else: ?>
-        <div class="form-container">
-          <a href="book-appointment.php" class="back-link">← Choose another pet</a>
-
-          <form method="POST" action="appointment-handler.php" class="booking-form">
-            <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
-
-            <?php if ($recommended_package): ?>
-              <input type="hidden" name="recommended_package" value="<?= htmlspecialchars($recommended_package) ?>">
-              <div class="recommendation-box">
-                🐾 Recommended Package for <strong><?= htmlspecialchars($valid_pet['name']) ?></strong>:
-                <span class="recommend"><?= htmlspecialchars($recommended_package) ?></span>
-              </div>
-            <?php endif; ?>
-
-            <div class="form-group">
-              <label for="package_id"><i class="fas fa-box"></i> Select Grooming Package:</label> 
-              <select name="package_id" id="package_id" required>
-                <?php while ($pkg = pg_fetch_assoc($packages_result)): ?>
-                  <option value="<?= $pkg['price_id'] ?>" 
-                    <?= ($pkg['name'] == $recommended_package) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($pkg['name']) ?> 
-                    (<?= htmlspecialchars($pkg['species']) ?> - <?= htmlspecialchars($pkg['size']) ?>,
-                    <?= $pkg['min_weight'] ?> - <?= $pkg['max_weight'] ?>) 
-                    - ₱<?= number_format($pkg['price'], 2) ?>
-                  </option>
-                <?php endwhile; ?>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="appointment_date"><i class="fas fa-calendar-alt"></i> Appointment Date and Time:</label>
-              <div class="datetime-container">
-                <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
-                <div class="peak-indicator" id="peakIndicator">Select date/time</div>
-              </div>
-              <small style="color: #666; margin-top: 5px;">AI-powered demand prediction based on actual appointment counts</small>
+        <div class="content-grid">
+          <!-- Pet Profile Card - Left Side -->
+          <div class="pet-profile-card">
+            <div class="pet-image-container">
+              <?php if (!empty($valid_pet['photo_url'])): ?>
+                <img src="../pets/<?= htmlspecialchars($valid_pet['photo_url']) ?>" alt="<?= htmlspecialchars($valid_pet['name']) ?>">
+              <?php else: ?>
+                <i class="fas fa-paw pet-placeholder"></i>
+              <?php endif; ?>
             </div>
             
-            <div class="form-group">
-              <label for="notes"><i class="fas fa-sticky-note"></i> Notes (optional):</label>
-              <textarea name="notes" id="notes" rows="3" placeholder="Any special instructions..."></textarea>
-            </div>
-
-            <?php if ($selected_pet_id): ?>
-                <!-- Debugging info (remove after fixing) -->
-                <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
-                    <strong>Debug Info:</strong><br>
-                    Pet: <?= htmlspecialchars($valid_pet['name']) ?><br>
-                    Breed: <?= htmlspecialchars($valid_pet['breed']) ?><br>
-                    Recommended Package: <?= $recommended_package ? htmlspecialchars($recommended_package) : 'None' ?><br>
-                    API Response: <?= isset($response) ? htmlspecialchars(substr($response, 0, 200)) : 'No response' ?>
+            <div class="pet-info">
+              <h3 class="pet-name"><?= htmlspecialchars($valid_pet['name']) ?></h3>
+              <p class="pet-breed"><?= htmlspecialchars($valid_pet['breed']) ?></p>
+              
+              <div class="pet-details">
+                <div class="pet-detail-item">
+                  <div class="pet-detail-icon">
+                    <i class="fas fa-birthday-cake"></i>
+                  </div>
+                  <div class="pet-detail-label">Age</div>
+                  <div class="pet-detail-value"><?= htmlspecialchars($valid_pet['age']) ?> years</div>
                 </div>
-            <?php endif; ?>
+                
+                <div class="pet-detail-item">
+                  <div class="pet-detail-icon">
+                    <i class="fas fa-venus-mars"></i>
+                  </div>
+                  <div class="pet-detail-label">Gender</div>
+                  <div class="pet-detail-value"><?= htmlspecialchars($valid_pet['gender']) ?></div>
+                </div>
+                
+                <div class="pet-detail-item">
+                  <div class="pet-detail-icon">
+                    <i class="fas fa-palette"></i>
+                  </div>
+                  <div class="pet-detail-label">Color</div>
+                  <div class="pet-detail-value"><?= htmlspecialchars($valid_pet['color']) ?></div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-            <button type="submit" class="btn submit-btn">Book Appointment</button>
-          </form>
+          <!-- Booking Form - Right Side -->
+          <div class="booking-section">
+            <a href="book-appointment.php" class="back-link">
+              <i class="fas fa-arrow-left"></i> Choose Another Pet
+            </a>
+            
+            <h2>Book Grooming Appointment</h2>
+
+            <form method="POST" action="appointment-handler.php" class="booking-form">
+              <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
+
+              <?php if ($recommended_package): ?>
+                <input type="hidden" name="recommended_package" value="<?= htmlspecialchars($recommended_package) ?>">
+                <div class="recommendation-box">
+                  <i class="fas fa-star"></i> Recommended Package for <strong><?= htmlspecialchars($valid_pet['name']) ?></strong>:
+                  <span class="recommend"><?= htmlspecialchars($recommended_package) ?></span>
+                </div>
+              <?php endif; ?>
+
+              <div class="form-group">
+                <label for="package_id">
+                  <i class="fas fa-box"></i> Select Grooming Package
+                </label>
+                <select name="package_id" id="package_id" required>
+                  <?php while ($pkg = pg_fetch_assoc($packages_result)): ?>
+                    <option value="<?= $pkg['price_id'] ?>" 
+                      <?= ($pkg['name'] == $recommended_package) ? 'selected' : '' ?>>
+                      <?= htmlspecialchars($pkg['name']) ?> 
+                      (<?= htmlspecialchars($pkg['species']) ?> - <?= htmlspecialchars($pkg['size']) ?>,
+                      <?= $pkg['min_weight'] ?> - <?= $pkg['max_weight'] ?>) 
+                      - ₱<?= number_format($pkg['price'], 2) ?>
+                    </option>
+                  <?php endwhile; ?>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="appointment_date">
+                  <i class="fas fa-calendar-alt"></i> Appointment Date and Time
+                </label>
+                <div class="datetime-container">
+                  <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
+                  <div class="availability-indicator" id="availabilityIndicator">Select date/time</div>
+                </div>
+                <div class="legend-container">
+                  <div class="legend-title">📅 Calendar Legend:</div>
+                  <div class="legend-items">
+                    <div class="legend-item">
+                      <span class="legend-color available"></span>
+                      <span>Available (0-2 bookings)</span>
+                    </div>
+                    <div class="legend-item">
+                      <span class="legend-color busy"></span>
+                      <span>Busy (3-4 bookings)</span>
+                    </div>
+                    <div class="legend-item">
+                      <span class="legend-color full"></span>
+                      <span>Full (5+ bookings)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="notes">
+                  <i class="fas fa-sticky-note"></i> Special Instructions (optional)
+                </label>
+                <textarea name="notes" id="notes" rows="3" placeholder="Any special care instructions for your pet..."></textarea>
+              </div>
+
+              <button type="submit" class="submit-btn">
+                <i class="fas fa-check-circle"></i> Confirm Appointment
+              </button>
+            </form>
+          </div>
         </div>
       <?php endif; ?>
     </div>
   </div>
 
   <script>
-  // Peak hours data from PHP (corrected to show actual appointment counts)
-  const peakHoursData = <?= json_encode($peak_hours_data_raw) ?>;
-  const mlPeakHoursData = <?= json_encode($peak_hours_data) ?>;
-  const modelStats = <?= json_encode($model_stats) ?>;
+  const appointmentCounts = <?= json_encode($appointment_counts) ?>;
+  const MAX_APPOINTMENTS = 5;
 
-  // Fixed function to get peak level based on appointment count
-  function getPeakLevel(count) {
-    if (count >= 5) return 'high';      // 5 or more appointments = high demand
-    if (count >= 1) return 'medium';    // 1-4 appointments = moderate demand
-    return 'low';                       // 0 appointments = low demand
+  function getAppointmentCount(date, hour) {
+    const dateStr = date.toISOString().split('T')[0];
+    if (appointmentCounts[dateStr] && appointmentCounts[dateStr][hour] !== undefined) {
+      return appointmentCounts[dateStr][hour];
+    }
+    return 0;
   }
 
-  // Create a comprehensive map for ML predictions with actual appointment counts
-  const mlPredictionMap = {};
-  mlPeakHoursData.forEach(item => {
-    const key = `${item.day_of_week}_${item.hour}`;
-    mlPredictionMap[key] = {
-      prediction: item.prediction,
-      confidence: item.confidence,
-      appointment_count: item.appointment_count || 0,
-      ml_powered: true
-    };
-  });
-
-  // Enhanced ML prediction function with corrected logic
-  function getMLPrediction(date, hour) {
-    const dayOfWeek = date.getDay() + 1; // Convert to MySQL DAYOFWEEK
-    const key = `${dayOfWeek}_${hour}`;
-    
-    if (mlPredictionMap[key]) {
-      return mlPredictionMap[key];
-    }
-    
-    // Fallback prediction - default to low demand (0 appointments)
-    const isBusinessHours = hour >= 9 && hour <= 18;
-    
-    // Return null for outside business hours
-    if (!isBusinessHours) {
-      return { 
-        prediction: 'unavailable', 
-        confidence: 1.0, 
-        appointment_count: 0,
-        ml_powered: true 
-      };
-    }
-    
-    // Default to low demand for times without historical data
-    return { 
-      prediction: 'low', 
-      confidence: 0.95, 
-      appointment_count: 0,
-      ml_powered: true 
-    };
+  function isSlotAvailable(date, hour) {
+    const count = getAppointmentCount(date, hour);
+    return count < MAX_APPOINTMENTS;
   }
 
-  // Function to update ML-powered peak indicator with corrected logic
-  function updateMLPeakIndicator() {
+  function updateAvailabilityIndicator() {
     const dateInput = document.getElementById('appointment_date');
-    const indicator = document.getElementById('peakIndicator');
+    const indicator = document.getElementById('availabilityIndicator');
     const submitBtn = document.querySelector('.submit-btn');
 
     if (!dateInput.value) {
-      indicator.className = 'peak-indicator';
+      indicator.className = 'availability-indicator';
       indicator.textContent = 'Select date/time';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Book Appointment (ML Optimized)';
-      submitBtn.style.cursor = 'pointer';
-      submitBtn.style.backgroundColor = '';
-      submitBtn.style.opacity = '';
+      submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
       return;
     }
 
     const selectedDate = new Date(dateInput.value);
     const hour = selectedDate.getHours();
     
-    // Check if time is within business hours
     if (hour < 9 || hour > 18) {
-      indicator.className = 'peak-indicator show high';
+      indicator.className = 'availability-indicator show full';
       indicator.innerHTML = '⛔ Outside Business Hours';
       submitBtn.disabled = true;
-      submitBtn.innerHTML = 'Outside Business Hours (9 AM - 6 PM Only)';
-      submitBtn.style.cursor = 'not-allowed';
-      submitBtn.style.backgroundColor = '#ccc';
-      submitBtn.style.opacity = '0.6';
+      submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Outside Business Hours (9 AM - 6 PM Only)';
       return;
     }
     
-    const mlResult = getMLPrediction(selectedDate, hour);
-    const peakLevel = mlResult.prediction;
-    const confidence = Math.round(mlResult.confidence * 100);
-    const appointmentCount = mlResult.appointment_count || 0;
+    const appointmentCount = getAppointmentCount(selectedDate, hour);
+    const available = isSlotAvailable(selectedDate, hour);
 
-    // Update peak indicator with ML results
-    indicator.className = `peak-indicator show ${peakLevel}`;
-
-    let text = '';
-    let icon = '';
-    switch (peakLevel) {
-      case 'high':
-        text = `High Demand (${appointmentCount} appointments)`;
-        icon = '🔴';
-        break;
-      case 'medium':
-        text = `Moderate (${appointmentCount} appointments)`;
-        icon = '🟡';
-        break;
-      case 'low':
-        text = `Low Demand (${appointmentCount} appointments)`;
-        icon = '🟢';
-        break;
-      case 'unavailable':
-        text = `Outside Hours`;
-        icon = '⛔';
-        break;
-    }
-    
-    indicator.innerHTML = `
-      ${icon} ${text}
-      <span class="ml-confidence">(${confidence}% confidence)</span>
-    `;
-
-    // Enhanced booking logic - only disable high demand slots (5+ appointments)
-    if (peakLevel === 'high' || peakLevel === 'unavailable') {
-      submitBtn.disabled = true;
-      const message = peakLevel === 'unavailable' ? 
-        'Outside Business Hours (9 AM - 6 PM Only)' : 
-        `Unavailable (High Demand - ${appointmentCount} appointments)`;
-      submitBtn.innerHTML = message;
-      submitBtn.style.cursor = 'not-allowed';
-      submitBtn.style.backgroundColor = '#ccc';
-      submitBtn.style.opacity = '0.6';
-    } else {
+    if (available) {
+      indicator.className = 'availability-indicator show available';
+      indicator.innerHTML = `✓ Available (${appointmentCount}/${MAX_APPOINTMENTS} booked)`;
       submitBtn.disabled = false;
-      let buttonText;
-      if (peakLevel === 'low') {
-        buttonText = appointmentCount === 0 ? 
-          'Book Appointment (Perfect Time - No Conflicts!)' : 
-          'Book Appointment (Low Demand - Great Choice!)';
-      } else {
-        buttonText = `Book Appointment (${appointmentCount} other appointments)`;
-      }
-      submitBtn.innerHTML = buttonText;
-      submitBtn.style.cursor = 'pointer';
-      submitBtn.style.backgroundColor = '#A8E6CF';
-      submitBtn.style.opacity = '1';
+      submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
+    } else {
+      indicator.className = 'availability-indicator show full';
+      indicator.innerHTML = `✕ Full (${appointmentCount}/${MAX_APPOINTMENTS} booked)`;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
     }
   }
 
-  // Set up ML-enhanced event listeners
   document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('appointment_date');
     if (dateInput) {
-      // Manual event listeners
-      dateInput.addEventListener('change', updateMLPeakIndicator);
-      dateInput.addEventListener('input', updateMLPeakIndicator);
+      dateInput.addEventListener('change', updateAvailabilityIndicator);
+      dateInput.addEventListener('input', updateAvailabilityIndicator);
 
-      // Set minimum date to today
       const now = new Date();
       const today = now.toISOString().split('T')[0];
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
     }
-
-    // Display corrected ML model information
-    console.group('🧠 Machine Learning Model Information (Corrected)');
-    console.log('Model Type:', modelStats.model_type);
-    console.log('Training Samples:', modelStats.training_samples);
-    console.log('Demand Thresholds:', modelStats.thresholds);
-    console.log('Business Hours: 9 AM - 6 PM');
-    console.log('Logic: 0 appointments = Low, 1-4 = Moderate, 5+ = High (disabled)');
-    console.groupEnd();
   });
 
-  // Enhanced Flatpickr with corrected ML integration
   flatpickr("#appointment_date", {
     enableTime: true,
     dateFormat: "Y-m-d H:i",
@@ -1058,106 +1597,118 @@ $model_stats = $ml_model->getModelStats();
     allowInput: true,
     clickOpens: true,
     onChange: function(selectedDates, dateStr, instance) {
-      updateMLPeakIndicator();
-      
-      // Log appointment count for debugging
-      if (selectedDates.length > 0) {
-        const mlResult = getMLPrediction(selectedDates[0], selectedDates[0].getHours());
-        console.log(`Selected time has ${mlResult.appointment_count} existing appointments - ${mlResult.prediction} demand`);
-      }
+      updateAvailabilityIndicator();
     },
-    onReady: function(selectedDates, dateStr, instance) {
-      console.log('Flatpickr initialized with corrected appointment counting logic');
-    },
-    // Only disable high demand times (5+ appointments)
     disable: [
       function(date) {
         const hour = date.getHours();
         const minute = date.getMinutes();
         
-        // If it's just a date (no specific time), allow it
         if (hour === 0 && minute === 0) {
           return false;
         }
         
-        // If it's a specific time, check business hours and appointment count
         if (hour < 9 || hour > 18) {
           return true;
         }
         
-        const prediction = getMLPrediction(date, hour);
-        // Only disable if there are 5 or more appointments (high demand)
-        return prediction.appointment_count >= 5;
+        return !isSlotAvailable(date, hour);
       }
     ],
-    // Enhanced day visualization
     onDayCreate: function(dObj, dStr, fp, dayElem) {
       const date = dayElem.dateObj;
       if (date) {
-        // Check average appointment count for this day (business hours 9-18)
         let totalAppointments = 0;
         let hoursChecked = 0;
         
         for (let h = 9; h <= 18; h++) {
           const testDate = new Date(date);
           testDate.setHours(h);
-          const pred = getMLPrediction(testDate, h);
-          totalAppointments += pred.appointment_count;
+          totalAppointments += getAppointmentCount(testDate, h);
           hoursChecked++;
         }
         
         const avgAppointments = totalAppointments / hoursChecked;
         
-        if (avgAppointments >= 5) {
+        if (avgAppointments >= 4) {
           dayElem.style.backgroundColor = '#ffebee';
-          dayElem.title = `High demand day - avg ${avgAppointments.toFixed(1)} appointments per hour`;
-        } else if (avgAppointments >= 1) {
+          dayElem.title = `Busy day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
+        } else if (avgAppointments >= 2) {
           dayElem.style.backgroundColor = '#fff3e0';
-          dayElem.title = `Moderate demand day - avg ${avgAppointments.toFixed(1)} appointments per hour`;
+          dayElem.title = `Moderate day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
         } else {
           dayElem.style.backgroundColor = '#e8f5e8';
-          dayElem.title = `Low demand day - avg ${avgAppointments.toFixed(1)} appointments per hour (Best choice!)`;
+          dayElem.title = `Available day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
         }
       }
     }
   });
 
-  // Display corrected weekly pattern analysis
-  function displayCorrectedWeeklyPattern() {
-    console.group('📊 Corrected ML Weekly Demand Pattern (9 AM - 6 PM)');
-    console.log('Logic: 0 appointments = Low, 1-4 = Moderate, 5+ = High (booking disabled)');
-    
-    const weeklyPattern = {};
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
-    for (let day = 1; day <= 7; day++) {
-      const dayName = dayNames[day - 1];
-      weeklyPattern[dayName] = {};
-      
-      for (let hour = 9; hour <= 18; hour++) {
-        const testDate = new Date();
-        testDate.setDate(testDate.getDate() + (day - testDate.getDay()));
-        testDate.setHours(hour, 0, 0, 0);
-        
-        const prediction = getMLPrediction(testDate, hour);
-        weeklyPattern[dayName][`${hour}:00`] = {
-          demand: prediction.prediction,
-          appointments: prediction.appointment_count,
-          confidence: Math.round(prediction.confidence * 100)
-        };
-      }
-    }
-    
-    console.table(weeklyPattern);
-    console.groupEnd();
-  }
+ // Hamburger Menu Toggle
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
+const navOverlay = document.getElementById('nav-overlay');
+const profileDropdown = document.getElementById('profile-dropdown');
 
-  // Initialize corrected analytics
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(displayCorrectedWeeklyPattern, 1000);
+hamburger.addEventListener('click', function() {
+  hamburger.classList.toggle('active');
+  navMenu.classList.toggle('active');
+  navOverlay.classList.toggle('active');
+  document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+});
+
+// Close menu when clicking overlay
+navOverlay.addEventListener('click', function() {
+  hamburger.classList.remove('active');
+  navMenu.classList.remove('active');
+  navOverlay.classList.remove('active');
+  profileDropdown.classList.remove('active');
+  document.body.style.overflow = '';
+});
+
+// Close menu when clicking on regular nav links
+document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+  link.addEventListener('click', function() {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    document.body.style.overflow = '';
   });
+});
 
+// Handle profile dropdown - ONLY for mobile (click to toggle)
+profileDropdown.addEventListener('click', function(e) {
+  if (window.innerWidth <= 1024) {
+    // Only prevent default and toggle on mobile
+    if (e.target.closest('.profile-icon')) {
+      e.preventDefault();
+      this.classList.toggle('active');
+    }
+  }
+  // On desktop, do nothing - CSS :hover handles it
+});
+
+// Close menu when clicking dropdown items
+document.querySelectorAll('.dropdown-menu a').forEach(link => {
+  link.addEventListener('click', function() {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+});
+
+// Reset on window resize
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 1024) {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
   </script>
-
 </body>
 </html>

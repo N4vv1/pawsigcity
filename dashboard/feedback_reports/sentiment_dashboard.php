@@ -246,22 +246,30 @@ $feedback_result = pg_query($conn, $feedback_query);
     /* CHARTS */
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
       margin-bottom: 40px;
+      max-width: 800px; /* Limit total width */
     }
 
     .chart-card {
       background: var(--white-color);
-      padding: 30px;
+      padding: 20px;
       border-radius: 14px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      max-height: 350px; /* Limit card height */
     }
 
     .chart-card h2 {
-      font-size: 1.3rem;
-      margin-bottom: 20px;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
       color: var(--dark-color);
+      font-weight: 600;
+    }
+
+    .chart-card canvas {
+      max-height: 250px !important; /* Limit canvas height */
+      width: 100% !important;
     }
 
     /* FEEDBACK TABLE */
@@ -557,7 +565,7 @@ const sentimentData = {
   pending: <?= $pending_count ?>
 };
 
-// Pie Chart
+// Pie Chart - Updated for smaller size
 const pieCtx = document.getElementById('sentimentPieChart').getContext('2d');
 new Chart(pieCtx, {
   type: 'doughnut',
@@ -572,15 +580,22 @@ new Chart(pieCtx, {
   options: {
     responsive: true,
     maintainAspectRatio: true,
+    aspectRatio: 1.5, /* Make it wider than tall */
     plugins: {
       legend: {
-        position: 'bottom'
+        position: 'bottom',
+        labels: {
+          padding: 10,
+          font: {
+            size: 11
+          }
+        }
       }
     }
   }
 });
 
-// Bar Chart
+// Bar Chart - Updated for smaller size
 const barCtx = document.getElementById('sentimentBarChart').getContext('2d');
 new Chart(barCtx, {
   type: 'bar',
@@ -590,17 +605,29 @@ new Chart(barCtx, {
       label: 'Number of Feedback',
       data: [sentimentData.positive, sentimentData.neutral, sentimentData.negative, sentimentData.pending],
       backgroundColor: ['#4CAF50', '#FF9800', '#F44336', '#9E9E9E'],
-      borderRadius: 8
+      borderRadius: 8,
+      barThickness: 40 /* Control bar width */
     }]
   },
   options: {
     responsive: true,
     maintainAspectRatio: true,
+    aspectRatio: 1.5, /* Make it wider than tall */
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 1
+          stepSize: 1,
+          font: {
+            size: 11
+          }
+        }
+      },
+      x: {
+        ticks: {
+          font: {
+            size: 11
+          }
         }
       }
     },
