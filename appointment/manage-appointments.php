@@ -2,13 +2,6 @@
 session_start();
 require '../db.php'; // $conn = pg_connect(...);
 
-// ✅ If you want admin-only access, uncomment this
-// if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-//   header('Location: ../login/loginform.php');
-//   exit;
-// }
-
-// Fetch all appointments with joins
 $query = "
   SELECT a.*, 
          u.full_name AS client_name,

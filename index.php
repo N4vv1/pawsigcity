@@ -394,7 +394,7 @@ if (!$result) {
   <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../pawsigcity/homepage/images/pawsig.png" alt="Logo" class="icon" />
+      <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
     </a>
     
     <!-- Hamburger Menu Button -->
@@ -418,7 +418,7 @@ if (!$result) {
           <i class="fas fa-user"></i>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="../pawsigcity/homepage/login/loginform.php">Login</a></li>
+          <li><a href="../homepage/login/loginform.php">Login</a></li>
         </ul>
       </li>
     </ul>
