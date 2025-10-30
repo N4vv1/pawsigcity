@@ -418,7 +418,7 @@ if (!$result) {
           <i class="fas fa-user"></i>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="../homepage/login/loginform.php">Login</a></li>
+          <li><a href="../pawsigcity/homepage/login/loginform.php">Login</a></li>
         </ul>
       </li>
     </ul>

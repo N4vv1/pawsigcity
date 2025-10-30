@@ -132,6 +132,7 @@
     .feature-item i {
       font-size: 24px;
       color: #2d5f4a;
+      flex-shrink: 0;
     }
 
     .feature-item span {
@@ -178,6 +179,10 @@
     .back-button:hover {
       background: rgba(168, 230, 207, 0.5);
       transform: translateX(-5px);
+    }
+
+    .back-button:active {
+      transform: translateX(-3px);
     }
 
     .container {
@@ -228,6 +233,8 @@
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .tab-btn.active {
@@ -266,6 +273,7 @@
       margin-bottom: 20px;
       font-size: 14px;
       animation: slideDown 0.3s ease;
+      word-wrap: break-word;
     }
 
     @keyframes slideDown {
@@ -305,6 +313,8 @@
       transition: all 0.3s ease;
       background: #fafafa;
       outline: none;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     .input-field:focus {
@@ -338,6 +348,7 @@
       font-size: 20px;
       color: #999;
       transition: color 0.3s ease;
+      pointer-events: none;
     }
 
     .input-field:focus ~ .icon {
@@ -373,11 +384,17 @@
       accent-color: #A8E6CF;
     }
 
+    .remember-me label {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .forgot a {
       color: #5fb894;
       text-decoration: none;
       font-weight: 500;
       transition: color 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .forgot a:hover {
@@ -396,6 +413,8 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(168, 230, 207, 0.4);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .submit-btn:hover {
@@ -414,8 +433,8 @@
       }
 
       .brand-side {
-        min-height: 40vh;
-        padding: 40px 30px;
+        min-height: auto;
+        padding: 50px 30px 40px;
       }
 
       .brand-content h1 {
@@ -444,8 +463,8 @@
       }
 
       .form-side {
-        min-height: 60vh;
-        padding: 40px 30px;
+        min-height: auto;
+        padding: 40px 30px 50px;
       }
 
       .back-button {
@@ -461,8 +480,128 @@
     /* Mobile devices */
     @media (max-width: 640px) {
       .brand-side {
-        min-height: 35vh;
-        padding: 30px 20px;
+        min-height: auto;
+        padding: 45px 25px 35px;
+      }
+
+      .brand-content h1 {
+        font-size: 32px;
+        margin-bottom: 15px;
+        line-height: 1.2;
+      }
+
+      .brand-content p {
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .brand-features {
+        margin-top: 25px;
+        gap: 12px;
+        max-width: 100%;
+      }
+
+      .feature-item {
+        padding: 12px 18px;
+      }
+
+      .feature-item i {
+        font-size: 20px;
+      }
+
+      .feature-item span {
+        font-size: 14px;
+      }
+
+      .form-side {
+        padding: 35px 25px 45px;
+      }
+
+      .back-button {
+        top: 18px;
+        left: 18px;
+        padding: 10px 16px;
+        font-size: 14px;
+        gap: 6px;
+      }
+
+      .back-button i {
+        font-size: 18px;
+      }
+
+      .logo-section {
+        margin-bottom: 25px;
+      }
+
+      .logo-section h2 {
+        font-size: 26px;
+      }
+
+      .logo-section p {
+        font-size: 13px;
+      }
+
+      .tab-buttons {
+        margin-bottom: 25px;
+        padding: 4px;
+      }
+
+      .tab-btn {
+        padding: 12px 8px;
+        font-size: 14px;
+      }
+
+      .input-field {
+        padding: 14px 42px 14px 14px;
+        font-size: 15px;
+      }
+
+      .label {
+        font-size: 15px;
+        top: 14px;
+        left: 14px;
+      }
+
+      .icon {
+        right: 14px;
+        top: 14px;
+        font-size: 19px;
+      }
+
+      .row-inputs {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .input-box {
+        margin-bottom: 22px;
+      }
+
+      .remember-forgot {
+        font-size: 13px;
+        margin-bottom: 22px;
+      }
+
+      .remember-me input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+      }
+
+      .submit-btn {
+        padding: 14px;
+        font-size: 15px;
+      }
+
+      .alert-message {
+        font-size: 13px;
+        padding: 11px 14px;
+      }
+    }
+
+    /* Very small mobile devices */
+    @media (max-width: 380px) {
+      .brand-side {
+        padding: 40px 20px 30px;
       }
 
       .brand-content h1 {
@@ -475,13 +614,13 @@
       }
 
       .brand-features {
+        gap: 10px;
         margin-top: 20px;
-        gap: 12px;
-        max-width: 100%;
       }
 
       .feature-item {
         padding: 10px 15px;
+        gap: 12px;
       }
 
       .feature-item i {
@@ -493,14 +632,18 @@
       }
 
       .form-side {
-        padding: 30px 20px;
+        padding: 30px 20px 40px;
       }
 
       .back-button {
+        padding: 8px 14px;
+        font-size: 13px;
         top: 15px;
         left: 15px;
-        padding: 8px 15px;
-        font-size: 14px;
+      }
+
+      .back-button i {
+        font-size: 16px;
       }
 
       .logo-section h2 {
@@ -508,101 +651,42 @@
       }
 
       .logo-section p {
-        font-size: 13px;
-      }
-
-      .tab-buttons {
-        margin-bottom: 25px;
+        font-size: 12px;
       }
 
       .tab-btn {
-        padding: 10px;
-        font-size: 14px;
+        padding: 11px 6px;
+        font-size: 13px;
       }
 
       .input-field {
-        padding: 12px 40px 12px 12px;
+        padding: 13px 40px 13px 13px;
         font-size: 14px;
       }
 
       .label {
         font-size: 14px;
-        top: 12px;
-        left: 12px;
+        top: 13px;
+        left: 13px;
       }
 
       .icon {
-        right: 12px;
-        top: 12px;
+        right: 13px;
+        top: 13px;
         font-size: 18px;
-      }
-
-      .row-inputs {
-        grid-template-columns: 1fr;
-        gap: 0;
       }
 
       .input-box {
         margin-bottom: 20px;
       }
 
-      .remember-forgot {
-        font-size: 13px;
-        margin-bottom: 20px;
-      }
-
       .submit-btn {
         padding: 13px;
-        font-size: 15px;
-      }
-    }
-
-    /* Very small mobile devices */
-    @media (max-width: 380px) {
-      .brand-side {
-        padding: 25px 15px;
-      }
-
-      .brand-content h1 {
-        font-size: 24px;
-      }
-
-      .brand-content p {
-        font-size: 13px;
-      }
-
-      .brand-features {
-        gap: 10px;
-      }
-
-      .feature-item {
-        padding: 8px 12px;
-        gap: 10px;
-      }
-
-      .feature-item i {
-        font-size: 16px;
-      }
-
-      .feature-item span {
-        font-size: 12px;
-      }
-
-      .form-side {
-        padding: 25px 15px;
-      }
-
-      .back-button {
-        padding: 6px 12px;
-        font-size: 13px;
-      }
-
-      .logo-section h2 {
-        font-size: 22px;
+        font-size: 14px;
       }
 
       .container {
-        padding: 0 10px;
+        padding: 0 5px;
       }
     }
 
@@ -633,6 +717,29 @@
 
       .container {
         max-width: 550px;
+      }
+    }
+
+    /* Landscape mobile orientation fix */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .brand-side {
+        min-height: auto;
+        padding: 30px 25px;
+      }
+
+      .brand-features {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .feature-item {
+        flex: 0 1 auto;
+      }
+
+      .form-side {
+        padding: 30px 25px;
       }
     }
   </style>
