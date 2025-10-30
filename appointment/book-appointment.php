@@ -1305,6 +1305,7 @@ if ($selected_pet_id) {
     border-bottom: none !important;
   }
 }
+}
 </style>
 
 </head>
