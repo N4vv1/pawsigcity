@@ -1,5 +1,5 @@
 <?php
-require '../db.php';  // Changed from ../../db.php
+require '../../db.php';
 session_start();
 
 // Get inputs safely
@@ -16,7 +16,7 @@ $_SESSION['previous_rating'] = $rating;
 if (!$id || !$rating) {
     $_SESSION['error'] = "Missing appointment or rating.";
     $_SESSION['show_feedback_modal'] = true;
-    header("Location: ../homepage/appointments.php");  // Updated path
+    header("Location: ../appointments.php");
     exit;
 }
 
@@ -24,7 +24,7 @@ if (!$id || !$rating) {
 if ($rating < 1 || $rating > 5) {
     $_SESSION['error'] = "Rating must be between 1 and 5 stars.";
     $_SESSION['show_feedback_modal'] = true;
-    header("Location: ../homepage/appointments.php");  // Updated path
+    header("Location: ../appointments.php");
     exit;
 }
 
@@ -34,7 +34,7 @@ if (!empty($feedback)) {
     if ($wordCount < 5) {
         $_SESSION['error'] = "Please provide at least 5 words in your feedback.";
         $_SESSION['show_feedback_modal'] = true;
-        header("Location: ../homepage/appointments.php");  // Updated path
+        header("Location: ../appointments.php");
         exit;
     }
 }
@@ -45,7 +45,7 @@ $result = pg_query_params($conn, $query, [$rating, $feedback, $id]);
 
 // Execute and handle result
 if ($result) {
-    // ✅ Automatically analyze sentiment using Flask API
+    // ✅ Automatically analyze sentiment using Render API
     $sentiment = analyzeSentiment($feedback, $rating, $id);
     
     // Update sentiment in database
@@ -70,11 +70,11 @@ if ($result) {
 }
 
 // Always redirect back to appointments page
-header("Location: ../homepage/appointments.php");  // Updated path
+header("Location: ../appointments.php");
 exit;
 
 /**
- * Analyze sentiment using Flask API (VADER)
+ * Analyze sentiment using Flask API on Render
  * @param string $feedback_text The feedback to analyze
  * @param int $rating Star rating (1-5)
  * @param int $appointment_id For logging purposes
@@ -86,15 +86,12 @@ function analyzeSentiment($feedback_text, $rating, $appointment_id) {
         return 'neutral';
     }
     
-    // Use Render deployed API URL
-    $api_url = 'https://pawsigcity-1.onrender.com/sentiment';  // Updated to your Render URL
+    // Use Render deployed API (change to localhost if testing locally)
+    $api_url = 'https://pawsigcity-1.onrender.com/sentiment';
+    // For local testing: $api_url = 'http://127.0.0.1:5000/sentiment';
     
-    // Prepare data
-    $data = json_encode([
-        'feedback' => $feedback_text
-    ]);
+    $data = json_encode(['feedback' => $feedback_text]);
     
-    // Initialize cURL
     $ch = curl_init($api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -103,22 +100,20 @@ function analyzeSentiment($feedback_text, $rating, $appointment_id) {
         'Content-Type: application/json',
         'Content-Length: ' . strlen($data)
     ]);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15); // 15 second timeout for Render
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); // 10 second connection timeout
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60); // 60 seconds for API wake-up
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
     
-    // Execute request
     $response = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $curl_error = curl_error($ch);
     curl_close($ch);
     
-    // Check for cURL errors
+    // Check for errors
     if ($curl_error) {
         error_log("❌ cURL Error for Appointment #$appointment_id: $curl_error");
         return null;
     }
     
-    // Check HTTP status
     if ($http_code != 200) {
         error_log("❌ API returned HTTP $http_code for Appointment #$appointment_id");
         return null;
@@ -135,16 +130,15 @@ function analyzeSentiment($feedback_text, $rating, $appointment_id) {
     $sentiment = $result['sentiment'];
     $compound_score = $result['compound_score'] ?? 0;
     
-    // Optional: Override sentiment based on rating if there's strong disagreement
+    // Override sentiment based on rating if there's disagreement
     if ($rating <= 2 && $sentiment === 'positive') {
-        error_log("⚠️ Overriding sentiment from 'positive' to 'negative' due to low rating ($rating stars) for appointment #$appointment_id");
+        error_log("⚠️ Overriding sentiment from 'positive' to 'negative' due to low rating ($rating stars)");
         $sentiment = 'negative';
     } elseif ($rating >= 4 && $sentiment === 'negative') {
-        error_log("⚠️ Overriding sentiment from 'negative' to 'positive' due to high rating ($rating stars) for appointment #$appointment_id");
+        error_log("⚠️ Overriding sentiment from 'negative' to 'positive' due to high rating ($rating stars)");
         $sentiment = 'positive';
     }
     
-    // Log successful analysis
     error_log("✅ VADER Analysis for Appointment #$appointment_id: sentiment=$sentiment, compound=$compound_score, rating=$rating");
     
     return $sentiment;

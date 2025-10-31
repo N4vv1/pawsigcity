@@ -416,9 +416,9 @@ if (!$result) {
       <li class="nav-item dropdown" id="profile-dropdown">
         <a href="#" class="nav-link profile-icon">
           <i class="fas fa-user"></i>
-        </a>
+        </a> 
         <ul class="dropdown-menu">
-          <li><a href="../pawsigcity/homepage/login/loginform.php">Login</a></li>
+          <li><a href="../homepage/login/loginform.php">Login</a></li>
         </ul>
       </li>
     </ul>
@@ -1095,7 +1095,7 @@ if (!$result) {
           <li class="contact-info"><i class="fa-solid fa-calendar-check"></i><p>MONDAY TO SUNDAY</p></li>
           <li class="contact-info"><i class="fa-solid fa-globe"></i><p>PAWsig City</p></li>
         </ul>
-        <form action="loginform.php" class="contact-form">
+        <form action="./homepage/login/loginform.php" class="contact-form">
           <input type="text" placeholder="Your Name" class="form-input" required />
           <input type="email" placeholder="Email" class="form-input" required />
           <textarea placeholder="Your Message" class="form-input" required></textarea>
