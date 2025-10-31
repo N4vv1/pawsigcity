@@ -73,7 +73,7 @@ if ($noShowCount > 0) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
+  <title>Admin | Overview</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -148,6 +148,22 @@ if ($noShowCount > 0) {
       menu.style.display = isVisible ? 'none' : 'block';
     }
   };
+  window.toggleSidebar = function() {
+  console.log('toggleSidebar called'); // Debug log
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  console.log('Sidebar found:', sidebar); // Debug log
+  console.log('Overlay found:', overlay); // Debug log
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+    console.log('Sidebar active:', sidebar.classList.contains('active')); // Debug log
+  } else {
+    console.error('Sidebar or overlay not found!');
+  }
+};
   </script>
   
   <style>
@@ -197,6 +213,8 @@ if ($noShowCount > 0) {
       gap: 20px;
       box-shadow: var(--shadow-light);
       overflow-y: auto;
+      transition: transform var(--transition-speed); 
+      z-index: 999;
     }
 
     .sidebar .logo {
@@ -285,6 +303,7 @@ if ($noShowCount > 0) {
       margin-left: 260px;
       padding: 40px;
       width: calc(100% - 260px);
+      transition: margin-left var(--transition-speed), width var(--transition-speed);  
     }
 
     .dashboard {
@@ -521,11 +540,199 @@ if ($noShowCount > 0) {
       font-weight: 600;
       display: none;
     }
+    :root {
+  /* ...existing variables... */
+  --sidebar-width: 260px;  /* ADD THIS LINE */
+}
+
+/* MOBILE MENU BUTTON - ADD THIS ENTIRE SECTION */
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition-speed);
+}
+
+.mobile-menu-btn i {
+  font-size: 24px;
+  color: var(--dark-color);
+}
+
+.mobile-menu-btn:hover {
+  background: var(--secondary-color);
+}
+
+/* SIDEBAR OVERLAY - ADD THIS ENTIRE SECTION */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  transition: opacity var(--transition-speed);
+}
+
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+}
+/* RESPONSIVE DESIGN */
+@media screen and (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    padding: 25px;
+    min-height: 200px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  main {
+    margin-left: 0;
+    width: 100%;
+    padding: 80px 20px 40px;
+  }
+
+  .dashboard {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 20px;
+  }
+
+  .card {
+    padding: 20px;
+    min-height: 180px;
+  }
+
+  .card-icon {
+    font-size: 2rem;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card p {
+    font-size: 1.5rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    max-height: 90vh;
+  }
+
+  .modal-content table {
+    font-size: 0.8rem;
+  }
+
+  .modal-content table th,
+  .modal-content table td {
+    padding: 8px 6px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .button {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  #toast {
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  main {
+    padding: 70px 15px 30px;
+  }
+
+  .card {
+    padding: 15px;
+    min-height: 160px;
+  }
+
+  .card-icon {
+    font-size: 1.8rem;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+  }
+
+  .card p {
+    font-size: 1.3rem;
+  }
+
+  .card a {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+
+  .sidebar .logo img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .menu a {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .menu a i {
+    font-size: 18px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+  }
+}
   </style>
 </head>
 <body>
 
 <!-- Sidebar -->
+ <!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleSidebar()">
+  <i class='bx bx-menu'></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
@@ -1026,10 +1233,8 @@ if ($noShowCount > 0) {
 </main>
 
 <script>
-// DOM initialization - runs after page loads
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM ready - initializing event listeners...');
-
+// Define functions IMMEDIATELY in global scope before page loads
+window.openModal = function(type) {
   const modals = {
     users: 'usersModal',
     pets: 'petsModal',
@@ -1041,37 +1246,62 @@ document.addEventListener('DOMContentLoaded', function() {
     appointments: 'appointmentsModal',
     history: 'historyModal'
   };
-
-  // Close modal when clicking outside
-  window.onclick = function(event) {
-    Object.values(modals).forEach(id => {
-      const modal = document.getElementById(id);
-      if (event.target === modal) {
-        modal.style.display = 'none';
-      }
-    });
-
-    // Close dropdowns if clicking outside
-    if (!event.target.closest('.dropdown')) {
-      document.querySelectorAll('.dropdown-menu').forEach(menu => {
-        menu.style.display = 'none';
-      });
+  
+  console.log('openModal called with:', type);
+  const modalId = modals[type];
+  if (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'flex';
+      console.log('Modal opened successfully');
+    } else {
+      console.error('Modal element not found:', modalId);
     }
-  };
-
-  // Auto-open modals if ?show= parameter is present
-  const params = new URLSearchParams(window.location.search);
-  const modalToShow = params.get('show');
-  if (modalToShow && modals[modalToShow]) {
-    openModal(modalToShow);
+  } else {
+    console.error('Unknown modal type:', type);
   }
+};
 
-  // Show toast if noshows parameter exists
-  const noshows = params.get('noshows');
-  if (noshows) {
-    showToast(noshows + ' appointment(s) marked as no-show.');
+window.closeModal = function(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = 'none';
+};
+
+window.viewHistory = function(userId) {
+  openModal('history');
+  const historyContainer = document.getElementById('historyTable');
+  if (historyContainer) {
+    historyContainer.innerHTML = 'Loading...';
+    fetch('../../appointment/fetch-history.php?user_id=' + userId)
+      .then(response => response.text())
+      .then(html => historyContainer.innerHTML = html)
+      .catch(() => historyContainer.innerHTML = 'Failed to load history.');
   }
-});
+};
+
+window.showToast = function(message) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+};
+
+window.toggleDropdown = function(event) {
+  event.preventDefault();
+  const menu = event.currentTarget.nextElementSibling;
+  if (menu && menu.classList.contains('dropdown-menu')) {
+    const isVisible = menu.style.display === 'block';
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isVisible ? 'none' : 'block';
+  }
+};
+
 </script>
 
 </body>

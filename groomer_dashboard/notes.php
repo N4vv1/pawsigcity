@@ -20,9 +20,7 @@ $query = "
          DATE(a.appointment_date) AS appointment_date, 
          p.name AS pet_name, 
          p.breed, 
-         u.first_name,
-         u.middle_name,
-         u.last_name 
+         u.first_name || ' ' || COALESCE(u.middle_name || ' ', '') || u.last_name AS full_name
   FROM appointments a
   JOIN pets p ON a.pet_id = p.pet_id
   JOIN users u ON p.user_id = u.user_id
@@ -32,16 +30,14 @@ $query = "
 $appointments = pg_query($conn, $query);
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Groomer Dashboard</title>
+  <title>Groomer | Notes</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../../homepage/images/Logo.jpg">
+  <link rel="icon" type="image/png" href="../homepage/images/pawsig.png">
   <style>
     :root {
       --white-color: #fff;
@@ -59,6 +55,9 @@ $appointments = pg_query($conn, $query);
       --border-radius-s: 8px;
       --border-radius-circle: 50%;
       --site-max-width: 1300px;
+      --sidebar-width: 260px;
+      --transition-speed: 0.3s;
+      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
     * {
@@ -73,6 +72,50 @@ $appointments = pg_query($conn, $query);
       display: flex;
     }
 
+    /* MOBILE MENU BUTTON */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-light);
+      transition: var(--transition-speed);
+    }
+
+    .mobile-menu-btn i {
+      font-size: 24px;
+      color: var(--dark-color);
+    }
+
+    .mobile-menu-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity var(--transition-speed);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
     .sidebar {
       width: 260px;
       height: 100vh;
@@ -84,6 +127,10 @@ $appointments = pg_query($conn, $query);
       display: flex;
       flex-direction: column;
       gap: 20px;
+      overflow-y: auto;
+      box-shadow: var(--shadow-light);
+      transition: transform var(--transition-speed);
+      z-index: 999;
     }
 
     .sidebar .logo {
@@ -136,6 +183,7 @@ $appointments = pg_query($conn, $query);
       padding: 40px;
       flex-grow: 1;
       width: calc(100% - 260px);
+      transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
     .form-wrapper {
@@ -190,13 +238,113 @@ $appointments = pg_query($conn, $query);
     .form-card button:hover {
       background-color: var(--secondary-color);
     }
+
+    /* RESPONSIVE DESIGN */
+    @media screen and (max-width: 1024px) {
+      .form-card {
+        padding: 35px 40px;
+        max-width: 650px;
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      /* Show mobile menu button */
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      /* Hide sidebar off-screen by default */
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      /* Show sidebar when active */
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      /* Adjust content area */
+      .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 80px 20px 40px;
+      }
+
+      .form-wrapper {
+        min-height: calc(100vh - 120px);
+      }
+
+      .form-card {
+        padding: 30px 25px;
+        max-width: 100%;
+      }
+
+      .form-card select,
+      .form-card textarea {
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+
+      .form-card button {
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .content {
+        padding: 70px 15px 30px;
+      }
+
+      .sidebar .logo img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .menu a {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+
+      .menu a i {
+        font-size: 18px;
+      }
+
+      .form-card {
+        padding: 25px 20px;
+      }
+
+      .form-card label {
+        font-size: 0.9rem;
+      }
+
+      .form-card select,
+      .form-card textarea {
+        padding: 10px;
+        font-size: 0.9rem;
+      }
+
+      .form-card button {
+        padding: 10px;
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
 <body>
 
- <aside class="sidebar">
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleSidebar()">
+  <i class='bx bx-menu'></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/Logo.jpg" alt="Logo" />
+    <img src="../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="home_groomer.php"><i class='bx bx-calendar-check'></i>Appointments</a>
@@ -209,29 +357,55 @@ $appointments = pg_query($conn, $query);
   </nav>
 </aside>
 
+<!-- Main Content -->
+<main class="content">
+  <div class="form-wrapper">
+    <div class="form-card">
+      <form method="POST">
+        <label for="appointment_id">Select Appointment:</label>
+        <select name="appointment_id" required>
+          <?php while ($row = pg_fetch_assoc($appointments)): ?>
+            <option value="<?= $row['appointment_id'] ?>">
+              <?= $row['appointment_date'] ?> - <?= htmlspecialchars($row['full_name']) ?> - <?= htmlspecialchars($row['pet_name']) ?> (<?= htmlspecialchars($row['breed']) ?>)
+            </option>
+          <?php endwhile; ?>
+        </select>
 
-  <!-- Main Content -->
-  <main class="content">
-    <div class="form-wrapper">
-      <div class="form-card">
-        <form method="POST">
-          <label for="appointment_id">Select Appointment:</label>
-          <select name="appointment_id" required>
-              <?php while ($row = pg_fetch_assoc($appointments)): ?>
-              <option value="<?= $row['appointment_id'] ?>">
-                <?= $row['appointment_date'] ?> - <?= htmlspecialchars($row['full_name']) ?> - <?= htmlspecialchars($row['pet_name']) ?> (<?= htmlspecialchars($row['breed']) ?>)
-              </option>
-            <?php endwhile; ?>
-          </select>
+        <label for="notes">Notes:</label>
+        <textarea name="notes" rows="6" placeholder="Enter session notes here..." required></textarea>
 
-          <label for="notes">Notes:</label>
-          <textarea name="notes" rows="6" placeholder="Enter session notes here..." required></textarea>
-
-          <button type="submit">💾 Save Notes</button>
-        </form>
-      </div>
+        <button type="submit">💾 Save Notes</button>
+      </form>
     </div>
-  </main>
+  </div>
+</main>
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+}
+
+// Close sidebar when clicking a link on mobile
+document.addEventListener('DOMContentLoaded', function() {
+  const menuLinks = document.querySelectorAll('.menu a');
+  menuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
+  });
+});
+</script>
 
 </body>
 </html>

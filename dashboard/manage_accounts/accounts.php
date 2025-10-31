@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
         ]);
 
         if ($result) {
-            $_SESSION['success'] = "Admin account created successfully.";
+            $_SESSION['success'] = "User account created successfully.";
         } else {
             $_SESSION['error'] = "Something went wrong. Please try again.";
         }
@@ -84,38 +84,14 @@ if (isset($_GET['id'])) {
 }
 ?>
 
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>User Management</title>
+  <title>Admin | User Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../../homepage/images/Logo.jpg">
-
-  <script>
-    function toggleDropdown(event) {
-      event.preventDefault();
-      const dropdown = event.currentTarget.nextElementSibling;
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-
-    // Close dropdown if clicked outside
-    window.onclick = function(event) {
-      if (!event.target.matches('.dropdown-toggle')) {
-        const dropdowns = document.getElementsByClassName("dropdown-menu");
-        for (let i = 0; i < dropdowns.length; i++) {
-          const openDropdown = dropdowns[i];
-          if (openDropdown.style.display === 'block') {
-            openDropdown.style.display = 'none';
-          }
-        }
-      }
-    };
-  </script>
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
 
   <style>
     :root {
@@ -133,6 +109,9 @@ if (isset($_GET['id'])) {
       --font-weight-bold: 700;
       --border-radius-s: 8px;
       --border-radius-circle: 50%;
+      --sidebar-width: 260px;
+      --transition-speed: 0.3s;
+      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
     * {
@@ -147,6 +126,50 @@ if (isset($_GET['id'])) {
       display: flex;
     }
 
+    /* MOBILE MENU BUTTON - Base styles FIRST */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-light);
+      transition: var(--transition-speed);
+    }
+
+    .mobile-menu-btn i {
+      font-size: 24px;
+      color: var(--dark-color);
+    }
+
+    .mobile-menu-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity var(--transition-speed);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
     .sidebar {
       width: 260px;
       height: 100vh;
@@ -158,6 +181,10 @@ if (isset($_GET['id'])) {
       display: flex;
       flex-direction: column;
       gap: 20px;
+      overflow-y: auto;
+      box-shadow: var(--shadow-light);
+      transition: transform var(--transition-speed);
+      z-index: 999;
     }
 
     .sidebar .logo {
@@ -205,11 +232,49 @@ if (isset($_GET['id'])) {
       margin: 9px 0;
     }
 
+    /* Dropdown styles */
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--dark-color);
+      border-radius: var(--border-radius-s);
+      transition: background 0.3s, color 0.3s;
+      font-weight: var(--font-weight-semi-bold);
+      cursor: pointer;
+    }
+
+    .dropdown-toggle:hover,
+    .dropdown-toggle.active {
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
+    }
+
+    .dropdown-menu {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+
+    .dropdown-menu a {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+
     .content {
       margin-left: 260px;
       padding: 40px;
       flex-grow: 1;
       width: calc(100% - 260px);
+      transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
     h2 {
@@ -228,6 +293,7 @@ if (isset($_GET['id'])) {
       display: inline-block;
       margin-bottom: 20px;
       cursor: pointer;
+      border: none;
     }
 
     .add-btn:hover {
@@ -284,7 +350,7 @@ if (isset($_GET['id'])) {
     .modal {
       display: none;
       position: fixed;
-      z-index: 999;
+      z-index: 9999;
       left: 0; top: 0;
       width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.5);
@@ -298,6 +364,8 @@ if (isset($_GET['id'])) {
       border-radius: var(--border-radius-s);
       width: 100%;
       max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
@@ -385,91 +453,112 @@ if (isset($_GET['id'])) {
       background-color: var(--secondary-color);
     }
 
-    .message-success {
-      color: green;
-      background: #eaffea;
-      padding: 0.8rem;
-      border-radius: var(--border-radius-s);
-      margin-bottom: 1rem;
-      font-size: var(--font-size-s);
-      text-align: center;
-    }
-
-    .message-error {
-      color: red;
-      background: #ffeaea;
-      padding: 0.8rem;
-      border-radius: var(--border-radius-s);
-      margin-bottom: 1rem;
-      font-size: var(--font-size-s);
-      text-align: center;
-    }
-
     .toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #eaffea;
-  color: #2d8a2d;
-  padding: 14px 20px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
-  animation: fadeOut 4s forwards;
-}
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10000;
+      animation: fadeOut 4s forwards;
+    }
 
-.toast-error {
-  background-color: #ffeaea;
-  color: #e74c3c;
-}
+    .toast-success {
+      background-color: #eaffea;
+      color: #2d8a2d;
+    }
 
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-20px); }
-}
+    .toast-error {
+      background-color: #ffeaea;
+      color: #e74c3c;
+    }
 
-/* Dropdown styles */
-.dropdown {
-  position: relative;
-}
+    @keyframes fadeOut {
+      0%, 90% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
 
-.dropdown-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      text-decoration: none;
-      color: var(--dark-color);
-      border-radius: var(--border-radius-s);
-      transition: background 0.3s, color 0.3s;
-      font-weight: var(--font-weight-semi-bold);
-      cursor: pointer;
-}
+    /* RESPONSIVE DESIGN - Media queries AFTER base styles */
+    @media screen and (max-width: 1024px) {
+      table {
+        font-size: 0.9rem;
+      }
+    }
 
-.dropdown-toggle:hover {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
-}
+    @media screen and (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
 
-.dropdown-menu {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      margin-left: 20px;
-      margin-top: 5px;
-}
+      .sidebar {
+        transform: translateX(-100%);
+      }
 
-.dropdown-menu a {
-      padding: 8px 12px;
-      font-size: 0.9rem;
-}
-    
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 80px 20px 40px;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .content {
+        padding: 70px 15px 30px;
+      }
+
+      .sidebar .logo img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .menu a {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+
+      .menu a i {
+        font-size: 18px;
+      }
+
+      table {
+        font-size: 0.75rem;
+      }
+
+      th, td {
+        padding: 8px 5px;
+      }
+    }
   </style>
 </head>
 <body>
+
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleSidebar()">
+  <i class='bx bx-menu'></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
 <aside class="sidebar">
@@ -503,185 +592,226 @@ if (isset($_GET['id'])) {
   </nav>
 </aside>
 
-  <?php if (isset($success)): ?>
-    <div id="toast" class="toast"><?= $success ?></div>
-  <?php endif; ?>
+<!-- Main Content -->
+<main class="content">
+  <h2>User Management</h2>
+  <button class="add-btn" onclick="openModal()">➕ Add New User</button>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php while ($user = pg_fetch_assoc($users)): ?>
+      <tr>
+        <td><?= $user['user_id'] ?></td>
+        <td>
+          <?= htmlspecialchars($user['first_name']) ?>
+          <?= htmlspecialchars($user['middle_name']) ?>
+          <?= htmlspecialchars($user['last_name']) ?>
+        </td>
+        <td><?= htmlspecialchars($user['email']) ?></td>
+        <td><?= htmlspecialchars($user['phone']) ?></td>
+        <td><?= ucfirst($user['role']) ?></td>
+        <td class="actions">
+          <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">Edit</a>
+          <a href="delete.php?id=<?= $user['user_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+      </tr>
+      <?php endwhile; ?>
+    </tbody>
+  </table>
 
+  <!-- Add User Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeAddModal()">&times;</span>
+      <h2>Create User Account</h2>
 
-  <!-- Main Content -->
-  <main class="content">
-    <h2>User Management</h2>
-    <button class="add-btn" onclick="openModal()">➕ Add New User</button>
-    <table>
-      <thead>
-        <tr>
-          <th>User ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Role</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($user = pg_fetch_assoc($users)): ?>
-        <tr>
-          <td><?= $user['user_id'] ?></td>
+      <form method="POST">
+        <input type="hidden" name="create_user" value="1">
 
-          <td>
-            <?= htmlspecialchars($user['first_name']) ?>
-            <?= htmlspecialchars($user['middle_name']) ?>
-            <?= htmlspecialchars($user['last_name']) ?>
-          </td>
+        <div class="input_box">
+          <input type="text" class="input-field" name="first_name" required />
+          <label class="label">First Name</label>
+          <i class='bx bx-user icon'></i>
+        </div>
 
-          <td><?= htmlspecialchars($user['email']) ?></td>
-          <td><?= htmlspecialchars($user['phone']) ?></td>
-          <td><?= $user['role'] ?></td>
+        <div class="input_box">
+          <input type="text" class="input-field" name="middle_name" />
+          <label class="label">Middle Name</label>
+          <i class='bx bx-user icon'></i>
+        </div>
 
-          <td class="actions">
-            <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">Edit</a>
-            <a href="delete.php?id=<?= $user['user_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
-          </td>
-        </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
+        <div class="input_box">
+          <input type="text" class="input-field" name="last_name" required />
+          <label class="label">Last Name</label>
+          <i class='bx bx-user icon'></i>
+        </div>
 
-    <!-- Modal -->
-    <div id="userModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h2>Create Account</h2>
+        <div class="input_box">
+          <input type="email" class="input-field" name="email" required />
+          <label class="label">Email</label>
+          <i class='bx bx-envelope icon'></i>
+        </div>
 
-    <?php if (isset($error)): ?>
-      <p class="message-error"><?= $error ?></p>
-    <?php elseif (isset($success)): ?>
-      <p class="message-success"><?= $success ?></p>
-      <script>setTimeout(closeModal, 1500);</script>
-    <?php endif; ?>
+        <div class="input_box">
+          <input type="password" class="input-field" name="password" required />
+          <label class="label">Password</label>
+          <i class='bx bx-lock-alt icon'></i>
+        </div>
 
-    <form method="POST">
-      <!-- Hidden flag to trigger the create_user logic in PHP -->
-      <input type="hidden" name="create_user" value="1">
+        <div class="input_box">
+          <input type="text" class="input-field" name="phone" required />
+          <label class="label">Phone Number</label>
+          <i class='bx bx-phone icon'></i>
+        </div>
 
-      <div class="input_box">
-        <input type="text" class="input-field" name="first_name" required />
-        <label class="label">First Name</label>
-        <i class='bx bx-user icon'></i>
-      </div>
-
-      <div class="input_box">
-        <input type="text" class="input-field" name="middle_name" />
-        <label class="label">Middle Name</label>
-        <i class='bx bx-user icon'></i>
-      </div>
-
-      <div class="input_box">
-        <input type="text" class="input-field" name="last_name" required />
-        <label class="label">Last Name</label>
-        <i class='bx bx-user icon'></i>
-      </div>
-
-      <div class="input_box">
-        <input type="email" class="input-field" name="email" required />
-        <label class="label">Email</label>
-        <i class='bx bx-envelope icon'></i>
-      </div>
-
-      <div class="input_box">
-        <input type="password" class="input-field" name="password" required />
-        <label class="label">Password</label>
-        <i class='bx bx-lock-alt icon'></i>
-      </div>
-
-      <div class="input_box">
-        <input type="text" class="input-field" name="phone" required />
-        <label class="label">Phone Number</label>
-        <i class='bx bx-phone icon'></i>
-      </div>
-
-      <div class="input_box">
-        <select class="input-field" name="role" required>
-          <option value="" disabled selected>Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="staff">Customer</option>
-          <option value="user">Groomer</option>
-          <option value="user">Receptionist</option>
-        </select>
-        <label class="label">Role</label>
-        <i class='bx bx-id-card icon'></i>
-      </div>
-      
-      <div class="input_box">
-        <input type="submit" class="input-submit" value="Create Account" />
-      </div>
-
-    </form>
+        <div class="input_box">
+          <select class="input-field" name="role" required>
+            <option value="" disabled selected>Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="customer">Customer</option>
+            <option value="groomer">Groomer</option>
+            <option value="receptionist">Receptionist</option>
+          </select>
+          <label class="label">Role</label>
+          <i class='bx bx-id-card icon'></i>
+        </div>
+        
+        <div class="input_box">
+          <input type="submit" class="input-submit" value="Create Account" />
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 
-
-    <?php if (isset($edit_user)): ?>
+  <!-- Edit User Modal -->
+  <?php if (isset($edit_user)): ?>
   <div id="editModal" class="modal" style="display:flex;">
     <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
+      <span class="close" onclick="closeEditModal()">&times;</span>
       <h2>Edit User</h2>
       <form method="POST">
         <input type="hidden" name="user_id" value="<?= $edit_user['user_id'] ?>">
+        
         <div class="input_box">
-          <input type="text" name="full_name" class="input-field" value="<?= htmlspecialchars($edit_user['full_name']) ?>" required>
-          <label class="label">Full Name</label>
+          <input type="text" name="first_name" class="input-field" value="<?= htmlspecialchars($edit_user['first_name']) ?>" required>
+          <label class="label">First Name</label>
           <i class='bx bx-user icon'></i>
         </div>
+
+        <div class="input_box">
+          <input type="text" name="middle_name" class="input-field" value="<?= htmlspecialchars($edit_user['middle_name']) ?>">
+          <label class="label">Middle Name</label>
+          <i class='bx bx-user icon'></i>
+        </div>
+
+        <div class="input_box">
+          <input type="text" name="last_name" class="input-field" value="<?= htmlspecialchars($edit_user['last_name']) ?>" required>
+          <label class="label">Last Name</label>
+          <i class='bx bx-user icon'></i>
+        </div>
+
         <div class="input_box">
           <input type="email" name="email" class="input-field" value="<?= htmlspecialchars($edit_user['email']) ?>" required>
           <label class="label">Email</label>
           <i class='bx bx-envelope icon'></i>
         </div>
+
         <div class="input_box">
           <input type="text" name="phone" class="input-field" value="<?= htmlspecialchars($edit_user['phone']) ?>" required>
           <label class="label">Phone</label>
           <i class='bx bx-phone icon'></i>
         </div>
+
         <div class="input_box">
           <input type="submit" name="update_user" class="input-submit" value="Update User">
         </div>
       </form>
     </div>
   </div>
-<?php endif; ?>
+  <?php endif; ?>
+</main>
 
-  </main>
+<script>
+function toggleDropdown(event) {
+  event.preventDefault();
+  event.stopPropagation(); // Prevent event bubbling
+  const dropdown = event.currentTarget.nextElementSibling;
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
 
-  <script>
-    function openModal() {
-      document.getElementById('userModal').style.display = 'flex';
+// Close dropdown if clicked outside
+document.addEventListener('click', function(event) {
+  if (!event.target.closest('.dropdown')) {
+    const dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (let i = 0; i < dropdowns.length; i++) {
+      dropdowns[i].style.display = 'none';
     }
-
-    function closeModal() {
-      document.getElementById('userModal').style.display = 'none';
-    }
-
-    window.onclick = function(e) {
-      const modal = document.getElementById('userModal');
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
-    }
-  </script>
-  <script>
-  function closeModal() {
-    document.getElementById('editModal').style.display = 'none';
-    window.history.replaceState(null, null, window.location.pathname); // remove ?id=xx
   }
+});
+
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+}
+
+function openModal() {
+  document.getElementById('userModal').style.display = 'flex';
+}
+
+function closeAddModal() {
+  document.getElementById('userModal').style.display = 'none';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+  window.history.replaceState(null, null, window.location.pathname);
+}
+
+// Close modal if clicked outside
+document.addEventListener('click', function(event) {
+  const addModal = document.getElementById('userModal');
+  const editModal = document.getElementById('editModal');
+  
+  if (event.target === addModal) closeAddModal();
+  if (event.target === editModal) closeEditModal();
+});
+
+// Close sidebar when clicking a link on mobile
+document.addEventListener('DOMContentLoaded', function() {
+  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
+  menuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
+  });
+});
 </script>
 
-
-</body>
 <?php if (isset($_SESSION['success'])): ?>
   <div class="toast toast-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
 <?php elseif (isset($_SESSION['error'])): ?>
   <div class="toast toast-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
 <?php endif; ?>
 
+</body>
 </html>

@@ -10,31 +10,10 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Gallery Dashboard</title>
+  <title>Admin | Gallery</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
-
-  <script>
-    function toggleDropdown(event) {
-      event.preventDefault();
-      const dropdown = event.currentTarget.nextElementSibling;
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-
-    // Close dropdown if clicked outside
-    window.onclick = function(event) {
-      if (!event.target.matches('.dropdown-toggle')) {
-        const dropdowns = document.getElementsByClassName("dropdown-menu");
-        for (let i = 0; i < dropdowns.length; i++) {
-          const openDropdown = dropdowns[i];
-          if (openDropdown.style.display === 'block') {
-            openDropdown.style.display = 'none';
-          }
-        }
-      }
-    };
-  </script>
   
   <style>
     :root {
@@ -53,6 +32,9 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       --border-radius-s: 8px;
       --border-radius-circle: 50%;
       --site-max-width: 1300px;
+      --sidebar-width: 260px;
+      --transition-speed: 0.3s;
+      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
     * {
@@ -67,6 +49,50 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       display: flex;
     }
 
+    /* MOBILE MENU BUTTON */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-light);
+      transition: var(--transition-speed);
+    }
+
+    .mobile-menu-btn i {
+      font-size: 24px;
+      color: var(--dark-color);
+    }
+
+    .mobile-menu-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity var(--transition-speed);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
     .sidebar {
       width: 260px;
       height: 100vh;
@@ -78,6 +104,10 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       display: flex;
       flex-direction: column;
       gap: 20px;
+      overflow-y: auto;
+      box-shadow: var(--shadow-light);
+      transition: transform var(--transition-speed);
+      z-index: 999;
     }
 
     .sidebar .logo {
@@ -125,15 +155,40 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       margin: 9px 0;
     }
 
-    .submenu {
-      margin-left: 30px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
+    /* Dropdown styles */
+    .dropdown {
+      position: relative;
     }
 
-    .submenu a {
-      font-size: var(--font-size-s);
+    .dropdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--dark-color);
+      border-radius: var(--border-radius-s);
+      transition: background 0.3s, color 0.3s;
+      font-weight: var(--font-weight-semi-bold);
+      cursor: pointer;
+    }
+
+    .dropdown-toggle:hover {
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
+    }
+
+    .dropdown-menu {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+
+    .dropdown-menu a {
+      padding: 8px 12px;
+      font-size: 0.9rem;
     }
 
     .content {
@@ -141,6 +196,7 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       padding: 40px;
       flex-grow: 1;
       width: calc(100% - 260px);
+      transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
     h2 {
@@ -159,6 +215,7 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       display: inline-block;
       margin-bottom: 20px;
       cursor: pointer;
+      border: none;
     }
 
     .add-btn:hover {
@@ -219,18 +276,16 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       background-color: #ff4949;
     }
 
-        .modal {
+    .modal {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(5px);
-      /* display: flex;  ❌ REMOVE THIS LINE */
       align-items: center;
       justify-content: center;
       z-index: 9999;
     }
-
 
     .modal-content {
       background: var(--white-color);
@@ -248,7 +303,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       align-items: center;
       text-align: center;
     }
-
 
     .modal-content .close-btn {
       position: absolute;
@@ -270,47 +324,108 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       to { opacity: 1; transform: scale(1); }
     }
 
-/* Dropdown styles */
-.dropdown {
-  position: relative;
-}
+    /* RESPONSIVE DESIGN */
+    @media screen and (max-width: 1024px) {
+      table {
+        font-size: 0.9rem;
+      }
 
-.dropdown-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      text-decoration: none;
-      color: var(--dark-color);
-      border-radius: var(--border-radius-s);
-      transition: background 0.3s, color 0.3s;
-      font-weight: var(--font-weight-semi-bold);
-      cursor: pointer;
-}
+      th, td {
+        padding: 12px 8px;
+      }
+    }
 
-.dropdown-toggle:hover {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
-}
+    @media screen and (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
 
-.dropdown-menu {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      margin-left: 20px;
-      margin-top: 5px;
-}
+      .sidebar {
+        transform: translateX(-100%);
+      }
 
-.dropdown-menu a {
-      padding: 8px 12px;
-      font-size: 0.9rem;
-}
+      .sidebar.active {
+        transform: translateX(0);
+      }
 
+      .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 80px 20px 40px;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 10px 8px;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
+        max-height: 90vh;
+      }
+
+      .modal-content table {
+        font-size: 0.8rem;
+      }
+
+      .modal-content table th,
+      .modal-content table td {
+        padding: 8px 6px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .content {
+        padding: 70px 15px 30px;
+      }
+
+      .sidebar .logo img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .menu a {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+
+      .menu a i {
+        font-size: 18px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      table {
+        font-size: 0.75rem;
+      }
+
+      th, td {
+        padding: 8px 5px;
+      }
+
+      img {
+        width: 60px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleSidebar()">
+  <i class='bx bx-menu'></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
@@ -343,6 +458,7 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 </aside>
 
 <main class="content">
+  <h2>Pet Gallery</h2>
   <button class="add-btn" onclick="openModal('../gallery_dashboard/gallery_add.php')">+ Add New Image</button>
   <table>
     <thead>
@@ -356,7 +472,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
     <tbody>
       <?php if (pg_num_rows($result) > 0): ?>
         <?php while ($row = pg_fetch_assoc($result)): ?>
-
           <tr>
             <td><?php echo $row['id']; ?></td>
             <td><img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
@@ -383,10 +498,38 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 </div>
 
 <script>
+function toggleDropdown(event) {
+  event.preventDefault();
+  event.stopPropagation(); // IMPORTANT: Stop event from bubbling up
+  const dropdown = event.currentTarget.nextElementSibling;
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Close dropdown if clicked outside
+document.addEventListener('click', function(event) {
+  // Check if click is outside dropdown
+  if (!event.target.closest('.dropdown')) {
+    const dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (let i = 0; i < dropdowns.length; i++) {
+      dropdowns[i].style.display = 'none';
+    }
+  }
+});
+
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+}
+
 function openModal(url) {
   const modal = document.getElementById("dynamicModal");
   const modalBody = document.getElementById("modalBody");
-  modal.style.display = "flex"; // ← this will correctly show the modal only when needed
+  modal.style.display = "flex";
   modalBody.innerHTML = "Loading...";
   fetch(url)
     .then(res => res.text())
@@ -398,6 +541,21 @@ function closeModal() {
   document.getElementById("dynamicModal").style.display = "none";
   document.getElementById("modalBody").innerHTML = "";
 }
+
+// Close sidebar when clicking a link on mobile
+document.addEventListener('DOMContentLoaded', function() {
+  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)'); // Exclude dropdown toggle
+  menuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
+  });
+});
 </script>
 
 </body>
