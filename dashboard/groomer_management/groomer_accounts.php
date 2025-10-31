@@ -69,36 +69,14 @@ if (isset($_GET['id'])) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Groomer Management</title>
+<title>Admin | Groomer Accounts</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-<link rel="icon" type="image/png" href="../pawsigcity/icons/pawsig.png">
-
-  <script>
-    function toggleDropdown(event) {
-      event.preventDefault();
-      const dropdown = event.currentTarget.nextElementSibling;
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-
-    // Close dropdown if clicked outside
-    window.onclick = function(event) {
-      if (!event.target.matches('.dropdown-toggle')) {
-        const dropdowns = document.getElementsByClassName("dropdown-menu");
-        for (let i = 0; i < dropdowns.length; i++) {
-          const openDropdown = dropdowns[i];
-          if (openDropdown.style.display === 'block') {
-            openDropdown.style.display = 'none';
-          }
-        }
-      }
-    };
-  </script>
+<link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
 
 <style>
 :root {
@@ -116,6 +94,9 @@ if (isset($_GET['id'])) {
   --font-weight-bold: 700;
   --border-radius-s: 8px;
   --border-radius-circle: 50%;
+  --sidebar-width: 260px;
+  --transition-speed: 0.3s;
+  --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -130,6 +111,50 @@ body {
   display: flex;
 }
 
+/* MOBILE MENU BUTTON - Base styles FIRST */
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition-speed);
+}
+
+.mobile-menu-btn i {
+  font-size: 24px;
+  color: var(--dark-color);
+}
+
+.mobile-menu-btn:hover {
+  background: var(--secondary-color);
+}
+
+/* SIDEBAR OVERLAY */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  transition: opacity var(--transition-speed);
+}
+
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
 /* Sidebar */
 .sidebar {
   width: 260px;
@@ -142,6 +167,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-light);
+  transition: transform var(--transition-speed); 
+  z-index: 999;
 }
 
 .sidebar .logo {
@@ -150,10 +179,10 @@ body {
 }
 
 .sidebar hr {
-    border: none; /* remove default border */
-    height: 1px; /* thin line */
-    background-color: #FFE29D; /* yellow color */
-    margin: 10px 0; /* spacing */
+  border: none;
+  height: 1px;
+  background-color: #FFE29D;
+  margin: 10px 0;
 }
 
 .sidebar .logo img {
@@ -196,34 +225,35 @@ body {
 }
 
 .dropdown-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 12px;
-      text-decoration: none;
-      color: var(--dark-color);
-      border-radius: var(--border-radius-s);
-      transition: background 0.3s, color 0.3s;
-      font-weight: var(--font-weight-semi-bold);
-      cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--dark-color);
+  border-radius: var(--border-radius-s);
+  transition: background 0.3s, color 0.3s;
+  font-weight: var(--font-weight-semi-bold);
+  cursor: pointer;
 }
 
-.dropdown-toggle:hover {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
+.dropdown-toggle:hover,
+.dropdown-toggle.active {
+  background-color: var(--secondary-color);
+  color: var(--dark-color);
 }
 
 .dropdown-menu {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      margin-left: 20px;
-      margin-top: 5px;
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 20px;
+  margin-top: 5px;
 }
 
 .dropdown-menu a {
-      padding: 8px 12px;
-      font-size: 0.9rem;
+  padding: 8px 12px;
+  font-size: 0.9rem;
 }
 
 /* Main content */
@@ -231,6 +261,7 @@ body {
   margin-left: 260px;
   padding: 40px;
   width: calc(100% - 260px);
+  transition: margin-left var(--transition-speed), width var(--transition-speed);
 }
 
 h2 {
@@ -404,10 +435,107 @@ th {
   0%, 90% { opacity: 1; }
   100% { opacity: 0; transform: translateY(-20px); }
 }
+
+/* RESPONSIVE DESIGN - Media queries AFTER base styles */
+@media screen and (max-width: 1024px) {
+  table {
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* Show mobile menu button */
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  /* Hide sidebar off-screen by default */
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  /* Show sidebar when active */
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  /* Adjust content area */
+  .content {
+    margin-left: 0;
+    width: 100%;
+    padding: 80px 20px 40px;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 10px 8px;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .actions a {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    margin: 2px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .content {
+    padding: 70px 15px 30px;
+  }
+
+  .sidebar .logo img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .menu a {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .menu a i {
+    font-size: 18px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+  }
+
+  table {
+    font-size: 0.75rem;
+  }
+
+  th, td {
+    padding: 8px 5px;
+  }
+
+  .add-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
 </style>
 
 </head>
 <body>
+
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleSidebar()">
+  <i class='bx bx-menu'></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
 <aside class="sidebar">
@@ -441,8 +569,8 @@ th {
   </nav>
 </aside>
 
-
 <main class="content">
+  <h2>Groomer Management</h2>
   <button class="add-btn" onclick="openModal()">➕ Add Groomer</button>
 
   <table>
@@ -455,46 +583,44 @@ th {
       </tr>
     </thead>
     <tbody>
-<?php if ($groomers && pg_num_rows($groomers) > 0): ?>
-    <?php while($g = pg_fetch_assoc($groomers)): ?>
-        <tr>
+      <?php if ($groomers && pg_num_rows($groomers) > 0): ?>
+        <?php while($g = pg_fetch_assoc($groomers)): ?>
+          <tr>
             <td><?= $g['groomer_id'] ?></td>
             <td><?= htmlspecialchars($g['groomer_name']) ?></td>
             <td><?= htmlspecialchars($g['email']) ?></td>
             <td class="actions">
-                <a href="?id=<?= $g['groomer_id'] ?>" class="edit-btn">Edit</a>
-                <a href="delete_groomer.php?id=<?= $g['groomer_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+              <a href="?id=<?= $g['groomer_id'] ?>" class="edit-btn">Edit</a>
+              <a href="delete_groomer.php?id=<?= $g['groomer_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
             </td>
-        </tr>
-    <?php endwhile; ?>
-<?php else: ?>
-    <tr><td colspan="4">No groomers found.</td></tr>
-<?php endif; ?>
-</tbody>
-
+          </tr>
+        <?php endwhile; ?>
+      <?php else: ?>
+        <tr><td colspan="4">No groomers found.</td></tr>
+      <?php endif; ?>
+    </tbody>
   </table>
 
   <!-- Add Groomer Modal -->
   <div id="groomerModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h2>Create Groomer</h2>
-    <form method="POST">
-      <input type="hidden" name="create_groomer" value="1">
-      <div class="input_box">
-        <input type="text" name="groomer_name" class="input-field" placeholder="Enter Groomer Name" required>
-      </div>
-      <div class="input_box">
-        <input type="email" name="email" class="input-field" placeholder="Enter Email Address" required>
-      </div>
-      <div class="input_box">
-        <input type="password" name="password" class="input-field" placeholder="Enter Password" required>
-      </div>
-      <input type="submit" class="input-submit" value="Create Groomer">
-    </form>
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Create Groomer</h2>
+      <form method="POST">
+        <input type="hidden" name="create_groomer" value="1">
+        <div class="input_box">
+          <input type="text" name="groomer_name" class="input-field" placeholder="Enter Groomer Name" required>
+        </div>
+        <div class="input_box">
+          <input type="email" name="email" class="input-field" placeholder="Enter Email Address" required>
+        </div>
+        <div class="input_box">
+          <input type="password" name="password" class="input-field" placeholder="Enter Password" required>
+        </div>
+        <input type="submit" class="input-submit" value="Create Groomer">
+      </form>
+    </div>
   </div>
-</div>
-
 
   <!-- Edit Groomer Modal -->
   <?php if(isset($edit_groomer)): ?>
@@ -519,14 +645,67 @@ th {
 </main>
 
 <script>
-function openModal() { document.getElementById('groomerModal').style.display='flex'; }
-function closeModal() { document.getElementById('groomerModal').style.display='none'; }
-function closeEditModal() { document.getElementById('editGroomerModal').style.display='none'; window.history.replaceState(null,null,window.location.pathname); }
-
-window.onclick = function(e){
-  const modal = document.getElementById('groomerModal');
-  if(e.target === modal) closeModal();
+function toggleDropdown(event) {
+  event.preventDefault();
+  event.stopPropagation(); // IMPORTANT: Stop event from bubbling up
+  const dropdown = event.currentTarget.nextElementSibling;
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 }
+
+// Close dropdown if clicked outside
+document.addEventListener('click', function(event) {
+  // Check if click is outside dropdown
+  if (!event.target.closest('.dropdown')) {
+    const dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (let i = 0; i < dropdowns.length; i++) {
+      dropdowns[i].style.display = 'none';
+    }
+  }
+});
+
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+}
+
+function openModal() { 
+  document.getElementById('groomerModal').style.display='flex'; 
+}
+
+function closeModal() { 
+  document.getElementById('groomerModal').style.display='none'; 
+}
+
+function closeEditModal() { 
+  document.getElementById('editGroomerModal').style.display='none'; 
+  window.history.replaceState(null,null,window.location.pathname); 
+}
+
+// Close modal if clicked outside
+document.addEventListener('click', function(event) {
+  const modal = document.getElementById('groomerModal');
+  if(event.target === modal) closeModal();
+});
+
+// Close sidebar when clicking a link on mobile
+document.addEventListener('DOMContentLoaded', function() {
+  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)'); // Exclude dropdown toggle
+  menuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
+  });
+});
 </script>
 
 <?php if (isset($_SESSION['success'])): ?>

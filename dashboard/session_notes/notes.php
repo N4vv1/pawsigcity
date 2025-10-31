@@ -3,29 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Peak Hours and No Shows Prediction</title>
+  <title>Admin | Analytics</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
 
   <style>
-    :root {
-      --white-color: #fff;
-      --dark-color: #252525;
-      --primary-color: #A8E6CF;
-      --secondary-color: #FFE29D;
-      --light-pink-color: #faf4f5;
-      --medium-gray-color: #ccc;
-      --font-size-s: 0.9rem;
-      --font-size-n: 1rem;
-      --font-size-l: 1.5rem;
-      --font-size-xl: 2rem;
-      --font-weight-semi-bold: 600;
-      --font-weight-bold: 700;
-      --border-radius-s: 8px;
-      --border-radius-circle: 50%;
-      --site-max-width: 1300px;
-    }
+        :root {
+        --white-color: #fff;
+        --dark-color: #252525;
+        --primary-color: #A8E6CF;
+        --secondary-color: #FFE29D;
+        --light-pink-color: #faf4f5;
+        --medium-gray-color: #ccc;
+        --font-size-s: 0.9rem;
+        --font-size-n: 1rem;
+        --font-size-l: 1.5rem;
+        --font-size-xl: 2rem;
+        --font-weight-semi-bold: 600;
+        --font-weight-bold: 700;
+        --border-radius-s: 8px;
+        --border-radius-circle: 50%;
+        --site-max-width: 1300px;
+        --sidebar-width: 260px;
+        --transition-speed: 0.3s;  /* ADD THIS LINE */
+        --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);  /* ADD THIS LINE */
+      }
 
     * {
       margin: 0;
@@ -52,7 +55,8 @@
       flex-direction: column;
       gap: 20px;
       overflow-y: auto;
-      z-index: 100;
+      transition: transform var(--transition-speed);  /* ADD THIS */
+      z-index: 999;
     }
 
     .sidebar .logo {
@@ -129,6 +133,7 @@
       width: calc(100% - 260px);
       min-height: 100vh;
       overflow-x: hidden;
+      transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
     .header {
@@ -569,7 +574,7 @@
 
     @media (max-width: 768px) {
       .sidebar {
-        width: 200px;
+        width: 250px;
       }
       .content {
         margin-left: 200px;
@@ -586,6 +591,181 @@
         padding: 6px;
       }
     }
+        /* MOBILE MENU BUTTON */
+      .mobile-menu-btn {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: var(--primary-color);
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        cursor: pointer;
+        box-shadow: var(--shadow-light);
+        transition: var(--transition-speed);
+      }
+
+    .mobile-menu-btn i {
+      font-size: 24px;
+      color: var(--dark-color);
+    }
+
+    .mobile-menu-btn:hover {
+      background: var(--secondary-color);
+    }
+        /* SIDEBAR OVERLAY */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity var(--transition-speed);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+    /* RESPONSIVE DESIGN */
+@media screen and (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    padding: 25px;
+    min-height: 200px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  main {
+    margin-left: 0;
+    width: 100%;
+    padding: 80px 20px 40px;
+  }
+
+  .dashboard, .content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 20px;
+  }
+
+  .card {
+    padding: 20px;
+    min-height: 180px;
+  }
+
+  .card-icon {
+    font-size: 2rem;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card p {
+    font-size: 1.5rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    max-height: 90vh;
+  }
+
+  .modal-content table {
+    font-size: 0.8rem;
+  }
+
+  .modal-content table th,
+  .modal-content table td {
+    padding: 8px 6px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .button {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  #toast {
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  main {
+    padding: 70px 15px 30px;
+  }
+
+  .card {
+    padding: 15px;
+    min-height: 160px;
+  }
+
+  .card-icon {
+    font-size: 1.8rem;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+  }
+
+  .card p {
+    font-size: 1.3rem;
+  }
+
+  .card a {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+
+  .sidebar .logo img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .menu a {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .menu a i {
+    font-size: 18px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+  }
+}
   </style>
 </head>
 <body>
@@ -611,7 +791,12 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
     }
 }
 ?>
+<button class="mobile-menu-btn" onclick="toggleSidebar()">
+  <i class='bx bx-menu'></i>
+</button>
 
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/pawsig.png" alt="Pawsig City Logo" />
@@ -1123,11 +1308,19 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
   }
 
   function toggleDropdown(event) {
-    event.preventDefault();
-    const dropdown = event.currentTarget.parentElement;
-    const menu = dropdown.querySelector('.dropdown-menu');
-    menu.classList.toggle('show');
+  event.preventDefault();
+  event.stopPropagation(); // ADD THIS LINE
+  const dropdown = event.currentTarget.parentElement;
+  const menu = dropdown.querySelector('.dropdown-menu');
+  menu.classList.toggle('show');
   }
+  // Close dropdown if clicked outside
+document.addEventListener('click', function(event) {
+  if (!event.target.closest('.dropdown')) {
+    const dropdowns = document.querySelectorAll('.dropdown-menu');
+    dropdowns.forEach(menu => menu.classList.remove('show'));
+  }
+});
 
   // Fetch appointments and initialize
   window.addEventListener('DOMContentLoaded', async () => {
@@ -1164,6 +1357,32 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
     
     console.log('Dashboard initialized');
   });
+
+  window.toggleSidebar = function() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+};
+document.addEventListener('DOMContentLoaded', function() {
+  // ...your existing code...
+
+  // Close sidebar when clicking a link on mobile
+  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
+  menuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
+  });
+});
 </script>
 
 </body>
