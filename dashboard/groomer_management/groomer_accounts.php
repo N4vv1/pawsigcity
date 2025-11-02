@@ -570,7 +570,6 @@ th {
 </aside>
 
 <main class="content">
-  <h2>Groomer Management</h2>
   <button class="add-btn" onclick="openModal()">➕ Add Groomer</button>
 
   <table>

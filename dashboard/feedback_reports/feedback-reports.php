@@ -413,7 +413,6 @@ if (!$results) {
 </aside>
 
 <main class="content">
-  <h2>Feedback Reports</h2>
   <form action="reanalyze_sentiment.php" method="POST">
     <button type="submit">Reanalyze Sentiment</button>
   </form>

@@ -548,6 +548,302 @@ if (isset($_GET['id'])) {
         padding: 8px 5px;
       }
     }
+
+  /* Add these improvements to your existing CSS */
+
+/* 1. Make table horizontally scrollable on mobile/tablet */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  margin-bottom: 20px;
+}
+
+/* 2. Prevent iOS zoom on input focus */
+.input-field,
+.input-submit,
+select.input-field {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* 3. Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* TABLET RESPONSIVE (768px - 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .content {
+    padding: 30px;
+  }
+  
+  table {
+    font-size: 0.9rem;
+  }
+  
+  th, td {
+    padding: 12px 8px;
+  }
+  
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  table {
+    min-width: 700px;
+  }
+}
+
+/* MOBILE RESPONSIVE (up to 768px) */
+@media screen and (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
+    width: 100%;
+    padding: 80px 20px 40px;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+  }
+  
+  .add-btn {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+  
+  /* Make table scrollable horizontally */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 0 -20px; /* Extend to edges */
+    padding: 0 20px;
+  }
+  
+  table {
+    min-width: 700px; /* Maintains table structure */
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 10px 8px;
+    white-space: nowrap; /* Prevents text wrapping */
+  }
+  
+  /* Make action buttons more touch-friendly */
+  .actions a {
+    padding: 8px 12px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    max-height: 85vh;
+  }
+  
+  .input-field {
+    padding: 0.8rem 2.2rem;
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+  
+  .label {
+    font-size: 0.85rem;
+  }
+  
+  .input_box {
+    margin-bottom: 1.3rem;
+  }
+}
+
+/* SMALL MOBILE (up to 480px) */
+@media screen and (max-width: 480px) {
+  .content {
+    padding: 70px 15px 30px;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .add-btn {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .sidebar .logo img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .menu a {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .menu a i {
+    font-size: 18px;
+  }
+  
+  /* Keep table scrollable */
+  .table-wrapper {
+    margin: 0 -15px;
+    padding: 0 15px;
+  }
+  
+  table {
+    min-width: 650px;
+    font-size: 0.75rem;
+  }
+
+  th, td {
+    padding: 8px 5px;
+    font-size: 0.75rem;
+  }
+  
+  .actions a {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    margin: 2px;
+  }
+  
+  .modal-content {
+    padding: 15px;
+  }
+  
+  .modal-content h2 {
+    font-size: 1.3rem;
+  }
+  
+  .input-field {
+    padding: 0.75rem 2rem;
+  }
+  
+  .icon {
+    font-size: 1rem;
+  }
+}
+
+/* EXTRA SMALL DEVICES (up to 360px) */
+@media screen and (max-width: 360px) {
+  .content {
+    padding: 70px 10px 30px;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  table {
+    min-width: 600px;
+    font-size: 0.7rem;
+  }
+  
+  th, td {
+    padding: 6px 4px;
+  }
+  
+  .actions a {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+  
+  .menu a {
+    font-size: 0.85rem;
+    padding: 7px 8px;
+  }
+}
+
+/* LANDSCAPE ORIENTATION (for phones in landscape) */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+  .modal-content {
+    max-height: 95vh;
+    padding: 15px;
+  }
+  
+  .sidebar {
+    padding: 15px 10px;
+  }
+  
+  .sidebar .logo img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .menu a {
+    padding: 6px 10px;
+  }
+}
+
+/* TOUCH DEVICE OPTIMIZATIONS */
+@media (hover: none) and (pointer: coarse) {
+  /* Better touch targets */
+  .menu a,
+  .dropdown-toggle {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .actions a {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  
+  .add-btn {
+    min-height: 44px;
+  }
+  
+  .input-submit {
+    min-height: 48px;
+  }
+}
+
+/* PRINT STYLES */
+@media print {
+  .sidebar,
+  .mobile-menu-btn,
+  .sidebar-overlay,
+  .add-btn,
+  .actions,
+  .toast {
+    display: none !important;
+  }
+  
+  .content {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  table {
+    page-break-inside: avoid;
+    font-size: 0.85rem;
+  }
+}
+
+/* DESKTOP - Keep original design (1025px and above) */
+@media screen and (min-width: 1025px) {
+  /* Desktop maintains all original styles */
+  /* No changes needed - original design preserved */
+}
   </style>
 </head>
 <body>
@@ -597,6 +893,8 @@ if (isset($_GET['id'])) {
   <h2>User Management</h2>
   <button class="add-btn" onclick="openModal()">➕ Add New User</button>
   
+  <!-- Find your table in the HTML and wrap it like this: -->
+<div class="table-wrapper">
   <table>
     <thead>
       <tr>
@@ -628,6 +926,7 @@ if (isset($_GET['id'])) {
       <?php endwhile; ?>
     </tbody>
   </table>
+</div>
 
   <!-- Add User Modal -->
   <div id="userModal" class="modal">

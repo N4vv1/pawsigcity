@@ -394,7 +394,7 @@ if (!$result) {
   <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
+      <img src="../pawsigcity/homepage/images/pawsig.png" alt="Logo" class="icon" />
     </a>
     
     <!-- Hamburger Menu Button -->
@@ -413,14 +413,7 @@ if (!$result) {
       <li class="nav-item"><a href="#service" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
       <li class="nav-item"><a href="#gallery" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
       <li class="nav-item"><a href="#contact" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
-      <li class="nav-item dropdown" id="profile-dropdown">
-        <a href="#" class="nav-link profile-icon">
-          <i class="fas fa-user"></i>
-        </a> 
-        <ul class="dropdown-menu">
-          <li><a href="../homepage/login/loginform.php">Login</a></li>
-        </ul>
-      </li>
+      <li class="nav-item"><a href="https://pawsigcity.onrender.com/homepage/login/loginform.php" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></li>
     </ul>
   </nav>
 </header>

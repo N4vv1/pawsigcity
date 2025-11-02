@@ -646,106 +646,267 @@
   }
 }
 
+/* REPLACE your existing media queries with these improved responsive styles */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent iOS zoom on inputs */
+input, select, button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 16px;
+}
+
+/* TABLET RESPONSIVE (769px - 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .content {
+    padding: 30px 25px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+
+  .calendar-grid {
+    gap: 8px;
+  }
+
+  .calendar-day {
+    min-height: 90px;
+    padding: 8px;
+  }
+}
+
+/* MOBILE RESPONSIVE (up to 768px) */
 @media screen and (max-width: 768px) {
+  /* Show mobile menu button */
   .mobile-menu-btn {
     display: block;
   }
 
+  /* Hide sidebar by default */
   .sidebar {
     transform: translateX(-100%);
   }
 
+  /* Show sidebar when active */
   .sidebar.active {
     transform: translateX(0);
   }
 
-  main {
+  /* Adjust content area */
+  .content {
     margin-left: 0;
     width: 100%;
     padding: 80px 20px 40px;
   }
 
-  .dashboard, .content-wrapper {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding-top: 20px;
-  }
-
-  .card {
-    padding: 20px;
-    min-height: 180px;
-  }
-
-  .card-icon {
-    font-size: 2rem;
-  }
-
-  .card h3 {
-    font-size: 1rem;
-  }
-
-  .card p {
+  .header h1 {
     font-size: 1.5rem;
   }
 
+  .header p {
+    font-size: 0.85rem;
+  }
+
+  /* Model status responsive */
+  .model-status {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px 15px;
+  }
+
+  .model-info h4 {
+    font-size: 0.95rem;
+  }
+
+  .retrain-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Dashboard grid - stack vertically */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 200px)); /* Smaller, fixed-width boxes */
+  gap: 15px;
+  margin-bottom: 20px;
+  justify-content: start; /* Align to the left/top */
+}
+
+.card {
+  background: var(--white-color);
+  border-radius: var(--border-radius-s);
+  padding: 15px; /* Reduced padding */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  min-height: auto; /* Remove min-height to make it compact */
+}
+
+.card h3 {
+  color: var(--dark-color);
+  font-size: 0.85rem; /* Smaller heading */
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-icon {
+  width: 28px; /* Smaller icon container */
+  height: 28px;
+  background: var(--primary-color);
+  border-radius: var(--border-radius-s);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.stat-value {
+  font-size: 1.5rem; /* Smaller stat number */
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  margin: 5px 0;
+  line-height: 1;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.75rem; /* Smaller label */
+  margin: 0;
+}
+
+  /* Calendar responsive */
+  .calendar-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .calendar-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .calendar-nav {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .calendar-nav button {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  .calendar-nav select {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .calendar-grid {
+    gap: 5px;
+  }
+
+  .calendar-day-header {
+    padding: 8px 4px;
+    font-size: 0.75rem;
+  }
+
+  .calendar-day {
+    min-height: 80px;
+    padding: 6px;
+  }
+
+  .day-number {
+    font-size: 0.95rem;
+  }
+
+  .appointments-count,
+  .noshow-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+
+  .peak-level {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Legend responsive */
+  .legend {
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  .legend-item {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+
+  .legend-color {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Modal responsive */
   .modal-content {
     width: 95%;
     padding: 20px;
-    max-height: 90vh;
+    max-height: 85vh;
   }
 
-  .modal-content table {
-    font-size: 0.8rem;
+  .modal-header h3 {
+    font-size: 1.1rem;
   }
 
-  .modal-content table th,
-  .modal-content table td {
-    padding: 8px 6px;
-  }
-
-  .action-buttons {
+  .detail-row {
+    padding: 10px;
+    font-size: 0.85rem;
     flex-direction: column;
+    gap: 5px;
+    text-align: left;
   }
 
-  .button {
-    font-size: 0.8rem;
-    padding: 6px 10px;
+  .hour-item {
+    padding: 10px;
+    font-size: 0.85rem;
   }
 
-  #toast {
-    bottom: 20px;
-    right: 20px;
-    left: 20px;
-    padding: 12px 16px;
-    font-size: 0.9rem;
+  .algorithm-info {
+    font-size: 0.75rem;
+    padding: 12px;
   }
 }
 
+/* SMALL MOBILE (up to 480px) */
 @media screen and (max-width: 480px) {
-  main {
+  .content {
     padding: 70px 15px 30px;
   }
 
-  .card {
-    padding: 15px;
-    min-height: 160px;
-  }
-
-  .card-icon {
-    font-size: 1.8rem;
-  }
-
-  .card h3 {
-    font-size: 0.9rem;
-  }
-
-  .card p {
+  .header h1 {
     font-size: 1.3rem;
-  }
-
-  .card a {
-    padding: 8px 14px;
-    font-size: 0.9rem;
   }
 
   .sidebar .logo img {
@@ -762,9 +923,270 @@
     font-size: 18px;
   }
 
-  .modal-content h2 {
+  /* Model status */
+  .model-status i {
+    font-size: 24px;
+  }
+
+  .model-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .model-info p {
+    font-size: 0.75rem;
+  }
+
+  .retrain-btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  /* Dashboard cards */
+  .card {
+    padding: 15px;
+  }
+
+  .card h3 {
+    font-size: 0.85rem;
+  }
+
+  .card-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  /* Calendar */
+  .calendar-container {
+    padding: 15px;
+  }
+
+  .calendar-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .calendar-nav {
+    gap: 5px;
+  }
+
+  .calendar-nav button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .calendar-nav select {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .calendar-day-header {
+    padding: 6px 2px;
+    font-size: 0.7rem;
+  }
+
+  .calendar-day {
+    min-height: 70px;
+    padding: 5px;
+  }
+
+  .day-number {
+    font-size: 0.85rem;
+  }
+
+  .appointments-count,
+  .noshow-badge {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+
+  .peak-level {
+    width: 10px;
+    height: 10px;
+    top: 4px;
+    right: 4px;
+  }
+
+  /* Legend */
+  .legend {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .legend-item {
+    padding: 3px 6px;
+  }
+
+  /* Modal */
+  .modal-content {
+    padding: 15px;
+  }
+
+  .modal-header {
+    padding-bottom: 10px;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .close-modal {
+    font-size: 24px;
+  }
+
+  .detail-row {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .hourly-breakdown h4 {
+    font-size: 0.9rem;
+  }
+
+  .hour-item {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .algorithm-info {
+    padding: 10px;
+    font-size: 0.7rem;
+  }
+}
+
+/* EXTRA SMALL DEVICES (up to 360px) */
+@media screen and (max-width: 360px) {
+  .content {
+    padding: 70px 10px 30px;
+  }
+
+  .header h1 {
     font-size: 1.2rem;
   }
+
+  .calendar-container {
+    padding: 12px;
+  }
+
+  .calendar-grid {
+    gap: 3px;
+  }
+
+  .calendar-day {
+    min-height: 65px;
+    padding: 4px;
+  }
+
+  .day-number {
+    font-size: 0.8rem;
+  }
+
+  .appointments-count,
+  .noshow-badge {
+    font-size: 0.55rem;
+    padding: 1px 4px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .menu a {
+    font-size: 0.85rem;
+    padding: 7px 8px;
+  }
+}
+
+/* LANDSCAPE ORIENTATION (for phones in landscape) */
+@media screen and (max-height: 600px) and (orientation: landscape) {
+  .modal-content {
+    max-height: 95vh;
+    padding: 15px;
+  }
+
+  .sidebar {
+    padding: 15px 10px;
+  }
+
+  .sidebar .logo img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .menu a {
+    padding: 6px 10px;
+  }
+
+  .calendar-day {
+    min-height: 60px;
+  }
+}
+
+/* TOUCH DEVICE OPTIMIZATIONS */
+@media (hover: none) and (pointer: coarse) {
+  /* Better touch targets */
+  .menu a,
+  .dropdown-toggle {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .calendar-nav button,
+  .retrain-btn {
+    min-height: 44px;
+  }
+
+  .calendar-nav select {
+    min-height: 44px;
+  }
+
+  .calendar-day {
+    cursor: pointer;
+  }
+}
+
+/* PRINT STYLES */
+@media print {
+  .sidebar,
+  .mobile-menu-btn,
+  .sidebar-overlay,
+  .retrain-btn,
+  .calendar-nav,
+  .model-status {
+    display: none !important;
+  }
+
+  .content {
+    margin-left: 0;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .calendar-container {
+    page-break-inside: avoid;
+  }
+
+  .modal {
+    display: none !important;
+  }
+}
+
+/* DESKTOP - Keep original design (1025px and above) */
+@media screen and (min-width: 1025px) {
+  /* Desktop maintains all original styles */
+  /* No changes needed - original design preserved */
 }
   </style>
 </head>
@@ -1267,12 +1689,6 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
       <div class="detail-row">
         <span class="detail-label">No-Show Risk:</span>
         <span class="detail-value"><strong style="color: ${riskColor};">${noshowPct}% (${riskLevel})</strong></span>
-      </div>
-      <div class="algorithm-info">
-        <strong>🤖 ML Prediction:</strong> Based on trained decision tree models using ${historicalCount} historical appointments for this day of week.
-      </div>
-      <div class="algorithm-info">
-        <strong>💡 Recommendation:</strong> ${recommendation}
       </div>
     `;
 

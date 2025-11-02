@@ -310,7 +310,7 @@ if (!$result) {
     <hr>
     <a href="notes.php"><i class='bx bx-note'></i>Session Notes</a>
     <hr>
-    <a href="logout.php"><i class='bx bx-log-out'></i>Logout</a>
+    <a href=" https://pawsigcity.onrender.com/homepage/login/loginform.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>
 

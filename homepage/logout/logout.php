@@ -4,5 +4,5 @@ session_unset(); // Clear all session variables
 session_destroy(); // Destroy the session
 
 // Redirect to login page
-header("Location: ../homepage/login/loginform.php"); 
+header("Location: https://pawsigcity.onrender.com/homepage/login/loginform.php"); 
 exit;

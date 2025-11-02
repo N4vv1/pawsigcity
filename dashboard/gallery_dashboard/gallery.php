@@ -458,7 +458,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 </aside>
 
 <main class="content">
-  <h2>Pet Gallery</h2>
   <button class="add-btn" onclick="openModal('../gallery_dashboard/gallery_add.php')">+ Add New Image</button>
   <table>
     <thead>
