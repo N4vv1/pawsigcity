@@ -67,6 +67,13 @@ if ($selected_pet_id) {
         exit;
     }
 
+    // ✅ CRITICAL: Verify pet has required size information
+    if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
+        $_SESSION['error'] = "⚠️ Pet '{$valid_pet['name']}' is missing size information. Please update the pet profile first.";
+        header("Location: ../pets/pet-profile.php");
+        exit;
+    } 
+
     // API call for package recommendation
     $api_url = "https://pawsigcity-1.onrender.com/recommend";
     $payload = json_encode([
@@ -82,14 +89,13 @@ if ($selected_pet_id) {
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    // ✅ FIXED: Better error handling
     if ($curl_error) {
         error_log("API Error: " . $curl_error);
-        $_SESSION['error'] = "⚠️ Could not connect to recommendation service.";
+        $_SESSION['info'] = "ℹ️ Recommendation service unavailable. Showing all packages for your pet.";
         $recommended_package = null;
     } elseif ($http_code !== 200) {
         error_log("API HTTP Error: " . $http_code . " Response: " . $response);
-        $_SESSION['error'] = "⚠️ Recommendation service unavailable.";
+        $_SESSION['info'] = "ℹ️ Recommendation service unavailable. Showing all packages for your pet.";
         $recommended_package = null;
     } else {
         $response_data = json_decode($response, true);
@@ -97,7 +103,7 @@ if ($selected_pet_id) {
         if (isset($response_data['recommended_package'])) {
             $recommended_package = $response_data['recommended_package'];
             
-            // ✅ FIXED: Verify the package exists in database
+            // Verify the package exists in database
             $package_verify = pg_query_params(
                 $conn,
                 "SELECT p.name FROM packages p WHERE p.name ILIKE '%' || $1 || '%' LIMIT 1",
@@ -106,35 +112,33 @@ if ($selected_pet_id) {
             
             if (!pg_fetch_assoc($package_verify)) {
                 error_log("Recommended package not found in DB: " . $recommended_package);
-                $_SESSION['error'] = "⚠️ Recommended package '{$recommended_package}' not available.";
+                $_SESSION['info'] = "ℹ️ Recommended package not available. Showing all packages for your pet.";
                 $recommended_package = null;
             }
         } elseif (isset($response_data['error'])) {
-            $_SESSION['error'] = "⚠️ " . htmlspecialchars($response_data['error']);
+            $_SESSION['info'] = "ℹ️ " . htmlspecialchars($response_data['error']);
             $recommended_package = null;
         }
     }
 
-    // Fetch packages for dropdown
-    $packages_result = pg_query($conn, "
+    // ✅ CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
+    $packages_result = pg_query_params($conn, "
         SELECT pp.price_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
         FROM package_prices pp
         JOIN packages p ON pp.package_id = p.package_id
-        ORDER BY 
-            p.name,
-            CASE pp.species
-                WHEN 'Dog' THEN 1
-                WHEN 'Cat' THEN 2
-                ELSE 3
-            END,
-            CASE pp.size
-                WHEN 'Small' THEN 1
-                WHEN 'Medium' THEN 2
-                WHEN 'Large' THEN 3
-                ELSE 4
-            END,
-            pp.min_weight
-    ");
+        WHERE pp.species = $1 
+        AND pp.size = $2
+        AND pp.min_weight <= $3 
+        AND pp.max_weight >= $3
+        ORDER BY p.name, pp.price
+    ", [$valid_pet['species'], $valid_pet['size'], $valid_pet['weight']]);
+
+    // ✅ Check if any packages are available
+    if (pg_num_rows($packages_result) === 0) {
+        $_SESSION['error'] = "⚠️ No packages available for a {$valid_pet['size']} {$valid_pet['species']} weighing {$valid_pet['weight']} kg. Please contact support.";
+        header("Location: pet-profile.php");
+        exit;
+    }
 }
 ?>
 
@@ -290,6 +294,19 @@ if ($selected_pet_id) {
     color: #2c3e50;
   }
 
+    /* Size Info Badge */
+  .size-info-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
   /* Booking Form - Right Side */
   .booking-section {
     background: #fff;
@@ -376,6 +393,24 @@ if ($selected_pet_id) {
     font-weight: bold;
     font-size: 1.1rem;
   }
+
+    /* Locked Package Notice */
+  .locked-notice {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-left: 5px solid #ff9800;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #e65100;
+    font-weight: 500;
+  }
+
+  .locked-notice i {
+    font-size: 1.5rem;
+  }   
 
   .submit-btn {
     background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
@@ -1444,6 +1479,17 @@ if ($selected_pet_id) {
             
             <h2>Book Grooming Appointment</h2>
 
+            <!-- 🔒 LOCKED NOTICE -->
+            <div class="locked-notice">
+              <i class="fas fa-lock"></i>
+              <div>
+                <strong>Size-Based Pricing Active:</strong> 
+                Packages are filtered for your pet's registered size 
+                (<?= htmlspecialchars($valid_pet['species']) ?> - <?= htmlspecialchars($valid_pet['size']) ?> - <?= htmlspecialchars($valid_pet['weight']) ?> kg).
+                This prevents pricing manipulation.
+              </div>
+            </div>
+
             <form method="POST" action="appointment-handler.php" class="booking-form">
               <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
 
@@ -1457,15 +1503,16 @@ if ($selected_pet_id) {
 
               <div class="form-group">
                 <label for="package_id">
-                  <i class="fas fa-box"></i> Select Grooming Package
+                  <i class="fas fa-box"></i> Select Grooming Package (Filtered for Your Pet)
                 </label>
                 <select name="package_id" id="package_id" required>
+                  <option value="">-- Select Package --</option>
                   <?php while ($pkg = pg_fetch_assoc($packages_result)): ?>
                     <option value="<?= $pkg['price_id'] ?>" 
                       <?= ($pkg['name'] == $recommended_package) ? 'selected' : '' ?>>
                       <?= htmlspecialchars($pkg['name']) ?> 
                       (<?= htmlspecialchars($pkg['species']) ?> - <?= htmlspecialchars($pkg['size']) ?>,
-                      <?= $pkg['min_weight'] ?> - <?= $pkg['max_weight'] ?>) 
+                      <?= $pkg['min_weight'] ?>-<?= $pkg['max_weight'] ?> kg) 
                       - ₱<?= number_format($pkg['price'], 2) ?>
                     </option>
                   <?php endwhile; ?>
