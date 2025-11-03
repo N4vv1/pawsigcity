@@ -64,48 +64,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $weight_warnings[] = "Weight seems low for a Large pet (typically 25+ kg).";
     }
 
-    // Handle photo upload
-    $photo_url = '';
-    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $file_type = $_FILES['photo']['type'];
+ // Handle photo upload - DEBUG VERSION
+$photo_url = '';
+if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $file_type = $_FILES['photo']['type'];
 
-        if (in_array($file_type, $allowed_types)) {
-            // ✅ Use existing uploads folder (one level up from pets folder)
-            $upload_dir = dirname(__DIR__) . '/uploads/';
-            
-            // ✅ Check if uploads folder exists
-            if (!is_dir($upload_dir)) {
-                $_SESSION['error'] = "⚠️ Upload directory does not exist. Please contact administrator.";
-                header('Location: add-pet.php');
-                exit;
-            }
-            
-            // ✅ Check if writable
-            if (!is_writable($upload_dir)) {
-                $_SESSION['error'] = "⚠️ Upload directory is not writable. Please contact administrator.";
-                header('Location: add-pet.php');
-                exit;
-            }
-
-            $file_extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-            $unique_filename = uniqid('pet_', true) . '.' . $file_extension;
-            $target_path = $upload_dir . $unique_filename;
-
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_path)) {
-                // ✅ Store relative path for database (for displaying in browser)
-                $photo_url = '../uploads/' . $unique_filename;
-            } else {
-                $_SESSION['error'] = "⚠️ Failed to upload photo. Please try again or contact administrator.";
-                header('Location: add-pet.php');
-                exit;
-            }
-        } else {
-            $_SESSION['error'] = "⚠️ Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.";
-            header('Location: add-pet.php');
-            exit;
+    if (in_array($file_type, $allowed_types)) {
+        
+        // 🔍 DEBUG: Let's see what paths we're working with
+        $debug_info = [
+            '__FILE__' => __FILE__,
+            '__DIR__' => __DIR__,
+            'dirname(__DIR__)' => dirname(__DIR__),
+            'getcwd()' => getcwd(),
+            'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT'] ?? 'not set'
+        ];
+        
+        // Try different path options
+        $path_options = [
+            'Option 1: __DIR__ . /../uploads/' => __DIR__ . '/../uploads/',
+            'Option 2: dirname(__DIR__) . /uploads/' => dirname(__DIR__) . '/uploads/',
+            'Option 3: $_SERVER[DOCUMENT_ROOT] . /uploads/' => ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/uploads/',
+            'Option 4: Absolute /uploads/' => '/uploads/',
+            'Option 5: ./uploads/' => './uploads/',
+            'Option 6: ../uploads/' => '../uploads/'
+        ];
+        
+        $results = [];
+        foreach ($path_options as $label => $path) {
+            $results[$label] = [
+                'path' => $path,
+                'exists' => is_dir($path) ? 'YES ✅' : 'NO ❌',
+                'writable' => is_writable($path) ? 'YES ✅' : 'NO ❌',
+                'realpath' => realpath($path) ?: 'cannot resolve'
+            ];
         }
+        
+        // Log everything
+        error_log("=== UPLOAD DEBUG INFO ===");
+        error_log(print_r($debug_info, true));
+        error_log(print_r($results, true));
+        
+        // Also show in session for easy viewing
+        $_SESSION['debug'] = [
+            'info' => $debug_info,
+            'paths' => $results
+        ];
+        
+        $_SESSION['error'] = "🔍 Debug mode active. Check the results below.";
+        header('Location: add-pet.php');
+        exit;
     }
+}
 
     // ✅ Insert into pets table with NEW fields (species, size, weight)
     $query = "INSERT INTO pets (
