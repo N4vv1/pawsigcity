@@ -36,4 +36,4 @@ with open("le_breed.pkl", "wb") as f:
 with open("le_package.pkl", "wb") as f:
     pickle.dump(le_package, f)
 
-print("✅ Model trained and saved successfully — using only Breed as input.")
+print("Model trained and saved successfully — using only Breed as input.")
