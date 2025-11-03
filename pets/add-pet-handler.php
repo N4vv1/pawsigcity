@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (in_array($file_type, $allowed_types)) {
             // ✅ Use existing uploads folder (one level up from pets folder)
-            $upload_dir = dirname(__DIR__) . '/../uploads/';
+            $upload_dir = dirname(__DIR__) . '../uploads/';
             
             // ✅ Check if uploads folder exists
             if (!is_dir($upload_dir)) {
