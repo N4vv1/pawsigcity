@@ -2,6 +2,16 @@
 session_start();
 require '../db.php';
 
+// Display debug info
+if (isset($_SESSION['debug'])) {
+    echo "<div style='background: #f0f0f0; padding: 20px; margin: 20px; font-family: monospace; font-size: 12px;'>";
+    echo "<h3>🔍 DEBUG INFO:</h3>";
+    echo "<pre>" . print_r($_SESSION['debug'], true) . "</pre>";
+    echo "</div>";
+    unset($_SESSION['debug']); // Clear after showing
+}
+
+
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../login/loginform.php');
