@@ -64,45 +64,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $weight_warnings[] = "Weight seems low for a Large pet (typically 25+ kg).";
     }
 
-// Handle photo upload
-$photo_url = '';
-if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    $file_type = $_FILES['photo']['type'];
+    // Handle photo upload
+    $photo_url = '';
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $file_type = $_FILES['photo']['type'];
 
-    if (in_array($file_type, $allowed_types)) {
-        $upload_dir = __DIR__ . '/uploads/';
-        
-        if (!is_dir($upload_dir)) {
-            if (!mkdir($upload_dir, 0755, true)) {
-                @mkdir($upload_dir, 0755);
+        if (in_array($file_type, $allowed_types)) {
+            // ✅ Use existing uploads folder (must already exist)
+            $upload_dir = __DIR__ . '/uploads/';
+            
+            // ✅ Check if uploads folder exists
+            if (!is_dir($upload_dir)) {
+                $_SESSION['error'] = "⚠️ Upload directory does not exist. Please contact administrator.";
+                header('Location: add-pet.php');
+                exit;
             }
-        }
-        
-        if (!is_writable($upload_dir)) {
-            $_SESSION['error'] = "⚠️ Upload directory is not writable. Please contact administrator.";
-            header('Location: add-pet.php');
-            exit;
-        }
+            
+            // ✅ Check if writable
+            if (!is_writable($upload_dir)) {
+                $_SESSION['error'] = "⚠️ Upload directory is not writable. Please contact administrator.";
+                header('Location: add-pet.php');
+                exit;
+            }
 
-        $file_extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
-        $unique_filename = uniqid('pet_', true) . '.' . $file_extension;
-        $target_path = $upload_dir . $unique_filename;
+            $file_extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+            $unique_filename = uniqid('pet_', true) . '.' . $file_extension;
+            $target_path = $upload_dir . $unique_filename;
 
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_path)) {
-            // ✅ Store relative path for database (for displaying in browser)
-            $photo_url = 'uploads/' . $unique_filename;
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_path)) {
+                // ✅ Store relative path for database (for displaying in browser)
+                $photo_url = 'uploads/' . $unique_filename;
+            } else {
+                $_SESSION['error'] = "⚠️ Failed to upload photo. Please try again or contact administrator.";
+                header('Location: add-pet.php');
+                exit;
+            }
         } else {
-            $_SESSION['error'] = "⚠️ Failed to upload photo. Error: " . error_get_last()['message'];
+            $_SESSION['error'] = "⚠️ Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.";
             header('Location: add-pet.php');
             exit;
         }
-    } else {
-        $_SESSION['error'] = "⚠️ Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.";
-        header('Location: add-pet.php');
-        exit;
     }
-}
 
     // ✅ Insert into pets table with NEW fields (species, size, weight)
     $query = "INSERT INTO pets (
