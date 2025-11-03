@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $file_type = $_FILES['photo']['type'];
 
         if (in_array($file_type, $allowed_types)) {
-            // ✅ Use existing uploads folder (must already exist)
-            $upload_dir = __DIR__ . '/uploads/';
+            // ✅ Use existing uploads folder (one level up from pets folder)
+            $upload_dir = dirname(__DIR__) . '/../uploads/';
             
             // ✅ Check if uploads folder exists
             if (!is_dir($upload_dir)) {
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_path)) {
                 // ✅ Store relative path for database (for displaying in browser)
-                $photo_url = 'uploads/' . $unique_filename;
+                $photo_url = '../uploads/' . $unique_filename;
             } else {
                 $_SESSION['error'] = "⚠️ Failed to upload photo. Please try again or contact administrator.";
                 header('Location: add-pet.php');
