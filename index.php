@@ -962,7 +962,11 @@ function getServiceImage($serviceName) {
   justify-content: center;
   min-height: 100vh;
   padding: 80px 20px;
-  background: linear-gradient(135deg, #52de97 0%, #A8E6CF 50%, #7ed6ad 100%);
+  background-image: url('./uploads/pawsigbg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   overflow: hidden;
 }
 
@@ -970,12 +974,12 @@ function getServiceImage($serviceName) {
 .hero-section::before {
   content: "";
   position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255, 228, 163, 0.3) 0%, transparent 70%);
-  border-radius: 50%;
-  top: -200px;
-  right: -200px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 77, 64, 0.80) 0%, rgba(0, 105, 92, 0.85) 50%, rgba(0, 121, 107, 0.88) 100%);
+  z-index: 1;
   animation: pulse 8s ease-in-out infinite;
 }
 
@@ -989,15 +993,14 @@ function getServiceImage($serviceName) {
   bottom: -150px;
   left: -150px;
   animation: pulse 6s ease-in-out infinite reverse;
+  z-index: 2;
 }
 
 @keyframes pulse {
   0%, 100% {
-    transform: scale(1);
-    opacity: 0.6;
+    opacity: 0.8;
   }
   50% {
-    transform: scale(1.3);
     opacity: 1;
   }
 }
@@ -1008,7 +1011,7 @@ function getServiceImage($serviceName) {
   font-size: 3rem;
   color: rgba(255, 255, 255, 0.2);
   animation: float-paw 12s ease-in-out infinite;
-  z-index: 1;
+  z-index: 3;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
@@ -1078,6 +1081,7 @@ function getServiceImage($serviceName) {
   inset: 0;
   background: transparent;
   backdrop-filter: blur(0px);
+  z-index: 1;
 }
 
 .hero-content {
@@ -1132,6 +1136,13 @@ function getServiceImage($serviceName) {
   text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
   letter-spacing: -2px;
   animation: titlePulse 3s ease-in-out infinite;
+  -webkit-text-stroke: 2px rgba(0, 0, 0, 0.5);
+  text-stroke: 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 
+    4px 4px 0px rgba(0, 0, 0, 0.3),
+    6px 6px 12px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(0, 0, 0, 0.2);
+  paint-order: stroke fill;
 }
 
 @keyframes titlePulse {
@@ -1151,6 +1162,7 @@ function getServiceImage($serviceName) {
   text-shadow: 0 0 30px rgba(255, 228, 163, 0.8),
                0 0 60px rgba(255, 228, 163, 0.5),
                4px 4px 12px rgba(0, 0, 0, 0.3);
+               
 }
 
 @keyframes glow {
@@ -1407,10 +1419,9 @@ function getServiceImage($serviceName) {
   }
 }
 
-/* Responsive Design */
 @media (max-width: 968px) {
-  .hero-title {
-    font-size: 3rem;
+  .hero-section {
+    background-attachment: scroll;
   }
 
   .hero-subtitle {
@@ -1433,6 +1444,9 @@ function getServiceImage($serviceName) {
 }
 
 @media (max-width: 480px) {
+   .hero-section {
+    background-attachment: scroll;
+  }
   .hero-title {
     font-size: 2.2rem;
     letter-spacing: -1px;
@@ -1922,9 +1936,9 @@ function getServiceImage($serviceName) {
       <h2 class="section-title">Contact Us</h2>
       <div class="section-content">
         <ul class="contact-info-list">
-          <li class="contact-info"><i class="fa-solid fa-location-crosshairs"></i><p>324 DR. SIXTO ANTONIO AVENUE., CANIOGAN, PASIG CITY</p></li>
+          <li class="contact-info"><i class="fa-solid fa-location-crosshairs"></i><p>2F Hampton Gardens Arcade, C. Raymundo, Maybunga, Pasig, Philippines</p></li>
           <li class="contact-info"><i class="fa-regular fa-envelope"></i><p>pawsigcity@gmail.com</p></li>
-          <li class="contact-info"><i class="fa-solid fa-phone"></i><p>CP num</p></li>
+          <li class="contact-info"><i class="fa-solid fa-phone"></i><p>0954 476 0085</p></li>
           <li class="contact-info"><i class="fa-solid fa-clock"></i><p>9AM - 8PM ONLY</p></li>
           <li class="contact-info"><i class="fa-solid fa-calendar-check"></i><p>MONDAY TO SUNDAY</p></li>
           <li class="contact-info"><i class="fa-solid fa-globe"></i><p>PAWsig City</p></li>
