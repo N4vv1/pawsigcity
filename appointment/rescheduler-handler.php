@@ -1,15 +1,16 @@
 <?php
 session_start();
-require '../db.php'; // $conn = pg_connect(...)
+require '../db.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login/loginform.php");
+    header("Location: ../homepage/login/loginform.php");
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
 $appointment_id = $_POST['appointment_id'] ?? null;
 $new_date = $_POST['appointment_date'] ?? null;
+$reschedule_reason = $_POST['reschedule_reason'] ?? 'Client requested reschedule';
 
 if (!$appointment_id || !$new_date) {
     $_SESSION['error'] = "Missing appointment ID or date.";
@@ -17,62 +18,35 @@ if (!$appointment_id || !$new_date) {
     exit;
 }
 
-// ✅ Update appointment with valid enum value
-$result = pg_query_params(
+// Verify the appointment belongs to this user
+$check = pg_query_params(
     $conn,
-    "UPDATE appointments
-     SET appointment_date = $1,
-         status = 'confirmed',
-         is_approved = false
-     WHERE appointment_id = $2 AND user_id = $3",
-    [$new_date, $appointment_id, $user_id]
+    "SELECT appointment_id FROM appointments WHERE appointment_id = $1 AND user_id = $2",
+    [$appointment_id, $user_id]
 );
 
-if ($result && pg_affected_rows($result) > 0) {
-    $_SESSION['reschedule_success'] = "Appointment successfully rescheduled. Awaiting admin approval.";
-    $_SESSION['reopen_modal_id'] = $appointment_id;
-} else {
-    $_SESSION['error'] = "Failed to reschedule.";
-}
-
-pg_close($conn);
-header("Location: ../homepage/appointments.php");
-exit;
-?><?php
-session_start();
-require '../db.php'; // $conn = pg_connect(...)
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login/loginform.php");
-    exit;
-}
-
-$user_id = $_SESSION['user_id'];
-$appointment_id = $_POST['appointment_id'] ?? null;
-$new_date = $_POST['appointment_date'] ?? null;
-
-if (!$appointment_id || !$new_date) {
-    $_SESSION['error'] = "Missing appointment ID or date.";
+if (!$check || pg_num_rows($check) === 0) {
+    $_SESSION['error'] = "Appointment not found or access denied.";
     header("Location: ../homepage/appointments.php");
     exit;
 }
 
-// ✅ Update appointment with valid enum value
+// Submit reschedule request for admin approval
 $result = pg_query_params(
     $conn,
     "UPDATE appointments
-     SET appointment_date = $1,
-         status = 'confirmed',
-         is_approved = false
-     WHERE appointment_id = $2 AND user_id = $3",
-    [$new_date, $appointment_id, $user_id]
+     SET reschedule_requested = true,
+         reschedule_reason = $1,
+         requested_date = $2,
+         reschedule_approved = NULL
+     WHERE appointment_id = $3 AND user_id = $4",
+    [$reschedule_reason, $new_date, $appointment_id, $user_id]
 );
 
 if ($result && pg_affected_rows($result) > 0) {
-    $_SESSION['reschedule_success'] = "Appointment successfully rescheduled. Awaiting admin approval.";
-    $_SESSION['reopen_modal_id'] = $appointment_id;
+    $_SESSION['success'] = "Reschedule request submitted successfully. Awaiting admin approval.";
 } else {
-    $_SESSION['error'] = "Failed to reschedule.";
+    $_SESSION['error'] = "Failed to submit reschedule request. Please try again.";
 }
 
 pg_close($conn);

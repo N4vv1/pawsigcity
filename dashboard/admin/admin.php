@@ -1166,7 +1166,18 @@ window.toggleSidebar = function() {
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_breed']) ?></td>
             <td><?= htmlspecialchars($row['package_name']) ?></td>
-            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+            <td>
+              <?= htmlspecialchars($row['appointment_date']) ?>
+
+                        <!-- Show reschedule request if pending -->
+              <?php if ($row['reschedule_requested'] && is_null($row['reschedule_approved'])): ?>
+                <div style="margin-top:8px; padding:8px; background:#fff3cd; border-left:3px solid #ffc107; border-radius:4px;">
+                  <strong style="color:#856404;">📅 Reschedule Request:</strong><br>
+                  <span style="color:#856404;"><?= htmlspecialchars($row['requested_date']) ?></span><br>
+                  <em style="color:#666; font-size:0.85rem;"><?= htmlspecialchars($row['reschedule_reason'] ?? 'No reason provided') ?></em>
+                </div>
+              <?php endif; ?>
+            </td>
             <td>
               <?php if ($row['status'] === 'no_show'): ?>
                 <span style="color: red; font-weight: bold;">No Show</span>
@@ -1176,6 +1187,8 @@ window.toggleSidebar = function() {
                 <span style="color: green;">Confirmed</span>
               <?php elseif ($row['status'] === 'cancelled'): ?>
                 <span style="color: red;">Cancelled</span>
+              <?php elseif ($row['reschedule_requested'] && is_null($row['reschedule_approved'])): ?>
+                <span style="color: orange; font-weight: bold;">Reschedule Pending</span>
               <?php elseif (!empty($row['cancel_requested'])): ?>
                 <span style="color: red;">Cancel Requested</span>
               <?php else: ?>

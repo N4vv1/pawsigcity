@@ -826,6 +826,17 @@ error_log("Number of appointments found: " . $row_count);
     flex-direction: column-reverse !important;
   }
 }
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
   </style>
 </head>
 <body>
@@ -869,6 +880,19 @@ error_log("Number of appointments found: " . $row_count);
 </header>
 
 <div class="container">
+
+    <!-- Add this right after opening <div class="container"> -->
+  <?php if (isset($_SESSION['success'])): ?>
+    <div style="background:#d4edda; color:#155724; padding:15px 20px; border-radius:8px; margin-bottom:20px; border-left:4px solid #28a745; font-weight:600; animation:slideDown 0.3s ease;">
+      ✓ <?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if (isset($_SESSION['error'])): ?>
+    <div style="background:#f8d7da; color:#721c24; padding:15px 20px; border-radius:8px; margin-bottom:20px; border-left:4px solid #dc3545; font-weight:600; animation:slideDown 0.3s ease;">
+      ✗ <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+    </div>
+  <?php endif; ?>
 
   <?php if ($row_count > 0): ?>
     <!-- Stats Overview -->
@@ -938,7 +962,26 @@ error_log("Number of appointments found: " . $row_count);
             <tr>
               <td><?= htmlspecialchars($row['pet_name']) ?></td>
               <td><?= htmlspecialchars($row['package_name']) ?></td>
-              <td><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?></td>
+
+              <td>
+                <?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?>
+                
+                <!-- Show reschedule request info if pending -->
+                <?php if ($row['reschedule_requested'] && is_null($row['reschedule_approved'])): ?>
+                  <div style="margin-top:8px; padding:8px; background:#fff3cd; border-left:3px solid #ffc107; border-radius:4px; font-size:0.85rem;">
+                    <strong style="color:#856404;">Reschedule Requested:</strong><br>
+                    <span style="color:#856404;"><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['requested_date']))) ?></span><br>
+                    <em style="color:#666; font-size:0.8rem;">Awaiting admin approval</em>
+                  </div>
+                <?php elseif ($row['reschedule_requested'] && $row['reschedule_approved'] === false): ?>
+                  <div style="margin-top:8px; padding:8px; background:#f8d7da; border-left:3px solid #dc3545; border-radius:4px; font-size:0.85rem;">
+                    <strong style="color:#721c24;">Reschedule Denied</strong><br>
+                    <em style="color:#721c24; font-size:0.8rem;">Please contact us for assistance</em>
+                  </div>
+                <?php endif; ?>
+              </td>
+              
+              <!-- RECOMMENDED COLUMN - Keep it clean -->
               <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
               <td>
                 <?php if ($row['status'] === 'cancelled'): ?>
@@ -1000,7 +1043,7 @@ error_log("Number of appointments found: " . $row_count);
 <div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:2000; backdrop-filter:blur(4px);">
   <div style="background:#fff; border:1px solid #e0e0e0; padding:40px; border-radius:12px; width:90%; max-width:500px; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.15);">
     <h3 style="color:#2c3e50; font-size:24px; font-weight:600; margin-bottom:8px;">Reschedule Appointment</h3>
-    <p style="color:#7f8c8d; font-size:14px; margin-bottom:32px;">Update your appointment details</p>
+    <p style="color:#7f8c8d; font-size:14px; margin-bottom:32px;">Request a new date and time for your appointment</p>
     
     <form action="../appointment/rescheduler-handler.php" method="POST">
       <input type="hidden" name="appointment_id" id="reschedule_appointment_id">
@@ -1010,6 +1053,13 @@ error_log("Number of appointments found: " . $row_count);
         <input type="datetime-local" name="appointment_date" id="appointment_date" required 
                min="<?= date('Y-m-d\TH:i') ?>"
                style="width:100%; padding:12px; background:#f9f9f9; border:1px solid #e0e0e0; border-radius:6px; color:#2c3e50; font-size:16px; font-family:inherit; transition:border-color 0.2s;">
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <label for="reschedule_reason" style="display:block; font-size:13px; color:#7f8c8d; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; font-weight:500;">Reason for Rescheduling</label>
+        <textarea name="reschedule_reason" id="reschedule_reason" rows="3" 
+                  placeholder="Please explain why you need to reschedule..."
+                  style="width:100%; padding:12px; background:#f9f9f9; border:1px solid #e0e0e0; border-radius:6px; color:#2c3e50; font-size:14px; font-family:inherit; resize:vertical; transition:border-color 0.2s;"></textarea>
       </div>
       
       <div style="display:flex; gap:12px; margin-top:32px;">
@@ -1023,7 +1073,7 @@ error_log("Number of appointments found: " . $row_count);
                 style="flex:1; padding:14px 24px; background:linear-gradient(135deg, #7FD4B3 0%, #A8E6CF 100%); color:#2c3e50; border:none; border-radius:6px; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s;" 
                 onmouseover="this.style.background='linear-gradient(135deg, #6CC4A3 0%, #97D6BF 100%)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(127, 212, 179, 0.3)';" 
                 onmouseout="this.style.background='linear-gradient(135deg, #7FD4B3 0%, #A8E6CF 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-          Reschedule
+          Request Reschedule
         </button>
       </div>
     </form>
