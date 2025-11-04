@@ -142,7 +142,7 @@ if ($selected_pet_id) {
 
     // âœ… CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
     $packages_result = pg_query_params($conn, "
-        SELECT pp.price_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
+        SELECT pp.price_id, pp.package_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
         FROM package_prices pp
         JOIN packages p ON pp.package_id = p.package_id
         WHERE pp.species = $1 
@@ -1520,27 +1520,27 @@ select option:disabled:hover {
 
               <!-- âœ… SERVICE/PACKAGE SELECTION -->
               <div class="form-group">
-                <label for="price_id">
+                <label for="package_id">
                   <i class="fas fa-box"></i> Select Service Package
                 </label>
-                <select name="price_id" id="price_id" required>
+                <select name="package_id" id="package_id" required>
                   <option value="">-- Select Package --</option>
                   <?php while ($package = pg_fetch_assoc($packages_result)): ?>
                     <option 
-                      value="<?= $package['price_id'] ?>" 
-                      data-price="<?= $package['price'] ?>"
+                      value="<?= $package['package_id'] ?>" 
+                      data-price="<?= $package['price_id'] ?>"
                       <?= ($recommended_package && stripos($package['name'], $recommended_package) !== false) ? 'selected' : '' ?>
                     >
                       <?= htmlspecialchars($package['name']) ?> 
                       (<?= htmlspecialchars($package['species']) ?> - <?= htmlspecialchars($package['size']) ?>) 
-                      - â‚±<?= number_format($package['price'], 2) ?>
+                      - ₱ <?= number_format($package['price'], 2) ?>
                     </option>
                   <?php endwhile; ?>
                 </select>
                 
                 <div id="package-price-display" style="margin-top: 12px; padding: 14px; background: #f0f8ff; border-radius: 10px; display: none;">
                   <strong style="color: #2c3e50;">Selected Price:</strong> 
-                  <span class="package-price" id="selected-price">â‚±0.00</span>
+                  <span class="package-price" id="selected-price">₱ 0.00</span>
                 </div>
               </div>
           

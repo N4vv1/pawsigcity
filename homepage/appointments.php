@@ -966,14 +966,18 @@ error_log("Number of appointments found: " . $row_count);
               <td>
                 <?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?>
                 
-                <!-- Show reschedule request info if pending -->
-                <?php if ($row['reschedule_requested'] && is_null($row['reschedule_approved'])): ?>
+                  <!-- Show reschedule request info if pending -->
+                <?php if (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
                   <div style="margin-top:8px; padding:8px; background:#fff3cd; border-left:3px solid #ffc107; border-radius:4px; font-size:0.85rem;">
                     <strong style="color:#856404;">Reschedule Requested:</strong><br>
-                    <span style="color:#856404;"><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['requested_date']))) ?></span><br>
+                    <?php if (!empty($row['requested_date'])): ?>
+                      <span style="color:#856404;"><?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['requested_date']))) ?></span><br>
+                    <?php else: ?>
+                      <span style="color:#856404;">Date pending...</span><br>
+                    <?php endif; ?>
                     <em style="color:#666; font-size:0.8rem;">Awaiting admin approval</em>
                   </div>
-                <?php elseif ($row['reschedule_requested'] && $row['reschedule_approved'] === false): ?>
+                <?php elseif (!empty($row['reschedule_requested']) && $row['reschedule_approved'] == 0): ?>
                   <div style="margin-top:8px; padding:8px; background:#f8d7da; border-left:3px solid #dc3545; border-radius:4px; font-size:0.85rem;">
                     <strong style="color:#721c24;">Reschedule Denied</strong><br>
                     <em style="color:#721c24; font-size:0.8rem;">Please contact us for assistance</em>
