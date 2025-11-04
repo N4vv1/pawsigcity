@@ -1362,11 +1362,11 @@ if ($selected_pet_id) {
     <div class="nav-overlay" id="nav-overlay"></div>
 
     <ul class="nav-menu" id="nav-menu">
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i>Home</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i>About</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i>Services</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i>Gallery</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i>Contact</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
+      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
       <li class="nav-item dropdown" id="profile-dropdown">
         <a href="#" class="nav-link profile-icon active">
           <i class="fas fa-user"></i>
@@ -1412,7 +1412,7 @@ if ($selected_pet_id) {
               <div class="pet-card">
                 <div class="pet-card-image">
                   <?php if (!empty($pet['photo_url'])): ?>
-                    <img src="../pets/<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>">
+                    <img src="<?= htmlspecialchars($pet['photo_url']) ?>" alt="<?= htmlspecialchars($pet['name']) ?>">
                   <?php else: ?>
                     <i class="fas fa-paw pet-placeholder"></i>
                   <?php endif; ?>
@@ -1433,7 +1433,7 @@ if ($selected_pet_id) {
           <div class="pet-profile-card">
             <div class="pet-image-container">
               <?php if (!empty($valid_pet['photo_url'])): ?>
-                <img src="../pets/<?= htmlspecialchars($valid_pet['photo_url']) ?>" alt="<?= htmlspecialchars($valid_pet['name']) ?>">
+                <img src="<?= htmlspecialchars($valid_pet['photo_url']) ?>" alt="<?= htmlspecialchars($valid_pet['name']) ?>">
               <?php else: ?>
                 <i class="fas fa-paw pet-placeholder"></i>
               <?php endif; ?>
@@ -1478,17 +1478,6 @@ if ($selected_pet_id) {
             </a>
             
             <h2>Book Grooming Appointment</h2>
-
-            <!-- 🔒 LOCKED NOTICE -->
-            <div class="locked-notice">
-              <i class="fas fa-lock"></i>
-              <div>
-                <strong>Size-Based Pricing Active:</strong> 
-                Packages are filtered for your pet's registered size 
-                (<?= htmlspecialchars($valid_pet['species']) ?> - <?= htmlspecialchars($valid_pet['size']) ?> - <?= htmlspecialchars($valid_pet['weight']) ?> kg).
-                This prevents pricing manipulation.
-              </div>
-            </div>
 
             <form method="POST" action="appointment-handler.php" class="booking-form">
               <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
