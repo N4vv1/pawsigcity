@@ -29,12 +29,22 @@ if (!$total_result) {
 }
 $total_row = pg_fetch_assoc($total_result);
 $total_images = $total_row['total'];
-$total_pages = ceil($total_images / $images_per_page);
+$total_pages = ceil($total_images / $images_per_page); 
 
 // Get images for current page
 $result = pg_query($conn, "SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
 if (!$result) {
     die("Query failed: " . pg_last_error($conn));
+}
+
+// DEBUG: Check what paths are stored (remove this after fixing)
+$debug_result = pg_query($conn, "SELECT image_path FROM gallery LIMIT 1");
+if ($debug_result && pg_num_rows($debug_result) > 0) {
+    $debug_row = pg_fetch_assoc($debug_result);
+    // This will show in HTML comment - check browser source
+    echo "<!-- DEBUG - Database stores: " . htmlspecialchars($debug_row['image_path']) . " -->";
+    echo "<!-- DEBUG - Current file location: " . __FILE__ . " -->";
+    echo "<!-- DEBUG - Document root: " . $_SERVER['DOCUMENT_ROOT'] . " -->";
 }
 ?>
 
@@ -1089,7 +1099,469 @@ if (!$result) {
     font-size: 1.5rem !important;
   }
 }
+/* ===== COMPLETE GALLERY SECTION CSS ===== */
 
+/* Gallery Section Container */
+.gallery-section {
+  padding: 80px 0px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Gallery Title */
+.gallery-section .section-title {
+  text-align: center;
+  font-size: 2.8rem;
+  color: #2c3e50;
+  margin-bottom: 50px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0 15px;
+}
+
+/* Title Underline Decoration */
+.gallery-section .section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #A8E6CF 0%, #7ed6ad 100%);
+  border-radius: 10px;
+}
+
+/* Gallery Container - Centered with Max Width */
+.gallery-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+/* Gallery Grid - 3 Columns Layout */
+.gallery-grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 auto 30px auto;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+}
+
+/* Individual Gallery Item */
+.gallery-item {
+  position: relative;
+  width: 33.333333%; /* 3 columns on desktop */
+  padding-bottom: 25%; /* Height ratio */
+  overflow: hidden;
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid #f0f0f0;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+/* Gallery Item Hover Overlay Background */
+.gallery-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(168, 230, 207, 0.2) 0%, rgba(126, 214, 173, 0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+/* Gallery Item Hover State */
+.gallery-item:hover {
+  z-index: 10;
+  border-color: #A8E6CF;
+}
+
+.gallery-item:hover::before {
+  opacity: 1;
+}
+
+/* Gallery Images */
+.gallery-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Image Zoom on Hover */
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+/* Gallery Overlay with Icon and Text */
+.gallery-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(168, 230, 207, 0.95) 0%, rgba(126, 214, 173, 0.95) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 3;
+}
+
+.gallery-item:hover .gallery-overlay {
+  opacity: 1;
+}
+
+/* Overlay Icon */
+.gallery-overlay i {
+  font-size: 2.5rem;
+  color: #ffffff;
+  animation: zoomPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes zoomPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Overlay Text */
+.gallery-overlay-text {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Empty Gallery State */
+.gallery-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+  animation: fadeIn 1s ease-out;
+  width: 100%;
+}
+
+.gallery-empty i {
+  font-size: 4rem;
+  color: #A8E6CF;
+  margin-bottom: 20px;
+  opacity: 0.4;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.gallery-empty h3 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.gallery-empty p {
+  font-size: 1rem;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== PAGINATION STYLES ===== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  padding: 0 15px;
+}
+
+.pagination a,
+.pagination span {
+  min-width: 50px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: #ffffff;
+  color: #2c3e50;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+}
+
+.pagination a:hover {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
+  border-color: #A8E6CF;
+}
+
+.pagination .active {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
+  transform: scale(1.1);
+  border-color: #7ed6ad;
+}
+
+.pagination .disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #f0f0f0;
+  box-shadow: none;
+}
+
+.pagination a i {
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 12px;
+}
+
+/* ===== LIGHTBOX MODAL ===== */
+
+.lightbox {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.97);
+  justify-content: center;
+  align-items: center;
+  animation: fadeInLightbox 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.lightbox.active {
+  display: flex;
+}
+
+.lightbox-content {
+  max-width: 95%;
+  max-height: 95vh;
+  position: relative;
+  animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lightbox-content img {
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 15px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -60px;
+  right: 0;
+  color: #ffffff;
+  font-size: 3rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(168, 230, 207, 0.9);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.lightbox-close:hover {
+  background: #A8E6CF;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 8px 30px rgba(168, 230, 207, 0.6);
+}
+
+@keyframes fadeInLightbox {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { 
+    transform: scale(0.7); 
+    opacity: 0; 
+  }
+  to { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablets (481px - 968px) - Keep 3 columns */
+@media (max-width: 968px) {
+  .gallery-section {
+    padding: 60px 0px;
+  }
+
+  .gallery-section .section-title {
+    font-size: 2.2rem;
+    margin-bottom: 40px;
+  }
+
+  .gallery-item {
+    width: 33.333333%; /* Keep 3 columns */
+    padding-bottom: 25%;
+  }
+
+  .gallery-overlay i {
+    font-size: 2rem;
+  }
+
+  .gallery-overlay-text {
+    font-size: 0.9rem;
+  }
+
+  .pagination {
+    margin-top: 30px;
+    gap: 10px;
+  }
+
+  .pagination a,
+  .pagination span {
+    min-width: 45px;
+    height: 45px;
+    font-size: 0.95rem;
+  }
+
+  .lightbox-close {
+    top: -50px;
+    width: 50px;
+    height: 50px;
+    font-size: 2.5rem;
+  }
+
+  .gallery-empty {
+    padding: 60px 20px;
+  }
+
+  .gallery-empty i {
+    font-size: 3.5rem;
+  }
+
+  .gallery-empty h3 {
+    font-size: 1.6rem;
+  }
+}
+
+/* Mobile (<= 480px) - 2 columns */
+@media (max-width: 480px) {
+  .gallery-section {
+    padding: 50px 0px;
+  }
+
+  .gallery-section .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+
+  .gallery-item {
+    width: 50%; /* 2 columns on mobile */
+    padding-bottom: 50%; /* Square ratio */
+  }
+
+  .gallery-grid {
+    margin-bottom: 20px;
+  }
+
+  .gallery-overlay i {
+    font-size: 1.8rem;
+  }
+
+  .gallery-overlay-text {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+  .pagination {
+    margin-top: 25px;
+    gap: 8px;
+  }
+
+  .pagination a,
+  .pagination span {
+    min-width: 42px;
+    height: 42px;
+    font-size: 0.9rem;
+  }
+
+  .lightbox-close {
+    top: -50px;
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+
+  .gallery-empty {
+    padding: 50px 15px;
+  }
+
+  .gallery-empty i {
+    font-size: 3rem;
+  }
+
+  .gallery-empty h3 {
+    font-size: 1.4rem;
+  }
+
+  .gallery-empty p {
+    font-size: 0.9rem;
+  }
+}
 </style>
      <?php if ($petCount == 0): ?>
   <div id="petToast" class="pet-toast">
@@ -1186,48 +1658,114 @@ if (!$result) {
       </div>
     </section>
 
-    <!-- Gallery Section -->
+  <!-- Gallery Section - NEW -->
     <section class="gallery-section" id="gallery">
-      <h2 class="section-title">Gallery</h2>
-      <div class="section-content">
-        <div class="gallery-container">
-          <div class="gallery-grid">
-            <ul class="gallery-list" id="gallery-list">
-              <?php if ($result && pg_num_rows($result) > 0): ?>
-                <?php while ($row = pg_fetch_assoc($result)): ?>
-                  <li class="gallery-item">
-                    <div class="gallery-image-container">
-                      <img src="../pawsigcity/dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image" class="gallery-image" />
-                    </div>
-                  </li>
-                <?php endwhile; ?>
-              <?php else: ?>
-                <li class="gallery-item no-images"><p>No images found in the gallery.</p></li>
-              <?php endif; ?>
-            </ul>
+  <h2 class="section-title">Pet Gallery</h2>
+  
+  <div class="gallery-container">
+    <?php if (pg_num_rows($result) > 0): ?>
+      <!-- 3x2 Gallery Grid -->
+      <div class="gallery-grid">
+        <?php while ($image = pg_fetch_assoc($result)): ?>
+          <?php 
+            // Get filename from database path
+            $filename = basename($image['image_path']);
+            // Construct correct path (going up one level from homepage to root, then to dashboard)
+            $imagePath = '../dashboard/gallery_dashboard/uploads/' . $filename;
+            // Debug - remove after fixing
+            echo "<!-- DB Path: " . htmlspecialchars($image['image_path']) . " | Constructed: " . htmlspecialchars($imagePath) . " -->";
+          ?>
+          <div class="gallery-item" onclick="openLightbox('<?= htmlspecialchars($imagePath) ?>')">
+            <img src="<?= htmlspecialchars($imagePath) ?>" 
+                 alt="Pet Gallery Image #<?= $image['id'] ?>"
+                 onerror="console.error('Image failed to load:', this.src); this.parentElement.innerHTML='<div style=\'padding:20px;text-align:center;color:#999;\'>Image not found</div>';">
+            <div class="gallery-overlay">
+              <i class="fas fa-search-plus"></i>
+              <div class="gallery-overlay-text">Click to View</div>
+            </div>
           </div>
-
-          <!-- Pagination -->
-          <div class="gallery-pagination">
-            <?php if ($current_page > 1): ?>
-              <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page - 1; ?>)" class="pagination-btn">&laquo;</a>
-            <?php endif; ?>
-
-            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-              <a href="javascript:void(0)"
-                 onclick="loadGalleryPage(<?php echo $i; ?>)"
-                 class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>">
-                 <?php echo $i; ?>
-              </a>
-            <?php endfor; ?>
-
-            <?php if ($current_page < $total_pages): ?>
-              <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page + 1; ?>)" class="pagination-btn">&raquo;</a>
-            <?php endif; ?>
-          </div>
-        </div>
+        <?php endwhile; ?>
       </div>
-    </section>
+
+      <!-- Pagination: 1 2 3 -->
+      <div class="pagination">
+        <!-- Previous Button -->
+        <?php if ($current_page > 1): ?>
+          <a href="?page=<?= $current_page - 1 ?>#gallery" title="Previous Page">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        <?php else: ?>
+          <span class="disabled">
+            <i class="fas fa-chevron-left"></i>
+          </span>
+        <?php endif; ?>
+
+        <!-- Page Numbers -->
+        <div class="page-numbers">
+          <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <?php if ($i == $current_page): ?>
+              <span class="active"><?= $i ?></span>
+            <?php else: ?>
+              <a href="?page=<?= $i ?>#gallery"><?= $i ?></a>
+            <?php endif; ?>
+          <?php endfor; ?>
+        </div>
+
+        <!-- Next Button -->
+        <?php if ($current_page < $total_pages): ?>
+          <a href="?page=<?= $current_page + 1 ?>#gallery" title="Next Page">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        <?php else: ?>
+          <span class="disabled">
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        <?php endif; ?>
+      </div>
+
+    <?php else: ?>
+      <div class="gallery-empty">
+        <i class="fas fa-images"></i>
+        <h3>No Images Yet</h3>
+        <p>Our gallery will be filled with adorable pet photos soon!</p>
+      </div>
+    <?php endif; ?>
+  </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+    <img id="lightbox-img" src="" alt="Full size image">
+  </div>
+</div>
+
+<script>
+// Lightbox functions - UPDATED
+function openLightbox(imageSrc) {
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  console.log('Opening lightbox with image:', imageSrc); // Debug
+  lightboxImg.src = imageSrc;
+  lightbox.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(event) {
+  if (event) event.stopPropagation();
+  const lightbox = document.getElementById('lightbox');
+  lightbox.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close lightbox on ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeLightbox();
+  }
+});
+</script>
 
     <!-- Contact Section -->
     <section class="contact-section" id="contact">
@@ -1255,15 +1793,18 @@ if (!$result) {
 
   <!-- JavaScript -->
   <script>
+   // Navigation highlight on scroll
     const sections = document.querySelectorAll("section[id]");
     const navLinks = document.querySelectorAll(".nav-link");
 
     window.addEventListener("scroll", () => {
       let scrollY = window.pageYOffset + 130;
+
       sections.forEach((section) => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.offsetHeight;
         const sectionId = section.getAttribute("id");
+
         if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
           navLinks.forEach((link) => {
             link.classList.remove("active");
@@ -1274,29 +1815,6 @@ if (!$result) {
         }
       });
     });
-
-    function loadGalleryPage(page) {
-      const galleryList = document.getElementById('gallery-list');
-      galleryList.classList.add('fade-out');
-
-      setTimeout(() => {
-        fetch(`../dashboard/gallery_dashboard/gallery_load.php?page=${page}`)
-          .then(response => response.json())
-          .then(data => {
-            galleryList.innerHTML = data.html;
-            document.querySelector('.gallery-pagination').innerHTML = data.pagination;
-            const pageInfo = document.querySelector('.gallery-page-info');
-            if (pageInfo) {
-              pageInfo.innerHTML = `
-                <span>Page ${data.current_page} of ${data.total_pages}</span>
-                <span>(${data.total_images} total images)</span>
-              `;
-            }
-            galleryList.classList.remove('fade-out');
-          })
-          .catch(error => console.error('Error loading gallery page:', error));
-      }, 300);
-    }
     // Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
@@ -1362,6 +1880,27 @@ window.addEventListener('resize', function() {
     document.body.style.overflow = '';
   }
 });
+ // Lightbox functions
+    function openLightbox(imageSrc) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      lightboxImg.src = imageSrc;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Close lightbox on ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
   </script>
 </body>
 </html>

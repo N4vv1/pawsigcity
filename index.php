@@ -1,8 +1,8 @@
 <?php 
 require_once 'db.php'; 
 
-// Pagination settings
-$images_per_page = 6; // Number of images per page
+// Pagination settings for gallery
+$images_per_page = 6; // 3x2 grid
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($current_page - 1) * $images_per_page;
 
@@ -16,7 +16,7 @@ $total_images = $total_row['total'];
 $total_pages = ceil($total_images / $images_per_page);
 
 // Get images for current page
-$result = pg_query($conn, "SELECT * FROM gallery ORDER BY uploaded_at DESC LIMIT $images_per_page OFFSET $offset");
+$result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC LIMIT $images_per_page OFFSET $offset");
 if (!$result) {
     die("Query failed: " . pg_last_error($conn));
 }
@@ -389,6 +389,430 @@ if (!$result) {
     display: none;
   }
 }
+<!-- Add this CSS to replace your existing gallery styles -->
+<style>
+/* ===== COMPACT GALLERY - FITS IN ONE VIEWPORT ===== */
+
+/* Gallery Section */
+.gallery-section {
+  padding: 40px 0px 40px 0px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  width: 100%;
+  overflow: hidden;
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-section .section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.gallery-section .section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #A8E6CF 0%, #7ed6ad 100%);
+  border-radius: 10px;
+}
+
+/* Container - CENTERED WITH MAX WIDTH */
+.gallery-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid - FLEXBOX for perfect control */
+.gallery-grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  flex: 1;
+  justify-content: center;
+}
+
+/* SMALLER Gallery Items - 3 per row on desktop */
+.gallery-item {
+  position: relative;
+  width: 33.333333%;
+  padding-bottom: 18%; /* REDUCED from 22% - makes images shorter/more compact */
+  overflow: hidden;
+  cursor: pointer;
+  background: #fff;
+  border: none;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.gallery-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(168, 230, 207, 0.2) 0%, rgba(126, 214, 173, 0.2) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.gallery-item:hover {
+  z-index: 10;
+}
+
+.gallery-item:hover::before {
+  opacity: 1;
+}
+
+.gallery-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+/* Overlay with Icon */
+.gallery-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(168, 230, 207, 0.95) 0%, rgba(126, 214, 173, 0.95) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 3;
+}
+
+.gallery-item:hover .gallery-overlay {
+  opacity: 1;
+}
+
+.gallery-overlay i {
+  font-size: 2.5rem;
+  color: #ffffff;
+  animation: zoomPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes zoomPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.gallery-overlay-text {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Empty Gallery State */
+.gallery-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+  animation: fadeIn 1s ease-out;
+  width: 100%;
+}
+
+.gallery-empty i {
+  font-size: 4rem;
+  color: #A8E6CF;
+  margin-bottom: 20px;
+  opacity: 0.4;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.gallery-empty h3 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.gallery-empty p {
+  font-size: 1rem;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ===== COMPACT PAGINATION ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  padding: 0 15px;
+  width: 100%;
+}
+
+.pagination a,
+.pagination span {
+  min-width: 45px;
+  height: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: #ffffff;
+  color: #2c3e50;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+}
+
+.pagination a:hover {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
+  border-color: #A8E6CF;
+}
+
+.pagination .active {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
+  transform: scale(1.1);
+  border-color: #7ed6ad;
+}
+
+.pagination .disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #f0f0f0;
+  box-shadow: none;
+}
+
+.pagination a i {
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 10px;
+}
+
+/* ===== RESPONSIVE - 3x2 on tablets, 2x3 on mobile ===== */
+
+/* Tablets - KEEP 3 columns */
+@media (max-width: 968px) {
+  .gallery-section {
+    padding: 40px 0px;
+    min-height: auto;
+  }
+
+  .gallery-section .section-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  .gallery-item {
+    width: 33.333333%; /* KEEP 3 columns */
+    padding-bottom: 22%; /* Slightly taller for tablets */
+  }
+
+  .pagination a,
+  .pagination span {
+    min-width: 42px;
+    height: 42px;
+    font-size: 0.95rem;
+  }
+
+  .gallery-overlay i {
+    font-size: 2rem;
+  }
+
+  .gallery-overlay-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile - 2 columns for better fit */
+@media (max-width: 480px) {
+  .gallery-section {
+    padding: 30px 0px;
+  }
+
+  .gallery-section .section-title {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+  }
+
+  .gallery-item {
+    width: 50%; /* 2 columns on mobile */
+    padding-bottom: 50%; /* Square-ish ratio */
+  }
+
+  .gallery-overlay i {
+    font-size: 1.8rem;
+  }
+
+  .gallery-overlay-text {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+  .pagination {
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .pagination a,
+  .pagination span {
+    min-width: 40px;
+    height: 40px;
+    font-size: 0.85rem;
+  }
+
+  .gallery-empty {
+    padding: 60px 20px;
+  }
+
+  .gallery-empty i {
+    font-size: 3rem;
+  }
+
+  .gallery-empty h3 {
+    font-size: 1.4rem;
+  }
+
+  .gallery-empty p {
+    font-size: 0.9rem;
+  }
+}
+
+/* ===== LIGHTBOX MODAL ===== */
+.lightbox {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.97);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.lightbox.active {
+  display: flex;
+}
+
+.lightbox-content {
+  max-width: 95%;
+  max-height: 95vh;
+  position: relative;
+  animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lightbox-content img {
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 15px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -60px;
+  right: 0;
+  color: #ffffff;
+  font-size: 3rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(168, 230, 207, 0.9);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.lightbox-close:hover {
+  background: #A8E6CF;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 8px 30px rgba(168, 230, 207, 0.6);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { 
+    transform: scale(0.7); 
+    opacity: 0; 
+  }
+  to { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+</style>
   </style>
   <!-- Navbar Header -->
   <header>
@@ -1022,58 +1446,78 @@ if (!$result) {
 </section>
 
 
-    <!-- Gallery Section with Pagination -->
-<section class="gallery-section" id="gallery">
-  <h2 class="section-title">Gallery</h2>
-  <div class="section-content">
-    
-    <!-- Gallery Container with Pagination Controls -->
-    <div class="gallery-container">
-      <!-- Gallery Grid -->
-      <div class="gallery-grid">
-        <ul class="gallery-list" id="gallery-list">
-          <?php if ($result && pg_num_rows($result) > 0): ?>
-          <?php while ($row = pg_fetch_assoc($result)): ?>
-              <li class="gallery-item">
-                <div class="gallery-image-container">
-                  <img src="../pawsigcity/dashboard/gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>"
-                       alt="Gallery Image" 
-                       class="gallery-image" />
+    <!-- Gallery Section - NEW -->
+    <section class="gallery-section" id="gallery">
+      <h2 class="section-title">Pet Gallery</h2>
+      
+      <div class="gallery-container">
+        <?php if (pg_num_rows($result) > 0): ?>
+          <!-- 3x2 Gallery Grid -->
+          <div class="gallery-grid">
+            <?php while ($image = pg_fetch_assoc($result)): ?>
+              <div class="gallery-item" onclick="openLightbox('dashboard/gallery_dashboard/uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>')">
+                <img src="dashboard/gallery_dashboard/uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>" 
+                     alt="Pet Gallery Image #<?= $image['id'] ?>">
+                <div class="gallery-overlay">
+                  <i class="fas fa-search-plus"></i>
+                  <div class="gallery-overlay-text">Click to View</div>
                 </div>
-              </li>
+              </div>
             <?php endwhile; ?>
-          <?php else: ?>
-            <li class="gallery-item no-images">
-              <p>No images found in the gallery.</p>
-            </li>
-          <?php endif; ?>
-        </ul>
-      </div>
+          </div>
 
-      <!-- Numbered Pagination -->
-      <div class="gallery-pagination">
-        <?php if ($current_page > 1): ?>
-          <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page - 1; ?>)" class="pagination-btn">&laquo;</a>
+          <!-- Pagination: 1 2 3 -->
+          <div class="pagination">
+            <!-- Previous Button -->
+            <?php if ($current_page > 1): ?>
+              <a href="?page=<?= $current_page - 1 ?>#gallery" title="Previous Page">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            <?php else: ?>
+              <span class="disabled">
+                <i class="fas fa-chevron-left"></i>
+              </span>
+            <?php endif; ?>
+
+            <!-- Page Numbers -->
+            <div class="page-numbers">
+              <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <?php if ($i == $current_page): ?>
+                  <span class="active"><?= $i ?></span>
+                <?php else: ?>
+                  <a href="?page=<?= $i ?>#gallery"><?= $i ?></a>
+                <?php endif; ?>
+              <?php endfor; ?>
+            </div>
+
+            <!-- Next Button -->
+            <?php if ($current_page < $total_pages): ?>
+              <a href="?page=<?= $current_page + 1 ?>#gallery" title="Next Page">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            <?php else: ?>
+              <span class="disabled">
+                <i class="fas fa-chevron-right"></i>
+              </span>
+            <?php endif; ?>
+          </div>
+
+        <?php else: ?>
+          <div class="gallery-empty">
+            <i class="fas fa-images"></i>
+            <h3>No Images Yet</h3>
+            <p>Our gallery will be filled with adorable pet photos soon!</p>
+          </div>
         <?php endif; ?>
-
-        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-          <a href="javascript:void(0)"
-             onclick="loadGalleryPage(<?php echo $i; ?>)"
-             class="pagination-btn <?php echo $i == $current_page ? 'active' : ''; ?>">
-             <?php echo $i; ?>
-          </a>
-        <?php endfor; ?>
-
-        <?php if ($current_page < $total_pages): ?>
-          <a href="javascript:void(0)" onclick="loadGalleryPage(<?php echo $current_page + 1; ?>)" class="pagination-btn">&raquo;</a>
-        <?php endif; ?>
       </div>
-
+    </section>
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-content">
+      <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+      <img id="lightbox-img" src="" alt="Full size image">
     </div>
-
-
   </div>
-</section>
 
 
     <!-- Contact Us Section -->
@@ -1101,154 +1545,119 @@ if (!$result) {
 
   </main>
 
-  <script>
-  const sections = document.querySelectorAll("section[id]");
-  const navLinks = document.querySelectorAll(".nav-link");
+   <script>
+    // Navigation highlight on scroll
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll(".nav-link");
 
-  // Highlight nav link based on scroll
-  window.addEventListener("scroll", () => {
-    let scrollY = window.pageYOffset + 130;
+    window.addEventListener("scroll", () => {
+      let scrollY = window.pageYOffset + 130;
 
-    sections.forEach((section) => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.offsetHeight;
-      const sectionId = section.getAttribute("id");
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionId = section.getAttribute("id");
 
-      if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-        navLinks.forEach((link) => {
-          link.classList.remove("active");
-          if (link.getAttribute("href") === `#${sectionId}`) {
-            link.classList.add("active");
+        if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+          navLinks.forEach((link) => {
+            link.classList.remove("active");
+            if (link.getAttribute("href") === `#${sectionId}`) {
+              link.classList.add("active");
+            }
+          });
+        }
+      });
+    });
+
+    // Hamburger Menu Toggle
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const navOverlay = document.getElementById('nav-overlay');
+    const profileDropdown = document.getElementById('profile-dropdown');
+
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+      navOverlay.classList.toggle('active');
+      document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Close menu when clicking overlay
+    navOverlay.addEventListener('click', function() {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+      navOverlay.classList.remove('active');
+      if (profileDropdown) profileDropdown.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    // Close menu when clicking on regular nav links
+    document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+      link.addEventListener('click', function() {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // Handle profile dropdown - ONLY for mobile (click to toggle)
+    if (profileDropdown) {
+      profileDropdown.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024) {
+          // Only prevent default and toggle on mobile
+          if (e.target.closest('.profile-icon')) {
+            e.preventDefault();
+            this.classList.toggle('active');
           }
-        });
+        }
+        // On desktop, do nothing - CSS :hover handles it
+      });
+    }
+
+    // Close menu when clicking dropdown items
+    document.querySelectorAll('.dropdown-menu a').forEach(link => {
+      link.addEventListener('click', function() {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        if (profileDropdown) profileDropdown.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // Reset on window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 1024) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        if (profileDropdown) profileDropdown.classList.remove('active');
+        document.body.style.overflow = '';
       }
     });
-  });
 
-  // Load gallery page with smooth fade transition
-  function loadGalleryPage(page) {
-    const galleryList = document.getElementById('gallery-list');
-    galleryList.classList.add('fade-out');
+    // Lightbox functions
+    function openLightbox(imageSrc) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      lightboxImg.src = imageSrc;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
 
-    setTimeout(() => {
-      fetch(`../dashboard/gallery_dashboard/gallery_load.php?page=${page}`)
-        .then(response => response.json())
-        .then(data => {
-          // Update gallery content
-          galleryList.innerHTML = data.html;
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
 
-          // Update pagination controls
-          document.querySelector('.gallery-pagination').innerHTML = data.pagination;
-
-          // Update page info if exists
-          const pageInfo = document.querySelector('.gallery-page-info');
-          if (pageInfo) {
-            pageInfo.innerHTML = `
-              <span>Page ${data.current_page} of ${data.total_pages}</span>
-              <span>(${data.total_images} total images)</span>
-            `;
-          }
-
-          galleryList.classList.remove('fade-out');
-        })
-        .catch(error => {
-          console.error('Error loading gallery page:', error);
-        });
-    }, 300); // Match this with CSS transition duration
-  }
-
-  // (Optional) Update next/prev arrows if you're using them
-  function updateArrows(currentPage, totalPages) {
-    const leftArrow = document.querySelector('.gallery-arrow-left');
-    const rightArrow = document.querySelector('.gallery-arrow-right');
-
-    if (leftArrow) {
-      if (currentPage > 1) {
-        leftArrow.onclick = () => loadGalleryPage(currentPage - 1);
-        leftArrow.classList.remove('disabled');
-      } else {
-        leftArrow.onclick = null;
-        leftArrow.classList.add('disabled');
+    // Close lightbox on ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLightbox();
       }
-    }
-
-    if (rightArrow) {
-      if (currentPage < totalPages) {
-        rightArrow.onclick = () => loadGalleryPage(currentPage + 1);
-        rightArrow.classList.remove('disabled');
-      } else {
-        rightArrow.onclick = null;
-        rightArrow.classList.add('disabled');
-      }
-    }
-  }
-
-  
- // Hamburger Menu Toggle
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('nav-menu');
-const navOverlay = document.getElementById('nav-overlay');
-const profileDropdown = document.getElementById('profile-dropdown');
-
-hamburger.addEventListener('click', function() {
-  hamburger.classList.toggle('active');
-  navMenu.classList.toggle('active');
-  navOverlay.classList.toggle('active');
-  document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-});
-
-// Close menu when clicking overlay
-navOverlay.addEventListener('click', function() {
-  hamburger.classList.remove('active');
-  navMenu.classList.remove('active');
-  navOverlay.classList.remove('active');
-  profileDropdown.classList.remove('active');
-  document.body.style.overflow = '';
-});
-
-// Close menu when clicking on regular nav links
-document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
-  link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-});
-
-// Handle profile dropdown - ONLY for mobile (click to toggle)
-profileDropdown.addEventListener('click', function(e) {
-  if (window.innerWidth <= 1024) {
-    // Only prevent default and toggle on mobile
-    if (e.target.closest('.profile-icon')) {
-      e.preventDefault();
-      this.classList.toggle('active');
-    }
-  }
-  // On desktop, do nothing - CSS :hover handles it
-});
-
-// Close menu when clicking dropdown items
-document.querySelectorAll('.dropdown-menu a').forEach(link => {
-  link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-});
-
-// Reset on window resize
-window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-});
-</script>
+    });
+  </script>
 </body>
 </html>

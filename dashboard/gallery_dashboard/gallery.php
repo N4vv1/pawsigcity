@@ -3,18 +3,20 @@ session_start();
 require '../../db.php';
 require_once '../admin/check_admin.php';
 
-$result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
+// Fetch all gallery images
+$query = "SELECT * FROM gallery ORDER BY id ASC";
+$result = pg_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin | Gallery</title>
+  <title>Admin | Pet Gallery</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
-  
+
   <style>
     :root {
       --white-color: #fff;
@@ -31,7 +33,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       --font-weight-bold: 700;
       --border-radius-s: 8px;
       --border-radius-circle: 50%;
-      --site-max-width: 1300px;
       --sidebar-width: 260px;
       --transition-speed: 0.3s;
       --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -49,7 +50,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       display: flex;
     }
 
-    /* MOBILE MENU BUTTON */
     .mobile-menu-btn {
       display: none;
       position: fixed;
@@ -74,7 +74,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       background: var(--secondary-color);
     }
 
-    /* SIDEBAR OVERLAY */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -155,7 +154,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       margin: 9px 0;
     }
 
-    /* Dropdown styles */
     .dropdown {
       position: relative;
     }
@@ -173,7 +171,8 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       cursor: pointer;
     }
 
-    .dropdown-toggle:hover {
+    .dropdown-toggle:hover,
+    .dropdown-toggle.active {
       background-color: var(--secondary-color);
       color: var(--dark-color);
     }
@@ -207,134 +206,296 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
 
     .add-btn {
       background: var(--primary-color);
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: var(--border-radius-s);
       text-decoration: none;
       color: var(--dark-color);
       font-weight: var(--font-weight-semi-bold);
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 20px;
       cursor: pointer;
       border: none;
+      font-size: var(--font-size-n);
+      transition: background 0.3s;
     }
 
     .add-btn:hover {
       background: var(--secondary-color);
     }
 
+    /* Table Container */
+    .table-container {
+      background: var(--white-color);
+      border-radius: var(--border-radius-s);
+      box-shadow: var(--shadow-light);
+      overflow: hidden;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: var(--white-color);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      min-width: 800px;
     }
 
-    th, td {
-      padding: 14px 10px;
-      border: 1px solid var(--medium-gray-color);
-      text-align: center;
+    thead {
+      background-color: var(--primary-color);
     }
 
-    th {
-      background: var(--primary-color);
-      font-weight: var(--font-weight-bold);
-      color: var(--dark-color);
-    }
-
-    img {
-      width: 100px;
-      height: auto;
-      border-radius: var(--border-radius-s);
-    }
-
-    .actions a {
-      padding: 6px 14px;
-      font-size: var(--font-size-s);
+    thead th {
+      padding: 18px 20px;
+      text-align: left;
       font-weight: var(--font-weight-semi-bold);
-      text-decoration: none;
-      margin: 0 5px;
-      border-radius: var(--border-radius-s);
-      display: inline-block;
-      cursor: pointer;
+      color: var(--dark-color);
+      font-size: var(--font-size-n);
+      white-space: nowrap;
     }
 
-    .edit-btn {
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    tbody td {
+      padding: 18px 20px;
+      color: var(--dark-color);
+      font-size: 0.95rem;
+      vertical-align: middle;
+    }
+
+    .image-preview {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: var(--border-radius-s);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .image-preview:hover {
+      transform: scale(1.05);
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: var(--border-radius-s);
+      font-weight: var(--font-weight-semi-bold);
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .btn-edit {
       background-color: var(--secondary-color);
       color: var(--dark-color);
     }
 
-    .edit-btn:hover {
+    .btn-edit:hover {
       background-color: #fdd56c;
     }
 
-    .delete-btn {
+    .btn-delete {
       background-color: #ff6b6b;
       color: var(--white-color);
     }
 
-    .delete-btn:hover {
+    .btn-delete:hover {
       background-color: #ff4949;
     }
 
+    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(5px);
-      align-items: center;
-      justify-content: center;
       z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
     }
 
     .modal-content {
-      background: var(--white-color);
-      padding: 40px 30px;
-      border-radius: 20px;
-      width: 95%;
-      max-width: 520px;
+      background-color: var(--white-color);
+      padding: 2rem;
+      border-radius: var(--border-radius-s);
+      width: 100%;
+      max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
-      animation: fadeIn 0.25s ease-in-out;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h2 {
+      margin-bottom: 1rem;
+      color: var(--dark-color);
       text-align: center;
     }
 
-    .modal-content .close-btn {
+    .close {
       position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 26px;
-      font-weight: bold;
+      right: 1rem;
+      top: 1rem;
+      font-size: 1.5rem;
+      color: var(--dark-color);
       cursor: pointer;
-      color: #888;
-      transition: color 0.2s ease-in-out;
     }
 
-    .modal-content .close-btn:hover {
-      color: #000;
+    .file-input-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1.5rem;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+    .file-input-wrapper input[type="file"] {
+      display: none;
     }
 
-    /* RESPONSIVE DESIGN */
-    @media screen and (max-width: 1024px) {
-      table {
-        font-size: 0.9rem;
-      }
-
-      th, td {
-        padding: 12px 8px;
-      }
+    .file-input-label {
+      display: block;
+      width: 100%;
+      padding: 0.9rem;
+      background-color: var(--light-pink-color);
+      border: 2px dashed var(--medium-gray-color);
+      border-radius: var(--border-radius-s);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
     }
 
+    .file-input-label:hover {
+      border-color: var(--primary-color);
+      background-color: var(--white-color);
+    }
+
+    .file-preview {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .file-preview img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: var(--border-radius-s);
+      box-shadow: var(--shadow-light);
+    }
+
+    .input-submit {
+      width: 100%;
+      padding: 0.9rem;
+      background-color: var(--primary-color);
+      color: var(--dark-color);
+      font-size: var(--font-size-n);
+      border: none;
+      border-radius: var(--border-radius-s);
+      font-weight: var(--font-weight-semi-bold);
+      cursor: pointer;
+    }
+
+    .input-submit:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10000;
+      animation: fadeOut 4s forwards;
+    }
+
+    .toast-success {
+      background-color: #eaffea;
+      color: #2d8a2d;
+    }
+
+    .toast-error {
+      background-color: #ffeaea;
+      color: #e74c3c;
+    }
+
+    @keyframes fadeOut {
+      0%, 90% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    /* Image View Modal */
+    .image-modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .image-modal-content {
+      max-width: 90%;
+      max-height: 90vh;
+      position: relative;
+    }
+
+    .image-modal-content img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--border-radius-s);
+    }
+
+    .image-modal .close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      font-size: 2rem;
+      color: var(--white-color);
+      cursor: pointer;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: var(--medium-gray-color);
+      margin-bottom: 20px;
+    }
+
+    /* Responsive */
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -355,26 +516,29 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
       }
 
       table {
+        min-width: 600px;
+      }
+
+      thead th,
+      tbody td {
+        padding: 12px 10px;
         font-size: 0.85rem;
       }
 
-      th, td {
-        padding: 10px 8px;
+      .image-preview {
+        width: 60px;
+        height: 60px;
       }
 
-      .modal-content {
-        width: 95%;
-        padding: 20px;
-        max-height: 90vh;
+      .actions-cell {
+        flex-direction: column;
+        gap: 6px;
+        align-items: stretch;
       }
 
-      .modal-content table {
-        font-size: 0.8rem;
-      }
-
-      .modal-content table th,
-      .modal-content table td {
-        padding: 8px 6px;
+      .btn {
+        width: 100%;
+        justify-content: center;
       }
     }
 
@@ -383,34 +547,21 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
         padding: 70px 15px 30px;
       }
 
-      .sidebar .logo img {
-        width: 60px;
-        height: 60px;
-      }
-
-      .menu a {
-        padding: 8px 10px;
-        font-size: 0.9rem;
-      }
-
-      .menu a i {
-        font-size: 18px;
-      }
-
       h2 {
         font-size: 1.5rem;
       }
 
+      .add-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
       table {
-        font-size: 0.75rem;
+        min-width: 500px;
       }
 
-      th, td {
-        padding: 8px 5px;
-      }
-
-      img {
-        width: 60px;
+      .modal-content {
+        padding: 1.5rem;
       }
     }
   </style>
@@ -434,7 +585,6 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
-    <!-- USERS DROPDOWN -->
     <div class="dropdown">
       <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
@@ -457,56 +607,135 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC");
   </nav>
 </aside>
 
+<!-- Main Content -->
 <main class="content">
-  <button class="add-btn" onclick="openModal('../gallery_dashboard/gallery_add.php')">+ Add New Image</button>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Preview</th>
-        <th>Filename</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
+  <h2>Pet Gallery</h2>
+  
+  <button class="add-btn" onclick="openAddModal()">
+    ➕ Add New User
+  </button>
+
+  <div class="table-container">
+    <div class="table-wrapper">
       <?php if (pg_num_rows($result) > 0): ?>
-        <?php while ($row = pg_fetch_assoc($result)): ?>
+      <table>
+        <thead>
           <tr>
-            <td><?php echo $row['id']; ?></td>
-            <td><img src="../gallery_images/<?php echo htmlspecialchars($row['image_path']); ?>" alt="Gallery Image"></td>
-            <td><?php echo htmlspecialchars($row['image_path']); ?></td>
-            <td class="actions">
-              <a class="edit-btn" onclick="openModal('../gallery_dashboard/gallery_edit.php?id=<?php echo $row['id']; ?>')">Edit</a>
-              <a href="../gallery_dashboard/gallery_delete.php?id=<?php echo $row['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this image?')">Delete</a>
+            <th>Image ID</th>
+            <th>Preview</th>
+            <th>Uploaded Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php while ($image = pg_fetch_assoc($result)): ?>
+          <tr>
+            <td><?= $image['id'] ?></td>
+            <td>
+              <img src="uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>" 
+                   alt="Pet Gallery Image"
+                   class="image-preview"
+                   onclick="viewImage('uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>')">
+            </td>
+            <td><?= date('F j, Y', strtotime($image['uploaded_at'])) ?></td>
+            <td>
+              <div class="actions-cell">
+                <button class="btn btn-edit" onclick="openEditModal(<?= $image['id'] ?>, 'uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>')">
+                  Edit
+                </button>
+                <form method="POST" action="delete_image.php" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this image?')">
+                  <input type="hidden" name="image_id" value="<?= $image['id'] ?>">
+                  <button type="submit" class="btn btn-delete">
+                    Delete
+                  </button>
+                </form>
+              </div>
             </td>
           </tr>
-        <?php endwhile; ?>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
       <?php else: ?>
-        <tr><td colspan="4">No images found.</td></tr>
+      <div class="empty-state">
+        <i class='bx bx-image'></i>
+        <h3>No images in gallery</h3>
+        <p>Click "Add New Image" to upload your first image</p>
+      </div>
       <?php endif; ?>
-    </tbody>
-  </table>
+    </div>
+  </div>
 </main>
 
-<!-- Modal -->
-<div class="modal" id="dynamicModal">
+<!-- Add Image Modal -->
+<div id="addModal" class="modal">
   <div class="modal-content">
-    <span class="close-btn" onclick="closeModal()">&times;</span>
-    <div id="modalBody">Loading...</div>
+    <span class="close" onclick="closeAddModal()">&times;</span>
+    <h2>Add New Image</h2>
+    <form method="POST" action="add_image.php" enctype="multipart/form-data">
+      <div class="file-input-wrapper">
+        <input type="file" id="imageFile" name="image" accept="image/*" required onchange="previewImage(this, 'addPreview')">
+        <label for="imageFile" class="file-input-label">
+          <i class='bx bx-upload' style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+          <strong>Choose Image File</strong>
+          <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">JPG, PNG, GIF, WEBP (Max 5MB)</p>
+        </label>
+        <div id="addPreview" class="file-preview"></div>
+      </div>
+
+      <div>
+        <input type="submit" class="input-submit" value="Upload Image" />
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Image Modal -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+    <h2>Replace Image</h2>
+    <form method="POST" action="edit_image.php" enctype="multipart/form-data">
+      <input type="hidden" id="edit_image_id" name="image_id">
+      <input type="hidden" id="edit_current_path" name="current_image_path">
+
+      <div class="file-preview" id="editCurrentImage" style="margin-bottom: 15px;">
+        <p style="margin-bottom: 10px; font-weight: 600;">Current Image:</p>
+      </div>
+
+      <div class="file-input-wrapper">
+        <input type="file" id="editImageFile" name="image" accept="image/*" required onchange="previewImage(this, 'editPreview')">
+        <label for="editImageFile" class="file-input-label">
+          <i class='bx bx-upload' style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+          <strong>Choose New Image</strong>
+          <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">JPG, PNG, GIF, WEBP (Max 5MB)</p>
+        </label>
+        <div id="editPreview" class="file-preview"></div>
+      </div>
+
+      <div>
+        <input type="submit" class="input-submit" value="Replace Image" />
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Image View Modal -->
+<div id="imageModal" class="image-modal" onclick="closeImageModal()">
+  <div class="image-modal-content">
+    <span class="close">&times;</span>
+    <img id="modalImage" src="" alt="">
   </div>
 </div>
 
 <script>
 function toggleDropdown(event) {
   event.preventDefault();
-  event.stopPropagation(); // IMPORTANT: Stop event from bubbling up
+  event.stopPropagation();
   const dropdown = event.currentTarget.nextElementSibling;
   dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 }
 
-// Close dropdown if clicked outside
 document.addEventListener('click', function(event) {
-  // Check if click is outside dropdown
   if (!event.target.closest('.dropdown')) {
     const dropdowns = document.getElementsByClassName("dropdown-menu");
     for (let i = 0; i < dropdowns.length; i++) {
@@ -525,37 +754,67 @@ function toggleSidebar() {
   }
 }
 
-function openModal(url) {
-  const modal = document.getElementById("dynamicModal");
-  const modalBody = document.getElementById("modalBody");
-  modal.style.display = "flex";
-  modalBody.innerHTML = "Loading...";
-  fetch(url)
-    .then(res => res.text())
-    .then(html => modalBody.innerHTML = html)
-    .catch(() => modalBody.innerHTML = '<p style="color:red">Failed to load content.</p>');
+function openAddModal() {
+  document.getElementById('addModal').style.display = 'flex';
 }
 
-function closeModal() {
-  document.getElementById("dynamicModal").style.display = "none";
-  document.getElementById("modalBody").innerHTML = "";
+function closeAddModal() {
+  document.getElementById('addModal').style.display = 'none';
+  document.getElementById('addPreview').innerHTML = '';
 }
 
-// Close sidebar when clicking a link on mobile
-document.addEventListener('DOMContentLoaded', function() {
-  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)'); // Exclude dropdown toggle
-  menuLinks.forEach(link => {
-    link.addEventListener('click', function() {
-      if (window.innerWidth <= 768) {
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.sidebar-overlay');
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-      }
-    });
-  });
-});
+function openEditModal(id, imagePath) {
+  document.getElementById('edit_image_id').value = id;
+  document.getElementById('edit_current_path').value = imagePath;
+  
+  document.getElementById('editCurrentImage').innerHTML = 
+    '<p style="margin-bottom: 10px; font-weight: 600;">Current Image:</p>' +
+    '<img src="' + imagePath + '" style="max-width: 100%; max-height: 200px; border-radius: 8px;">';
+  
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+  document.getElementById('editPreview').innerHTML = '';
+}
+
+function viewImage(imageUrl) {
+  document.getElementById('modalImage').src = imageUrl;
+  document.getElementById('imageModal').style.display = 'flex';
+}
+
+function closeImageModal() {
+  document.getElementById('imageModal').style.display = 'none';
+}
+
+function previewImage(input, previewId) {
+  const preview = document.getElementById(previewId);
+  preview.innerHTML = '';
+  
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+    }
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+window.onclick = function(event) {
+  const addModal = document.getElementById('addModal');
+  const editModal = document.getElementById('editModal');
+  
+  if (event.target === addModal) closeAddModal();
+  if (event.target === editModal) closeEditModal();
+}
 </script>
+
+<?php if (isset($_SESSION['success'])): ?>
+  <div class="toast toast-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+<?php elseif (isset($_SESSION['error'])): ?>
+  <div class="toast toast-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+<?php endif; ?>
 
 </body>
 </html>
