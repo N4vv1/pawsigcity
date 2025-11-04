@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (isset($_FILES['photo_url']) && $_FILES['photo_url']['error'] === UPLOAD_ERR_OK) {
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $file_type = $_FILES['_url']['type'];
+        $file_type = $_FILES['photo_url']['type'];
 
         if (in_array($file_type, $allowed_types)) {
             // Get Supabase credentials
