@@ -546,7 +546,6 @@ th {
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
-    <!-- USERS DROPDOWN -->
     <div class="dropdown">
       <a href="javascript:void(0)" class="dropdown-toggle active" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
@@ -557,6 +556,20 @@ th {
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
       </div>
     </div>
+
+    <hr>
+
+     <!-- SERVICES DROPDOWN -->
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+          <span><i class='bx bx-spa'></i> Services</span>
+          <i class='bx bx-chevron-down'></i>
+        </a>
+        <div class="dropdown-menu">
+           <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
+          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
+        </div>
+      </div>
 
     <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>

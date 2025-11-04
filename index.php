@@ -20,6 +20,51 @@ $result = pg_query($conn, "SELECT * FROM gallery ORDER BY id ASC LIMIT $images_p
 if (!$result) {
     die("Query failed: " . pg_last_error($conn));
 }
+// Pagination settings for services
+$services_per_page = 6;
+$current_service_page = isset($_GET['service_page']) ? max(1, intval($_GET['service_page'])) : 1;
+$service_offset = ($current_service_page - 1) * $services_per_page;
+
+// Get total number of active services
+$total_services_result = pg_query($conn, "SELECT COUNT(*) as total FROM packages WHERE is_active = true");
+if (!$total_services_result) {
+    die("Query failed: " . pg_last_error($conn));
+}
+$total_services_row = pg_fetch_assoc($total_services_result);
+$total_services = $total_services_row['total'];
+$total_service_pages = ceil($total_services / $services_per_page);
+
+// Get services for current page with price range
+$services_query = "
+    SELECT 
+        p.package_id,
+        p.name as service_name,
+        p.description,
+        MIN(pp.price) as min_price,
+        MAX(pp.price) as max_price
+    FROM packages p
+    LEFT JOIN package_prices pp ON p.package_id = pp.package_id
+    WHERE p.is_active = true 
+    GROUP BY p.package_id, p.name, p.description
+    ORDER BY p.package_id ASC 
+    LIMIT $services_per_page 
+    OFFSET $service_offset
+";
+$services_result = pg_query($conn, $services_query);
+if (!$services_result) {
+    die("Query failed: " . pg_last_error($conn));
+}
+
+// Map static images based on service name
+function getServiceImage($serviceName) {
+    $imageMap = [
+        'Basic Groom' => './homepage/images/bnd.png',
+        'Full Groom' => './homepage/images/fullgroom.png',
+        'Spa Bath' => './homepage/images/bathdry.png',
+    ];
+    return isset($imageMap[$serviceName]) ? $imageMap[$serviceName] : './homepage/images/default-service.png';
+}
+?>
 ?>
 
 <!DOCTYPE html>
@@ -812,6 +857,73 @@ if (!$result) {
     opacity: 1; 
   }
 }
+/* Service pricing styles */
+.service-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #A8E6CF;
+  margin: 15px 0 8px 0;
+  text-align: center;
+}
+
+.service-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+  animation: fadeIn 1s ease-out;
+  width: 100%;
+}
+
+.service-empty i {
+  font-size: 4rem;
+  color: #A8E6CF;
+  margin-bottom: 20px;
+  opacity: 0.4;
+  animation: float 3s ease-in-out infinite;
+}
+
+.service-empty h3 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.service-empty p {
+  font-size: 1rem;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.service-pagination {
+  margin-top: 40px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 968px) {
+  .service-price {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-price {
+    font-size: 1.1rem;
+  }
+  
+  .service-empty {
+    padding: 60px 15px;
+  }
+  
+  .service-empty i {
+    font-size: 3rem;
+  }
+  
+  .service-empty h3 {
+    font-size: 1.5rem;
+  }
+}
 </style>
   </style>
   <!-- Navbar Header -->
@@ -1359,7 +1471,254 @@ if (!$result) {
     font-size: 1.5rem !important;
   }
 }
+.service-section {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+}
 
+.service-section .section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 40px;
+  font-weight: 700;
+}
+
+/* Service Grid Layout */
+.service-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+/* Service Card */
+.service-item {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 3px solid transparent;
+}
+
+.service-item:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 15px 40px rgba(168, 230, 207, 0.4);
+  border-color: #A8E6CF;
+}
+
+.service-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 25px;
+  text-decoration: none;
+  height: 100%;
+  text-align: center;
+}
+
+/* Service Icon Styling */
+.service-icon {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 20px rgba(168, 230, 207, 0.3);
+}
+
+.service-icon i {
+  font-size: 2.5rem;
+  color: #ffffff;
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.service-item:hover .service-icon {
+  transform: scale(1.15) rotate(10deg);
+  box-shadow: 0 12px 30px rgba(168, 230, 207, 0.5);
+}
+
+/* Service Title */
+.service-link .name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+
+.service-item:hover .name {
+  color: #16a085;
+}
+
+/* Service Description */
+.service-link .text {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+/* Service Price */
+.service-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #A8E6CF;
+  margin: 15px 0 0 0;
+  text-align: center;
+}
+
+/* Empty State */
+.service-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+  animation: fadeIn 1s ease-out;
+  width: 100%;
+}
+
+.service-empty i {
+  font-size: 4rem;
+  color: #A8E6CF;
+  margin-bottom: 20px;
+  opacity: 0.4;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.service-empty h3 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.service-empty p {
+  font-size: 1rem;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.service-pagination {
+  margin-top: 40px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablets */
+@media (max-width: 968px) {
+  .service-section {
+    padding: 60px 15px;
+  }
+  
+  .service-list {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+  }
+  
+  .service-icon {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .service-icon i {
+    font-size: 2.2rem;
+  }
+  
+  .service-link .name {
+    font-size: 1.3rem;
+  }
+  
+  .service-price {
+    font-size: 1.3rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .service-section {
+    padding: 50px 15px;
+  }
+  
+  .service-list {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .service-icon {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .service-icon i {
+    font-size: 2rem;
+  }
+  
+  .service-link {
+    padding: 30px 20px;
+  }
+  
+  .service-link .name {
+    font-size: 1.2rem;
+  }
+  
+  .service-link .text {
+    font-size: 0.95rem;
+  }
+  
+  .service-price {
+    font-size: 1.2rem;
+  }
+  
+  .service-empty {
+    padding: 60px 15px;
+  }
+  
+  .service-empty i {
+    font-size: 3rem;
+  }
+  
+  .service-empty h3 {
+    font-size: 1.5rem;
+  }
+}
+/* ===== ABOUT & CONTACT SECTION TITLE STYLES ===== */
+.about-section .section-title,
+.contact-section .section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 40px;
+  font-weight: 700;
+}
 
 </style>
 
@@ -1406,45 +1765,83 @@ if (!$result) {
     </section>
     
     <!-- Services Section -->
-<section class="service-section" id="service">
+<!-- Services Section -->
+  <section class="service-section" id="service">
   <h2 class="section-title">Our Services</h2>
+  
   <div class="section-content">
-    <ul class="service-list">
-
+    <?php if (pg_num_rows($services_result) > 0): ?>
+      <ul class="service-list">
+          <?php while ($service = pg_fetch_assoc($services_result)): ?>
       <li class="service-item">
-        <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="./homepage/images/fullgroom.png" alt="Full Grooming" class="service-image" />
-          <h3 class="name">FULL GROOMING</h3>
-          <p class="text">
-            Our Full Grooming package includes a warm bath, blow dry, nail trim, tooth brushing, ear cleaning, and a stylish haircut — everything your pet needs to look and feel their best.
-          </p>
+        <a href="../appointment/book-appointment.php?service=<?= urlencode($service['service_name']) ?>" class="service-link">
+          <!-- NEW: Service Icon -->
+          <div class="service-icon">
+            <i class="fas fa-cut"></i>
+          </div>
+          <h3 class="name"><?= htmlspecialchars($service['service_name']) ?></h3>
+          <p class="text"><?= htmlspecialchars($service['description']) ?></p>
+          <?php if ($service['min_price']): ?>
+            <p class="service-price">
+              <?php if ($service['min_price'] == $service['max_price']): ?>
+                ₱<?= number_format($service['min_price'], 2) ?>
+              <?php else: ?>
+                ₱<?= number_format($service['min_price'], 2) ?> - ₱<?= number_format($service['max_price'], 2) ?>
+              <?php endif; ?>
+            </p>
+          <?php endif; ?>
         </a>
       </li>
+    <?php endwhile; ?>
+      </ul>
 
-      <li class="service-item">
-        <a href="./homepage/images/bathdry.png" class="service-link">
-          <img src="./homepage/images/bathdry.png" alt="Spa Bath" class="service-image" />
-          <h3 class="name">SPA BATH</h3>
-          <p class="text">
-            Pamper your pet with our luxurious Spa Bath, which features a nano bubble bath, gentle massage, blow dry, nail trim, tooth brushing, and ear cleaning. This package also includes a stylish haircut, odor eliminator, and paw moisturizer for a complete spa experience.
-          </p>
-        </a>
-      </li>
+      <!-- Pagination (only show if more than one page) -->
+      <?php if ($total_service_pages > 1): ?>
+        <div class="pagination service-pagination">
+          <!-- Previous Button -->
+          <?php if ($current_service_page > 1): ?>
+            <a href="?service_page=<?= $current_service_page - 1 ?>#service" title="Previous Page">
+              <i class="fas fa-chevron-left"></i>
+            </a>
+          <?php else: ?>
+            <span class="disabled">
+              <i class="fas fa-chevron-left"></i>
+            </span>
+          <?php endif; ?>
 
-      <li class="service-item">
-        <a href="../homepage/login/loginform.php" class="service-link">
-          <img src="./homepage/images/bnd.png" alt="Bath and Dry" class="service-image" />
-          <h3 class="name">BATH AND DRY</h3>
-          <p class="text">
-            A quick and refreshing service that includes a full bath and gentle blow dry — ideal for keeping your pet clean between full grooming sessions.
-          </p>
-        </a>
-      </li>
+          <!-- Page Numbers -->
+          <div class="page-numbers">
+            <?php for ($i = 1; $i <= $total_service_pages; $i++): ?>
+              <?php if ($i == $current_service_page): ?>
+                <span class="active"><?= $i ?></span>
+              <?php else: ?>
+                <a href="?service_page=<?= $i ?>#service"><?= $i ?></a>
+              <?php endif; ?>
+            <?php endfor; ?>
+          </div>
 
-    </ul>
+          <!-- Next Button -->
+          <?php if ($current_service_page < $total_service_pages): ?>
+            <a href="?service_page=<?= $current_service_page + 1 ?>#service" title="Next Page">
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          <?php else: ?>
+            <span class="disabled">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
+
+    <?php else: ?>
+      <div class="service-empty">
+        <i class="fas fa-spa"></i>
+        <h3>No Services Available</h3>
+        <p>We're updating our service offerings. Please check back soon!</p>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
-
 
     <!-- Gallery Section - NEW -->
     <section class="gallery-section" id="gallery">
