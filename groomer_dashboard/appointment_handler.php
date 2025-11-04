@@ -44,7 +44,7 @@ if (pg_num_rows($package_check) === 0) {
 // ✅ FIXED: Validate groomer exists and is active (removed DATE check)
 // Changed table name from 'groomers' to match your database
 $groomer_check = pg_query_params($conn, "
-    SELECT groomer_id FROM groomers 
+    SELECT groomer_id FROM groomer
     WHERE groomer_id = $1 AND is_active = true
 ", [$groomer_id]);
 
