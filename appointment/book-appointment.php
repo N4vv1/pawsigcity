@@ -52,6 +52,13 @@ function getAppointmentCounts($conn) {
 
 // ✅ Get appointment counts (NO ML PREDICTIONS - JUST REAL DATA)
 $appointment_counts = getAppointmentCounts($conn);
+$groomers_result = pg_query($conn, "
+    SELECT groomer_id, groomer_name 
+    FROM groomers 
+    WHERE is_active = true 
+    AND DATE(last_active) = CURRENT_DATE
+    ORDER BY groomer_name ASC
+");
 
 // ✅ Check pet ownership if selected
 if ($selected_pet_id) {
@@ -1429,7 +1436,6 @@ if ($selected_pet_id) {
         </div>
       <?php else: ?>
         <div class="content-grid">
-          <!-- Pet Profile Card - Left Side -->
           <div class="pet-profile-card">
             <div class="pet-image-container">
               <?php if (!empty($valid_pet['photo_url'])): ?>
@@ -1471,7 +1477,6 @@ if ($selected_pet_id) {
             </div>
           </div>
 
-          <!-- Booking Form - Right Side -->
           <div class="booking-section">
             <a href="book-appointment.php" class="back-link">
               <i class="fas fa-arrow-left"></i> Choose Another Pet
@@ -1492,7 +1497,7 @@ if ($selected_pet_id) {
 
               <div class="form-group">
                 <label for="package_id">
-                  <i class="fas fa-box"></i> Select Grooming Package (Filtered for Your Pet)
+                  <i class="fas fa-box"></i> Select Grooming Package
                 </label>
                 <select name="package_id" id="package_id" required>
                   <option value="">-- Select Package --</option>
@@ -1508,31 +1513,36 @@ if ($selected_pet_id) {
                 </select>
               </div>
 
+              <!-- 🆕 Groomer Selection -->
+              <div class="form-group">
+                <label for="groomer_id">
+                  <i class="fas fa-user-md"></i> Select Groomer
+                </label>
+                <?php if (pg_num_rows($groomers_result) > 0): ?>
+                  <select name="groomer_id" id="groomer_id" required>
+                    <option value="">-- Select Groomer --</option>
+                    <?php while ($groomer = pg_fetch_assoc($groomers_result)): ?>
+                      <option value="<?= $groomer['groomer_id'] ?>">
+                        <?= htmlspecialchars($groomer['groomer_name']) ?>
+                      </option>
+                    <?php endwhile; ?>
+                  </select>
+                <?php else: ?>
+                  <div class="no-groomers-notice">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    No groomers are currently available today. Please try again later or contact support.
+                  </div>
+                  <select name="groomer_id" disabled>
+                    <option>No groomers available</option>
+                  </select>
+                <?php endif; ?>
+              </div>
+
               <div class="form-group">
                 <label for="appointment_date">
                   <i class="fas fa-calendar-alt"></i> Appointment Date and Time
                 </label>
-                <div class="datetime-container">
-                  <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
-                  <div class="availability-indicator" id="availabilityIndicator">Select date/time</div>
-                </div>
-                <div class="legend-container">
-                  <div class="legend-title">📅 Calendar Legend:</div>
-                  <div class="legend-items">
-                    <div class="legend-item">
-                      <span class="legend-color available"></span>
-                      <span>Available (0-2 bookings)</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-color busy"></span>
-                      <span>Busy (3-4 bookings)</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-color full"></span>
-                      <span>Full (5+ bookings)</span>
-                    </div>
-                  </div>
-                </div>
+                <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
               </div>
               
               <div class="form-group">
@@ -1542,7 +1552,7 @@ if ($selected_pet_id) {
                 <textarea name="notes" id="notes" rows="3" placeholder="Any special care instructions for your pet..."></textarea>
               </div>
 
-              <button type="submit" class="submit-btn">
+              <button type="submit" class="submit-btn" <?= (pg_num_rows($groomers_result) == 0) ? 'disabled' : '' ?>>
                 <i class="fas fa-check-circle"></i> Confirm Appointment
               </button>
             </form>
@@ -1552,8 +1562,9 @@ if ($selected_pet_id) {
     </div>
   </div>
 
+
   <script>
-  const appointmentCounts = <?= json_encode($appointment_counts) ?>;
+   const appointmentCounts = <?= json_encode($appointment_counts) ?>;
   const MAX_APPOINTMENTS = 5;
 
   function getAppointmentCount(date, hour) {
@@ -1571,12 +1582,9 @@ if ($selected_pet_id) {
 
   function updateAvailabilityIndicator() {
     const dateInput = document.getElementById('appointment_date');
-    const indicator = document.getElementById('availabilityIndicator');
     const submitBtn = document.querySelector('.submit-btn');
 
     if (!dateInput.value) {
-      indicator.className = 'availability-indicator';
-      indicator.textContent = 'Select date/time';
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
       return;
@@ -1586,8 +1594,6 @@ if ($selected_pet_id) {
     const hour = selectedDate.getHours();
     
     if (hour < 9 || hour > 18) {
-      indicator.className = 'availability-indicator show full';
-      indicator.innerHTML = '⛔ Outside Business Hours';
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Outside Business Hours (9 AM - 6 PM Only)';
       return;
@@ -1597,13 +1603,9 @@ if ($selected_pet_id) {
     const available = isSlotAvailable(selectedDate, hour);
 
     if (available) {
-      indicator.className = 'availability-indicator show available';
-      indicator.innerHTML = `✓ Available (${appointmentCount}/${MAX_APPOINTMENTS} booked)`;
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
     } else {
-      indicator.className = 'availability-indicator show full';
-      indicator.innerHTML = `✕ Full (${appointmentCount}/${MAX_APPOINTMENTS} booked)`;
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
     }
@@ -1681,71 +1683,63 @@ if ($selected_pet_id) {
     }
   });
 
- // Hamburger Menu Toggle
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('nav-menu');
-const navOverlay = document.getElementById('nav-overlay');
-const profileDropdown = document.getElementById('profile-dropdown');
+  // Hamburger Menu Toggle
+  const hamburger = document.getElementById('hamburger');
+  const navMenu = document.getElementById('nav-menu');
+  const navOverlay = document.getElementById('nav-overlay');
+  const profileDropdown = document.getElementById('profile-dropdown');
 
-hamburger.addEventListener('click', function() {
-  hamburger.classList.toggle('active');
-  navMenu.classList.toggle('active');
-  navOverlay.classList.toggle('active');
-  document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-});
+  hamburger.addEventListener('click', function() {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    navOverlay.classList.toggle('active');
+    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+  });
 
-// Close menu when clicking overlay
-navOverlay.addEventListener('click', function() {
-  hamburger.classList.remove('active');
-  navMenu.classList.remove('active');
-  navOverlay.classList.remove('active');
-  profileDropdown.classList.remove('active');
-  document.body.style.overflow = '';
-});
-
-// Close menu when clicking on regular nav links
-document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
-  link.addEventListener('click', function() {
+  navOverlay.addEventListener('click', function() {
     hamburger.classList.remove('active');
     navMenu.classList.remove('active');
     navOverlay.classList.remove('active');
+    profileDropdown.classList.remove('active');
     document.body.style.overflow = '';
   });
-});
 
-// Handle profile dropdown - ONLY for mobile (click to toggle)
-profileDropdown.addEventListener('click', function(e) {
-  if (window.innerWidth <= 1024) {
-    // Only prevent default and toggle on mobile
-    if (e.target.closest('.profile-icon')) {
-      e.preventDefault();
-      this.classList.toggle('active');
+  document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+      navOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  });
+
+  profileDropdown.addEventListener('click', function(e) {
+    if (window.innerWidth <= 1024) {
+      if (e.target.closest('.profile-icon')) {
+        e.preventDefault();
+        this.classList.toggle('active');
+      }
     }
-  }
-  // On desktop, do nothing - CSS :hover handles it
-});
-
-// Close menu when clicking dropdown items
-document.querySelectorAll('.dropdown-menu a').forEach(link => {
-  link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
   });
-});
 
-// Reset on window resize
-window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-});
+  document.querySelectorAll('.dropdown-menu a').forEach(link => {
+    link.addEventListener('click', function() {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+      navOverlay.classList.remove('active');
+      profileDropdown.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  });
+
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 1024) {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+      navOverlay.classList.remove('active');
+      profileDropdown.classList.remove('active');
+      document.body.style.overflow = '';
+    }
   </script>
 </body>
 </html>
