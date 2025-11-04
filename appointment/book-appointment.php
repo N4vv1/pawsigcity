@@ -1528,7 +1528,7 @@ select option:disabled:hover {
                   <?php while ($package = pg_fetch_assoc($packages_result)): ?>
                     <option 
                       value="<?= $package['package_id'] ?>" 
-                      data-price="<?= $package['package'] ?>"
+                      data-price="<?= $package['price_id'] ?>"
                       <?= ($recommended_package && stripos($package['name'], $recommended_package) !== false) ? 'selected' : '' ?>
                     >
                       <?= htmlspecialchars($package['name']) ?> 
