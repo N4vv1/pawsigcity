@@ -4,7 +4,7 @@ require '../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_SESSION['user_id'])) {
-        header('Location: ../login/loginform.php');
+        header('Location: ../homepage/login/loginform.php');
         exit;
     }
 
