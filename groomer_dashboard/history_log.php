@@ -19,7 +19,9 @@ $query = "
         p.name AS package_name,
         pet.name AS pet_name,
         pet.breed AS pet_breed,
-        u.username AS customer_name,
+        (u.first_name || ' ' || u.last_name) AS customer_name,
+        u.first_name,
+        u.last_name
         a.updated_at AS completed_date
     FROM appointments a
     JOIN packages p ON a.package_id = p.package_id
