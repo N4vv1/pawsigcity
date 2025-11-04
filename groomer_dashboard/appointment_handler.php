@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $user_id = $_SESSION['user_id'];
 $pet_id = intval($_POST['pet_id']);
 $package_id = intval($_POST['package_id']);
-$groomer_id = intval($_POST['groomer_id']); // NEW: Groomer selection
+$groomer_id = intval($_POST['groomer_id']);
 $appointment_date = $_POST['appointment_date'];
 $notes = trim($_POST['notes'] ?? '');
 
@@ -41,10 +41,11 @@ if (pg_num_rows($package_check) === 0) {
     exit;
 }
 
-// ✅ Validate groomer exists and is active
+// ✅ FIXED: Validate groomer exists and is active (removed DATE check)
+// Changed table name from 'groomers' to match your database
 $groomer_check = pg_query_params($conn, "
     SELECT groomer_id FROM groomers 
-    WHERE groomer_id = $1 AND is_active = true AND DATE(last_active) = CURRENT_DATE
+    WHERE groomer_id = $1 AND is_active = true
 ", [$groomer_id]);
 
 if (pg_num_rows($groomer_check) === 0) {

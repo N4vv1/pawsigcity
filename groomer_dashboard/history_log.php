@@ -10,7 +10,7 @@ if (!isset($_SESSION['groomer_id'])) {
 
 $groomer_id = $_SESSION['groomer_id'];
 
-// Fetch ONLY completed appointments for THIS groomer
+// FIXED: Fetch ONLY completed appointments for THIS groomer using groomer_id filter
 $query = "
     SELECT 
         a.appointment_id,
@@ -340,8 +340,16 @@ if (!$result) {
         <?php while ($row = pg_fetch_assoc($result)): ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-            <td><?= htmlspecialchars(date('Y-m-d H:i', strtotime($row['appointment_date']))) ?></td>
-            <td><?= htmlspecialchars(date('Y-m-d H:i', strtotime($row['completed_date']))) ?></td>
+            <td><?= htmlspecialchars(date('M d, Y h:i A', strtotime($row['appointment_date']))) ?></td>
+            <td>
+              <?php 
+              if ($row['completed_date'] !== 'Not yet completed') {
+                echo htmlspecialchars(date('M d, Y h:i A', strtotime($row['completed_date'])));
+              } else {
+                echo htmlspecialchars($row['completed_date']);
+              }
+              ?>
+            </td>
             <td><?= htmlspecialchars($row['package_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_breed']) ?></td>
