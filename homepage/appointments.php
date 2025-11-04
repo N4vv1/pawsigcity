@@ -802,6 +802,30 @@ error_log("Number of appointments found: " . $row_count);
     display: none;
   }
 }
+
+#rescheduleModal input[type="datetime-local"]:focus {
+  outline: none;
+  border-color: #666;
+}
+
+#rescheduleModal input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  #rescheduleModal > div {
+    padding: 24px !important;
+  }
+  
+  #rescheduleModal h3 {
+    font-size: 20px !important;
+  }
+  
+  #rescheduleModal > div > div:last-child {
+    flex-direction: column-reverse !important;
+  }
+}
   </style>
 </head>
 <body>
@@ -973,20 +997,39 @@ error_log("Number of appointments found: " . $row_count);
 </div>
 
 <!-- Reschedule Modal -->
-<div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000;">
-  <div style="background:#fff; padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative;">
-    <h3>Reschedule Appointment</h3>
+<div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:2000; backdrop-filter:blur(4px);">
+  <div style="background:#1a1a1a; border:1px solid #333; padding:40px; border-radius:12px; width:90%; max-width:500px; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+    <h3 style="color:#fff; font-size:24px; font-weight:600; margin-bottom:8px;">Reschedule Appointment</h3>
+    <p style="color:#888; font-size:14px; margin-bottom:32px;">Update your appointment details</p>
+    
     <form action="../appointment/rescheduler-handler.php" method="POST">
       <input type="hidden" name="appointment_id" id="reschedule_appointment_id">
-      <label for="appointment_date">New Date & Time:</label>
-      <input type="datetime-local" name="appointment_date" required style="width:100%; padding:10px; margin:10px 0; border-radius:8px; border:1px solid #ddd;">
-      <div style="text-align:right;">
-        <button type="button" onclick="closeRescheduleModal()" style="margin-right:10px; background:#ccc;" class="button">Close</button>
-        <button type="submit" class="button">Submit</button>
+      
+      <div style="margin-bottom:24px;">
+        <label for="appointment_date" style="display:block; font-size:13px; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; font-weight:500;">New Date & Time</label>
+        <input type="datetime-local" name="appointment_date" id="appointment_date" required 
+               min="<?= date('Y-m-d\TH:i') ?>"
+               style="width:100%; padding:12px; background:#0a0a0a; border:1px solid #333; border-radius:6px; color:#e0e0e0; font-size:16px; font-family:inherit; transition:border-color 0.2s;">
+      </div>
+      
+      <div style="display:flex; gap:12px; margin-top:32px;">
+        <button type="button" onclick="closeRescheduleModal()" 
+                style="flex:1; padding:14px 24px; background:transparent; color:#888; border:1px solid #333; border-radius:6px; font-size:15px; font-weight:500; cursor:pointer; transition:all 0.2s;" 
+                onmouseover="this.style.borderColor='#666'; this.style.color='#e0e0e0';" 
+                onmouseout="this.style.borderColor='#333'; this.style.color='#888';">
+          Cancel
+        </button>
+        <button type="submit" 
+                style="flex:1; padding:14px 24px; background:#e0e0e0; color:#0a0a0a; border:none; border-radius:6px; font-size:15px; font-weight:500; cursor:pointer; transition:all 0.2s;" 
+                onmouseover="this.style.background='#fff'; this.style.transform='translateY(-1px)';" 
+                onmouseout="this.style.background='#e0e0e0'; this.style.transform='translateY(0)';">
+          Reschedule
+        </button>
       </div>
     </form>
   </div>
 </div>
+
 
 <!-- Feedback Modal -->
 <div id="feedbackModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000;">
