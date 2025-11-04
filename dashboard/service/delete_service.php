@@ -6,7 +6,7 @@ require_once '../admin/check_admin.php';
 // Check if ID is provided
 if (!isset($_GET['id'])) {
     $_SESSION['error'] = "No service ID provided.";
-    header("Location: services.php");
+    header("Location: https://pawsigcity.onrender.com/dashboard/service/services.php");
     exit;
 }
 
@@ -18,7 +18,7 @@ $check = pg_execute($conn, "check_service", [$service_id]);
 
 if (pg_num_rows($check) == 0) {
     $_SESSION['error'] = "Service not found.";
-    header("Location: services.php");
+    header("Location: https://pawsigcity.onrender.com/dashboard/service/services.php");
     exit;
 }
 
@@ -38,6 +38,6 @@ if ($result) {
     $_SESSION['error'] = "Failed to delete service. Please try again.";
 }
 
-header("Location: services.php");
+header("Location: https://pawsigcity.onrender.com/dashboard/service/services.php");
 exit;
 ?>
