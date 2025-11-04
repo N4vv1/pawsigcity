@@ -17,7 +17,7 @@ $is_active = isset($input['is_active']) ? (bool)$input['is_active'] : false;
 
 // Update groomer status
 $query = "
-    UPDATE groomers 
+    UPDATE groomer
     SET is_active = $1, 
         last_active = CURRENT_TIMESTAMP
     WHERE groomer_id = $2

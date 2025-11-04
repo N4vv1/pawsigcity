@@ -36,8 +36,8 @@ $query = "
     JOIN packages p ON a.package_id = p.package_id
     JOIN pets pet ON a.pet_id = pet.pet_id
     JOIN users u ON pet.user_id = u.user_id
-    WHERE a.status = 'confirmed'
-    AND a.groomer_id = $1
+    WHERE a.status::text = 'confirmed'
+      AND a.groomer_id = $1
     ORDER BY a.appointment_date ASC
 ";
 
@@ -48,6 +48,7 @@ if (!$result) {
 }
 ?>
 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -451,14 +452,17 @@ if (!$result) {
         </tr>
       </thead>
       <tbody>
-        <?php while ($row = pg_fetch_assoc($result)): ?>
+        
+        <?php
+        
+        while ($row = pg_fetch_assoc($result)): ?>
           <tr id="row-<?= $row['appointment_id'] ?>">
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['package_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_breed']) ?></td>
-            <td><?= htmlspecialchars($row['customer_name']) ?></td>
+            <td><?= htmlspecialchars($row['username']) ?></td>
             <td>
               <button class="action-btn" onclick="completeAppointment(<?= $row['appointment_id'] ?>)">
                 <i class='bx bx-check'></i> Complete
