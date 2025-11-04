@@ -12,13 +12,16 @@ $groomer_id = $_SESSION['groomer_id'];
 
 // Get groomer's current status
 $status_query = pg_query_params($conn, "
-    SELECT is_active, DATE(last_active) as last_active_date 
+    SELECT 
+        CASE WHEN is_active THEN 1 ELSE 0 END as is_active,
+        DATE(last_active) as last_active_date 
     FROM groomer
     WHERE groomer_id = $1
 ", [$groomer_id]);
 
 $groomer_status = pg_fetch_assoc($status_query);
-$is_active = $groomer_status['is_active'] ?? false;
+$is_active = (int)$groomer_status['is_active'] === 1;
+
 
 // Fetch ONLY confirmed appointments for THIS groomer
 $query = "

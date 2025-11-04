@@ -50,13 +50,13 @@ function getAppointmentCounts($conn) {
     return $counts;
 }
 
-// ✅ Get appointment counts (NO ML PREDICTIONS - JUST REAL DATA)
 $appointment_counts = getAppointmentCounts($conn);
-// Fetch active groomers - FIXED VERSION
+
+// ✅ Fetch groomers with their active status
 $groomers_query = "
-    SELECT groomer_id, groomer_name 
+    SELECT groomer_id, groomer_name, is_active 
     FROM groomer 
-    ORDER BY groomer_name ASC
+    ORDER BY is_active DESC, groomer_name ASC
 ";
 
 $groomers_result = pg_query($conn, $groomers_query);
@@ -64,6 +64,22 @@ $groomers_result = pg_query($conn, $groomers_query);
 if (!$groomers_result) {
     die("Groomer query failed: " . pg_last_error($conn));
 }
+
+// ✅ Store groomers in an array to reuse and avoid pointer issues
+$groomers_array = [];
+while ($groomer = pg_fetch_assoc($groomers_result)) {
+    $groomers_array[] = $groomer;
+}
+
+// DEBUG: Check groomer status (MOVED HERE - AFTER $groomers_array IS CREATED)
+echo "<pre style='background: #f0f0f0; padding: 10px; margin: 20px;'>";
+echo "DEBUG - Groomers Array:\n";
+foreach ($groomers_array as $g) {
+    echo "ID: {$g['groomer_id']}, Name: {$g['groomer_name']}, is_active value: ";
+    var_dump($g['is_active']);
+    echo "\n";
+}
+echo "</pre>";
 
 // ✅ Check pet ownership if selected
 if ($selected_pet_id) {
@@ -1353,6 +1369,16 @@ if ($selected_pet_id) {
   }
 }
 }
+select option:disabled {
+  color: #999;
+  background-color: #f5f5f5;
+  font-style: italic;
+}
+
+select option:disabled:hover {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
 </style>
 
 </head>
@@ -1501,41 +1527,51 @@ if ($selected_pet_id) {
               <?php endif; ?>
 
               <div class="form-group">
-                <label for="package_id">
-                  <i class="fas fa-box"></i> Select Grooming Package
-                </label>
-                <select name="package_id" id="package_id" required>
-                  <option value="">-- Select Package --</option>
-                  <?php while ($pkg = pg_fetch_assoc($packages_result)): ?>
-                    <option value="<?= $pkg['price_id'] ?>" 
-                      <?= ($pkg['name'] == $recommended_package) ? 'selected' : '' ?>>
-                      <?= htmlspecialchars($pkg['name']) ?> 
-                      (<?= htmlspecialchars($pkg['species']) ?> - <?= htmlspecialchars($pkg['size']) ?>,
-                      <?= $pkg['min_weight'] ?>-<?= $pkg['max_weight'] ?> kg) 
-                      - ₱<?= number_format($pkg['price'], 2) ?>
-                    </option>
-                  <?php endwhile; ?>
-                </select>
-              </div>
-
-              <!-- 🆕 Groomer Selection -->
-              <div class="form-group">
                 <label for="groomer_id">
-                  <i class="fas fa-user-md"></i> Select Groomer
+                   <i class="fas fa-user-md"></i> Select Groomer
                 </label>
-                <?php if (pg_num_rows($groomers_result) > 0): ?>
-                  <select name="groomer_id" id="groomer_id" required>
+                <select name="groomer_id" id="groomer_id" required>
                     <option value="">-- Select Groomer --</option>
-                    <?php while ($groomer = pg_fetch_assoc($groomers_result)): ?>
-                      <option value="<?= $groomer['groomer_id'] ?>">
+                    <?php foreach ($groomers_array as $groomer): ?>
+                      <?php 
+                      // Proper boolean check for PostgreSQL
+                      $is_active = ($groomer['is_active'] === 't' || $groomer['is_active'] === true || $groomer['is_active'] == 1);
+                      ?>
+                      <option 
+                        value="<?= $groomer['groomer_id'] ?>"
+                        <?= !$is_active ? 'disabled' : '' ?>
+                      >
                         <?= htmlspecialchars($groomer['groomer_name']) ?>
+                        <?= !$is_active ? ' (Offline)' : '' ?>
                       </option>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                   </select>
+                
+                <?php if (count($groomers_array) > 0): ?>
+                  <?php 
+                  // Check if there are any active groomers
+                  $has_active_groomer = false;
+                  foreach ($groomers_array as $groomer) {
+                    // PostgreSQL returns 't' for true, 'f' for false
+                     if ($groomer['is_active'] === 't') {
+                      $has_active_groomer = true;
+                      break;
+                    }
+                  }
+                  ?>
+                  
+                  
+                  <?php if (!$has_active_groomer): ?>
+                    <div style="margin-top: 10px; padding: 12px; background: #fff3cd; border-left: 4px solid #ff9800; border-radius: 8px; color: #856404;">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      All groomers are currently offline. Please try again later or contact support.
+                    </div>
+                  <?php endif; ?>
+                  
                 <?php else: ?>
-                  <div class="no-groomers-notice">
+                  <div style="margin-top: 10px; padding: 12px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px; color: #721c24;">
                     <i class="fas fa-exclamation-triangle"></i>
-                    No groomers are currently available today. Please try again later or contact support.
+                    No groomers are currently available. Please try again later or contact support.
                   </div>
                   <select name="groomer_id" disabled>
                     <option>No groomers available</option>
@@ -1557,9 +1593,21 @@ if ($selected_pet_id) {
                 <textarea name="notes" id="notes" rows="3" placeholder="Any special care instructions for your pet..."></textarea>
               </div>
 
-              <button type="submit" class="submit-btn" <?= (pg_num_rows($groomers_result) == 0) ? 'disabled' : '' ?>>
-                <i class="fas fa-check-circle"></i> Confirm Appointment
-              </button>
+              <?php
+                  // Check if there's at least one active groomer
+                  $has_active_groomer_for_submit = false;
+                  if (count($groomers_array) > 0) {
+                    foreach ($groomers_array as $g) {
+                      if ($g['is_active'] === 't' || $g['is_active'] === true || $g['is_active'] == 1) {
+                        $has_active_groomer_for_submit = true;
+                        break;
+                      }
+                    }
+                  }
+                  ?>
+                  <button type="submit" class="submit-btn" <?= !$has_active_groomer_for_submit ? 'disabled' : '' ?>>
+                    <i class="fas fa-check-circle"></i> Confirm Appointment
+                  </button>
             </form>
           </div>
         </div>
@@ -1747,6 +1795,17 @@ if ($selected_pet_id) {
       }
     });
   });
+  // Validate groomer selection on form submit
+document.querySelector('.booking-form').addEventListener('submit', function(e) {
+  const groomerSelect = document.getElementById('groomer_id');
+  const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
+  
+  if (selectedOption.disabled) {
+    e.preventDefault();
+    alert('Please select an available groomer. The selected groomer is currently offline.');
+    return false;
+  }
+});
 </script>
 </body>
 </html>
