@@ -18,12 +18,11 @@ $is_active = isset($input['is_active']) ? (bool)$input['is_active'] : false;
 // Update groomer status
 $query = "
     UPDATE groomer
-    SET is_active = $1::boolean, 
+    SET is_active = $1, 
         last_active = CURRENT_TIMESTAMP
     WHERE groomer_id = $2
 ";
 
-// Convert to PostgreSQL boolean - use true/false directly
 $result = pg_query_params($conn, $query, [$is_active ? 'true' : 'false', $groomer_id]);
 
 if ($result) {
