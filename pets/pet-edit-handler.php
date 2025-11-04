@@ -36,11 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user_id = $user_row['user_id'] ?? 0;
 
             // Generate unique filename
-            $file_extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+            $file_extension = pathinfo($_FILES['photo_url']['name'], PATHINFO_EXTENSION);
             $unique_filename = uniqid('pet_' . $user_id . '_', true) . '.' . $file_extension;
 
             // Read file content
-            $file_content = file_get_contents($_FILES['photo']['tmp_name']);
+            $file_content = file_get_contents($_FILES['photo_url']['tmp_name']);
 
             // Upload to Supabase Storage
             $upload_url = $supabase_url . '/storage/v1/object/pet-images/' . $unique_filename;
