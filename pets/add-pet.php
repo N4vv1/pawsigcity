@@ -650,118 +650,112 @@ if (!$pets) {
 
 
   
-  <div class="add-pet-container">
-    <div class="form-wrapper">
-      <form method="POST" action="add-pet-handler.php" enctype="multipart/form-data">
-        <div class="form-grid">
-          <label>Name:
-            <input type="text" name="name" placeholder="Enter pet name" required>
-          </label>
+<div class="add-pet-container">
+  <div class="form-wrapper">
+    <h2>Add New Pet</h2>
+    
+    <?php if (isset($_SESSION['error'])): ?>
+      <div class="alert alert-error" style="background-color: #ffe6e6; border-left: 4px solid #ff4444; padding: 12px; margin-bottom: 20px; border-radius: 8px; color: #cc0000;">
+        <i class="fas fa-exclamation-circle"></i>
+        <?= $_SESSION['error'] ?>
+      </div>
+      <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
 
-          <label>Breed:
-            <input type="text" name="breed" placeholder="Enter breed" required>
-          </label>
+    <?php if (isset($_SESSION['success'])): ?>
+      <div class="alert alert-success" style="background-color: #e6ffe6; border-left: 4px solid #44ff44; padding: 12px; margin-bottom: 20px; border-radius: 8px; color: #008800;">
+        <i class="fas fa-check-circle"></i>
+        <?= $_SESSION['success'] ?>
+      </div>
+      <?php unset($_SESSION['success']); ?>
+    <?php endif; ?>
 
-          <label>Gender:
-            <select name="gender">
+    <form method="POST" action="add-pet-handler.php" enctype="multipart/form-data">
+      <div class="form-grid">
+        <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
 
-          
-          <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-error">
-              <i class="fas fa-exclamation-circle"></i>
-              <?= $_SESSION['error'] ?>
-            </div>
-            <?php unset($_SESSION['error']); ?>
-          <?php endif; ?>
+        <label>Name:<span class="required" style="color: red;">*</span>
+          <input type="text" name="name" placeholder="Enter pet name" required>
+        </label>
 
-          <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success">
-              <i class="fas fa-check-circle"></i>
-              <?= $_SESSION['success'] ?>
-            </div>
-            <?php unset($_SESSION['success']); ?>
-          <?php endif; ?>
+        <label>Species:<span class="required" style="color: red;">*</span>
+          <select name="species" required>
+            <option value="">Select Species</option>
+            <option value="Dog">Dog</option>
+            <option value="Cat">Cat</option>
+          </select>
+        </label>
 
-          <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
+        <label>Breed:<span class="required" style="color: red;">*</span>
+          <input type="text" name="breed" placeholder="Enter breed" required>
+        </label>
 
-          <label>Name:<span class="required"></span>
-            <input type="text" name="name" placeholder="Enter pet name" required>
-          </label>
+        <label>Gender:<span class="required" style="color: red;">*</span>
+          <select name="gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </label>
 
-          <label>Species:<span class="required"></span>
-            <select name="species" required>
-              <option value="">Select Species</option>
-              <option value="Dog">Dog</option>
-              <option value="Cat">Cat</option>
-            </select>
-          </label>
+        <label>Age:
+          <input type="text" name="age" placeholder="Enter age (e.g., 2 years)">
+        </label>
 
-          <label>Breed:<span class="required"></span>
-            <input type="text" name="breed" placeholder="Enter breed" required>
-          </label>
+        <label>Birthday:
+          <input type="date" name="birthday">
+        </label>
 
-          <label>Gender:<span class="required"></span>
-            <select name="gender" required>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </label>
+        <label>Color:
+          <input type="text" name="color" placeholder="Enter color">
+        </label>
 
-          <label>Age:
-            <input type="text" name="age" placeholder="Enter age">
-          </label>
+        <label>Photo:
+          <input type="file" name="photo" accept="image/*" onchange="previewImage(event)">
+          <div class="preview-wrapper">
+            <img id="preview" src="#" alt="Selected Photo" />
+          </div>
+        </label>
 
-          <label>Birthday:
-            <input type="date" name="birthday">
-          </label>
+        <span class="form-section-title"><i class="fas fa-heartbeat"></i> Health Information</span>
 
-          <label>Color:
-            <input type="text" name="color" placeholder="Enter color">
-          </label>
+        <label>Allergies:
+          <textarea name="allergies" placeholder="Any allergies?"></textarea>
+        </label>
 
-          <label>Photo:
-            <input type="file" name="photo" accept="image/*" onchange="previewImage(event)">
-            <div class="preview-wrapper">
-              <img id="preview" src="#" alt="Selected Photo" />
-            </div>
-          </label>
+        <label>Medications:
+          <textarea name="medications" placeholder="Current medications"></textarea>
+        </label>
 
-          <span class="form-section-title"><i class="fas fa-heartbeat"></i> Health Information</span>
+        <label>Medical Conditions:
+          <textarea name="medical_conditions" placeholder="Ongoing conditions"></textarea>
+        </label>
 
-          <label>Allergies:
-            <textarea name="allergies" placeholder="Any allergies?"></textarea>
-          </label>
+        <span class="form-section-title"><i class="fas fa-dog"></i> Behavior & Preferences</span>
 
-          <label>Medications:
-            <textarea name="medications" placeholder="Current medications"></textarea>
-          </label>
+        <label>Behavior Notes:
+          <textarea name="behavior_notes" placeholder="Describe pet behavior"></textarea>
+        </label>
 
-          <label>Medical Conditions:
-            <textarea name="medical_conditions" placeholder="Ongoing conditions"></textarea>
-          </label>
+        <label>Nail Trimming:
+          <select name="nail_trimming">
+            <option value="">Select Option</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </label>
 
-          <span class="form-section-title"><i class="fas fa-dog"></i> Behavior & Preferences</span>
+        <label>Haircut Style:
+          <input type="text" name="haircut_style" placeholder="Preferred haircut style">
+        </label>
 
-          <label>Behavior Notes:
-            <textarea name="behavior_notes" placeholder="Describe pet behavior"></textarea>
-          </label>
-
-          <label>Nail Trimming:
-            <select name="nail_trimming">
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </label>
-
-          <label>Haircut Style:
-            <input type="text" name="haircut_style" placeholder="Preferred haircut">
-          </label>
-
-          <button type="submit" class="submit-button">Add Pet</button>
-        </div>
-      </form>
-    </div>
+        <button type="submit" class="submit-button">
+          <i class="fas fa-plus-circle"></i> Add Pet
+        </button>
+      </div>
+    </form>
   </div>
+</div>
 
   <script>
     function previewImage(event) {
