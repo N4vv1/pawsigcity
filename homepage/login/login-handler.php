@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                    FROM users WHERE email = $1";
     $user_result = pg_query_params($conn, $user_query, [$email]);
 
-    if (pg_num_rows($user_result) === 1) {
+    if ($user_result && pg_num_rows($user_result) === 1) {
         $user = pg_fetch_assoc($user_result);
 
         if (password_verify($password, $user['password'])) {
@@ -48,10 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     break;
             }
             exit;
-        } else {
-            $_SESSION['login_error'] = "❌ Incorrect password for this account.";
-            header("Location: loginform.php");
-            exit;
         }
     }
 
@@ -60,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                       FROM groomers WHERE email = $1";
     $groomer_result = pg_query_params($conn, $groomer_query, [$email]);
 
-    if (pg_num_rows($groomer_result) === 1) {
+    if ($groomer_result && pg_num_rows($groomer_result) === 1) {
         $groomer = pg_fetch_assoc($groomer_result);
 
         if (password_verify($password, $groomer['password'])) {
@@ -68,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['groomer_name'] = $groomer['groomer_name'];
             $_SESSION['email'] = $groomer['email'];
 
-            header("Location: ../../groomer_dashboard/home_groomer.php");
+            header("Location: https://pawsigcity.onrender.com/groomer_dashboard/home_groomer.php");
             exit;
         } else {
             $_SESSION['login_error'] = "❌ Incorrect password for groomer account.";
