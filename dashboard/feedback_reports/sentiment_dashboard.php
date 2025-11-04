@@ -21,6 +21,29 @@ $positive_percent = $total_feedback > 0 ? round(($positive_count / $total_feedba
 $neutral_percent = $total_feedback > 0 ? round(($neutral_count / $total_feedback) * 100, 1) : 0;
 $negative_percent = $total_feedback > 0 ? round(($negative_count / $total_feedback) * 100, 1) : 0;
 
+// Get sentiment trends over time (last 7 days)
+$trend_query = "
+    SELECT 
+        DATE(appointment_date) as date,
+        COUNT(CASE WHEN sentiment = 'positive' THEN 1 END) as positive,
+        COUNT(CASE WHEN sentiment = 'neutral' THEN 1 END) as neutral,
+        COUNT(CASE WHEN sentiment = 'negative' THEN 1 END) as negative
+    FROM appointments
+    WHERE feedback IS NOT NULL 
+    AND appointment_date >= CURRENT_DATE - INTERVAL '30 days'
+    GROUP BY DATE(appointment_date)
+    ORDER BY date ASC
+";
+$trend_result = pg_query($conn, $trend_query);
+
+$trend_data = ['dates' => [], 'positive' => [], 'neutral' => [], 'negative' => []];
+while ($row = pg_fetch_assoc($trend_result)) {
+    $trend_data['dates'][] = date('M d', strtotime($row['date']));
+    $trend_data['positive'][] = (int)$row['positive'];
+    $trend_data['neutral'][] = (int)$row['neutral'];
+    $trend_data['negative'][] = (int)$row['negative'];
+}
+
 // Get all feedback with sentiment
 $feedback_query = "
     SELECT a.appointment_id, a.feedback, a.rating, a.sentiment, a.appointment_date,
@@ -40,7 +63,7 @@ $feedback_result = pg_query($conn, $feedback_query);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sentiment Analysis Dashboard</title>
+  <title>Feedbacks</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -243,32 +266,24 @@ $feedback_result = pg_query($conn, $feedback_query);
       margin-right: 8px;
     }
 
-    /* CHARTS */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
-      max-width: 800px; /* Limit total width */
-    }
-
-    .chart-card {
+    /* CHART */
+    .chart-container {
       background: var(--white-color);
-      padding: 20px;
+      padding: 30px;
       border-radius: 14px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      max-height: 350px; /* Limit card height */
+      margin-bottom: 40px;
     }
 
-    .chart-card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 15px;
+    .chart-container h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
       color: var(--dark-color);
       font-weight: 600;
     }
 
-    .chart-card canvas {
-      max-height: 250px !important; /* Limit canvas height */
+    .chart-container canvas {
+      max-height: 400px !important;
       width: 100% !important;
     }
 
@@ -437,35 +452,31 @@ $feedback_result = pg_query($conn, $feedback_query);
 <main>
   <!-- Header -->
   <div class="header">
-    <h1>📊 Sentiment Analysis Dashboard</h1>
-    <p>Analyze customer feedback and sentiment trends</p>
+    <h1>Feedbacks</h1>
+    <p>Analyze customer feedback</p>
   </div>
 
   <!-- Stats Cards -->
   <div class="stats-grid">
     <div class="stat-card positive">
-      <div class="icon">😊</div>
       <h3>Positive</h3>
       <div class="count"><?= $positive_count ?></div>
       <div class="percentage"><?= $positive_percent ?>% of total</div>
     </div>
 
     <div class="stat-card neutral">
-      <div class="icon">😐</div>
       <h3>Neutral</h3>
       <div class="count"><?= $neutral_count ?></div>
       <div class="percentage"><?= $neutral_percent ?>% of total</div>
     </div>
 
     <div class="stat-card negative">
-      <div class="icon">😞</div>
       <h3>Negative</h3>
       <div class="count"><?= $negative_count ?></div>
       <div class="percentage"><?= $negative_percent ?>% of total</div>
     </div>
 
     <div class="stat-card pending">
-      <div class="icon">⏳</div>
       <h3>Pending Analysis</h3>
       <div class="count"><?= $pending_count ?></div>
       <div class="percentage">Not analyzed yet</div>
@@ -485,17 +496,10 @@ $feedback_result = pg_query($conn, $feedback_query);
   </div>
   <?php endif; ?>
 
-  <!-- Charts -->
-  <div class="charts-grid">
-    <div class="chart-card">
-      <h2>Sentiment Distribution</h2>
-      <canvas id="sentimentPieChart"></canvas>
-    </div>
-
-    <div class="chart-card">
-      <h2>Sentiment Overview</h2>
-      <canvas id="sentimentBarChart"></canvas>
-    </div>
+  <!-- Line Chart -->
+  <div class="chart-container">
+    <h2>Sentiment Trends Over Time (Last 30 Days)</h2>
+    <canvas id="sentimentLineChart"></canvas>
   </div>
 
   <!-- Feedback Table -->
@@ -557,83 +561,107 @@ $feedback_result = pg_query($conn, $feedback_query);
 <div id="toast" class="toast"></div>
 
 <script>
-// Sentiment data for charts
-const sentimentData = {
-  positive: <?= $positive_count ?>,
-  neutral: <?= $neutral_count ?>,
-  negative: <?= $negative_count ?>,
-  pending: <?= $pending_count ?>
+// Trend data from PHP
+const trendData = {
+  dates: <?= json_encode($trend_data['dates']) ?>,
+  positive: <?= json_encode($trend_data['positive']) ?>,
+  neutral: <?= json_encode($trend_data['neutral']) ?>,
+  negative: <?= json_encode($trend_data['negative']) ?>
 };
 
-// Pie Chart - Updated for smaller size
-const pieCtx = document.getElementById('sentimentPieChart').getContext('2d');
-new Chart(pieCtx, {
-  type: 'doughnut',
+// Line Chart
+const lineCtx = document.getElementById('sentimentLineChart').getContext('2d');
+new Chart(lineCtx, {
+  type: 'line',
   data: {
-    labels: ['Positive', 'Neutral', 'Negative', 'Pending'],
-    datasets: [{
-      data: [sentimentData.positive, sentimentData.neutral, sentimentData.negative, sentimentData.pending],
-      backgroundColor: ['#4CAF50', '#FF9800', '#F44336', '#9E9E9E'],
-      borderWidth: 0
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: true,
-    aspectRatio: 1.5, /* Make it wider than tall */
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          padding: 10,
-          font: {
-            size: 11
-          }
-        }
+    labels: trendData.dates,
+    datasets: [
+      {
+        label: 'Positive',
+        data: trendData.positive,
+        borderColor: '#4CAF50',
+        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+        tension: 0.4,
+        fill: true,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      },
+      {
+        label: 'Neutral',
+        data: trendData.neutral,
+        borderColor: '#FF9800',
+        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+        tension: 0.4,
+        fill: true,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      },
+      {
+        label: 'Negative',
+        data: trendData.negative,
+        borderColor: '#F44336',
+        backgroundColor: 'rgba(244, 67, 54, 0.1)',
+        tension: 0.4,
+        fill: true,
+        pointRadius: 4,
+        pointHoverRadius: 6
       }
-    }
-  }
-});
-
-// Bar Chart - Updated for smaller size
-const barCtx = document.getElementById('sentimentBarChart').getContext('2d');
-new Chart(barCtx, {
-  type: 'bar',
-  data: {
-    labels: ['Positive', 'Neutral', 'Negative', 'Pending'],
-    datasets: [{
-      label: 'Number of Feedback',
-      data: [sentimentData.positive, sentimentData.neutral, sentimentData.negative, sentimentData.pending],
-      backgroundColor: ['#4CAF50', '#FF9800', '#F44336', '#9E9E9E'],
-      borderRadius: 8,
-      barThickness: 40 /* Control bar width */
-    }]
+    ]
   },
   options: {
     responsive: true,
     maintainAspectRatio: true,
-    aspectRatio: 1.5, /* Make it wider than tall */
+    interaction: {
+      mode: 'index',
+      intersect: false
+    },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
           font: {
-            size: 11
+            size: 12
           }
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
         }
       },
       x: {
         ticks: {
           font: {
-            size: 11
-          }
+            size: 12
+          },
+          maxRotation: 45,
+          minRotation: 45
+        },
+        grid: {
+          display: false
         }
       }
     },
     plugins: {
       legend: {
-        display: false
+        position: 'top',
+        labels: {
+          padding: 15,
+          font: {
+            size: 13,
+            weight: '600'
+          },
+          usePointStyle: true
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: {
+          size: 14
+        },
+        bodyFont: {
+          size: 13
+        }
       }
     }
   }
@@ -680,13 +708,12 @@ function runSentimentAnalysis() {
   fetch('run_sentiment_analysis.php')
     .then(response => response.json())
     .then(data => {
-      console.log('Full response:', data); // Debug: log full response
+      console.log('Full response:', data);
       
       if (data.success) {
         showToast('✅ ' + data.message);
         setTimeout(() => location.reload(), 2000);
       } else {
-        // Show detailed error
         let errorDetails = data.message;
         if (data.error) {
           errorDetails += '\n\nError output:\n' + data.error;
@@ -699,7 +726,7 @@ function runSentimentAnalysis() {
         }
         
         console.error('Error details:', errorDetails);
-        alert(errorDetails); // Show full error in alert
+        alert(errorDetails);
         showToast('❌ ' + data.message, true);
         btn.disabled = false;
         btn.innerHTML = originalText;
