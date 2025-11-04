@@ -734,11 +734,11 @@ if (!$pets) {
 
           <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
 
-          <label>Name: *<span class="required"></span>
+          <label>Name:<span class="required"></span>
             <input type="text" name="name" placeholder="Enter pet name" required>
           </label>
 
-          <label>Species: *<span class="required"></span>
+          <label>Species:<span class="required"></span>
             <select name="species" required>
               <option value="">Select Species</option>
               <option value="Dog">Dog</option>
@@ -746,11 +746,11 @@ if (!$pets) {
             </select>
           </label>
 
-          <label>Breed:<span class="required">*</span>
+          <label>Breed:<span class="required"></span>
             <input type="text" name="breed" placeholder="Enter breed" required>
           </label>
 
-          <label>Gender:<span class="required">*</span>
+          <label>Gender:<span class="required"></span>
             <select name="gender" required>
               <option value="Male">Male</option>
               <option value="Female">Female</option>

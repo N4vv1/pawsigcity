@@ -14,9 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ✅ Handle photo upload to Supabase Storage (if provided)
     $photo_url = null; // null means don't update photo
     
-    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['photo_url']) && $_FILES['photo_url']['error'] === UPLOAD_ERR_OK) {
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $file_type = $_FILES['photo']['type'];
+        $file_type = $_FILES['_url']['type'];
 
         if (in_array($file_type, $allowed_types)) {
             // Get Supabase credentials
