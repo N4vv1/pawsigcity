@@ -136,7 +136,7 @@ if ($selected_pet_id) {
     // ✅ Check if any packages are available
     if (pg_num_rows($packages_result) === 0) {
         $_SESSION['error'] = "⚠️ No packages available for a {$valid_pet['size']} {$valid_pet['species']} weighing {$valid_pet['weight']} kg. Please contact support.";
-        header("Location: pet-profile.php");
+        header("Location: ../pets/pet-profile.php");
         exit;
     }
 }
