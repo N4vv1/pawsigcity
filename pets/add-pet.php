@@ -14,7 +14,7 @@ if (isset($_SESSION['debug'])) {
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login/loginform.php');
+    header('Location: ../homepage/login/loginform.php');
     exit;
 }
 
@@ -734,11 +734,11 @@ if (!$pets) {
 
           <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
 
-          <label>Name:<span class="required">*</span>
+          <label>Name: *<span class="required"></span>
             <input type="text" name="name" placeholder="Enter pet name" required>
           </label>
 
-          <label>Species:<span class="required">*</span>
+          <label>Species: *<span class="required"></span>
             <select name="species" required>
               <option value="">Select Species</option>
               <option value="Dog">Dog</option>

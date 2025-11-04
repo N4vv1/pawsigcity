@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $weight_warnings[] = "Weight seems low for a Large pet (typically 25+ kg).";
     }
 
-    // ✅ Handle photo upload to Supabase Storage with compression
+    // ✅ Handle photo upload to Supabase Storage
     $photo_url = '';
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -81,80 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // ✅ COMPRESS AND RESIZE IMAGE
-            $max_width = 1920;
-            $max_height = 1920;
-            $quality = 85; // 85% quality - great balance between quality and file size
-            
-            list($width, $height) = getimagesize($_FILES['photo']['tmp_name']);
-            
-            // Determine if we need to resize
-            $needs_resize = ($width > $max_width || $height > $max_height);
-            
-            if ($needs_resize) {
-                // Calculate new dimensions
-                $ratio = min($max_width / $width, $max_height / $height);
-                $new_width = round($width * $ratio);
-                $new_height = round($height * $ratio);
-            } else {
-                $new_width = $width;
-                $new_height = $height;
-            }
-            
-            // Create image resource based on type
-            $source = null;
-            switch ($file_type) {
-                case 'image/jpeg':
-                    $source = imagecreatefromjpeg($_FILES['photo']['tmp_name']);
-                    break;
-                case 'image/png':
-                    $source = imagecreatefrompng($_FILES['photo']['tmp_name']);
-                    break;
-                case 'image/gif':
-                    $source = imagecreatefromgif($_FILES['photo']['tmp_name']);
-                    break;
-                case 'image/webp':
-                    $source = imagecreatefromwebp($_FILES['photo']['tmp_name']);
-                    break;
-            }
-            
-            if (!$source) {
-                $_SESSION['error'] = "❌ Failed to process image. Please try a different file.";
-                header('Location: add-pet.php');
-                exit;
-            }
-            
-            // Create new image
-            $dest = imagecreatetruecolor($new_width, $new_height);
-            
-            // Preserve transparency for PNG/GIF
-            if ($file_type === 'image/png' || $file_type === 'image/gif') {
-                imagealphablending($dest, false);
-                imagesavealpha($dest, true);
-                $transparent = imagecolorallocatealpha($dest, 255, 255, 255, 127);
-                imagefilledrectangle($dest, 0, 0, $new_width, $new_height, $transparent);
-            }
-            
-            // Resize
-            imagecopyresampled($dest, $source, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-            
-            // Save to temp file
-            $temp_file = tempnam(sys_get_temp_dir(), 'pet_img_');
-            imagejpeg($dest, $temp_file, $quality); // Always save as JPEG for consistency
-            
-            // Get compressed file content
-            $file_content = file_get_contents($temp_file);
-            $compressed_size = strlen($file_content);
-            
-            // Clean up
-            imagedestroy($source);
-            imagedestroy($dest);
-            unlink($temp_file);
-            
-            error_log("Image compressed: {$width}x{$height} -> {$new_width}x{$new_height}, Size: " . round($compressed_size/1024) . "KB");
+            // Generate unique filename
+            $file_extension = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+            $unique_filename = uniqid('pet_' . $user_id . '_', true) . '.' . $file_extension;
 
-            // Generate unique filename (always .jpg since we convert to JPEG)
-            $unique_filename = uniqid('pet_' . $user_id . '_', true) . '.jpg';
+            // Read file content
+            $file_content = file_get_contents($_FILES['photo']['tmp_name']);
 
             // Upload to Supabase Storage
             $upload_url = $supabase_url . '/storage/v1/object/pet-images/' . $unique_filename;
@@ -163,21 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $file_content);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Authorization: Bearer ' . $supabase_key,
-                'Content-Type: image/jpeg',
+                'Content-Type: ' . $file_type,
                 'apikey: ' . $supabase_key
             ]);
 
-            $start_time = microtime(true);
             $response = curl_exec($ch);
-            $upload_time = round(microtime(true) - $start_time, 2);
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-            
-            error_log("Upload took {$upload_time}s - HTTP: $http_code");
 
             if ($http_code === 200 || $http_code === 201) {
                 // Success! Generate public URL
