@@ -709,7 +709,18 @@
       <div class="form-content">
         <!-- Login Form -->
         <div id="login-form" class="form-section active">
-          <div id="login-alerts"></div>
+          <div id="login-alerts">
+            <?php
+            if (isset($_SESSION['login_error'])) {
+                echo '<div class="alert-message alert-error">' . $_SESSION['login_error'] . '</div>';
+                unset($_SESSION['login_error']);
+            }
+            if (isset($_SESSION['login_success'])) {
+                echo '<div class="alert-message alert-success">' . $_SESSION['login_success'] . '</div>';
+                unset($_SESSION['login_success']);
+            }
+            ?>
+          </div>
           
           <form action="login-handler.php" method="post">
             <div class="input-box">

@@ -52,13 +52,18 @@ function getAppointmentCounts($conn) {
 
 // ✅ Get appointment counts (NO ML PREDICTIONS - JUST REAL DATA)
 $appointment_counts = getAppointmentCounts($conn);
-$groomers_result = pg_query($conn, "
+// Fetch active groomers - FIXED VERSION
+$groomers_query = "
     SELECT groomer_id, groomer_name 
-    FROM groomers 
-    WHERE is_active = true 
-    AND DATE(last_active) = CURRENT_DATE
+    FROM groomer 
     ORDER BY groomer_name ASC
-");
+";
+
+$groomers_result = pg_query($conn, $groomers_query);
+
+if (!$groomers_result) {
+    die("Groomer query failed: " . pg_last_error($conn));
+}
 
 // ✅ Check pet ownership if selected
 if ($selected_pet_id) {
@@ -1622,124 +1627,126 @@ if ($selected_pet_id) {
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
     }
-  });
 
-  flatpickr("#appointment_date", {
-    enableTime: true,
-    dateFormat: "Y-m-d H:i",
-    minDate: "today",
-    defaultHour: 10,
-    minTime: "09:00",
-    maxTime: "18:00",
-    time_24hr: true,
-    minuteIncrement: 30,
-    allowInput: true,
-    clickOpens: true,
-    onChange: function(selectedDates, dateStr, instance) {
-      updateAvailabilityIndicator();
-    },
-    disable: [
-      function(date) {
-        const hour = date.getHours();
-        const minute = date.getMinutes();
-        
-        if (hour === 0 && minute === 0) {
-          return false;
+    // Flatpickr initialization
+    flatpickr("#appointment_date", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      minDate: "today",
+      defaultHour: 10,
+      minTime: "09:00",
+      maxTime: "18:00",
+      time_24hr: true,
+      minuteIncrement: 30,
+      allowInput: true,
+      clickOpens: true,
+      onChange: function(selectedDates, dateStr, instance) {
+        updateAvailabilityIndicator();
+      },
+      disable: [
+        function(date) {
+          const hour = date.getHours();
+          const minute = date.getMinutes();
+          
+          if (hour === 0 && minute === 0) {
+            return false;
+          }
+          
+          if (hour < 9 || hour > 18) {
+            return true;
+          }
+          
+          return !isSlotAvailable(date, hour);
         }
-        
-        if (hour < 9 || hour > 18) {
-          return true;
+      ],
+      onDayCreate: function(dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        if (date) {
+          let totalAppointments = 0;
+          let hoursChecked = 0;
+          
+          for (let h = 9; h <= 18; h++) {
+            const testDate = new Date(date);
+            testDate.setHours(h);
+            totalAppointments += getAppointmentCount(testDate, h);
+            hoursChecked++;
+          }
+          
+          const avgAppointments = totalAppointments / hoursChecked;
+          
+          if (avgAppointments >= 4) {
+            dayElem.style.backgroundColor = '#ffebee';
+            dayElem.title = `Busy day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
+          } else if (avgAppointments >= 2) {
+            dayElem.style.backgroundColor = '#fff3e0';
+            dayElem.title = `Moderate day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
+          } else {
+            dayElem.style.backgroundColor = '#e8f5e8';
+            dayElem.title = `Available day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
+          }
         }
-        
-        return !isSlotAvailable(date, hour);
       }
-    ],
-    onDayCreate: function(dObj, dStr, fp, dayElem) {
-      const date = dayElem.dateObj;
-      if (date) {
-        let totalAppointments = 0;
-        let hoursChecked = 0;
-        
-        for (let h = 9; h <= 18; h++) {
-          const testDate = new Date(date);
-          testDate.setHours(h);
-          totalAppointments += getAppointmentCount(testDate, h);
-          hoursChecked++;
-        }
-        
-        const avgAppointments = totalAppointments / hoursChecked;
-        
-        if (avgAppointments >= 4) {
-          dayElem.style.backgroundColor = '#ffebee';
-          dayElem.title = `Busy day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
-        } else if (avgAppointments >= 2) {
-          dayElem.style.backgroundColor = '#fff3e0';
-          dayElem.title = `Moderate day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
-        } else {
-          dayElem.style.backgroundColor = '#e8f5e8';
-          dayElem.title = `Available day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
-        }
-      }
-    }
-  });
-
-  // Hamburger Menu Toggle
-  const hamburger = document.getElementById('hamburger');
-  const navMenu = document.getElementById('nav-menu');
-  const navOverlay = document.getElementById('nav-overlay');
-  const profileDropdown = document.getElementById('profile-dropdown');
-
-  hamburger.addEventListener('click', function() {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-    navOverlay.classList.toggle('active');
-    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-  });
-
-  navOverlay.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-
-  document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
-    link.addEventListener('click', function() {
-      hamburger.classList.remove('active');
-      navMenu.classList.remove('active');
-      navOverlay.classList.remove('active');
-      document.body.style.overflow = '';
     });
-  });
 
-  profileDropdown.addEventListener('click', function(e) {
-    if (window.innerWidth <= 1024) {
-      if (e.target.closest('.profile-icon')) {
-        e.preventDefault();
-        this.classList.toggle('active');
-      }
-    }
-  });
+    // Hamburger Menu Toggle
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const navOverlay = document.getElementById('nav-overlay');
+    const profileDropdown = document.getElementById('profile-dropdown');
 
-  document.querySelectorAll('.dropdown-menu a').forEach(link => {
-    link.addEventListener('click', function() {
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+      navOverlay.classList.toggle('active');
+      document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    navOverlay.addEventListener('click', function() {
       hamburger.classList.remove('active');
       navMenu.classList.remove('active');
       navOverlay.classList.remove('active');
       profileDropdown.classList.remove('active');
       document.body.style.overflow = '';
     });
-  });
 
-  window.addEventListener('resize', function() {
-    if (window.innerWidth > 1024) {
-      hamburger.classList.remove('active');
-      navMenu.classList.remove('active');
-      navOverlay.classList.remove('active');
-      profileDropdown.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  </script>
+    document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+      link.addEventListener('click', function() {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+    profileDropdown.addEventListener('click', function(e) {
+      if (window.innerWidth <= 1024) {
+        if (e.target.closest('.profile-icon')) {
+          e.preventDefault();
+          this.classList.toggle('active');
+        }
+      }
+    });
+
+    document.querySelectorAll('.dropdown-menu a').forEach(link => {
+      link.addEventListener('click', function() {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        profileDropdown.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 1024) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        profileDropdown.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+</script>
 </body>
 </html>
