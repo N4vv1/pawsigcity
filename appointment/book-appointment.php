@@ -71,15 +71,6 @@ while ($groomer = pg_fetch_assoc($groomers_result)) {
     $groomers_array[] = $groomer;
 }
 
-// DEBUG: Check groomer status (MOVED HERE - AFTER $groomers_array IS CREATED)
-echo "<pre style='background: #f0f0f0; padding: 10px; margin: 20px;'>";
-echo "DEBUG - Groomers Array:\n";
-foreach ($groomers_array as $g) {
-    echo "ID: {$g['groomer_id']}, Name: {$g['groomer_name']}, is_active value: ";
-    var_dump($g['is_active']);
-    echo "\n";
-}
-echo "</pre>";
 
 // ✅ Check pet ownership if selected
 if ($selected_pet_id) {
