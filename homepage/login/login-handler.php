@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // ✅ SECOND: Check if user exists in GROOMERS table
     $groomer_query = "SELECT groomer_id, groomer_name, email, password 
-                      FROM groomers WHERE email = $1";
+                      FROM groomer WHERE email = $1";
     $groomer_result = pg_query_params($conn, $groomer_query, [$email]);
 
     if ($groomer_result && pg_num_rows($groomer_result) === 1) {
