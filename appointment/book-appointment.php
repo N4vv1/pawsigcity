@@ -11,7 +11,7 @@ $user_id = $_SESSION['user_id'];
 $selected_pet_id = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : null;
 $package_id = isset($_GET['package_id']) ? intval($_GET['package_id']) : null;
 
-// ✅ Fetch user's pets securely
+// âœ… Fetch user's pets securely
 $pets_result = pg_query_params(
     $conn,
     "SELECT * FROM pets WHERE user_id = $1",
@@ -20,7 +20,7 @@ $pets_result = pg_query_params(
 
 $recommended_package = null;
 
-// ✅ Function to get appointment counts by date and hour (SIMPLIFIED - NO ML)
+// âœ… Function to get appointment counts by date and hour (SIMPLIFIED - NO ML)
 function getAppointmentCounts($conn) {
     $query = "
         SELECT 
@@ -52,7 +52,7 @@ function getAppointmentCounts($conn) {
 
 $appointment_counts = getAppointmentCounts($conn);
 
-// ✅ Fetch groomers with their active status
+// âœ… Fetch groomers with their active status
 $groomers_query = "
     SELECT groomer_id, groomer_name, is_active 
     FROM groomer 
@@ -65,14 +65,14 @@ if (!$groomers_result) {
     die("Groomer query failed: " . pg_last_error($conn));
 }
 
-// ✅ Store groomers in an array to reuse and avoid pointer issues
+// âœ… Store groomers in an array to reuse and avoid pointer issues
 $groomers_array = [];
 while ($groomer = pg_fetch_assoc($groomers_result)) {
     $groomers_array[] = $groomer;
 }
 
 
-// ✅ Check pet ownership if selected
+// âœ… Check pet ownership if selected
 if ($selected_pet_id) {
     $pet_check = pg_query_params(
         $conn,
@@ -86,9 +86,9 @@ if ($selected_pet_id) {
         exit;
     }
 
-    // ✅ CRITICAL: Verify pet has required size information
+    // âœ… CRITICAL: Verify pet has required size information
     if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
-        $_SESSION['error'] = "⚠️ Pet '{$valid_pet['name']}' is missing size information. Please update the pet profile first.";
+        $_SESSION['error'] = "âš ï¸ Pet '{$valid_pet['name']}' is missing size information. Please update the pet profile first.";
         header("Location: ../pets/pet-profile.php");
         exit;
     } 
@@ -110,11 +110,11 @@ if ($selected_pet_id) {
 
     if ($curl_error) {
         error_log("API Error: " . $curl_error);
-        $_SESSION['info'] = "ℹ️ Recommendation service unavailable. Showing all packages for your pet.";
+        $_SESSION['info'] = "â„¹ï¸ Recommendation service unavailable. Showing all packages for your pet.";
         $recommended_package = null;
     } elseif ($http_code !== 200) {
         error_log("API HTTP Error: " . $http_code . " Response: " . $response);
-        $_SESSION['info'] = "ℹ️ Recommendation service unavailable. Showing all packages for your pet.";
+        $_SESSION['info'] = "â„¹ï¸ Recommendation service unavailable. Showing all packages for your pet.";
         $recommended_package = null;
     } else {
         $response_data = json_decode($response, true);
@@ -131,16 +131,16 @@ if ($selected_pet_id) {
             
             if (!pg_fetch_assoc($package_verify)) {
                 error_log("Recommended package not found in DB: " . $recommended_package);
-                $_SESSION['info'] = "ℹ️ Recommended package not available. Showing all packages for your pet.";
+                $_SESSION['info'] = "â„¹ï¸ Recommended package not available. Showing all packages for your pet.";
                 $recommended_package = null;
             }
         } elseif (isset($response_data['error'])) {
-            $_SESSION['info'] = "ℹ️ " . htmlspecialchars($response_data['error']);
+            $_SESSION['info'] = "â„¹ï¸ " . htmlspecialchars($response_data['error']);
             $recommended_package = null;
         }
     }
 
-    // ✅ CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
+    // âœ… CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
     $packages_result = pg_query_params($conn, "
         SELECT pp.price_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
         FROM package_prices pp
@@ -152,9 +152,9 @@ if ($selected_pet_id) {
         ORDER BY p.name, pp.price
     ", [$valid_pet['species'], $valid_pet['size'], $valid_pet['weight']]);
 
-    // ✅ Check if any packages are available
+    // âœ… Check if any packages are available
     if (pg_num_rows($packages_result) === 0) {
-        $_SESSION['error'] = "⚠️ No packages available for a {$valid_pet['size']} {$valid_pet['species']} weighing {$valid_pet['weight']} kg. Please contact support.";
+        $_SESSION['error'] = "âš ï¸ No packages available for a {$valid_pet['size']} {$valid_pet['species']} weighing {$valid_pet['weight']} kg. Please contact support.";
         header("Location: ../pets/pet-profile.php");
         exit;
     }
@@ -827,7 +827,7 @@ if ($selected_pet_id) {
   }
 
   .dropdown-menu a::before {
-    content: '•';
+    content: 'â€¢';
     position: absolute;
     left: 35px;
     color: #A8E6CF;
@@ -1301,7 +1301,7 @@ if ($selected_pet_id) {
   }
 
   .dropdown-menu a::before {
-    content: '•';
+    content: 'â€¢';
     position: absolute;
     left: 35px;
     color: #A8E6CF;
@@ -1516,7 +1516,34 @@ select option:disabled:hover {
                   <span class="recommend"><?= htmlspecialchars($recommended_package) ?></span>
                 </div>
               <?php endif; ?>
+              
 
+              <!-- âœ… SERVICE/PACKAGE SELECTION -->
+              <div class="form-group">
+                <label for="price_id">
+                  <i class="fas fa-box"></i> Select Service Package
+                </label>
+                <select name="price_id" id="price_id" required>
+                  <option value="">-- Select Package --</option>
+                  <?php while ($package = pg_fetch_assoc($packages_result)): ?>
+                    <option 
+                      value="<?= $package['price_id'] ?>" 
+                      data-price="<?= $package['price'] ?>"
+                      <?= ($recommended_package && stripos($package['name'], $recommended_package) !== false) ? 'selected' : '' ?>
+                    >
+                      <?= htmlspecialchars($package['name']) ?> 
+                      (<?= htmlspecialchars($package['species']) ?> - <?= htmlspecialchars($package['size']) ?>) 
+                      - â‚±<?= number_format($package['price'], 2) ?>
+                    </option>
+                  <?php endwhile; ?>
+                </select>
+                
+                <div id="package-price-display" style="margin-top: 12px; padding: 14px; background: #f0f8ff; border-radius: 10px; display: none;">
+                  <strong style="color: #2c3e50;">Selected Price:</strong> 
+                  <span class="package-price" id="selected-price">â‚±0.00</span>
+                </div>
+              </div>
+          
               <div class="form-group">
                 <label for="groomer_id">
                    <i class="fas fa-user-md"></i> Select Groomer
@@ -1624,6 +1651,23 @@ select option:disabled:hover {
     return count < MAX_APPOINTMENTS;
   }
 
+      // Update price display when package is selected
+    function updatePriceDisplay() {
+      const packageSelect = document.getElementById('price_id');
+      const priceDisplay = document.getElementById('package-price-display');
+      const selectedPrice = document.getElementById('selected-price');
+      
+      const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+      
+      if (selectedOption.value && selectedOption.dataset.price) {
+        const price = parseFloat(selectedOption.dataset.price);
+        selectedPrice.textContent = 'â‚±' + price.toFixed(2);
+        priceDisplay.style.display = 'block';
+      } else {
+        priceDisplay.style.display = 'none';
+      }
+    }
+  
   function updateAvailabilityIndicator() {
     const dateInput = document.getElementById('appointment_date');
     const submitBtn = document.querySelector('.submit-btn');
@@ -1654,7 +1698,7 @@ select option:disabled:hover {
       submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
     }
   }
-
+  const packageSelect = document.getElementById('price_id');
   document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('appointment_date');
     if (dateInput) {
@@ -1665,6 +1709,13 @@ select option:disabled:hover {
       const today = now.toISOString().split('T')[0];
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
+
+
+       if (packageSelect) {
+    packageSelect.addEventListener('change', updatePriceDisplay);
+    // Trigger on page load if option is pre-selected
+    updatePriceDisplay();
+  }
     }
 
     // Flatpickr initialization
@@ -1786,7 +1837,7 @@ select option:disabled:hover {
       }
     });
   });
-  // Validate groomer selection on form submit
+// Validate groomer selection on form submit
 document.querySelector('.booking-form').addEventListener('submit', function(e) {
   const groomerSelect = document.getElementById('groomer_id');
   const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
@@ -1794,6 +1845,14 @@ document.querySelector('.booking-form').addEventListener('submit', function(e) {
   if (selectedOption.disabled) {
     e.preventDefault();
     alert('Please select an available groomer. The selected groomer is currently offline.');
+    return false;
+  }
+
+  // Validate package selection
+  const packageSelect = document.getElementById('price_id');
+  if (!packageSelect.value) {
+    e.preventDefault();
+    alert('Please select a service package.');
     return false;
   }
 });
