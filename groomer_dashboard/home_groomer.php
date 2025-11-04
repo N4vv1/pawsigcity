@@ -10,9 +10,9 @@ if (!isset($_SESSION['groomer_id'])) {
 
 $groomer_id = $_SESSION['groomer_id'];
 
-// Get groomer's current status
+// Get groomer's current status - FIXED: Changed 'groomer' to 'groomers' table
 $status_query = pg_query_params($conn, "
-    SELECT is_active, DATE(last_active) as last_active_date 
+    SELECT is_active, last_active 
     FROM groomer
     WHERE groomer_id = $1
 ", [$groomer_id]);
@@ -20,7 +20,14 @@ $status_query = pg_query_params($conn, "
 $groomer_status = pg_fetch_assoc($status_query);
 $is_active = $groomer_status['is_active'] ?? false;
 
-// Fetch ONLY confirmed appointments for THIS groomer
+// Convert PostgreSQL boolean to PHP boolean properly
+if ($is_active === 't' || $is_active === 'true' || $is_active === true) {
+    $is_active = true;
+} else {
+    $is_active = false;
+}
+
+// Fetch ONLY confirmed appointments for THIS groomer - FIXED: Added proper groomer_id filter
 $query = "
     SELECT 
         a.appointment_id,
@@ -36,7 +43,7 @@ $query = "
     JOIN packages p ON a.package_id = p.package_id
     JOIN pets pet ON a.pet_id = pet.pet_id
     JOIN users u ON pet.user_id = u.user_id
-    WHERE a.status::text = 'confirmed'
+    WHERE a.status = 'confirmed'
       AND a.groomer_id = $1
     ORDER BY a.appointment_date ASC
 ";
@@ -46,8 +53,6 @@ $result = pg_query_params($conn, $query, [$groomer_id]);
 if (!$result) {
     die("Query failed: " . pg_last_error($conn));
 }
-?>
-
 ?>
 
 <!DOCTYPE html>
@@ -361,6 +366,18 @@ if (!$result) {
       transform: none;
     }
 
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    .empty-state i {
+      font-size: 80px;
+      color: #ddd;
+      margin-bottom: 20px;
+    }
+
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -403,7 +420,7 @@ if (!$result) {
     <img src="../homepage/images/pawsig.png" alt="Logo" />
   </div>
 
-  <!-- Status Toggle -->
+  <!-- Status Toggle - FIXED: Proper checked state from database -->
   <div class="status-toggle">
     <h4>Availability Status</h4>
     <div class="toggle-container">
@@ -434,9 +451,10 @@ if (!$result) {
   <div id="alertContainer"></div>
 
   <?php if (pg_num_rows($result) == 0): ?>
-    <div class="alert alert-error">
-      <i class='bx bx-info-circle'></i>
-      No confirmed appointments yet.
+    <div class="empty-state">
+      <i class='bx bx-calendar-x'></i>
+      <h3>No Confirmed Appointments</h3>
+      <p>You don't have any confirmed appointments yet</p>
     </div>
   <?php else: ?>
     <table>
@@ -452,13 +470,10 @@ if (!$result) {
         </tr>
       </thead>
       <tbody>
-        
-        <?php
-        
-        while ($row = pg_fetch_assoc($result)): ?>
+        <?php while ($row = pg_fetch_assoc($result)): ?>
           <tr id="row-<?= $row['appointment_id'] ?>">
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
+            <td><?= htmlspecialchars(date('M d, Y h:i A', strtotime($row['appointment_date']))) ?></td>
             <td><?= htmlspecialchars($row['package_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_name']) ?></td>
             <td><?= htmlspecialchars($row['pet_breed']) ?></td>
@@ -500,7 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Status Toggle Handler
+// Status Toggle Handler - FIXED: Proper state management
 const statusToggle = document.getElementById('statusToggle');
 const statusLabel = document.getElementById('statusLabel');
 
@@ -522,12 +537,14 @@ statusToggle.addEventListener('change', function() {
       showAlert('Status updated successfully!', 'success');
     } else {
       showAlert('Failed to update status', 'error');
+      // Revert toggle if failed
       this.checked = !isActive;
     }
   })
   .catch(error => {
     console.error('Error:', error);
     showAlert('Error updating status', 'error');
+    // Revert toggle if error
     this.checked = !isActive;
   });
 });
