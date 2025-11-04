@@ -1749,38 +1749,112 @@ if (!$pets) {
               </div>
             </div>
 
-            <!-- Pet Edit Form -->
-            <div id="pet-edit-<?= $pet_id ?>" class="edit-form">
-              <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
-                <div class="form-grid">
-                  <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" name="name" value="<?= htmlspecialchars($pet['name']) ?>" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Breed</label>
-                    <input type="text" name="breed" value="<?= htmlspecialchars($pet['breed']) ?>" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Age</label>
-                    <input type="number" name="age" value="<?= htmlspecialchars($pet['age']) ?>" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Gender</label>
-                    <select name="gender" required>
-                      <option value="Male" <?= $pet['gender'] == 'Male' ? 'selected' : '' ?>>Male</option>
-                      <option value="Female" <?= $pet['gender'] == 'Female' ? 'selected' : '' ?>>Female</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label>Color</label>
-                    <input type="text" name="color" value="<?= htmlspecialchars($pet['color']) ?>" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Birthday</label>
-                    <input type="date" name="birthday" value="<?= htmlspecialchars($pet['birthday']) ?>" required>
-                  </div>
+           <!-- Pet Edit Form -->
+<div id="pet-edit-<?= $pet_id ?>" class="edit-form">
+  <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
+    
+    <!-- Basic Information Section -->
+    <h4 style="margin: 0 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #A8E6CF; padding-bottom: 8px;">
+      <i class="fas fa-paw"></i> Basic Information
+    </h4>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" value="<?= htmlspecialchars($pet['name']) ?>" required>
+      </div>
+      <div class="form-group">
+        <label>Breed</label>
+        <input type="text" name="breed" value="<?= htmlspecialchars($pet['breed']) ?>" required>
+      </div>
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" name="age" value="<?= htmlspecialchars($pet['age']) ?>" required>
+      </div>
+      <div class="form-group">
+        <label>Gender</label>
+        <select name="gender" required>
+          <option value="Male" <?= $pet['gender'] == 'Male' ? 'selected' : '' ?>>Male</option>
+          <option value="Female" <?= $pet['gender'] == 'Female' ? 'selected' : '' ?>>Female</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Color</label>
+        <input type="text" name="color" value="<?= htmlspecialchars($pet['color']) ?>" required>
+      </div>
+      <div class="form-group">
+        <label>Birthday</label>
+        <input type="date" name="birthday" value="<?= htmlspecialchars($pet['birthday']) ?>" required>
+      </div>
+      <div class="form-group">
+        <label>Size</label>
+        <select name="size">
+          <option value="">Select size</option>
+          <option value="Small" <?= ($pet['size'] ?? '') == 'Small' ? 'selected' : '' ?>>Small</option>
+          <option value="Medium" <?= ($pet['size'] ?? '') == 'Medium' ? 'selected' : '' ?>>Medium</option>
+          <option value="Large" <?= ($pet['size'] ?? '') == 'Large' ? 'selected' : '' ?>>Large</option>
+          <option value="Extra Large" <?= ($pet['size'] ?? '') == 'Extra Large' ? 'selected' : '' ?>>Extra Large</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Weight (kg)</label>
+        <input type="number" step="0.1" name="weight" value="<?= htmlspecialchars($pet['weight'] ?? '') ?>" placeholder="e.g., 5.5">
+      </div>
+      <div class="form-group full-width">
+        <label>Photo</label>
+        <input type="file" name="photo_url">
+      </div>
+    </div>
+
+    <!-- Health Information Section -->
+    <h4 style="margin: 20px 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #FFE29D; padding-bottom: 8px;">
+      <i class="fas fa-heartbeat"></i> Health Information
+    </h4>
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label>Allergies</label>
+        <textarea name="allergies" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="List any allergies (e.g., chicken, dairy, pollen)"><?= htmlspecialchars($health['allergies'] ?? '') ?></textarea>
+      </div>
+      <div class="form-group full-width">
+        <label>Medications</label>
+        <textarea name="medications" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Current medications and dosages"><?= htmlspecialchars($health['medications'] ?? '') ?></textarea>
+      </div>
+      <div class="form-group full-width">
+        <label>Medical Conditions</label>
+        <textarea name="medical_conditions" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Any medical conditions or health concerns"><?= htmlspecialchars($health['medical_conditions'] ?? '') ?></textarea>
+      </div>
+    </div>
+
+    <!-- Behavior & Preferences Section -->
+    <h4 style="margin: 20px 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #B4A7D6; padding-bottom: 8px;">
+      <i class="fas fa-heart"></i> Behavior & Preferences
+    </h4>
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label>Behavior Notes</label>
+        <textarea name="behavior_notes" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Temperament, likes, dislikes, special handling instructions"><?= htmlspecialchars($behavior['behavior_notes'] ?? '') ?></textarea>
+      </div>
+      <div class="form-group">
+        <label>Nail Trimming</label>
+        <select name="nail_trimming">
+          <option value="">Select preference</option>
+          <option value="Yes" <?= ($behavior['nail_trimming'] ?? '') == 'Yes' ? 'selected' : '' ?>>Yes</option>
+          <option value="No" <?= ($behavior['nail_trimming'] ?? '') == 'No' ? 'selected' : '' ?>>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Haircut Style</label>
+        <input type="text" name="haircut_style" value="<?= htmlspecialchars($behavior['haircut_style'] ?? '') ?>" placeholder="e.g., Puppy cut, Lion cut">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-save">Save Changes</button>
+      <button type="button" class="btn-cancel" onclick="togglePetEdit(<?= $pet_id ?>)">Cancel</button>
+    </div>
+  </form>
+</div>
+                  
                   <div class="form-group full-width">
                     <label>Photo</label>
                     <input type="file" name="photo_url">
