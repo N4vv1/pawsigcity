@@ -395,6 +395,7 @@
       font-weight: 500;
       transition: color 0.3s ease;
       -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
     }
 
     .forgot a:hover {
@@ -426,7 +427,145 @@
       transform: translateY(0);
     }
 
-    /* Tablet and below - Stack vertically */
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 450px;
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .modal-header h3 {
+      font-size: 24px;
+      color: #2d5f4a;
+      margin-bottom: 8px;
+    }
+
+    .modal-header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 28px;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      line-height: 1;
+    }
+
+    .close-modal:hover {
+      color: #2d5f4a;
+    }
+
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 25px 0;
+    }
+
+    .otp-input {
+      width: 50px;
+      height: 55px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .otp-input:focus {
+      border-color: #A8E6CF;
+      box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.15);
+    }
+
+    .resend-otp {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .resend-otp a {
+      color: #5fb894;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .resend-otp a:hover {
+      color: #7FD4B3;
+    }
+
+    .resend-otp a.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #2d5f4a;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
     @media (max-width: 968px) {
       body {
         flex-direction: column;
@@ -477,8 +616,18 @@
       }
     }
 
-    /* Mobile devices */
     @media (max-width: 640px) {
+      .modal-content {
+        padding: 30px 25px;
+        max-width: 95%;
+      }
+
+      .otp-input {
+        width: 45px;
+        height: 50px;
+        font-size: 20px;
+      }
+
       .brand-side {
         min-height: auto;
         padding: 45px 25px 35px;
@@ -495,24 +644,6 @@
         line-height: 1.5;
       }
 
-      .brand-features {
-        margin-top: 25px;
-        gap: 12px;
-        max-width: 100%;
-      }
-
-      .feature-item {
-        padding: 12px 18px;
-      }
-
-      .feature-item i {
-        font-size: 20px;
-      }
-
-      .feature-item span {
-        font-size: 14px;
-      }
-
       .form-side {
         padding: 35px 25px 45px;
       }
@@ -525,221 +656,9 @@
         gap: 6px;
       }
 
-      .back-button i {
-        font-size: 18px;
-      }
-
-      .logo-section {
-        margin-bottom: 25px;
-      }
-
-      .logo-section h2 {
-        font-size: 26px;
-      }
-
-      .logo-section p {
-        font-size: 13px;
-      }
-
-      .tab-buttons {
-        margin-bottom: 25px;
-        padding: 4px;
-      }
-
-      .tab-btn {
-        padding: 12px 8px;
-        font-size: 14px;
-      }
-
-      .input-field {
-        padding: 14px 42px 14px 14px;
-        font-size: 15px;
-      }
-
-      .label {
-        font-size: 15px;
-        top: 14px;
-        left: 14px;
-      }
-
-      .icon {
-        right: 14px;
-        top: 14px;
-        font-size: 19px;
-      }
-
       .row-inputs {
         grid-template-columns: 1fr;
         gap: 0;
-      }
-
-      .input-box {
-        margin-bottom: 22px;
-      }
-
-      .remember-forgot {
-        font-size: 13px;
-        margin-bottom: 22px;
-      }
-
-      .remember-me input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-      }
-
-      .submit-btn {
-        padding: 14px;
-        font-size: 15px;
-      }
-
-      .alert-message {
-        font-size: 13px;
-        padding: 11px 14px;
-      }
-    }
-
-    /* Very small mobile devices */
-    @media (max-width: 380px) {
-      .brand-side {
-        padding: 40px 20px 30px;
-      }
-
-      .brand-content h1 {
-        font-size: 28px;
-        margin-bottom: 12px;
-      }
-
-      .brand-content p {
-        font-size: 14px;
-      }
-
-      .brand-features {
-        gap: 10px;
-        margin-top: 20px;
-      }
-
-      .feature-item {
-        padding: 10px 15px;
-        gap: 12px;
-      }
-
-      .feature-item i {
-        font-size: 18px;
-      }
-
-      .feature-item span {
-        font-size: 13px;
-      }
-
-      .form-side {
-        padding: 30px 20px 40px;
-      }
-
-      .back-button {
-        padding: 8px 14px;
-        font-size: 13px;
-        top: 15px;
-        left: 15px;
-      }
-
-      .back-button i {
-        font-size: 16px;
-      }
-
-      .logo-section h2 {
-        font-size: 24px;
-      }
-
-      .logo-section p {
-        font-size: 12px;
-      }
-
-      .tab-btn {
-        padding: 11px 6px;
-        font-size: 13px;
-      }
-
-      .input-field {
-        padding: 13px 40px 13px 13px;
-        font-size: 14px;
-      }
-
-      .label {
-        font-size: 14px;
-        top: 13px;
-        left: 13px;
-      }
-
-      .icon {
-        right: 13px;
-        top: 13px;
-        font-size: 18px;
-      }
-
-      .input-box {
-        margin-bottom: 20px;
-      }
-
-      .submit-btn {
-        padding: 13px;
-        font-size: 14px;
-      }
-
-      .container {
-        padding: 0 5px;
-      }
-    }
-
-    /* Large tablets in landscape */
-    @media (min-width: 969px) and (max-width: 1200px) {
-      .brand-content h1 {
-        font-size: 42px;
-      }
-
-      .brand-features {
-        max-width: 320px;
-      }
-    }
-
-    /* Extra large screens */
-    @media (min-width: 1400px) {
-      .brand-content h1 {
-        font-size: 56px;
-      }
-
-      .brand-content p {
-        font-size: 20px;
-      }
-
-      .brand-features {
-        max-width: 400px;
-      }
-
-      .container {
-        max-width: 550px;
-      }
-    }
-
-    /* Landscape mobile orientation fix */
-    @media (max-height: 500px) and (orientation: landscape) {
-      .brand-side {
-        min-height: auto;
-        padding: 30px 25px;
-      }
-
-      .brand-features {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 20px;
-      }
-
-      .feature-item {
-        flex: 0 1 auto;
-      }
-
-      .form-side {
-        padding: 30px 25px;
       }
     }
   </style>
@@ -811,7 +730,7 @@
                 <label for="remember">Remember me</label>
               </div>
               <div class="forgot">
-                <a href="forgot_password.php">Forgot password?</a>
+                <a onclick="openForgotPasswordModal()">Forgot password?</a>
               </div>
             </div>
 
@@ -823,41 +742,41 @@
         <div id="register-form" class="form-section">
           <div id="register-alerts"></div>
           
-          <form action="../login/register-handler.php" method="post">
+          <form id="registration-form">
             <div class="row-inputs">
               <div class="input-box">
-                <input type="text" class="input-field" name="first_name" required />
+                <input type="text" class="input-field" name="first_name" id="first_name" required />
                 <label class="label">First Name</label>
                 <i class='bx bx-user icon'></i>
               </div>
 
               <div class="input-box">
-                <input type="text" class="input-field" name="last_name" required />
+                <input type="text" class="input-field" name="last_name" id="last_name" required />
                 <label class="label">Last Name</label>
                 <i class='bx bx-user icon'></i>
               </div>
             </div>
 
             <div class="input-box">
-              <input type="text" class="input-field" name="middle_name" required/>
+              <input type="text" class="input-field" name="middle_name" id="middle_name" required/>
               <label class="label">Middle Name</label>
               <i class='bx bx-user icon'></i>
             </div>
 
             <div class="input-box">
-              <input type="email" class="input-field" name="email" required />
+              <input type="email" class="input-field" name="email" id="reg_email" required />
               <label class="label">Email</label>
               <i class='bx bx-envelope icon'></i>
             </div>
 
             <div class="input-box">
-              <input type="password" class="input-field" name="password" required />
+              <input type="password" class="input-field" name="password" id="reg_password" required />
               <label class="label">Password</label>
               <i class='bx bx-lock icon'></i>
             </div>
 
             <div class="input-box">
-              <input type="text" class="input-field" name="phone"  required/>
+              <input type="text" class="input-field" name="phone" id="phone" required/>
               <label class="label">Phone Number</label>
               <i class='bx bx-phone icon'></i>
             </div>
@@ -869,52 +788,106 @@
     </div>
   </div>
 
-  <script>
-    function switchTab(tab) {
-      const loginForm = document.getElementById('login-form');
-      const registerForm = document.getElementById('register-form');
-      const tabButtons = document.querySelectorAll('.tab-btn');
+  <!-- Forgot Password Modal -->
+  <div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+      <div class="modal-header">
+        <h3>Forgot Password</h3>
+        <p>Enter your email to receive an OTP</p>
+      </div>
+      <div id="forgot-alerts"></div>
+      <form id="forgot-password-form">
+        <div class="input-box">
+          <input type="email" class="input-field" id="forgot_email" required />
+          <label class="label">Email Address</label>
+          <i class='bx bx-envelope icon'></i>
+        </div>
+        <button type="submit" class="submit-btn" id="send-forgot-otp-btn">Send OTP</button>
+      </form>
+    </div>
+  </div>
 
-      tabButtons.forEach(btn => btn.classList.remove('active'));
+  <!-- Forgot Password OTP Verification Modal -->
+  <div id="forgotOtpModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeForgotOtpModal()">&times;</span>
+      <div class="modal-header">
+        <h3>Verify OTP</h3>
+        <p>Enter the 6-digit code sent to <span id="forgot-email-display"></span></p>
+      </div>
+      <div id="forgot-otp-alerts"></div>
+      <form id="forgot-otp-form">
+        <div class="otp-inputs">
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+        </div>
+        <button type="submit" class="submit-btn">Verify OTP</button>
+        <div class="resend-otp">
+          Didn't receive code? <a onclick="resendForgotOTP()" id="resend-forgot-link">Resend OTP</a>
+          <span id="forgot-timer"></span>
+        </div>
+      </form>
+    </div>
+  </div>
 
-      if (tab === 'login') {
-        loginForm.classList.add('active');
-        registerForm.classList.remove('active');
-        tabButtons[0].classList.add('active');
-      } else {
-        registerForm.classList.add('active');
-        loginForm.classList.remove('active');
-        tabButtons[1].classList.add('active');
-      }
-    }
+  <!-- Reset Password Modal -->
+  <div id="resetPasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeResetPasswordModal()">&times;</span>
+      <div class="modal-header">
+        <h3>Reset Password</h3>
+        <p>Enter your new password</p>
+      </div>
+      <div id="reset-alerts"></div>
+      <form id="reset-password-form">
+        <div class="input-box">
+          <input type="password" class="input-field" id="new_password" required />
+          <label class="label">New Password</label>
+          <i class='bx bx-lock icon'></i>
+        </div>
+        <div class="input-box">
+          <input type="password" class="input-field" id="confirm_password" required />
+          <label class="label">Confirm Password</label>
+          <i class='bx bx-lock-alt icon'></i>
+        </div>
+        <button type="submit" class="submit-btn">Reset Password</button>
+      </form>
+    </div>
+  </div>
 
-    // Handle PHP session messages
-    window.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const success = urlParams.get('success');
-      const error = urlParams.get('error');
+  <!-- Registration OTP Modal -->
+  <div id="registerOtpModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeRegisterOtpModal()">&times;</span>
+      <div class="modal-header">
+        <h3>Verify Your Email</h3>
+        <p>Enter the 6-digit code sent to <span id="register-email-display"></span></p>
+      </div>
+      <div id="register-otp-alerts"></div>
+      <form id="register-otp-form">
+        <div class="otp-inputs">
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
+        </div>
+        <button type="submit" class="submit-btn">Verify & Register</button>
+        <div class="resend-otp">
+          Didn't receive code? <a onclick="resendRegisterOTP()" id="resend-register-link">Resend OTP</a>
+          <span id="register-timer"></span>
+        </div>
+      </form>
+    </div>
+  </div>
 
-      if (success) {
-        showAlert('login-alerts', success, 'success');
-      }
-      if (error) {
-        showAlert('login-alerts', error, 'error');
-      }
-    });
-
-    function showAlert(containerId, message, type) {
-      const container = document.getElementById(containerId);
-      const alertDiv = document.createElement('div');
-      alertDiv.className = `alert-message alert-${type}`;
-      alertDiv.textContent = message;
-      container.appendChild(alertDiv);
-
-      setTimeout(() => {
-        alertDiv.style.opacity = '0';
-        setTimeout(() => alertDiv.remove(), 300);
-      }, 5000);
-    }
-  </script>
+  <script src="auth-otp.js"></script>
 
 </body>
 </html>
