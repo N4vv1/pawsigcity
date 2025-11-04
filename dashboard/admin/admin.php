@@ -772,7 +772,7 @@ if ($noShowCount > 0) {
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="../feedback-reports/sentiment_analysis.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
+    <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
