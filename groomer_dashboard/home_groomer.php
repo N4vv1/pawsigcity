@@ -30,7 +30,7 @@ $query = "
         pet.name AS pet_name,
         pet.breed AS pet_breed,
         (u.first_name || ' ' || u.last_name) AS username,
-        u.firs_tname,
+        u.first_name,
         u.last_name
     FROM appointments a
     JOIN packages p ON a.package_id = p.package_id
