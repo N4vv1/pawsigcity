@@ -916,25 +916,21 @@ error_log("Number of appointments found: " . $row_count);
       ?>
       
       <div class="stat-card">
-        <i class="fas fa-clipboard-list"></i>
         <h3><?= $total ?></h3>
         <p>Total Appointments</p>
       </div>
       
       <div class="stat-card">
-        <i class="fas fa-check-circle"></i>
         <h3><?= $approved ?></h3>
         <p>Approved</p>
       </div>
       
       <div class="stat-card">
-        <i class="fas fa-clock"></i>
         <h3><?= $pending ?></h3>
         <p>Pending</p>
       </div>
       
       <div class="stat-card">
-        <i class="fas fa-star"></i>
         <h3><?= $completed ?></h3>
         <p>Completed</p>
       </div>
