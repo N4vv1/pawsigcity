@@ -4,7 +4,7 @@ require '../db.php';
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login/loginform.php');
+    header('Location: ../homepage/login/loginform.php');
     exit;
 }
 
@@ -1716,7 +1716,7 @@ if (!$pets) {
 
           <div class="pet-card">
             <div class="pet-header">
-              <img src="../<?= htmlspecialchars($pet['photo_url']) ?>" 
+              <img src="<?= htmlspecialchars($pet['photo_url']) ?>" 
                    alt="<?= htmlspecialchars($pet['name']) ?>"
                    class="pet-avatar"
                    onerror="this.onerror=null;this.src='../uploads/default.jpg';">

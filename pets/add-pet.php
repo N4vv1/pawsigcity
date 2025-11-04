@@ -4,7 +4,7 @@ require '../db.php';
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login/loginform.php');
+    header('Location: ../homepage/login/loginform.php');
     exit;
 }
 
@@ -664,6 +664,44 @@ if (!$pets) {
 
           <label>Gender:
             <select name="gender">
+
+          
+          <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-error">
+              <i class="fas fa-exclamation-circle"></i>
+              <?= $_SESSION['error'] ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+          <?php endif; ?>
+
+          <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle"></i>
+              <?= $_SESSION['success'] ?>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+          <?php endif; ?>
+
+          <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
+
+          <label>Name:<span class="required"></span>
+            <input type="text" name="name" placeholder="Enter pet name" required>
+          </label>
+
+          <label>Species:<span class="required"></span>
+            <select name="species" required>
+              <option value="">Select Species</option>
+              <option value="Dog">Dog</option>
+              <option value="Cat">Cat</option>
+            </select>
+          </label>
+
+          <label>Breed:<span class="required"></span>
+            <input type="text" name="breed" placeholder="Enter breed" required>
+          </label>
+
+          <label>Gender:<span class="required"></span>
+            <select name="gender" required>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
