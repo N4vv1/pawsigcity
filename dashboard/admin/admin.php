@@ -79,92 +79,99 @@ if ($noShowCount > 0) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
   
-  <script>
-  // Define functions IMMEDIATELY in global scope before page loads
-  window.openModal = function(type) {
-    const modals = {
-      users: 'usersModal',
-      pets: 'petsModal',
-      pending: 'pendingModal',
-      cancelled: 'cancelledModal',
-      noshow: 'noshowModal',
-      confirmed: 'confirmedModal',
-      completed: 'completedModal',
-      appointments: 'appointmentsModal',
-      history: 'historyModal'
-    };
-    
-    console.log('openModal called with:', type);
-    const modalId = modals[type];
-    if (modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        modal.style.display = 'flex';
-        console.log('Modal opened successfully');
-      } else {
-        console.error('Modal element not found:', modalId);
-      }
+<script>
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, modals should be available now');
+});
+
+// Define functions IMMEDIATELY in global scope
+window.openModal = function(type) {
+  const modals = {
+    users: 'usersModal',
+    pets: 'petsModal',
+    pending: 'pendingModal',
+    cancelled: 'cancelledModal',
+    noshow: 'noshowModal',
+    confirmed: 'confirmedModal',
+    completed: 'completedModal',
+    appointments: 'appointmentsModal',
+    history: 'historyModal'
+  };
+  
+  console.log('openModal called with:', type);
+  const modalId = modals[type];
+  if (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'flex';
+      console.log('Modal opened successfully');
     } else {
-      console.error('Unknown modal type:', type);
+      console.error('Modal element not found:', modalId);
+      console.error('Available modals:', Object.keys(modals).map(k => document.getElementById(modals[k]) ? k : null));
     }
-  };
+  } else {
+    console.error('Unknown modal type:', type);
+  }
+};
 
-  window.closeModal = function(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
-  };
+window.closeModal = function(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = 'none';
+};
 
-  window.viewHistory = function(userId) {
-    openModal('history');
-    const historyContainer = document.getElementById('historyTable');
-    if (historyContainer) {
-      historyContainer.innerHTML = 'Loading...';
-      fetch('../../appointment/fetch-history.php?user_id=' + userId)
-        .then(response => response.text())
-        .then(html => historyContainer.innerHTML = html)
-        .catch(() => historyContainer.innerHTML = 'Failed to load history.');
-    }
-  };
+window.viewHistory = function(userId) {
+  openModal('history');
+  const historyContainer = document.getElementById('historyTable');
+  if (historyContainer) {
+    historyContainer.innerHTML = 'Loading...';
+    fetch('../../appointment/fetch-history.php?user_id=' + userId)
+      .then(response => response.text())
+      .then(html => historyContainer.innerHTML = html)
+      .catch(() => historyContainer.innerHTML = 'Failed to load history.');
+  }
+};
 
-  window.showToast = function(message) {
-    let toast = document.getElementById('toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'toast';
-      toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: none;';
-      document.body.appendChild(toast);
-    }
-    toast.textContent = message;
-    toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 3000);
-  };
+window.showToast = function(message) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+};
 
-  window.toggleDropdown = function(event) {
-    event.preventDefault();
-    const menu = event.currentTarget.nextElementSibling;
-    if (menu && menu.classList.contains('dropdown-menu')) {
-      const isVisible = menu.style.display === 'block';
-      document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-      menu.style.display = isVisible ? 'none' : 'block';
-    }
-  };
-  window.toggleSidebar = function() {
-  console.log('toggleSidebar called'); // Debug log
+window.toggleDropdown = function(event) {
+  event.preventDefault();
+  const menu = event.currentTarget.nextElementSibling;
+  if (menu && menu.classList.contains('dropdown-menu')) {
+    const isVisible = menu.style.display === 'block';
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isVisible ? 'none' : 'block';
+  }
+};
+
+window.toggleSidebar = function() {
+  console.log('toggleSidebar called');
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
   
-  console.log('Sidebar found:', sidebar); // Debug log
-  console.log('Overlay found:', overlay); // Debug log
+  console.log('Sidebar found:', sidebar);
+  console.log('Overlay found:', overlay);
   
   if (sidebar && overlay) {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
-    console.log('Sidebar active:', sidebar.classList.contains('active')); // Debug log
+    console.log('Sidebar active:', sidebar.classList.contains('active'));
   } else {
     console.error('Sidebar or overlay not found!');
   }
 };
-  </script>
+</script>
   
   <style>
     :root {
@@ -1246,77 +1253,6 @@ if ($noShowCount > 0) {
 
 </main>
 
-<script>
-// Define functions IMMEDIATELY in global scope before page loads
-window.openModal = function(type) {
-  const modals = {
-    users: 'usersModal',
-    pets: 'petsModal',
-    pending: 'pendingModal',
-    cancelled: 'cancelledModal',
-    noshow: 'noshowModal',
-    confirmed: 'confirmedModal',
-    completed: 'completedModal',
-    appointments: 'appointmentsModal',
-    history: 'historyModal'
-  };
-  
-  console.log('openModal called with:', type);
-  const modalId = modals[type];
-  if (modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.style.display = 'flex';
-      console.log('Modal opened successfully');
-    } else {
-      console.error('Modal element not found:', modalId);
-    }
-  } else {
-    console.error('Unknown modal type:', type);
-  }
-};
-
-window.closeModal = function(id) {
-  const modal = document.getElementById(id);
-  if (modal) modal.style.display = 'none';
-};
-
-window.viewHistory = function(userId) {
-  openModal('history');
-  const historyContainer = document.getElementById('historyTable');
-  if (historyContainer) {
-    historyContainer.innerHTML = 'Loading...';
-    fetch('../../appointment/fetch-history.php?user_id=' + userId)
-      .then(response => response.text())
-      .then(html => historyContainer.innerHTML = html)
-      .catch(() => historyContainer.innerHTML = 'Failed to load history.');
-  }
-};
-
-window.showToast = function(message) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: none;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 3000);
-};
-
-window.toggleDropdown = function(event) {
-  event.preventDefault();
-  const menu = event.currentTarget.nextElementSibling;
-  if (menu && menu.classList.contains('dropdown-menu')) {
-    const isVisible = menu.style.display === 'block';
-    document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-    menu.style.display = isVisible ? 'none' : 'block';
-  }
-};
-
-</script>
 
 </body>
 </html>
