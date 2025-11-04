@@ -394,7 +394,7 @@ if (!$result) {
   <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../pawsigcity/homepage/images/pawsig.png" alt="Logo" class="icon" />
+      <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
     </a>
     
     <!-- Hamburger Menu Button -->
