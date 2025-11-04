@@ -597,6 +597,20 @@ $result = pg_query($conn, $query);
     </div>
 
     <hr>
+
+     <!-- SERVICES DROPDOWN -->
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+          <span><i class='bx bx-spa'></i> Services</span>
+          <i class='bx bx-chevron-down'></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
+          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
+        </div>
+      </div>
+
+    <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php" class="active"><i class='bx bx-camera'></i>Pet Gallery</a>

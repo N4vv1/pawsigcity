@@ -1221,11 +1221,12 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig.png" alt="Pawsig City Logo" />
+    <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
+
     <div class="dropdown">
       <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
@@ -1236,8 +1237,23 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
       </div>
     </div>
+
     <hr>
-    <a href="notes.php" class="active"><i class='bx bx-note'></i>Analytics</a>
+
+     <!-- SERVICES DROPDOWN -->
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+          <span><i class='bx bx-spa'></i> Services</span>
+          <i class='bx bx-chevron-down'></i>
+        </a>
+        <div class="dropdown-menu">
+           <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
+          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
+        </div>
+      </div>
+
+    <hr>
+    <a href="../session_notes/notes.php" class="active"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>

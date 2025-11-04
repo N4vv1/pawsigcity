@@ -3,84 +3,68 @@ session_start();
 require '../../db.php';
 require_once '../admin/check_admin.php';
 
-// Handle new user creation
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
-    $first_name  = trim($_POST['first_name']);
-    $middle_name = trim($_POST['middle_name']);
-    $last_name   = trim($_POST['last_name']);
-    $email      = trim($_POST['email']);
-    $password   = password_hash($_POST['password'], PASSWORD_BCRYPT);
-    $phone      = trim($_POST['phone']);
-    $role       = $_POST['role'];
+// Handle new service creation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_service'])) {
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
+    $is_active = isset($_POST['is_active']) ? 'true' : 'false';
 
-    // Check if email exists
-    pg_prepare($conn, "check_user", "SELECT * FROM users WHERE email = $1");
-    $check = pg_execute($conn, "check_user", [$email]);
-
-    if (pg_num_rows($check) > 0) {
-        $_SESSION['error'] = "Email is already registered.";
-    } else {
-        pg_prepare(
-            $conn,
-            "insert_user",
-            "INSERT INTO users (first_name, middle_name, last_name, email, password, phone, role)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)"
-        );
-        $result = pg_execute($conn, "insert_user", [
-            $first_name, $middle_name, $last_name,
-            $email, $password, $phone, $role
-        ]);
-
-        if ($result) {
-            $_SESSION['success'] = "User account created successfully.";
-        } else {
-            $_SESSION['error'] = "Something went wrong. Please try again.";
-        }
-    }
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
-}
-
-// Handle user update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
-    $id         = intval($_POST['user_id']);
-    $first_name  = trim($_POST['first_name']);
-    $middle_name = trim($_POST['middle_name']);
-    $last_name   = trim($_POST['last_name']);
-    $email      = trim($_POST['email']);
-    $phone      = trim($_POST['phone']);
-
-    pg_prepare(
-        $conn,
-        "update_user",
-        "UPDATE users
-         SET first_name=$1, middle_name=$2, last_name=$3, email=$4, phone=$5
-         WHERE user_id=$6"
-    );
-    $result = pg_execute($conn, "update_user", [
-        $first_name, $middle_name, $last_name,
-        $email, $phone, $id
-    ]);
+    $result = pg_query_params($conn, 
+        "INSERT INTO packages (name, description, is_active) VALUES ($1, $2, $3)",
+        [$name, $description, $is_active]);
 
     if ($result) {
-        $_SESSION['success'] = "User updated successfully.";
+        $_SESSION['success'] = "Service created successfully.";
     } else {
-        $_SESSION['error'] = "Failed to update user.";
+        $_SESSION['error'] = "Failed to create service.";
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-// Fetch users
-$users = pg_query($conn, "SELECT * FROM users ORDER BY last_name ASC, first_name ASC");
+// Handle service update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_service'])) {
+    $id = intval($_POST['package_id']);
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
+    $is_active = isset($_POST['is_active']) ? 'true' : 'false';
 
-// If editing specific user
-$edit_user = null;
+    $result = pg_query_params($conn,
+        "UPDATE packages SET name=$1, description=$2, is_active=$3 WHERE package_id=$4",
+        [$name, $description, $is_active, $id]);
+
+    if ($result) {
+        $_SESSION['success'] = "Service updated successfully.";
+    } else {
+        $_SESSION['error'] = "Failed to update service.";
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Fetch all services with pricing info
+$services_query = "
+    SELECT 
+        p.package_id,
+        p.name,
+        p.description,
+        p.is_active,
+        MIN(pp.price) as min_price,
+        MAX(pp.price) as max_price,
+        COUNT(pp.price_id) as price_count
+    FROM packages p
+    LEFT JOIN package_prices pp ON p.package_id = pp.package_id
+    GROUP BY p.package_id, p.name, p.description, p.is_active
+    ORDER BY p.package_id ASC
+";
+$services = pg_query($conn, $services_query);
+
+// If editing specific service
+$edit_service = null;
 if (isset($_GET['id'])) {
     $edit_id = intval($_GET['id']);
-    pg_prepare($conn, "get_user", "SELECT * FROM users WHERE user_id = $1");
-    $result = pg_execute($conn, "get_user", [$edit_id]);
-    $edit_user = pg_fetch_assoc($result);
+    $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1", [$edit_id]);
+    $edit_service = pg_fetch_assoc($result);
 }
 ?>
 
@@ -88,7 +72,7 @@ if (isset($_GET['id'])) {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin | User Management</title>
+  <title>Admin | Service Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
@@ -126,7 +110,6 @@ if (isset($_GET['id'])) {
       display: flex;
     }
 
-    /* MOBILE MENU BUTTON - Base styles FIRST */
     .mobile-menu-btn {
       display: none;
       position: fixed;
@@ -151,7 +134,6 @@ if (isset($_GET['id'])) {
       background: var(--secondary-color);
     }
 
-    /* SIDEBAR OVERLAY */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -232,7 +214,6 @@ if (isset($_GET['id'])) {
       margin: 9px 0;
     }
 
-    /* Dropdown styles */
     .dropdown {
       position: relative;
     }
@@ -300,11 +281,19 @@ if (isset($_GET['id'])) {
       background: var(--secondary-color);
     }
 
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 20px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       background-color: var(--white-color);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      min-width: 800px;
     }
 
     th, td {
@@ -319,6 +308,24 @@ if (isset($_GET['id'])) {
       color: var(--dark-color);
     }
 
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-inactive {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
     .actions a {
       padding: 6px 14px;
       font-size: var(--font-size-s);
@@ -327,6 +334,15 @@ if (isset($_GET['id'])) {
       margin: 0 5px;
       border-radius: var(--border-radius-s);
       display: inline-block;
+    }
+
+    .view-btn {
+      background-color: #17a2b8;
+      color: var(--white-color);
+    }
+
+    .view-btn:hover {
+      background-color: #138496;
     }
 
     .edit-btn {
@@ -363,7 +379,7 @@ if (isset($_GET['id'])) {
       padding: 2rem;
       border-radius: var(--border-radius-s);
       width: 100%;
-      max-width: 500px;
+      max-width: 600px;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
@@ -385,7 +401,6 @@ if (isset($_GET['id'])) {
       cursor: pointer;
     }
 
-    /* Input Form Styles */
     .input_box {
       position: relative;
       margin-bottom: 1.5rem;
@@ -399,6 +414,13 @@ if (isset($_GET['id'])) {
       background-color: var(--light-pink-color);
       font-size: var(--font-size-n);
       color: var(--dark-color);
+      font-family: "Montserrat", sans-serif;
+    }
+
+    textarea.input-field {
+      min-height: 120px;
+      resize: vertical;
+      padding-top: 1rem;
     }
 
     .input-field:focus {
@@ -416,6 +438,12 @@ if (isset($_GET['id'])) {
       color: var(--dark-color);
       transition: 0.3s ease;
       pointer-events: none;
+      background-color: transparent;
+    }
+
+    textarea.input-field + .label {
+      top: 1.2rem;
+      transform: none;
     }
 
     .input-field:focus + .label,
@@ -435,6 +463,34 @@ if (isset($_GET['id'])) {
       transform: translateY(-50%);
       font-size: 1.2rem;
       color: var(--dark-color);
+    }
+
+    textarea.input-field ~ .icon {
+      top: 1.2rem;
+      transform: none;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      padding: 0.9rem;
+      background-color: var(--light-pink-color);
+      border-radius: var(--border-radius-s);
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper label {
+      font-size: var(--font-size-n);
+      color: var(--dark-color);
+      cursor: pointer;
+      font-weight: var(--font-weight-semi-bold);
     }
 
     .input-submit {
@@ -481,10 +537,18 @@ if (isset($_GET['id'])) {
       100% { opacity: 0; transform: translateY(-20px); }
     }
 
-    /* RESPONSIVE DESIGN - Media queries AFTER base styles */
-    @media screen and (max-width: 1024px) {
+    /* RESPONSIVE */
+    @media screen and (min-width: 769px) and (max-width: 1024px) {
+      .content {
+        padding: 30px;
+      }
+      
       table {
         font-size: 0.9rem;
+      }
+      
+      th, td {
+        padding: 12px 8px;
       }
     }
 
@@ -506,24 +570,73 @@ if (isset($_GET['id'])) {
         width: 100%;
         padding: 80px 20px 40px;
       }
-
+      
+      h2 {
+        font-size: 1.8rem;
+      }
+      
+      .add-btn {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+      }
+      
+      .table-wrapper {
+        margin: 0 -20px;
+        padding: 0 20px;
+      }
+      
       table {
         font-size: 0.85rem;
       }
 
       th, td {
         padding: 10px 8px;
+        white-space: nowrap;
+      }
+      
+      .actions a {
+        padding: 8px 12px;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2px;
       }
 
       .modal-content {
         width: 95%;
         padding: 20px;
+        max-height: 85vh;
+      }
+      
+      .input-field {
+        padding: 0.8rem 2.2rem;
+        font-size: 16px;
+      }
+      
+      .label {
+        font-size: 0.85rem;
+      }
+      
+      .input_box {
+        margin-bottom: 1.3rem;
       }
     }
 
     @media screen and (max-width: 480px) {
       .content {
         padding: 70px 15px 30px;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+      }
+      
+      .add-btn {
+        width: 100%;
+        padding: 12px;
+        text-align: center;
       }
 
       .sidebar .logo img {
@@ -539,311 +652,54 @@ if (isset($_GET['id'])) {
       .menu a i {
         font-size: 18px;
       }
-
+      
+      .table-wrapper {
+        margin: 0 -15px;
+        padding: 0 15px;
+      }
+      
       table {
+        min-width: 700px;
         font-size: 0.75rem;
       }
 
       th, td {
         padding: 8px 5px;
+        font-size: 0.75rem;
+      }
+      
+      .actions a {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+      }
+      
+      .modal-content {
+        padding: 15px;
+      }
+      
+      .modal-content h2 {
+        font-size: 1.3rem;
+      }
+      
+      .input-field {
+        padding: 0.75rem 2rem;
+      }
+      
+      .icon {
+        font-size: 1rem;
       }
     }
 
-  /* Add these improvements to your existing CSS */
-
-/* 1. Make table horizontally scrollable on mobile/tablet */
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  margin-bottom: 20px;
-}
-
-/* 2. Prevent iOS zoom on input focus */
-.input-field,
-.input-submit,
-select.input-field {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-/* 3. Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* TABLET RESPONSIVE (768px - 1024px) */
-@media screen and (min-width: 769px) and (max-width: 1024px) {
-  .content {
-    padding: 30px;
-  }
-  
-  table {
-    font-size: 0.9rem;
-  }
-  
-  th, td {
-    padding: 12px 8px;
-  }
-  
-  .table-wrapper {
-    overflow-x: auto;
-  }
-  
-  table {
-    min-width: 700px;
-  }
-}
-
-/* MOBILE RESPONSIVE (up to 768px) */
-@media screen and (max-width: 768px) {
-  .mobile-menu-btn {
-    display: block;
-  }
-
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  .content {
-    margin-left: 0;
-    width: 100%;
-    padding: 80px 20px 40px;
-  }
-  
-  h2 {
-    font-size: 1.8rem;
-  }
-  
-  .add-btn {
-    padding: 12px 20px;
-    font-size: 0.95rem;
-  }
-  
-  /* Make table scrollable horizontally */
-  .table-wrapper {
-    overflow-x: auto;
-    margin: 0 -20px; /* Extend to edges */
-    padding: 0 20px;
-  }
-  
-  table {
-    min-width: 700px; /* Maintains table structure */
-    font-size: 0.85rem;
-  }
-
-  th, td {
-    padding: 10px 8px;
-    white-space: nowrap; /* Prevents text wrapping */
-  }
-  
-  /* Make action buttons more touch-friendly */
-  .actions a {
-    padding: 8px 12px;
-    min-height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-content {
-    width: 95%;
-    padding: 20px;
-    max-height: 85vh;
-  }
-  
-  .input-field {
-    padding: 0.8rem 2.2rem;
-    font-size: 16px; /* Prevents iOS zoom */
-  }
-  
-  .label {
-    font-size: 0.85rem;
-  }
-  
-  .input_box {
-    margin-bottom: 1.3rem;
-  }
-}
-
-/* SMALL MOBILE (up to 480px) */
-@media screen and (max-width: 480px) {
-  .content {
-    padding: 70px 15px 30px;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  
-  .add-btn {
-    width: 100%;
-    padding: 12px;
-    text-align: center;
-  }
-
-  .sidebar .logo img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .menu a {
-    padding: 8px 10px;
-    font-size: 0.9rem;
-  }
-
-  .menu a i {
-    font-size: 18px;
-  }
-  
-  /* Keep table scrollable */
-  .table-wrapper {
-    margin: 0 -15px;
-    padding: 0 15px;
-  }
-  
-  table {
-    min-width: 650px;
-    font-size: 0.75rem;
-  }
-
-  th, td {
-    padding: 8px 5px;
-    font-size: 0.75rem;
-  }
-  
-  .actions a {
-    padding: 6px 10px;
-    font-size: 0.75rem;
-    margin: 2px;
-  }
-  
-  .modal-content {
-    padding: 15px;
-  }
-  
-  .modal-content h2 {
-    font-size: 1.3rem;
-  }
-  
-  .input-field {
-    padding: 0.75rem 2rem;
-  }
-  
-  .icon {
-    font-size: 1rem;
-  }
-}
-
-/* EXTRA SMALL DEVICES (up to 360px) */
-@media screen and (max-width: 360px) {
-  .content {
-    padding: 70px 10px 30px;
-  }
-  
-  h2 {
-    font-size: 1.3rem;
-  }
-  
-  table {
-    min-width: 600px;
-    font-size: 0.7rem;
-  }
-  
-  th, td {
-    padding: 6px 4px;
-  }
-  
-  .actions a {
-    padding: 5px 8px;
-    font-size: 0.7rem;
-  }
-  
-  .menu a {
-    font-size: 0.85rem;
-    padding: 7px 8px;
-  }
-}
-
-/* LANDSCAPE ORIENTATION (for phones in landscape) */
-@media screen and (max-height: 600px) and (orientation: landscape) {
-  .modal-content {
-    max-height: 95vh;
-    padding: 15px;
-  }
-  
-  .sidebar {
-    padding: 15px 10px;
-  }
-  
-  .sidebar .logo img {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .menu a {
-    padding: 6px 10px;
-  }
-}
-
-/* TOUCH DEVICE OPTIMIZATIONS */
-@media (hover: none) and (pointer: coarse) {
-  /* Better touch targets */
-  .menu a,
-  .dropdown-toggle {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .actions a {
-    min-height: 44px;
-    padding: 10px 14px;
-  }
-  
-  .add-btn {
-    min-height: 44px;
-  }
-  
-  .input-submit {
-    min-height: 48px;
-  }
-}
-
-/* PRINT STYLES */
-@media print {
-  .sidebar,
-  .mobile-menu-btn,
-  .sidebar-overlay,
-  .add-btn,
-  .actions,
-  .toast {
-    display: none !important;
-  }
-  
-  .content {
-    margin-left: 0;
-    width: 100%;
-    padding: 20px;
-  }
-  
-  table {
-    page-break-inside: avoid;
-    font-size: 0.85rem;
-  }
-}
-
-/* DESKTOP - Keep original design (1025px and above) */
-@media screen and (min-width: 1025px) {
-  /* Desktop maintains all original styles */
-  /* No changes needed - original design preserved */
-}
+    @media screen and (max-width: 360px) {
+      table {
+        min-width: 650px;
+        font-size: 0.7rem;
+      }
+      
+      th, td {
+        padding: 6px 4px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -865,8 +721,9 @@ html {
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
 
+    <!-- USERS DROPDOWN -->
     <div class="dropdown">
-      <a href="javascript:void(0)" class="dropdown-toggle active" onclick="toggleDropdown(event)">
+      <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
         <i class='bx bx-chevron-down'></i>
       </a>
@@ -880,13 +737,13 @@ html {
 
     <!-- SERVICES DROPDOWN -->
       <div class="dropdown">
-        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+        <a href="javascript:void(0)" class="dropdown-toggle active" onclick="toggleDropdown(event)">
           <span><i class='bx bx-spa'></i> Services</span>
           <i class='bx bx-chevron-down'></i>
         </a>
         <div class="dropdown-menu">
-          <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
-          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
+          <a href="services.php" class="active"><i class='bx bx-list-ul'></i> All Services</a>
+          <a href="manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
         </div>
       </div>
 
@@ -903,149 +760,119 @@ html {
 
 <!-- Main Content -->
 <main class="content">
-  <h2>User Management</h2>
-  <button class="add-btn" onclick="openModal()">➕ Add New User</button>
+  <h2>Service Management</h2>
+  <button class="add-btn" onclick="openModal()">➕ Add New Service</button>
   
-  <!-- Find your table in the HTML and wrap it like this: -->
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <tr>
-        <th>User ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Role</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php while ($user = pg_fetch_assoc($users)): ?>
-      <tr>
-        <td><?= $user['user_id'] ?></td>
-        <td>
-          <?= htmlspecialchars($user['first_name']) ?>
-          <?= htmlspecialchars($user['middle_name']) ?>
-          <?= htmlspecialchars($user['last_name']) ?>
-        </td>
-        <td><?= htmlspecialchars($user['email']) ?></td>
-        <td><?= htmlspecialchars($user['phone']) ?></td>
-        <td><?= ucfirst($user['role']) ?></td>
-        <td class="actions">
-          <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">Edit</a>
-          <a href="delete.php?id=<?= $user['user_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
-        </td>
-      </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
-</div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Service ID</th>
+          <th>Service Name</th>
+          <th>Description</th>
+          <th>Price Range</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php while ($service = pg_fetch_assoc($services)): ?>
+        <tr>
+          <td><?= $service['package_id'] ?></td>
+          <td><strong><?= htmlspecialchars($service['name']) ?></strong></td>
+          <td style="text-align: left; padding-left: 15px;">
+            <?= htmlspecialchars(substr($service['description'], 0, 80)) ?>...
+          </td>
+          <td>
+            <?php if ($service['min_price']): ?>
+              <?php if ($service['min_price'] == $service['max_price']): ?>
+                ₱<?= number_format($service['min_price'], 2) ?>
+              <?php else: ?>
+                ₱<?= number_format($service['min_price'], 2) ?> - ₱<?= number_format($service['max_price'], 2) ?>
+              <?php endif; ?>
+            <?php else: ?>
+              <span style="color: #999;">No pricing set</span>
+            <?php endif; ?>
+          </td>
+          <td>
+            <?php if ($service['is_active'] == 't'): ?>
+              <span class="status-badge status-active">Active</span>
+            <?php else: ?>
+              <span class="status-badge status-inactive">Inactive</span>
+            <?php endif; ?>
+          </td>
+          <td class="actions">
+            <a href="manage_prices.php?id=<?= $service['package_id'] ?>" class="view-btn">Pricing</a>
+            <a href="?id=<?= $service['package_id'] ?>" class="edit-btn">Edit</a>
+            <a href="delete_service.php?id=<?= $service['package_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this service?')">Delete</a>
+          </td>
+        </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+  </div>
 
-  <!-- Add User Modal -->
-  <div id="userModal" class="modal">
+  <!-- Add Service Modal -->
+  <div id="serviceModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeAddModal()">&times;</span>
-      <h2>Create User Account</h2>
+      <h2>Create New Service</h2>
 
       <form method="POST">
-        <input type="hidden" name="create_user" value="1">
+        <input type="hidden" name="create_service" value="1">
 
         <div class="input_box">
-          <input type="text" class="input-field" name="first_name" required />
-          <label class="label">First Name</label>
-          <i class='bx bx-user icon'></i>
+          <input type="text" class="input-field" name="name" required />
+          <label class="label">Service Name</label>
+          <i class='bx bx-spa icon'></i>
         </div>
 
         <div class="input_box">
-          <input type="text" class="input-field" name="middle_name" />
-          <label class="label">Middle Name</label>
-          <i class='bx bx-user icon'></i>
+          <textarea class="input-field" name="description" required></textarea>
+          <label class="label">Description</label>
+          <i class='bx bx-detail icon'></i>
         </div>
 
-        <div class="input_box">
-          <input type="text" class="input-field" name="last_name" required />
-          <label class="label">Last Name</label>
-          <i class='bx bx-user icon'></i>
-        </div>
-
-        <div class="input_box">
-          <input type="email" class="input-field" name="email" required />
-          <label class="label">Email</label>
-          <i class='bx bx-envelope icon'></i>
-        </div>
-
-        <div class="input_box">
-          <input type="password" class="input-field" name="password" required />
-          <label class="label">Password</label>
-          <i class='bx bx-lock-alt icon'></i>
-        </div>
-
-        <div class="input_box">
-          <input type="text" class="input-field" name="phone" required />
-          <label class="label">Phone Number</label>
-          <i class='bx bx-phone icon'></i>
-        </div>
-
-        <div class="input_box">
-          <select class="input-field" name="role" required>
-            <option value="" disabled selected>Select Role</option>
-            <option value="admin">Admin</option>
-            <option value="customer">Customer</option>
-            <option value="groomer">Groomer</option>
-            <option value="receptionist">Receptionist</option>
-          </select>
-          <label class="label">Role</label>
-          <i class='bx bx-id-card icon'></i>
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="is_active" name="is_active" checked>
+          <label for="is_active">Active Service (Visible to customers)</label>
         </div>
         
         <div class="input_box">
-          <input type="submit" class="input-submit" value="Create Account" />
+          <input type="submit" class="input-submit" value="Create Service" />
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Edit User Modal -->
-  <?php if (isset($edit_user)): ?>
+  <!-- Edit Service Modal -->
+  <?php if (isset($edit_service)): ?>
   <div id="editModal" class="modal" style="display:flex;">
     <div class="modal-content">
       <span class="close" onclick="closeEditModal()">&times;</span>
-      <h2>Edit User</h2>
+      <h2>Edit Service</h2>
       <form method="POST">
-        <input type="hidden" name="user_id" value="<?= $edit_user['user_id'] ?>">
+        <input type="hidden" name="package_id" value="<?= $edit_service['package_id'] ?>">
         
         <div class="input_box">
-          <input type="text" name="first_name" class="input-field" value="<?= htmlspecialchars($edit_user['first_name']) ?>" required>
-          <label class="label">First Name</label>
-          <i class='bx bx-user icon'></i>
+          <input type="text" name="name" class="input-field" value="<?= htmlspecialchars($edit_service['name']) ?>" required>
+          <label class="label">Service Name</label>
+          <i class='bx bx-spa icon'></i>
         </div>
 
         <div class="input_box">
-          <input type="text" name="middle_name" class="input-field" value="<?= htmlspecialchars($edit_user['middle_name']) ?>">
-          <label class="label">Middle Name</label>
-          <i class='bx bx-user icon'></i>
+          <textarea name="description" class="input-field" required><?= htmlspecialchars($edit_service['description']) ?></textarea>
+          <label class="label">Description</label>
+          <i class='bx bx-detail icon'></i>
+        </div>
+
+        <div class="checkbox-wrapper">
+          <input type="checkbox" id="edit_is_active" name="is_active" <?= $edit_service['is_active'] == 't' ? 'checked' : '' ?>>
+          <label for="edit_is_active">Active Service (Visible to customers)</label>
         </div>
 
         <div class="input_box">
-          <input type="text" name="last_name" class="input-field" value="<?= htmlspecialchars($edit_user['last_name']) ?>" required>
-          <label class="label">Last Name</label>
-          <i class='bx bx-user icon'></i>
-        </div>
-
-        <div class="input_box">
-          <input type="email" name="email" class="input-field" value="<?= htmlspecialchars($edit_user['email']) ?>" required>
-          <label class="label">Email</label>
-          <i class='bx bx-envelope icon'></i>
-        </div>
-
-        <div class="input_box">
-          <input type="text" name="phone" class="input-field" value="<?= htmlspecialchars($edit_user['phone']) ?>" required>
-          <label class="label">Phone</label>
-          <i class='bx bx-phone icon'></i>
-        </div>
-
-        <div class="input_box">
-          <input type="submit" name="update_user" class="input-submit" value="Update User">
+          <input type="submit" name="update_service" class="input-submit" value="Update Service">
         </div>
       </form>
     </div>
@@ -1056,17 +883,18 @@ html {
 <script>
 function toggleDropdown(event) {
   event.preventDefault();
-  event.stopPropagation(); // Prevent event bubbling
+  event.stopPropagation();
   const dropdown = event.currentTarget.nextElementSibling;
   dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 }
 
-// Close dropdown if clicked outside
 document.addEventListener('click', function(event) {
   if (!event.target.closest('.dropdown')) {
     const dropdowns = document.getElementsByClassName("dropdown-menu");
     for (let i = 0; i < dropdowns.length; i++) {
-      dropdowns[i].style.display = 'none';
+      if (!dropdowns[i].closest('.dropdown').querySelector('.dropdown-toggle').classList.contains('active')) {
+        dropdowns[i].style.display = 'none';
+      }
     }
   }
 });
@@ -1082,11 +910,11 @@ function toggleSidebar() {
 }
 
 function openModal() {
-  document.getElementById('userModal').style.display = 'flex';
+  document.getElementById('serviceModal').style.display = 'flex';
 }
 
 function closeAddModal() {
-  document.getElementById('userModal').style.display = 'none';
+  document.getElementById('serviceModal').style.display = 'none';
 }
 
 function closeEditModal() {
@@ -1094,16 +922,14 @@ function closeEditModal() {
   window.history.replaceState(null, null, window.location.pathname);
 }
 
-// Close modal if clicked outside
 document.addEventListener('click', function(event) {
-  const addModal = document.getElementById('userModal');
+  const addModal = document.getElementById('serviceModal');
   const editModal = document.getElementById('editModal');
   
   if (event.target === addModal) closeAddModal();
   if (event.target === editModal) closeEditModal();
 });
 
-// Close sidebar when clicking a link on mobile
 document.addEventListener('DOMContentLoaded', function() {
   const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
   menuLinks.forEach(link => {

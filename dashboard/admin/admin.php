@@ -733,15 +733,15 @@ if ($noShowCount > 0) {
 
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+
 <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
     <hr>
-
-    <!-- USERS DROPDOWN -->
     <div class="dropdown">
       <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
@@ -754,11 +754,25 @@ if ($noShowCount > 0) {
     </div>
 
     <hr>
+
+     <!-- SERVICES DROPDOWN -->
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+          <span><i class='bx bx-spa'></i> Services</span>
+          <i class='bx bx-chevron-down'></i>
+        </a>
+        <div class="dropdown-menu">
+           <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
+          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
+        </div>
+      </div>
+
+    <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
+    <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
