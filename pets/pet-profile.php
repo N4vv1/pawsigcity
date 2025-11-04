@@ -1920,79 +1920,111 @@ if (!$pets) {
     </div>
   </div>
 
-  <script>
-    function switchTab(petId, tabName) {
-      const petCard = document.querySelector(`#health-${petId}`).closest('.pet-card');
-      const tabs = petCard.querySelectorAll('.tab');
-      const contents = petCard.querySelectorAll('.tab-content');
-      
-      tabs.forEach(tab => tab.classList.remove('active'));
-      contents.forEach(content => content.classList.remove('active'));
-      
-      event.target.classList.add('active');
-      document.getElementById(`${tabName}-${petId}`).classList.add('active');
-    }
+<script>
+function switchTab(petId, tabName) {
+  // Find the specific pet card by looking for the tab content with the petId
+  const healthTab = document.getElementById(`health-${petId}`);
+  if (!healthTab) {
+    console.error(`Could not find pet card for pet ID: ${petId}`);
+    return;
+  }
+  
+  const petCard = healthTab.closest('.pet-card');
+  if (!petCard) {
+    console.error(`Could not find parent pet-card for pet ID: ${petId}`);
+    return;
+  }
+  
+  const tabs = petCard.querySelectorAll('.tab');
+  const contents = petCard.querySelectorAll('.tab-content');
+  
+  // Remove active class from all tabs and contents
+  tabs.forEach(tab => tab.classList.remove('active'));
+  contents.forEach(content => content.classList.remove('active'));
+  
+  // Add active class to clicked tab
+  event.target.classList.add('active');
+  
+  // Show the corresponding content
+  const targetContent = document.getElementById(`${tabName}-${petId}`);
+  if (targetContent) {
+    targetContent.classList.add('active');
+  }
+}
 
-    function togglePetEdit(petId) {
-      const form = document.getElementById(`pet-edit-${petId}`);
-      form.classList.toggle('show');
-    }
+function togglePetEdit(petId) {
+  const form = document.getElementById(`pet-edit-${petId}`);
+  if (form) {
+    form.classList.toggle('show');
+  } else {
+    console.error(`Could not find edit form for pet ID: ${petId}`);
+  }
+}
 
-    function toggleUserEdit() {
-      const form = document.getElementById('user-edit-form');
-      form.classList.toggle('show');
-    }
-     // Hamburger Menu Toggle
+function toggleUserEdit() {
+  const form = document.getElementById('user-edit-form');
+  if (form) {
+    form.classList.toggle('show');
+  } else {
+    console.error('Could not find user edit form');
+  }
+}
+
+// Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
 const navOverlay = document.getElementById('nav-overlay');
 const profileDropdown = document.getElementById('profile-dropdown');
 
-hamburger.addEventListener('click', function() {
-  hamburger.classList.toggle('active');
-  navMenu.classList.toggle('active');
-  navOverlay.classList.toggle('active');
-  document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-});
+if (hamburger) {
+  hamburger.addEventListener('click', function() {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    navOverlay.classList.toggle('active');
+    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+  });
+}
 
 // Close menu when clicking overlay
-navOverlay.addEventListener('click', function() {
-  hamburger.classList.remove('active');
-  navMenu.classList.remove('active');
-  navOverlay.classList.remove('active');
-  profileDropdown.classList.remove('active');
-  document.body.style.overflow = '';
-});
+if (navOverlay) {
+  navOverlay.addEventListener('click', function() {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    if (profileDropdown) profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+}
 
 // Close menu when clicking on regular nav links
 document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
   link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
+    if (navMenu) navMenu.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
     document.body.style.overflow = '';
   });
 });
 
 // Handle profile dropdown - ONLY for mobile (click to toggle)
-profileDropdown.addEventListener('click', function(e) {
-  if (window.innerWidth <= 1024) {
-    // Only prevent default and toggle on mobile
-    if (e.target.closest('.profile-icon')) {
-      e.preventDefault();
-      this.classList.toggle('active');
+if (profileDropdown) {
+  profileDropdown.addEventListener('click', function(e) {
+    if (window.innerWidth <= 1024) {
+      if (e.target.closest('.profile-icon')) {
+        e.preventDefault();
+        this.classList.toggle('active');
+      }
     }
-  }
-  // On desktop, do nothing - CSS :hover handles it
-});
+  });
+}
 
 // Close menu when clicking dropdown items
 document.querySelectorAll('.dropdown-menu a').forEach(link => {
   link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
+    if (navMenu) navMenu.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
+    if (profileDropdown) profileDropdown.classList.remove('active');
     document.body.style.overflow = '';
   });
 });
@@ -2000,13 +2032,13 @@ document.querySelectorAll('.dropdown-menu a').forEach(link => {
 // Reset on window resize
 window.addEventListener('resize', function() {
   if (window.innerWidth > 1024) {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
+    if (navMenu) navMenu.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
+    if (profileDropdown) profileDropdown.classList.remove('active');
     document.body.style.overflow = '';
   }
 });
-  </script>
+</script>
 </body>
 </html>
