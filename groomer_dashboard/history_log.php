@@ -21,8 +21,8 @@ $query = "
         pet.breed AS pet_breed,
         (u.first_name || ' ' || u.last_name) AS customer_name,
         u.first_name,
-        u.last_name
-        a.updated_at AS completed_date
+        u.last_name,
+        COALESCE(TO_CHAR(a.updated_at, 'YYYY-MM-DD HH24:MI:SS'), 'Not yet completed') AS completed_date
     FROM appointments a
     JOIN packages p ON a.package_id = p.package_id
     JOIN pets pet ON a.pet_id = pet.pet_id
