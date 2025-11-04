@@ -21,29 +21,6 @@ $positive_percent = $total_feedback > 0 ? round(($positive_count / $total_feedba
 $neutral_percent = $total_feedback > 0 ? round(($neutral_count / $total_feedback) * 100, 1) : 0;
 $negative_percent = $total_feedback > 0 ? round(($negative_count / $total_feedback) * 100, 1) : 0;
 
-// Get sentiment trends over time (last 7 days)
-$trend_query = "
-    SELECT 
-        DATE(appointment_date) as date,
-        COUNT(CASE WHEN sentiment = 'positive' THEN 1 END) as positive,
-        COUNT(CASE WHEN sentiment = 'neutral' THEN 1 END) as neutral,
-        COUNT(CASE WHEN sentiment = 'negative' THEN 1 END) as negative
-    FROM appointments
-    WHERE feedback IS NOT NULL 
-    AND appointment_date >= CURRENT_DATE - INTERVAL '30 days'
-    GROUP BY DATE(appointment_date)
-    ORDER BY date ASC
-";
-$trend_result = pg_query($conn, $trend_query);
-
-$trend_data = ['dates' => [], 'positive' => [], 'neutral' => [], 'negative' => []];
-while ($row = pg_fetch_assoc($trend_result)) {
-    $trend_data['dates'][] = date('M d', strtotime($row['date']));
-    $trend_data['positive'][] = (int)$row['positive'];
-    $trend_data['neutral'][] = (int)$row['neutral'];
-    $trend_data['negative'][] = (int)$row['negative'];
-}
-
 // Get all feedback with sentiment
 $feedback_query = "
     SELECT a.appointment_id, a.feedback, a.rating, a.sentiment, a.appointment_date,
@@ -68,7 +45,6 @@ $feedback_result = pg_query($conn, $feedback_query);
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
@@ -165,7 +141,7 @@ $feedback_result = pg_query($conn, $feedback_query);
     }
 
     .header {
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
 
     .header h1 {
@@ -184,45 +160,41 @@ $feedback_result = pg_query($conn, $feedback_query);
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
-      margin-bottom: 40px;
+      margin-bottom: 50px;
     }
 
     .stat-card {
       background: var(--white-color);
-      padding: 25px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      transition: transform 0.3s;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s;
     }
 
     .stat-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-3px);
     }
-
-    .stat-card .icon {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .stat-card.positive .icon { color: var(--positive-color); }
-    .stat-card.neutral .icon { color: var(--neutral-color); }
-    .stat-card.negative .icon { color: var(--negative-color); }
-    .stat-card.pending .icon { color: var(--pending-color); }
 
     .stat-card h3 {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: #999;
+      margin-bottom: 12px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      font-weight: 500;
     }
 
     .stat-card .count {
       font-size: 2.5rem;
-      font-weight: 700;
+      font-weight: 600;
       color: var(--dark-color);
-      margin-bottom: 5px;
+      margin-bottom: 8px;
     }
+
+    .stat-card.positive .count { color: var(--positive-color); }
+    .stat-card.neutral .count { color: var(--neutral-color); }
+    .stat-card.negative .count { color: var(--negative-color); }
+    .stat-card.pending .count { color: var(--pending-color); }
 
     .stat-card .percentage {
       font-size: 0.9rem;
@@ -232,33 +204,44 @@ $feedback_result = pg_query($conn, $feedback_query);
     /* ANALYZE BUTTON */
     .analyze-section {
       background: var(--white-color);
-      padding: 30px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      margin-bottom: 40px;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 50px;
       text-align: center;
     }
 
-    .analyze-btn {
-      background: linear-gradient(135deg, var(--primary-color), #80d1b8);
+    .analyze-section h2 {
+      font-size: 1.2rem;
       color: var(--dark-color);
-      padding: 15px 40px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .analyze-section p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .analyze-btn {
+      background: var(--dark-color);
+      color: var(--white-color);
+      padding: 14px 35px;
       border: none;
-      border-radius: 14px;
-      font-size: 1.1rem;
+      border-radius: 8px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 4px 15px rgba(168, 230, 207, 0.3);
+      transition: all 0.2s;
     }
 
     .analyze-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(168, 230, 207, 0.4);
+      background: #1a1a1a;
+      transform: translateY(-1px);
     }
 
     .analyze-btn:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
@@ -266,63 +249,48 @@ $feedback_result = pg_query($conn, $feedback_query);
       margin-right: 8px;
     }
 
-    /* CHART */
-    .chart-container {
+    /* FEEDBACK TABLE */
+    .feedback-section {
       background: var(--white-color);
-      padding: 30px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      margin-bottom: 40px;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
-    .chart-container h2 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
+    .feedback-section h2 {
+      font-size: 1.3rem;
+      margin-bottom: 25px;
       color: var(--dark-color);
       font-weight: 600;
     }
 
-    .chart-container canvas {
-      max-height: 400px !important;
-      width: 100% !important;
-    }
-
-    /* FEEDBACK TABLE */
-    .feedback-section {
-      background: var(--white-color);
-      padding: 30px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-
-    .feedback-section h2 {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-      color: var(--dark-color);
-    }
-
     .filter-buttons {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
 
     .filter-btn {
-      padding: 8px 16px;
-      border: 2px solid var(--primary-color);
+      padding: 8px 18px;
+      border: 1px solid #ddd;
       background: transparent;
-      border-radius: 20px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
+      font-weight: 500;
+      transition: all 0.2s;
       color: var(--dark-color);
+      font-size: 0.9rem;
     }
 
-    .filter-btn.active,
+    .filter-btn.active {
+      background: var(--dark-color);
+      color: var(--white-color);
+      border-color: var(--dark-color);
+    }
+
     .filter-btn:hover {
-      background: var(--primary-color);
-      color: var(--dark-color);
+      border-color: var(--dark-color);
     }
 
     table {
@@ -332,26 +300,32 @@ $feedback_result = pg_query($conn, $feedback_query);
 
     table th,
     table td {
-      padding: 12px;
+      padding: 15px 12px;
       text-align: left;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #f0f0f0;
     }
 
     table th {
-      background-color: var(--primary-color);
+      background-color: #fafafa;
       color: var(--dark-color);
       font-weight: 600;
+      font-size: 0.9rem;
       position: sticky;
       top: 0;
+    }
+
+    table tbody tr:hover {
+      background-color: #fafafa;
     }
 
     .sentiment-badge {
       display: inline-block;
       padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
       font-weight: 600;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .sentiment-badge.positive {
@@ -384,10 +358,10 @@ $feedback_result = pg_query($conn, $feedback_query);
       position: fixed;
       bottom: 30px;
       right: 30px;
-      background: var(--positive-color);
+      background: var(--dark-color);
       color: white;
       padding: 15px 25px;
-      border-radius: 10px;
+      border-radius: 8px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       z-index: 9999;
       display: none;
@@ -411,11 +385,11 @@ $feedback_result = pg_query($conn, $feedback_query);
 
     /* LOADING SPINNER */
     .spinner {
-      border: 3px solid rgba(168, 230, 207, 0.3);
-      border-top: 3px solid var(--primary-color);
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       animation: spin 1s linear infinite;
       display: inline-block;
       margin-right: 10px;
@@ -477,17 +451,17 @@ $feedback_result = pg_query($conn, $feedback_query);
     </div>
 
     <div class="stat-card pending">
-      <h3>Pending Analysis</h3>
+      <h3>Pending</h3>
       <div class="count"><?= $pending_count ?></div>
-      <div class="percentage">Not analyzed yet</div>
+      <div class="percentage">Not analyzed</div>
     </div>
   </div>
 
   <!-- Analyze Button -->
   <?php if ($pending_count > 0): ?>
   <div class="analyze-section">
-    <h2>🤖 Run Sentiment Analysis</h2>
-    <p style="margin: 15px 0; color: #666;">
+    <h2>Run Sentiment Analysis</h2>
+    <p>
       Analyze <?= $pending_count ?> pending feedback<?= $pending_count > 1 ? 's' : '' ?> using VADER sentiment analysis
     </p>
     <button class="analyze-btn" onclick="runSentimentAnalysis()">
@@ -495,12 +469,6 @@ $feedback_result = pg_query($conn, $feedback_query);
     </button>
   </div>
   <?php endif; ?>
-
-  <!-- Line Chart -->
-  <div class="chart-container">
-    <h2>Sentiment Trends Over Time (Last 30 Days)</h2>
-    <canvas id="sentimentLineChart"></canvas>
-  </div>
 
   <!-- Feedback Table -->
   <div class="feedback-section">
@@ -561,112 +529,6 @@ $feedback_result = pg_query($conn, $feedback_query);
 <div id="toast" class="toast"></div>
 
 <script>
-// Trend data from PHP
-const trendData = {
-  dates: <?= json_encode($trend_data['dates']) ?>,
-  positive: <?= json_encode($trend_data['positive']) ?>,
-  neutral: <?= json_encode($trend_data['neutral']) ?>,
-  negative: <?= json_encode($trend_data['negative']) ?>
-};
-
-// Line Chart
-const lineCtx = document.getElementById('sentimentLineChart').getContext('2d');
-new Chart(lineCtx, {
-  type: 'line',
-  data: {
-    labels: trendData.dates,
-    datasets: [
-      {
-        label: 'Positive',
-        data: trendData.positive,
-        borderColor: '#4CAF50',
-        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointHoverRadius: 6
-      },
-      {
-        label: 'Neutral',
-        data: trendData.neutral,
-        borderColor: '#FF9800',
-        backgroundColor: 'rgba(255, 152, 0, 0.1)',
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointHoverRadius: 6
-      },
-      {
-        label: 'Negative',
-        data: trendData.negative,
-        borderColor: '#F44336',
-        backgroundColor: 'rgba(244, 67, 54, 0.1)',
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointHoverRadius: 6
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: true,
-    interaction: {
-      mode: 'index',
-      intersect: false
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 1,
-          font: {
-            size: 12
-          }
-        },
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        }
-      },
-      x: {
-        ticks: {
-          font: {
-            size: 12
-          },
-          maxRotation: 45,
-          minRotation: 45
-        },
-        grid: {
-          display: false
-        }
-      }
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          padding: 15,
-          font: {
-            size: 13,
-            weight: '600'
-          },
-          usePointStyle: true
-        }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        padding: 12,
-        titleFont: {
-          size: 14
-        },
-        bodyFont: {
-          size: 13
-        }
-      }
-    }
-  }
-});
-
 // Filter feedback table
 function filterFeedback(sentiment) {
   const rows = document.querySelectorAll('#feedbackTable tbody tr');
