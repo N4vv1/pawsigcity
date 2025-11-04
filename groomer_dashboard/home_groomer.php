@@ -18,9 +18,7 @@ $status_query = pg_query_params($conn, "
 ", [$groomer_id]);
 
 $groomer_status = pg_fetch_assoc($status_query);
-// Properly convert PostgreSQL boolean to PHP boolean
-$is_active = filter_var($groomer_status['is_active'], FILTER_VALIDATE_BOOLEAN);
-
+$is_active = $groomer_status['is_active'] ?? false;
 
 // Fetch ONLY confirmed appointments for THIS groomer
 $query = "
@@ -59,7 +57,7 @@ if (!$result) {
   <title>Groomer | Home</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../homepage/images/paw.png">
+  <link rel="icon" type="image/png" href="../homepage/images/pawsig.png">
   <style>
     :root {
       --white-color: #fff;
