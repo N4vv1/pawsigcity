@@ -22,8 +22,22 @@ $pet_id = $pet['pet_id'];
     </select>
   </label><br>
   
+  <!-- 👇 NEW: Size field -->
+  <label>Size:
+    <select name="size">
+      <option value="">Select size</option>
+      <option value="Small" <?= ($pet['size'] ?? '') == 'Small' ? 'selected' : '' ?>>Small</option>
+      <option value="Medium" <?= ($pet['size'] ?? '') == 'Medium' ? 'selected' : '' ?>>Medium</option>
+      <option value="Large" <?= ($pet['size'] ?? '') == 'Large' ? 'selected' : '' ?>>Large</option>
+      <option value="Extra Large" <?= ($pet['size'] ?? '') == 'Extra Large' ? 'selected' : '' ?>>Extra Large</option>
+    </select>
+  </label><br>
+  
+  <!-- 👇 NEW: Weight field -->
+  <label>Weight (kg): <input type="number" step="0.1" name="weight" value="<?= htmlspecialchars($pet['weight'] ?? '') ?>" placeholder="e.g., 5.5"></label><br>
+  
   <label>Update Photo (optional):
-    <input type="file" name="photo" accept="image/jpeg,image/png,image/gif,image/webp">
+    <input type="file" name="photo_url" accept="image/jpeg,image/png,image/gif,image/webp">
   </label><br>
   <small style="color: #666;">Leave empty to keep current photo. Accepted: JPEG, PNG, GIF, WebP</small><br>
   
@@ -34,6 +48,6 @@ $pet_id = $pet['pet_id'];
     </div>
   <?php endif; ?>
   
-  <button type="submit">💾 Save</button>
-  <button type="button" onclick="toggleEdit(<?= $pet['pet_id'] ?>)">❌ Cancel</button>
+  <button type="submit">Save</button>
+  <button type="button" onclick="toggleEdit(<?= $pet['pet_id'] ?>)">Cancel</button>
 </form>

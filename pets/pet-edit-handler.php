@@ -10,6 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $birthday = !empty($_POST['birthday']) ? $_POST['birthday'] : null;
     $color = trim($_POST['color'] ?? '');
     $gender = trim($_POST['gender'] ?? '');
+    
+    // NEW: Add size and weight
+    $size = trim($_POST['size'] ?? '');
+    $weight = !empty($_POST['weight']) ? floatval($_POST['weight']) : null;
 
     // ✅ Handle photo upload to Supabase Storage (if provided)
     $photo_url = null; // null means don't update photo
@@ -99,24 +103,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ✅ Update pet info (include photo_url only if new photo was uploaded)
     if ($photo_url !== null) {
-        // Update with new photo
+        // Update with new photo - UPDATED to include size and weight
         $query = "
             UPDATE pets 
-            SET name = $1, breed = $2, age = $3, birthday = $4, color = $5, gender = $6, photo_url = $7
-            WHERE pet_id = $8
+            SET name = $1, breed = $2, age = $3, birthday = $4, color = $5, gender = $6, photo_url = $7, size = $8, weight = $9
+            WHERE pet_id = $10
         ";
         $result = pg_query_params($conn, $query, [
-            $name, $breed, $age, $birthday, $color, $gender, $photo_url, $pet_id
+            $name, $breed, $age, $birthday, $color, $gender, $photo_url, $size, $weight, $pet_id
         ]);
     } else {
-        // Update without changing photo
+        // Update without changing photo - UPDATED to include size and weight
         $query = "
             UPDATE pets 
-            SET name = $1, breed = $2, age = $3, birthday = $4, color = $5, gender = $6
-            WHERE pet_id = $7
+            SET name = $1, breed = $2, age = $3, birthday = $4, color = $5, gender = $6, size = $7, weight = $8
+            WHERE pet_id = $9
         ";
         $result = pg_query_params($conn, $query, [
-            $name, $breed, $age, $birthday, $color, $gender, $pet_id
+            $name, $breed, $age, $birthday, $color, $gender, $size, $weight, $pet_id
         ]);
     }
 

@@ -1728,6 +1728,12 @@ if (!$pets) {
                   <span><i class="fas fa-venus-mars"></i> <?= htmlspecialchars($pet['gender']) ?></span>
                   <span><i class="fas fa-palette"></i> <?= htmlspecialchars($pet['color']) ?></span>
                   <span><i class="fas fa-birthday-cake"></i> <?= htmlspecialchars($pet['birthday']) ?></span>
+                  <?php if (!empty($pet['size'])): ?>
+                    <span><i class="fas fa-ruler-combined"></i> <?= htmlspecialchars($pet['size']) ?></span>
+                  <?php endif; ?>
+                  <?php if (!empty($pet['weight'])): ?>
+                    <span><i class="fas fa-weight"></i> <?= htmlspecialchars($pet['weight']) ?> kg</span>
+                  <?php endif; ?>
                 </div>
               </div>
               <div class="pet-actions">
