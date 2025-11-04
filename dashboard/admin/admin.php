@@ -24,7 +24,6 @@ $total_pets = $total_pets_result ? pg_fetch_result($total_pets_result, 0, 'count
 $total_appointments_result = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments");
 $total_appointments = $total_appointments_result ? pg_fetch_result($total_appointments_result, 0, 'count') : 0;
 
-// Count by actual status values from your ENUM
 $confirmed_query = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'confirmed'");
 $confirmed_appointments = $confirmed_query ? pg_fetch_result($confirmed_query, 0, 'count') : 0;
 
@@ -67,7 +66,6 @@ if ($noShowCount > 0) {
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,100 +76,6 @@ if ($noShowCount > 0) {
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
-  
-<script>
-// Wait for DOM to be ready
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, modals should be available now');
-});
-
-// Define functions IMMEDIATELY in global scope
-window.openModal = function(type) {
-  const modals = {
-    users: 'usersModal',
-    pets: 'petsModal',
-    pending: 'pendingModal',
-    cancelled: 'cancelledModal',
-    noshow: 'noshowModal',
-    confirmed: 'confirmedModal',
-    completed: 'completedModal',
-    appointments: 'appointmentsModal',
-    history: 'historyModal'
-  };
-  
-  console.log('openModal called with:', type);
-  const modalId = modals[type];
-  if (modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-      modal.style.display = 'flex';
-      console.log('Modal opened successfully');
-    } else {
-      console.error('Modal element not found:', modalId);
-      console.error('Available modals:', Object.keys(modals).map(k => document.getElementById(modals[k]) ? k : null));
-    }
-  } else {
-    console.error('Unknown modal type:', type);
-  }
-};
-
-window.closeModal = function(id) {
-  const modal = document.getElementById(id);
-  if (modal) modal.style.display = 'none';
-};
-
-window.viewHistory = function(userId) {
-  openModal('history');
-  const historyContainer = document.getElementById('historyTable');
-  if (historyContainer) {
-    historyContainer.innerHTML = 'Loading...';
-    fetch('../../appointment/fetch-history.php?user_id=' + userId)
-      .then(response => response.text())
-      .then(html => historyContainer.innerHTML = html)
-      .catch(() => historyContainer.innerHTML = 'Failed to load history.');
-  }
-};
-
-window.showToast = function(message) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: none;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 3000);
-};
-
-window.toggleDropdown = function(event) {
-  event.preventDefault();
-  const menu = event.currentTarget.nextElementSibling;
-  if (menu && menu.classList.contains('dropdown-menu')) {
-    const isVisible = menu.style.display === 'block';
-    document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-    menu.style.display = isVisible ? 'none' : 'block';
-  }
-};
-
-window.toggleSidebar = function() {
-  console.log('toggleSidebar called');
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.querySelector('.sidebar-overlay');
-  
-  console.log('Sidebar found:', sidebar);
-  console.log('Overlay found:', overlay);
-  
-  if (sidebar && overlay) {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-    console.log('Sidebar active:', sidebar.classList.contains('active'));
-  } else {
-    console.error('Sidebar or overlay not found!');
-  }
-};
-</script>
   
   <style>
     :root {
@@ -191,6 +95,7 @@ window.toggleSidebar = function() {
       --border-radius-circle: 50%;
       --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
       --transition-speed: 0.3s;
+      --sidebar-width: 260px;
     }
 
     * {
@@ -269,7 +174,6 @@ window.toggleSidebar = function() {
       margin: 9px 0;
     }
 
-    /* Dropdown styles */
     .dropdown {
       position: relative;
     }
@@ -390,7 +294,8 @@ window.toggleSidebar = function() {
       height: 100%;
       background-color: rgba(0, 0, 0, 0.4);
       align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
+      padding-right: 20px;
     }
 
     .modal-content {
@@ -454,7 +359,6 @@ window.toggleSidebar = function() {
       background-color: var(--secondary-color);
     }
 
-    /* Feedback styling */
     .feedback-box {
       padding: 0;
       margin: 0;
@@ -486,7 +390,6 @@ window.toggleSidebar = function() {
       justify-content: space-between;
     }
 
-    /* Action buttons */
     .action-buttons {
       display: flex;
       flex-wrap: wrap;
@@ -534,7 +437,6 @@ window.toggleSidebar = function() {
       background-color: #c0c0c0;
     }
 
-    /* Toast notification */
     #toast {
       position: fixed;
       bottom: 30px;
@@ -547,200 +449,77 @@ window.toggleSidebar = function() {
       font-weight: 600;
       display: none;
     }
-    :root {
-  /* ...existing variables... */
-  --sidebar-width: 260px;  /* ADD THIS LINE */
-}
 
-/* MOBILE MENU BUTTON - ADD THIS ENTIRE SECTION */
-.mobile-menu-btn {
-  display: none;
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1001;
-  background: var(--primary-color);
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  cursor: pointer;
-  box-shadow: var(--shadow-light);
-  transition: var(--transition-speed);
-}
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-light);
+      transition: var(--transition-speed);
+    }
 
-.mobile-menu-btn i {
-  font-size: 24px;
-  color: var(--dark-color);
-}
+    .mobile-menu-btn i {
+      font-size: 24px;
+      color: var(--dark-color);
+    }
 
-.mobile-menu-btn:hover {
-  background: var(--secondary-color);
-}
+    .mobile-menu-btn:hover {
+      background: var(--secondary-color);
+    }
 
-/* SIDEBAR OVERLAY - ADD THIS ENTIRE SECTION */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 998;
-  opacity: 0;
-  transition: opacity var(--transition-speed);
-}
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity var(--transition-speed);
+    }
 
-.sidebar-overlay.active {
-  display: block;
-  opacity: 1;
-}
-/* RESPONSIVE DESIGN */
-@media screen and (max-width: 1024px) {
-  .dashboard {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-  }
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
 
-  .card {
-    padding: 25px;
-    min-height: 200px;
-  }
-}
+    @media screen and (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
 
-@media screen and (max-width: 768px) {
-  .mobile-menu-btn {
-    display: block;
-  }
+      .sidebar {
+        transform: translateX(-100%);
+      }
 
-  .sidebar {
-    transform: translateX(-100%);
-  }
+      .sidebar.active {
+        transform: translateX(0);
+      }
 
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  main {
-    margin-left: 0;
-    width: 100%;
-    padding: 80px 20px 40px;
-  }
-
-  .dashboard {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding-top: 20px;
-  }
-
-  .card {
-    padding: 20px;
-    min-height: 180px;
-  }
-
-  .card-icon {
-    font-size: 2rem;
-  }
-
-  .card h3 {
-    font-size: 1rem;
-  }
-
-  .card p {
-    font-size: 1.5rem;
-  }
-
-  .modal-content {
-    width: 95%;
-    padding: 20px;
-    max-height: 90vh;
-  }
-
-  .modal-content table {
-    font-size: 0.8rem;
-  }
-
-  .modal-content table th,
-  .modal-content table td {
-    padding: 8px 6px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-  }
-
-  .button {
-    font-size: 0.8rem;
-    padding: 6px 10px;
-  }
-
-  #toast {
-    bottom: 20px;
-    right: 20px;
-    left: 20px;
-    padding: 12px 16px;
-    font-size: 0.9rem;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  main {
-    padding: 70px 15px 30px;
-  }
-
-  .card {
-    padding: 15px;
-    min-height: 160px;
-  }
-
-  .card-icon {
-    font-size: 1.8rem;
-  }
-
-  .card h3 {
-    font-size: 0.9rem;
-  }
-
-  .card p {
-    font-size: 1.3rem;
-  }
-
-  .card a {
-    padding: 8px 14px;
-    font-size: 0.9rem;
-  }
-
-  .sidebar .logo img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .menu a {
-    padding: 8px 10px;
-    font-size: 0.9rem;
-  }
-
-  .menu a i {
-    font-size: 18px;
-  }
-
-  .modal-content h2 {
-    font-size: 1.2rem;
-  }
-}
+      main {
+        margin-left: 0;
+        width: 100%;
+        padding: 80px 20px 40px;
+      }
+    }
   </style>
 </head>
 <body>
 
-<!-- Sidebar -->
- <!-- Mobile Menu Button -->
 <button class="mobile-menu-btn" onclick="toggleSidebar()">
   <i class='bx bx-menu'></i>
 </button>
 
-<!-- Sidebar Overlay -->
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
 
 <aside class="sidebar">
   <div class="logo">
@@ -759,21 +538,17 @@ window.toggleSidebar = function() {
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
       </div>
     </div>
-
     <hr>
-
-     <!-- SERVICES DROPDOWN -->
-      <div class="dropdown">
-        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
-          <span><i class='bx bx-spa'></i> Services</span>
-          <i class='bx bx-chevron-down'></i>
-        </a>
-        <div class="dropdown-menu">
-           <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
-          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
-        </div>
+    <div class="dropdown">
+      <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+        <span><i class='bx bx-spa'></i> Services</span>
+        <i class='bx bx-chevron-down'></i>
+      </a>
+      <div class="dropdown-menu">
+        <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
+        <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
       </div>
-
+    </div>
     <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
     <hr>
@@ -836,6 +611,7 @@ window.toggleSidebar = function() {
       <a href="javascript:void(0)" onclick="openModal('completed')">View Completed</a>
     </div>
   </div>
+</main>
 
 <!-- USERS MODAL -->
 <div id="usersModal" class="modal">
@@ -852,15 +628,19 @@ window.toggleSidebar = function() {
       <tbody>
         <?php
         $userList = pg_query($conn, "SELECT user_id, first_name, middle_name, last_name, email FROM users");
-        while ($user = pg_fetch_assoc($userList)):
-          $fullName = trim($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']);
+        if ($userList):
+          while ($user = pg_fetch_assoc($userList)):
+            $fullName = trim($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']);
         ?>
           <tr>
             <td><?= htmlspecialchars($user['user_id']) ?></td>
             <td><?= htmlspecialchars($fullName) ?></td>
             <td><?= htmlspecialchars($user['email']) ?></td>
           </tr>
-        <?php endwhile; ?>
+        <?php 
+          endwhile;
+        endif;
+        ?>
       </tbody>
     </table>
     <button onclick="closeModal('usersModal')">Close</button>
@@ -883,7 +663,8 @@ window.toggleSidebar = function() {
       <tbody>
         <?php
         $petList = pg_query($conn, "SELECT pet_id, name, breed, user_id FROM pets");
-        while ($pet = pg_fetch_assoc($petList)):
+        if ($petList):
+          while ($pet = pg_fetch_assoc($petList)):
         ?>
           <tr>
             <td><?= htmlspecialchars($pet['pet_id']) ?></td>
@@ -891,7 +672,10 @@ window.toggleSidebar = function() {
             <td><?= htmlspecialchars($pet['breed']) ?></td>
             <td><?= htmlspecialchars($pet['user_id']) ?></td>
           </tr>
-        <?php endwhile; ?>
+        <?php 
+          endwhile;
+        endif;
+        ?>
       </tbody>
     </table>
     <button onclick="closeModal('petsModal')">Close</button>
@@ -925,8 +709,9 @@ window.toggleSidebar = function() {
             ORDER BY a.appointment_date DESC
         ";
         $cancelledResult = pg_query($conn, $cancelledQuery);
-        while ($row = pg_fetch_assoc($cancelledResult)): 
-          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        if ($cancelledResult):
+          while ($row = pg_fetch_assoc($cancelledResult)): 
+            $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
@@ -935,7 +720,10 @@ window.toggleSidebar = function() {
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
-        <?php endwhile; ?>
+        <?php 
+          endwhile;
+        endif;
+        ?>
       </tbody>
     </table>
     <button onclick="closeModal('cancelledModal')">Close</button>
@@ -969,8 +757,9 @@ window.toggleSidebar = function() {
             ORDER BY a.appointment_date DESC
         ";
         $noshowResult = pg_query($conn, $noshowQuery);
-        while ($row = pg_fetch_assoc($noshowResult)): 
-          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        if ($noshowResult):
+          while ($row = pg_fetch_assoc($noshowResult)): 
+            $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
@@ -979,54 +768,13 @@ window.toggleSidebar = function() {
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
-        <?php endwhile; ?>
+        <?php 
+          endwhile;
+        endif;
+        ?>
       </tbody>
     </table>
     <button onclick="closeModal('noshowModal')">Close</button>
-  </div>
-</div>
-
-<!-- PENDING APPOINTMENTS MODAL -->
-<div id="pendingModal" class="modal">
-  <div class="modal-content">
-    <h2>🕒 Pending Appointments</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Appointment ID</th>
-          <th>Pet Name</th>
-          <th>Owner Name</th>
-          <th>Date</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php
-        $pendingQuery = "
-            SELECT a.appointment_id, a.appointment_date, a.status,
-                  p.name AS pet_name, p.breed,
-                  u.first_name, u.middle_name, u.last_name
-            FROM appointments a
-            JOIN pets p ON a.pet_id = p.pet_id
-            JOIN users u ON p.user_id = u.user_id
-            WHERE a.status = 'pending'
-            ORDER BY a.appointment_date DESC
-        ";
-        $pendingResult = pg_query($conn, $pendingQuery);
-        while ($row = pg_fetch_assoc($pendingResult)): 
-          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
-        ?>
-          <tr>
-            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-            <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($ownerName) ?></td>
-            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
-            <td><?= htmlspecialchars($row['status']) ?></td>
-          </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
-    <button onclick="closeModal('pendingModal')">Close</button>
   </div>
 </div>
 
@@ -1057,8 +805,9 @@ window.toggleSidebar = function() {
             ORDER BY a.appointment_date DESC
         ";
         $confirmedResult = pg_query($conn, $confirmedQuery);
-        while ($row = pg_fetch_assoc($confirmedResult)): 
-          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        if ($confirmedResult):
+          while ($row = pg_fetch_assoc($confirmedResult)): 
+            $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
@@ -1067,7 +816,10 @@ window.toggleSidebar = function() {
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
-        <?php endwhile; ?>
+        <?php 
+          endwhile;
+        endif;
+        ?>
       </tbody>
     </table>
     <button onclick="closeModal('confirmedModal')">Close</button>
@@ -1101,8 +853,9 @@ window.toggleSidebar = function() {
             ORDER BY a.appointment_date DESC
         ";
         $completedResult = pg_query($conn, $completedQuery);
-        while ($row = pg_fetch_assoc($completedResult)): 
-          $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        if ($completedResult):
+          while ($row = pg_fetch_assoc($completedResult)): 
+            $ownerName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
           <tr>
             <td><?= htmlspecialchars($row['appointment_id']) ?></td>
@@ -1111,7 +864,10 @@ window.toggleSidebar = function() {
             <td><?= htmlspecialchars($row['appointment_date']) ?></td>
             <td><?= htmlspecialchars($row['status']) ?></td>
           </tr>
-        <?php endwhile; ?>
+        <?php 
+          endwhile;
+        endif;
+        ?>
       </tbody>
     </table>
     <button onclick="closeModal('completedModal')">Close</button>
@@ -1120,23 +876,22 @@ window.toggleSidebar = function() {
 
 <!-- ALL APPOINTMENTS MODAL -->
 <div id="appointmentsModal" class="modal">
-  <div class="modal-content" style="max-width: 95%; max-height: 90vh; overflow-y: auto;">
+  <div class="modal-content" style="max-width: 1400px; max-height: 85vh; overflow-y: auto; margin-left: auto; margin-right: 20px;">
     <h2>📋 All Appointments</h2>
-    <table>
+    <div style="overflow-x: auto;">
+    <table style="font-size: 0.85rem; min-width: 100%;">
       <thead>
         <tr>
-          <th>Client</th>
-          <th>Pet</th>
-          <th>Breed</th>
-          <th>Service</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Approval</th>
-          <th>Cancel Reason</th>
-          <th>Groomer</th>
-          <th>Notes</th>
-          <th>Feedback</th>
-          <th>Actions</th>
+          <th style="min-width: 120px;">Client</th>
+          <th style="min-width: 100px;">Pet</th>
+          <th style="min-width: 100px;">Service</th>
+          <th style="min-width: 140px;">Date</th>
+          <th style="min-width: 90px;">Status</th>
+          <th style="min-width: 80px;">Approval</th>
+          <th style="min-width: 100px;">Groomer</th>
+          <th style="min-width: 120px;">Notes</th>
+          <th style="min-width: 100px;">Feedback</th>
+          <th style="min-width: 180px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -1153,75 +908,73 @@ window.toggleSidebar = function() {
             FROM appointments a
             JOIN users u ON a.user_id = u.user_id
             JOIN pets p ON a.pet_id = p.pet_id
-            JOIN packages pk ON a.package_id = pk.id
+            JOIN packages pk ON a.package_id = pk.package_id
             ORDER BY a.appointment_date DESC
         ";
         $appointmentList = pg_query($conn, $appointmentQuery);
-        ?>
-        <?php while ($row = pg_fetch_assoc($appointmentList)): 
-          $clientName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+        if ($appointmentList):
+          while ($row = pg_fetch_assoc($appointmentList)): 
+            $clientName = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
         ?>
           <tr>
             <td><?= htmlspecialchars($clientName) ?></td>
-            <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['pet_breed']) ?></td>
-            <td><?= htmlspecialchars($row['package_name']) ?></td>
             <td>
-              <?= htmlspecialchars($row['appointment_date']) ?>
-
-                        <!-- Show reschedule request if pending -->
-              <?php if ($row['reschedule_requested'] && is_null($row['reschedule_approved'])): ?>
-                <div style="margin-top:8px; padding:8px; background:#fff3cd; border-left:3px solid #ffc107; border-radius:4px;">
-                  <strong style="color:#856404;">📅 Reschedule Request:</strong><br>
-                  <span style="color:#856404;"><?= htmlspecialchars($row['requested_date']) ?></span><br>
-                  <em style="color:#666; font-size:0.85rem;"><?= htmlspecialchars($row['reschedule_reason'] ?? 'No reason provided') ?></em>
+              <strong><?= htmlspecialchars($row['pet_name']) ?></strong><br>
+              <small style="color: #666;"><?= htmlspecialchars($row['pet_breed']) ?></small>
+            </td>
+            <td><?= htmlspecialchars($row['package_name']) ?></td>
+            <td style="font-size: 0.8rem;">
+              <?= date('M d, Y g:i A', strtotime($row['appointment_date'])) ?>
+              <?php if (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
+                <div style="margin-top:4px; padding:4px; background:#fff3cd; border-left:2px solid #ffc107; border-radius:3px; font-size:0.75rem;">
+                  <strong style="color:#856404;">📅 Reschedule</strong><br>
+                  <span style="color:#856404;"><?= date('M d, Y', strtotime($row['requested_date'] ?? '')) ?></span>
                 </div>
               <?php endif; ?>
             </td>
             <td>
               <?php if ($row['status'] === 'no_show'): ?>
-                <span style="color: red; font-weight: bold;">No Show</span>
+                <span style="color: red; font-weight: bold; font-size: 0.8rem;">No Show</span>
               <?php elseif ($row['status'] === 'completed'): ?>
-                <span style="color: green;">Completed</span>
+                <span style="color: green; font-size: 0.8rem;">✓ Completed</span>
               <?php elseif ($row['status'] === 'confirmed'): ?>
-                <span style="color: green;">Confirmed</span>
+                <span style="color: green; font-size: 0.8rem;">✓ Confirmed</span>
               <?php elseif ($row['status'] === 'cancelled'): ?>
-                <span style="color: red;">Cancelled</span>
-              <?php elseif ($row['reschedule_requested'] && is_null($row['reschedule_approved'])): ?>
-                <span style="color: orange; font-weight: bold;">Reschedule Pending</span>
+                <span style="color: red; font-size: 0.8rem;">✗ Cancelled</span>
+              <?php elseif (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
+                <span style="color: orange; font-weight: bold; font-size: 0.8rem;">⏳ Reschedule</span>
               <?php elseif (!empty($row['cancel_requested'])): ?>
-                <span style="color: red;">Cancel Requested</span>
+                <span style="color: red; font-size: 0.8rem;">Cancel Req.</span>
               <?php else: ?>
-                <span style="color: orange;">Pending</span>
+                <span style="color: orange; font-size: 0.8rem;">⏳ Pending</span>
               <?php endif; ?>
             </td>
-            <td>
-              <?= $row['status'] === 'cancelled' ? '<span style="color:red;">Cancelled</span>' :
-                  (!empty($row['is_approved']) ? '<span style="color:green;">Approved</span>' : '<span style="color:orange;">Pending</span>') ?>
+            <td style="font-size: 0.8rem;">
+              <?= $row['status'] === 'cancelled' ? '<span style="color:red;">✗</span>' :
+                  (!empty($row['is_approved']) ? '<span style="color:green;">✓</span>' : '<span style="color:orange;">⏳</span>') ?>
             </td>
-            <td><?= !empty($row['cancel_reason']) ? nl2br(htmlspecialchars($row['cancel_reason'])) : '-' ?></td>
-            <td><?= !empty($row['groomer_name']) ? htmlspecialchars($row['groomer_name']) : 'Not assigned' ?></td>
-            <td><?= nl2br(htmlspecialchars($row['notes'] ?? '')) ?></td>
-            <td>
+            <td style="font-size: 0.8rem;"><?= !empty($row['groomer_name']) ? htmlspecialchars($row['groomer_name']) : '<em style="color:#999;">Not assigned</em>' ?></td>
+            <td style="font-size: 0.75rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">
+              <?= !empty($row['notes']) ? htmlspecialchars(substr($row['notes'], 0, 50)) . (strlen($row['notes']) > 50 ? '...' : '') : '-' ?>
+            </td>
+            <td style="font-size: 0.75rem;">
             <?php if (isset($row['rating'])): ?>
               <div class="feedback-box">
-                <div class="feedback-header">
-                  <div class="feedback-stars">
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                      <i class="fa<?= $i <= $row['rating'] ? 's' : 'r' ?> fa-star"></i>
-                    <?php endfor; ?>
-                  </div>
+                <div class="feedback-stars" style="font-size: 0.7rem;">
+                  <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <i class="fa<?= $i <= $row['rating'] ? 's' : 'r' ?> fa-star"></i>
+                  <?php endfor; ?>
                 </div>
-                <div class="feedback-comment">
-                  <?= !empty($row['feedback']) ? nl2br(htmlspecialchars($row['feedback'])) : '<em>No comment.</em>' ?>
+                <div class="feedback-comment" style="font-size: 0.7rem; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <?= !empty($row['feedback']) ? htmlspecialchars(substr($row['feedback'], 0, 30)) . '...' : '<em>No comment</em>' ?>
                 </div>
               </div>
             <?php else: ?>
-              <em>No feedback</em>
+              <em style="color:#999; font-size: 0.7rem;">No feedback</em>
             <?php endif; ?>
           </td>
             <td>
-              <div class="action-buttons">
+              <div class="action-buttons" style="gap: 4px;">
                 <?php
                   $status = strtolower($row['status']);
                   $appointmentId = $row['appointment_id'];
@@ -1229,28 +982,32 @@ window.toggleSidebar = function() {
                 ?>
 
                 <?php if ($status === 'pending' && !$isApproved): ?>
-                  <a href="../../admin/approve/approve-handler.php?id=<?= $appointmentId ?>" class="button">Approve</a>
-                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+                  <a href="../../admin/approve/approve-handler.php?id=<?= $appointmentId ?>" class="button" style="padding: 5px 10px; font-size: 0.75rem;">Approve</a>
+                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Delete?')">Delete</a>
 
                 <?php elseif ($status === 'confirmed'): ?>
-                  <a href="../../appointment/mark-completed.php?id=<?= $appointmentId ?>" class="button" onclick="return confirm('Mark this appointment as completed?');">Complete</a>
-                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+                  <a href="../../appointment/mark-completed.php?id=<?= $appointmentId ?>" class="button" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Mark as completed?');">Complete</a>
+                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Delete?')">Delete</a>
 
                 <?php elseif ($status === 'cancelled' || $status === 'no_show' || $status === 'completed'): ?>
-                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" onclick="return confirm('Delete this appointment?')">Delete</a>
+                  <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Delete?')">Delete</a>
                 <?php endif; ?>
 
                 <?php if (!empty($row['cancel_requested']) && $status !== 'cancelled'): ?>
-                  <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger">Cancel</a>
+                  <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;">Cancel</a>
                 <?php endif; ?>
 
-                <a href="javascript:void(0)" class="button view-history" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
+                <a href="javascript:void(0)" class="button view-history" style="padding: 5px 10px; font-size: 0.75rem;" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
               </div>
             </td>
           </tr>
-        <?php endwhile; ?>
+        <?php 
+          endwhile;
+        endif;
+        ?>
       </tbody>
     </table>
+    </div>
     <button onclick="closeModal('appointmentsModal')">Close</button>
   </div>
 </div>
@@ -1264,8 +1021,94 @@ window.toggleSidebar = function() {
   </div>
 </div>
 
-</main>
+<script>
+// Define functions IMMEDIATELY in global scope
+window.openModal = function(type) {
+  const modals = {
+    users: 'usersModal',
+    pets: 'petsModal',
+    pending: 'pendingModal',
+    cancelled: 'cancelledModal',
+    noshow: 'noshowModal',
+    confirmed: 'confirmedModal',
+    completed: 'completedModal',
+    appointments: 'appointmentsModal',
+    history: 'historyModal'
+  };
+  
+  console.log('openModal called with:', type);
+  const modalId = modals[type];
+  if (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'flex';
+      console.log('Modal opened successfully:', modalId);
+    } else {
+      console.error('Modal element not found:', modalId);
+    }
+  } else {
+    console.error('Unknown modal type:', type);
+  }
+};
 
+window.closeModal = function(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.style.display = 'none';
+};
+
+window.viewHistory = function(userId) {
+  openModal('history');
+  const historyContainer = document.getElementById('historyTable');
+  if (historyContainer) {
+    historyContainer.innerHTML = 'Loading...';
+    fetch('../../appointment/fetch-history.php?user_id=' + userId)
+      .then(response => response.text())
+      .then(html => historyContainer.innerHTML = html)
+      .catch(() => historyContainer.innerHTML = 'Failed to load history.');
+  }
+};
+
+window.showToast = function(message) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 3000);
+};
+
+window.toggleDropdown = function(event) {
+  event.preventDefault();
+  const menu = event.currentTarget.nextElementSibling;
+  if (menu && menu.classList.contains('dropdown-menu')) {
+    const isVisible = menu.style.display === 'block';
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+    menu.style.display = isVisible ? 'none' : 'block';
+  }
+};
+
+window.toggleSidebar = function() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+};
+
+// Debug on page load
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('=== MODAL DEBUG ===');
+  console.log('confirmedModal exists:', document.getElementById('confirmedModal') !== null);
+  console.log('completedModal exists:', document.getElementById('completedModal') !== null);
+  console.log('appointmentsModal exists:', document.getElementById('appointmentsModal') !== null);
+});
+</script>
 
 </body>
 </html>
