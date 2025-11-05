@@ -783,13 +783,13 @@ if (isset($_GET['edit'])) {
         </div>
 
         <div class="input_box">
-          <input type="text" class="input-field" name="min_weight" placeholder="e.g., below 10kg" />
+          <input type="text" name="min_weight" class="input-field" value="<?= htmlspecialchars($edit_price['min_weight'] ?? '') ?>">
           <label class="label">Min Weight (Optional)</label>
           <i class='bx bx-trending-down icon'></i>
         </div>
 
         <div class="input_box">
-          <input type="text" class="input-field" name="max_weight" placeholder="e.g., 10kg" />
+          <input type="text" name="max_weight" class="input-field" value="<?= htmlspecialchars($edit_price['max_weight'] ?? '') ?>">
           <label class="label">Max Weight (Optional)</label>
           <i class='bx bx-trending-up icon'></i>
         </div>
@@ -826,7 +826,7 @@ if (isset($_GET['edit'])) {
         </div>
 
         <div class="input_box">
-          <input type="text" name="size" class="input-field" value="<?= htmlspecialchars($edit_price['size']) ?>">
+          <input type="text" name="size" class="input-field" value="<?= htmlspecialchars($edit_price['size'] ?? '') ?>">
           <label class="label">Size (Optional)</label>
           <i class='bx bx-ruler icon'></i>
         </div>
