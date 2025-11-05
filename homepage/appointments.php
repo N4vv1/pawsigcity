@@ -1211,6 +1211,9 @@ error_log("Number of appointments found: " . $row_count);
           Submit
         </button>
       </div>
+    </form>
+  </div>
+</div>
 
 <!-- Reschedule Modal -->
 <div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:2000; backdrop-filter:blur(4px);">
