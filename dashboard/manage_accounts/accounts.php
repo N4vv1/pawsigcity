@@ -73,15 +73,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
 
 // Fetch users
 $users = pg_query($conn, "SELECT * FROM users ORDER BY last_name ASC, first_name ASC");
-
 // If editing specific user
 $edit_user = null;
-pg_prepare($conn, "get_user", "SELECT * FROM users WHERE user_id = $1");
-
-// Later, execute when needed
 if (isset($_GET['id'])) {
     $edit_id = intval($_GET['id']);
-    $result = pg_execute($conn, "get_user", [$edit_id]);
+    $result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$edit_id]);
     $edit_user = pg_fetch_assoc($result);
 }
 ?>
