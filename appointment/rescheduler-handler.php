@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $appointment_id = $_POST['appointment_id'] ?? null;
-$requested_date = $_POST['requested_date'] ?? null;
+$requested_date = $_POST['appointment_date'] ?? null;  // ✅ CHANGED FROM 'requested_date' to 'appointment_date'
 $reschedule_reason = trim($_POST['reschedule_reason'] ?? '');
 $user_id = $_SESSION['user_id'];
 
@@ -77,7 +77,7 @@ if ($conflictData['conflict_count'] > 0) {
         WHERE appointment_id = $3 AND user_id = $4
     ";
     pg_query_params($conn, $query, [$requested_date, $reschedule_reason, $appointment_id, $user_id]);
-    $_SESSION['success'] = "✅ Reschedule approved automatically! Your new appointment date is confirmed. (Note: You cannot reschedule this appointment again)";
+    $_SESSION['success'] = "✅ Reschedule approved automatically! Your new appointment date is confirmed.";
 }
 
 header("Location: ../homepage/appointments.php");
