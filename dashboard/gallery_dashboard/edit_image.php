@@ -1,4 +1,7 @@
 <?php
+// Start output buffering to prevent header issues
+ob_start();
+
 session_start();
 require '../../db.php';
 require_once '../admin/check_admin.php';
@@ -50,20 +53,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Update database with new image path
                     $new_image_path = 'gallery_dashboard/uploads/' . $newFileName;
                     
-                    pg_prepare(
+                    // Use pg_query_params instead of prepare/execute to avoid conflicts
+                    $result = pg_query_params(
                         $conn,
-                        "update_gallery",
-                        "UPDATE gallery SET image_path=$1, uploaded_at=NOW() WHERE id=$2"
+                        "UPDATE gallery SET image_path=$1, uploaded_at=NOW() WHERE id=$2",
+                        [$new_image_path, $image_id]
                     );
-                    
-                    $result = pg_execute($conn, "update_gallery", [$new_image_path, $image_id]);
                     
                     if ($result) {
                         $_SESSION['success'] = "Image replaced successfully!";
                     } else {
                         $_SESSION['error'] = "Failed to update image in database.";
                         // Delete new file if database update fails
-                        unlink($destination);
+                        if (file_exists($destination)) {
+                            unlink($destination);
+                        }
                     }
                 } else {
                     $_SESSION['error'] = "Failed to upload new image.";
@@ -81,6 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['error'] = "Invalid request method.";
 }
 
+// Clear output buffer and redirect
+ob_end_clean();
 header("Location: gallery.php");
 exit;
 ?>
