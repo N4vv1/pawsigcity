@@ -182,19 +182,11 @@
       transform: translateX(-5px);
     }
 
-    .back-button:active {
-      transform: translateX(-3px);
-    }
-
     .container {
       width: 100%;
       max-width: 500px;
       position: relative;
       z-index: 1;
-    }
-
-    .form-container {
-      padding: 0;
     }
 
     .logo-section {
@@ -608,54 +600,6 @@
       color: #2d5f4a;
     }
 
-    .otp-inputs {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin: 25px 0;
-    }
-
-    .otp-input {
-      width: 50px;
-      height: 55px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: 600;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      outline: none;
-      transition: all 0.3s ease;
-    }
-
-    .otp-input:focus {
-      border-color: #A8E6CF;
-      box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.15);
-    }
-
-    .resend-otp {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .resend-otp a {
-      color: #5fb894;
-      text-decoration: none;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .resend-otp a:hover {
-      color: #7FD4B3;
-    }
-
-    .resend-otp a.disabled {
-      color: #ccc;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
     /* Loading Spinner */
     .spinner {
       display: inline-block;
@@ -728,12 +672,6 @@
       .modal-content {
         padding: 30px 25px;
         max-width: 95%;
-      }
-
-      .otp-input {
-        width: 45px;
-        height: 50px;
-        font-size: 20px;
       }
 
       .brand-side {
@@ -825,7 +763,6 @@
                   echo '<span>' . $_SESSION['login_error'] . '</span>';
                   echo '</div>';
                   
-                  // Add inline script to highlight the error field
                   if (isset($_SESSION['error_field'])) {
                       $field = $_SESSION['error_field'];
                       echo "<script>
@@ -934,104 +871,47 @@
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
-  <div id="forgotPasswordModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
-      <div class="modal-header">
-        <h3>Forgot Password</h3>
-        <p>Enter your email to receive an OTP</p>
-      </div>
-      <div id="forgot-alerts"></div>
-      <form id="forgot-password-form">
-        <div class="input-box">
-          <input type="email" class="input-field" id="forgot_email" required />
-          <label class="label">Email Address</label>
-          <i class='bx bx-envelope icon'></i>
-        </div>
-        <button type="submit" class="submit-btn" id="send-forgot-otp-btn">Send OTP</button>
-      </form>
+ <!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+    <div class="modal-header">
+      <h3>Reset Password</h3>
+      <p>Verify your identity to reset your password</p>
     </div>
-  </div>
-
-  <!-- Forgot Password OTP Verification Modal -->
-  <div id="forgotOtpModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeForgotOtpModal()">&times;</span>
-      <div class="modal-header">
-        <h3>Verify OTP</h3>
-        <p>Enter the 6-digit code sent to <span id="forgot-email-display"></span></p>
+    <div id="forgot-alerts"></div>
+    <form id="forgot-password-form" action="reset-password-handler.php" method="post">
+      <div class="input-box">
+        <input type="email" class="input-field" name="email" id="forgot_email" required />
+        <label class="label">Email Address</label>
+        <i class='bx bx-envelope icon'></i>
       </div>
-      <div id="forgot-otp-alerts"></div>
-      <form id="forgot-otp-form">
-        <div class="otp-inputs">
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-        </div>
-        <button type="submit" class="submit-btn">Verify OTP</button>
-        <div class="resend-otp">
-          Didn't receive code? <a onclick="resendForgotOTP()" id="resend-forgot-link">Resend OTP</a>
-          <span id="forgot-timer"></span>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Reset Password Modal -->
-  <div id="resetPasswordModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeResetPasswordModal()">&times;</span>
-      <div class="modal-header">
-        <h3>Reset Password</h3>
-        <p>Enter your new password</p>
+      
+      <div class="input-box has-toggle">
+        <input type="password" class="input-field" name="old_password" id="old_password" required />
+        <label class="label">Current Password</label>
+        <i class='bx bx-lock-alt icon'></i>
+        <i class='bx bx-hide password-toggle' onclick="togglePassword('old_password', this)"></i>
       </div>
-      <div id="reset-alerts"></div>
-      <form id="reset-password-form">
-        <div class="input-box">
-          <input type="password" class="input-field" id="new_password" required />
-          <label class="label">New Password</label>
-          <i class='bx bx-lock icon'></i>
-        </div>
-        <div class="input-box">
-          <input type="password" class="input-field" id="confirm_password" required />
-          <label class="label">Confirm Password</label>
-          <i class='bx bx-lock-alt icon'></i>
-        </div>
-        <button type="submit" class="submit-btn">Reset Password</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Registration OTP Modal -->
-  <div id="registerOtpModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeRegisterOtpModal()">&times;</span>
-      <div class="modal-header">
-        <h3>Verify Your Email</h3>
-        <p>Enter the 6-digit code sent to <span id="register-email-display"></span></p>
+      
+      <div class="input-box has-toggle">
+        <input type="password" class="input-field" name="new_password" id="new_password" required />
+        <label class="label">New Password</label>
+        <i class='bx bx-lock icon'></i>
+        <i class='bx bx-hide password-toggle' onclick="togglePassword('new_password', this)"></i>
       </div>
-      <div id="register-otp-alerts"></div>
-      <form id="register-otp-form">
-        <div class="otp-inputs">
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-          <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" />
-        </div>
-        <button type="submit" class="submit-btn">Verify & Register</button>
-        <div class="resend-otp">
-          Didn't receive code? <a onclick="resendRegisterOTP()" id="resend-register-link">Resend OTP</a>
-          <span id="register-timer"></span>
-        </div>
-      </form>
-    </div>
+      
+      <div class="input-box has-toggle">
+        <input type="password" class="input-field" name="confirm_password" id="confirm_password" required />
+        <label class="label">Confirm New Password</label>
+        <i class='bx bx-lock-alt icon'></i>
+        <i class='bx bx-hide password-toggle' onclick="togglePassword('confirm_password', this)"></i>
+      </div>
+      
+      <button type="submit" class="submit-btn">Reset Password</button>
+    </form>
   </div>
+</div>
 
   <!-- JavaScript -->
   <script>
@@ -1124,9 +1004,28 @@
         });
       }
     });
+    // Handle forgot password form submission
+document.getElementById('forgot-password-form').addEventListener('submit', function(e) {
+  const newPassword = document.getElementById('new_password').value;
+  const confirmPassword = document.getElementById('confirm_password').value;
+  
+  if (newPassword !== confirmPassword) {
+    e.preventDefault();
+    const alertDiv = document.getElementById('forgot-alerts');
+    alertDiv.innerHTML = '<div class="alert-message alert-error"><i class="bx bx-error-circle"></i><span>Passwords do not match!</span></div>';
+    return false;
+  }
+  
+  if (newPassword.length < 8) {
+    e.preventDefault();
+    const alertDiv = document.getElementById('forgot-alerts');
+    alertDiv.innerHTML = '<div class="alert-message alert-error"><i class="bx bx-error-circle"></i><span>Password must be at least 8 characters long!</span></div>';
+    return false;
+  }
+});
   </script>
 
-  <script src="auth-otp.js"></script>
+  <script src="./auth-otp.js"></script>
 
 </body>
 </html>

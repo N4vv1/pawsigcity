@@ -1,9 +1,9 @@
 <?php
+header('Content-Type: application/json');
 session_start();
 require '../../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  // Get and sanitize input data
   $first_name  = trim($_POST['first_name']);
   $middle_name = trim($_POST['middle_name']);
   $last_name   = trim($_POST['last_name']);
@@ -12,38 +12,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $phone       = trim($_POST['phone']);
   $role        = 'customer';
 
-  // Basic validation
+  // Validation
   if (empty($first_name) || empty($last_name) || empty($email) || empty($password)) {
-    header("Location: loginform.php?error=" . urlencode("All required fields must be filled."));
+    echo json_encode(['success' => false, 'message' => 'All required fields must be filled.']);
     exit;
   }
 
-  // Validate email format
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    header("Location: loginform.php?error=" . urlencode("Invalid email format."));
+    echo json_encode(['success' => false, 'message' => 'Invalid email format.']);
     exit;
   }
 
-  // Validate password length (minimum 6 characters)
   if (strlen($password) < 6) {
-    header("Location: loginform.php?error=" . urlencode("Password must be at least 6 characters long."));
+    echo json_encode(['success' => false, 'message' => 'Password must be at least 6 characters long.']);
     exit;
   }
 
-  // Hash the password
   $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-  // Check if email already exists
+  // Check if email exists
   $check_query = "SELECT 1 FROM users WHERE email = $1";
   $check_result = pg_query_params($conn, $check_query, [$email]);
 
   if (!$check_result) {
-    header("Location: loginform.php?error=" . urlencode("Database error: " . pg_last_error($conn)));
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . pg_last_error($conn)]);
     exit;
   }
 
   if (pg_num_rows($check_result) > 0) {
-    header("Location: loginform.php?error=" . urlencode("Email is already registered."));
+    echo json_encode(['success' => false, 'message' => 'Email is already registered.']);
     exit;
   }
 
@@ -64,19 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   ]);
 
   if ($insert_result) {
-    // Registration successful
-    $_SESSION['success'] = "Registration successful! Please login with your credentials.";
-    header("Location: loginform.php");
-    exit;
+    echo json_encode(['success' => true, 'message' => 'Registration successful!']);
   } else {
-    // Registration failed
-    $error_message = pg_last_error($conn);
-    header("Location: loginform.php?error=" . urlencode("Registration failed: " . $error_message));
-    exit;
+    echo json_encode(['success' => false, 'message' => 'Registration failed: ' . pg_last_error($conn)]);
   }
 } else {
-  // If not POST request, redirect to login form
-  header("Location: loginform.php");
-  exit;
+  echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
 ?>
