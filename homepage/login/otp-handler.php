@@ -13,7 +13,7 @@ require_once '../../db.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once __DIR__ . '/../../homepage/login/vendor/autoload.php';
+require_once __DIR__ . './vendor/autoload';
 header('Content-Type: application/json');
 
 // Check database connection
