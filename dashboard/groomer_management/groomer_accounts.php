@@ -3,76 +3,76 @@ session_start();
 require '../../db.php';
 require_once '../admin/check_admin.php';
 
-// Handle new user creation
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
-    $first_name  = trim($_POST['first_name']);
-    $middle_name = trim($_POST['middle_name']);
-    $last_name   = trim($_POST['last_name']);
-    $email      = trim($_POST['email']);
-    $password   = password_hash($_POST['password'], PASSWORD_BCRYPT);
-    $phone      = trim($_POST['phone']);
-    $role       = $_POST['role'];
+// Handle new groomer creation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_groomer'])) {
+    $groomer_name = trim($_POST['groomer_name']);
+    $email        = trim($_POST['email']);
+    $password     = password_hash($_POST['password'], PASSWORD_BCRYPT);
 
-    // Check if email exists - use pg_query_params instead
-    $check = pg_query_params($conn, "SELECT * FROM users WHERE email = $1", [$email]);
+    // Check if email exists - use pg_query_params
+    $check = pg_query_params($conn, "SELECT 1 FROM groomer WHERE email=$1", [$email]);
 
-    if (pg_num_rows($check) > 0) {
+    if ($check === false) {
+        $_SESSION['error'] = "Database error: " . pg_last_error($conn);
+    } elseif (pg_num_rows($check) > 0) {
         $_SESSION['error'] = "Email is already registered.";
     } else {
-        // Insert user - use pg_query_params instead
+        // Insert groomer - use pg_query_params
         $result = pg_query_params(
             $conn,
-            "INSERT INTO users (first_name, middle_name, last_name, email, password, phone, role)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)",
-            [$first_name, $middle_name, $last_name, $email, $password, $phone, $role]
+            "INSERT INTO groomer (groomer_name, email, password) VALUES ($1,$2,$3)",
+            [$groomer_name, $email, $password]
         );
 
         if ($result) {
-            $_SESSION['success'] = "User account created successfully.";
+            $_SESSION['success'] = "Groomer account created successfully.";
         } else {
-            $_SESSION['error'] = "Something went wrong. Please try again.";
+            $_SESSION['error'] = "Something went wrong: " . pg_last_error($conn);
         }
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-// Handle user update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
-    $id         = intval($_POST['user_id']);
-    $first_name  = trim($_POST['first_name']);
-    $middle_name = trim($_POST['middle_name']);
-    $last_name   = trim($_POST['last_name']);
-    $email      = trim($_POST['email']);
-    $phone      = trim($_POST['phone']);
+// Handle groomer update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_groomer'])) {
+    $id           = intval($_POST['groomer_id']);
+    $groomer_name = trim($_POST['groomer_name']);
+    $email        = trim($_POST['email']);
 
-    // Use pg_query_params instead
+    // Use pg_query_params
     $result = pg_query_params(
         $conn,
-        "UPDATE users
-         SET first_name=$1, middle_name=$2, last_name=$3, email=$4, phone=$5
-         WHERE user_id=$6",
-        [$first_name, $middle_name, $last_name, $email, $phone, $id]
+        "UPDATE groomer SET groomer_name=$1, email=$2 WHERE groomer_id=$3",
+        [$groomer_name, $email, $id]
     );
 
     if ($result) {
-        $_SESSION['success'] = "User updated successfully.";
+        $_SESSION['success'] = "Groomer updated successfully.";
     } else {
-        $_SESSION['error'] = "Failed to update user.";
+        $_SESSION['error'] = "Failed to update groomer: " . pg_last_error($conn);
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-// Fetch users
-$users = pg_query($conn, "SELECT * FROM users ORDER BY last_name ASC, first_name ASC");
+// Fetch groomers
+$groomers = pg_query($conn, "SELECT * FROM groomer ORDER BY groomer_name DESC");
+if ($groomers === false) {
+    die("Query failed: " . pg_last_error($conn));
+}
 
-// If editing specific user
-$edit_user = null;
+// If editing specific groomer
+$edit_groomer = null;
 if (isset($_GET['id'])) {
     $edit_id = intval($_GET['id']);
-    $result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$edit_id]);
-    $edit_user = pg_fetch_assoc($result);
+    // Use pg_query_params
+    $result = pg_query_params($conn, "SELECT * FROM groomer WHERE groomer_id=$1", [$edit_id]);
+    if ($result !== false) {
+        $edit_groomer = pg_fetch_assoc($result);
+    } else {
+        $_SESSION['error'] = "Failed to fetch groomer: " . pg_last_error($conn);
+    }
 }
 ?>
 

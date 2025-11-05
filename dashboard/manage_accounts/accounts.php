@@ -13,23 +13,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
     $phone      = trim($_POST['phone']);
     $role       = $_POST['role'];
 
-    // Check if email exists
-    pg_prepare($conn, "check_user", "SELECT * FROM users WHERE email = $1");
-    $check = pg_execute($conn, "check_user", [$email]);
+    // Check if email exists - use pg_query_params instead
+    $check = pg_query_params($conn, "SELECT * FROM users WHERE email = $1", [$email]);
 
     if (pg_num_rows($check) > 0) {
         $_SESSION['error'] = "Email is already registered.";
     } else {
-        pg_prepare(
+        // Insert user - use pg_query_params instead
+        $result = pg_query_params(
             $conn,
-            "insert_user",
             "INSERT INTO users (first_name, middle_name, last_name, email, password, phone, role)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)"
+             VALUES ($1, $2, $3, $4, $5, $6, $7)",
+            [$first_name, $middle_name, $last_name, $email, $password, $phone, $role]
         );
-        $result = pg_execute($conn, "insert_user", [
-            $first_name, $middle_name, $last_name,
-            $email, $password, $phone, $role
-        ]);
 
         if ($result) {
             $_SESSION['success'] = "User account created successfully.";
@@ -50,17 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
     $email      = trim($_POST['email']);
     $phone      = trim($_POST['phone']);
 
-    pg_prepare(
+    // Use pg_query_params instead
+    $result = pg_query_params(
         $conn,
-        "update_user",
         "UPDATE users
          SET first_name=$1, middle_name=$2, last_name=$3, email=$4, phone=$5
-         WHERE user_id=$6"
+         WHERE user_id=$6",
+        [$first_name, $middle_name, $last_name, $email, $phone, $id]
     );
-    $result = pg_execute($conn, "update_user", [
-        $first_name, $middle_name, $last_name,
-        $email, $phone, $id
-    ]);
 
     if ($result) {
         $_SESSION['success'] = "User updated successfully.";
@@ -73,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
 
 // Fetch users
 $users = pg_query($conn, "SELECT * FROM users ORDER BY last_name ASC, first_name ASC");
+
 // If editing specific user
 $edit_user = null;
 if (isset($_GET['id'])) {
