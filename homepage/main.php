@@ -630,7 +630,7 @@ function getServiceImage($serviceName) {
   justify-content: center;
   min-height: 100vh;
   padding: 80px 20px;
-  background-image: url('./uploads/pawsigbg.jpg');
+  background-image: url('../uploads/pawsigbg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
