@@ -164,16 +164,15 @@ header .navbar {
 .navbar .nav-menu .nav-link:hover,
 .navbar .nav-menu .nav-link:focus,
 .navbar .nav-menu .nav-link.active {
-  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-  color: #ffffff;
+  background: var(--secondary-color);
+  color: var(--primary-color);
   font-weight: var(--font-weight-semi-bold);
 }
 
 
 /* Active state */
 .navbar .nav-link.active {
-  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-  color: #ffffff;
+  background-color: var(--secondary-color);
   font-weight: 700;
   border-bottom: 3px solid var(--dark-color);
 }
@@ -901,6 +900,12 @@ textarea.form-input {
   }
 
 
+  /* Active state */
+  .navbar .nav-link.active {
+    background-color: var(--secondary-color);
+    font-weight: 700;
+    border-bottom: 3px solid var(--dark-color);
+  }
 
   /* Underline effect */
   .navbar .nav-menu .nav-link::after {
@@ -1393,10 +1398,10 @@ textarea.form-input {
   }
 
   .dropdown-menu li a:hover {
-  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-  color: #ffffff;
-  font-weight: 600;
-}
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+  }
   table {
     margin: 0 auto;
     border-collapse: collapse;

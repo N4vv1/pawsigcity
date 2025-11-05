@@ -1601,7 +1601,7 @@ function getServiceImage($serviceName) {
   .gallery-empty i {
     font-size: 3rem;
   }
-
+  
   .gallery-empty h3 {
     font-size: 1.4rem;
   }
@@ -1807,7 +1807,7 @@ function getServiceImage($serviceName) {
   margin-bottom: 15px;
   transition: color 0.3s ease;
 }
-
+ 
 .service-item:hover .name {
   color: #16a085;
 }
