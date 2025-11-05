@@ -871,51 +871,47 @@
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
-  <div id="forgotPasswordModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
-      <div class="modal-header">
-        <h3>Forgot Password</h3>
-        <p>Enter your email to reset your password</p>
-      </div>
-      <div id="forgot-alerts"></div>
-      <form id="forgot-password-form">
-        <div class="input-box">
-          <input type="email" class="input-field" id="forgot_email" required />
-          <label class="label">Email Address</label>
-          <i class='bx bx-envelope icon'></i>
-        </div>
-        <button type="submit" class="submit-btn" id="send-forgot-btn">Verify Email</button>
-      </form>
+ <!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+    <div class="modal-header">
+      <h3>Reset Password</h3>
+      <p>Verify your identity to reset your password</p>
     </div>
-  </div>
-
-  <!-- Reset Password Modal -->
-  <div id="resetPasswordModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeResetPasswordModal()">&times;</span>
-      <div class="modal-header">
-        <h3>Reset Password</h3>
-        <p>Enter your new password</p>
+    <div id="forgot-alerts"></div>
+    <form id="forgot-password-form" action="reset-password-handler.php" method="post">
+      <div class="input-box">
+        <input type="email" class="input-field" name="email" id="forgot_email" required />
+        <label class="label">Email Address</label>
+        <i class='bx bx-envelope icon'></i>
       </div>
-      <div id="reset-alerts"></div>
-      <form id="reset-password-form">
-        <input type="hidden" id="reset_email_hidden" />
-        <div class="input-box">
-          <input type="password" class="input-field" id="new_password" required />
-          <label class="label">New Password</label>
-          <i class='bx bx-lock icon'></i>
-        </div>
-        <div class="input-box">
-          <input type="password" class="input-field" id="confirm_password" required />
-          <label class="label">Confirm Password</label>
-          <i class='bx bx-lock-alt icon'></i>
-        </div>
-        <button type="submit" class="submit-btn">Reset Password</button>
-      </form>
-    </div>
+      
+      <div class="input-box has-toggle">
+        <input type="password" class="input-field" name="old_password" id="old_password" required />
+        <label class="label">Current Password</label>
+        <i class='bx bx-lock-alt icon'></i>
+        <i class='bx bx-hide password-toggle' onclick="togglePassword('old_password', this)"></i>
+      </div>
+      
+      <div class="input-box has-toggle">
+        <input type="password" class="input-field" name="new_password" id="new_password" required />
+        <label class="label">New Password</label>
+        <i class='bx bx-lock icon'></i>
+        <i class='bx bx-hide password-toggle' onclick="togglePassword('new_password', this)"></i>
+      </div>
+      
+      <div class="input-box has-toggle">
+        <input type="password" class="input-field" name="confirm_password" id="confirm_password" required />
+        <label class="label">Confirm New Password</label>
+        <i class='bx bx-lock-alt icon'></i>
+        <i class='bx bx-hide password-toggle' onclick="togglePassword('confirm_password', this)"></i>
+      </div>
+      
+      <button type="submit" class="submit-btn">Reset Password</button>
+    </form>
   </div>
+</div>
 
   <!-- JavaScript -->
   <script>
@@ -1008,9 +1004,28 @@
         });
       }
     });
+    // Handle forgot password form submission
+document.getElementById('forgot-password-form').addEventListener('submit', function(e) {
+  const newPassword = document.getElementById('new_password').value;
+  const confirmPassword = document.getElementById('confirm_password').value;
+  
+  if (newPassword !== confirmPassword) {
+    e.preventDefault();
+    const alertDiv = document.getElementById('forgot-alerts');
+    alertDiv.innerHTML = '<div class="alert-message alert-error"><i class="bx bx-error-circle"></i><span>Passwords do not match!</span></div>';
+    return false;
+  }
+  
+  if (newPassword.length < 8) {
+    e.preventDefault();
+    const alertDiv = document.getElementById('forgot-alerts');
+    alertDiv.innerHTML = '<div class="alert-message alert-error"><i class="bx bx-error-circle"></i><span>Password must be at least 8 characters long!</span></div>';
+    return false;
+  }
+});
   </script>
 
-  <script src="auth.js"></script>
+  <script src="./auth-otp.js"></script>
 
 </body>
 </html>

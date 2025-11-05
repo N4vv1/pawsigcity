@@ -68,7 +68,7 @@ document.getElementById('forgot-password-form')?.addEventListener('submit', asyn
   btn.innerHTML = 'Processing...<span class="spinner"></span>';
   
   try {
-    const response = await fetch('forgot-handler.php', {
+    const response = await fetch('reset-password-handler.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `email=${encodeURIComponent(email)}`
@@ -77,11 +77,9 @@ document.getElementById('forgot-password-form')?.addEventListener('submit', asyn
     const data = await response.json();
     
     if (data.success) {
-      // Store email in session and open reset modal
-      document.getElementById('reset_email_hidden').value = email;
+      // Close forgot password modal and show success on login form
       closeForgotPasswordModal();
-      openResetPasswordModal();
-      showAlert('reset-alerts', data.message, 'success');
+      showAlert('login-alerts', data.message, 'success');
     } else {
       showAlert('forgot-alerts', data.message, 'error');
     }
@@ -93,11 +91,10 @@ document.getElementById('forgot-password-form')?.addEventListener('submit', asyn
   }
 });
 
-// Reset password
+// Reset password (this will be accessed via email link with token)
 document.getElementById('reset-password-form')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  const email = document.getElementById('reset_email_hidden').value;
   const newPassword = document.getElementById('new_password').value;
   const confirmPassword = document.getElementById('confirm_password').value;
   
@@ -118,17 +115,23 @@ document.getElementById('reset-password-form')?.addEventListener('submit', async
   btn.innerHTML = 'Resetting...<span class="spinner"></span>';
   
   try {
-    const response = await fetch('reset-handler.php', {
+    // Get token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    const response = await fetch('reset-password-handler.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(newPassword)}`
+      body: `password=${encodeURIComponent(newPassword)}&token=${encodeURIComponent(token)}`
     });
     
     const data = await response.json();
     
     if (data.success) {
-      closeResetPasswordModal();
-      showAlert('login-alerts', 'Password reset successful! Please login with your new password.', 'success');
+      showAlert('reset-alerts', 'Password reset successful! Redirecting to login...', 'success');
+      setTimeout(() => {
+        window.location.href = 'loginform.php?success=Password reset successful! Please login with your new password.';
+      }, 2000);
     } else {
       showAlert('reset-alerts', data.message, 'error');
     }
@@ -176,7 +179,7 @@ document.getElementById('registration-form')?.addEventListener('submit', async (
   try {
     const params = new URLSearchParams(formData);
     
-    const response = await fetch('register-handler.php', {
+    const response = await fetch('register-password-handler.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: params.toString()
@@ -224,3 +227,27 @@ window.addEventListener('click', (e) => {
     e.target.classList.remove('active');
   }
 });
+function openForgotPasswordModal() {
+  document.getElementById('forgotPasswordModal').classList.add('active');
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById('forgotPasswordModal').classList.remove('active');
+}
+
+function closeResetPasswordModal() {
+  document.getElementById('resetPasswordModal').classList.remove('active');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const forgotModal = document.getElementById('forgotPasswordModal');
+  const resetModal = document.getElementById('resetPasswordModal');
+  
+  if (event.target === forgotModal) {
+    closeForgotPasswordModal();
+  }
+  if (event.target === resetModal) {
+    closeResetPasswordModal();
+  }
+}

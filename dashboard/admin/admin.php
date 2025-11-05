@@ -295,7 +295,7 @@ if ($noShowCount > 0) {
       background-color: rgba(0, 0, 0, 0.4);
       align-items: center;
       justify-content: flex-end;
-      padding-right: 20px;
+      padding-right: 300px;
     }
 
     .modal-content {
@@ -876,7 +876,12 @@ if ($noShowCount > 0) {
 
 <!-- ALL APPOINTMENTS MODAL -->
 <div id="appointmentsModal" class="modal">
-  <div class="modal-content" style="max-width: 1400px; max-height: 85vh; overflow-y: auto; margin-left: auto; margin-right: 85px;">
+  <div class="modal-content"
+     style="max-width: 1400px; max-height: 85vh; overflow-y: auto;
+            position: absolute; right: 80px; top: 50%; transform: translateY(-50%);">
+
+
+
     <h2>All Appointments</h2>
     <div style="overflow-x: auto;">
     <table style="font-size: 0.85rem; min-width: 100%;">
@@ -1022,7 +1027,7 @@ if ($noShowCount > 0) {
 </div>
 
 <!-- HISTORY MODAL -->
-<div id="historyModal" class="modal" style="justify-content: center; padding-left: 300px;">
+<div id="historyModal" class="modal" style="justify-content: center; padding-left: 600px;">
   <div class="modal-content" id="historyContent">
     <h3>Appointment History</h3>
     <div id="historyTable">Loading...</div>
