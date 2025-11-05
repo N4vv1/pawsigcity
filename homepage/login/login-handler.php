@@ -8,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($email) || empty($password)) {
         $_SESSION['login_error'] = "⚠️ Please enter both email and password.";
+        $_SESSION['error_field'] = empty($email) ? 'email' : 'password';
         header("Location: loginform.php");
         exit;
     }
@@ -48,6 +49,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     break;
             }
             exit;
+        } else {
+            // ❌ Password incorrect for user account
+            $_SESSION['login_error'] = "❌ Incorrect password.";
+            $_SESSION['error_field'] = 'password'; // Highlight password field
+            header("Location: loginform.php");
+            exit;
         }
     }
 
@@ -67,14 +74,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: https://pawsigcity.onrender.com/groomer_dashboard/home_groomer.php");
             exit;
         } else {
-            $_SESSION['login_error'] = "❌ Incorrect password for groomer account.";
+            // ❌ Password incorrect for groomer account
+            $_SESSION['login_error'] = "❌ Incorrect password.";
+            $_SESSION['error_field'] = 'password'; // Highlight password field
             header("Location: loginform.php");
             exit;
         }
     }
 
     // ❌ No account found in either table
-    $_SESSION['login_error'] = "❌ No account found with email: " . htmlspecialchars($email);
+    $_SESSION['login_error'] = "❌ No account found with this email.";
+    $_SESSION['error_field'] = 'email'; // Highlight email field
     header("Location: loginform.php");
     exit;
 }

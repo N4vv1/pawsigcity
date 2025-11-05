@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -274,6 +275,9 @@
       font-size: 14px;
       animation: slideDown 0.3s ease;
       word-wrap: break-word;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     @keyframes slideDown {
@@ -285,6 +289,11 @@
         opacity: 1;
         transform: translateY(0);
       }
+    }
+
+    .alert-message i {
+      font-size: 20px;
+      flex-shrink: 0;
     }
 
     .alert-success {
@@ -425,6 +434,105 @@
 
     .submit-btn:active {
       transform: translateY(0);
+    }
+
+    /* Password Toggle */
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 14px;
+      font-size: 20px;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      z-index: 2;
+    }
+
+    .password-toggle:hover {
+      color: #5fb894;
+    }
+
+    .input-box.has-toggle .icon {
+      right: 45px;
+    }
+
+    /* Error States */
+    .input-box.error .input-field {
+      border-color: #ff4d4d;
+      background: #fff5f5;
+    }
+
+    .input-box.error .icon,
+    .input-box.error .password-toggle {
+      color: #ff4d4d;
+    }
+
+    .input-box.success .input-field {
+      border-color: #4caf50;
+    }
+
+    .input-box.success .icon {
+      color: #4caf50;
+    }
+
+    .error-message {
+      display: none;
+      color: #ff4d4d;
+      font-size: 12px;
+      margin-top: 5px;
+      margin-left: 5px;
+      animation: slideDown 0.3s ease;
+    }
+
+    .input-box.error .error-message {
+      display: block;
+    }
+
+    /* Password Strength */
+    .password-strength {
+      margin-top: 8px;
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .password-strength.active {
+      display: block;
+    }
+
+    .password-strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .password-strength-bar.weak {
+      width: 33%;
+      background: #ff4d4d;
+    }
+
+    .password-strength-bar.medium {
+      width: 66%;
+      background: #ffa500;
+    }
+
+    .password-strength-bar.strong {
+      width: 100%;
+      background: #4caf50;
+    }
+
+    .password-hint {
+      font-size: 11px;
+      color: #999;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .password-hint.active {
+      display: block;
     }
 
     /* Modal Styles */
@@ -701,99 +809,126 @@
           <p>Please enter your details to continue</p>
         </div>
 
-      <div class="tab-buttons">
-        <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-        <button class="tab-btn" onclick="switchTab('register')">Register</button>
-      </div>
-
-      <div class="form-content">
-        <!-- Login Form -->
-        <div id="login-form" class="form-section active">
-          <div id="login-alerts">
-            <?php
-            if (isset($_SESSION['login_error'])) {
-                echo '<div class="alert-message alert-error">' . $_SESSION['login_error'] . '</div>';
-                unset($_SESSION['login_error']);
-            }
-            if (isset($_SESSION['login_success'])) {
-                echo '<div class="alert-message alert-success">' . $_SESSION['login_success'] . '</div>';
-                unset($_SESSION['login_success']);
-            }
-            ?>
-          </div>
-          
-          <form action="login-handler.php" method="post">
-            <div class="input-box">
-              <input type="email" class="input-field" name="email" required />
-              <label class="label">Email</label>
-              <i class='bx bx-user icon'></i>
-            </div>
-
-            <div class="input-box">
-              <input type="password" class="input-field" name="password" required />
-              <label class="label">Password</label>
-              <i class='bx bx-lock-alt icon'></i>
-            </div>
-
-            <div class="remember-forgot">
-              <div class="remember-me">
-                <input type="checkbox" id="remember" />
-                <label for="remember">Remember me</label>
-              </div>
-              <div class="forgot">
-                <a onclick="openForgotPasswordModal()">Forgot password?</a>
-              </div>
-            </div>
-
-            <button type="submit" class="submit-btn">Login</button>
-          </form>
+        <div class="tab-buttons">
+          <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+          <button class="tab-btn" onclick="switchTab('register')">Register</button>
         </div>
 
-        <!-- Register Form -->
-        <div id="register-form" class="form-section">
-          <div id="register-alerts"></div>
-          
-          <form id="registration-form">
-            <div class="row-inputs">
+        <div class="form-content">
+          <!-- Login Form -->
+          <div id="login-form" class="form-section active">
+            <div id="login-alerts">
+              <?php
+              if (isset($_SESSION['login_error'])) {
+                  echo '<div class="alert-message alert-error">';
+                  echo '<i class="bx bx-error-circle"></i>';
+                  echo '<span>' . $_SESSION['login_error'] . '</span>';
+                  echo '</div>';
+                  
+                  // Add inline script to highlight the error field
+                  if (isset($_SESSION['error_field'])) {
+                      $field = $_SESSION['error_field'];
+                      echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                          showFieldError('login-{$field}-box', '');
+                        });
+                      </script>";
+                      unset($_SESSION['error_field']);
+                  }
+                  
+                  unset($_SESSION['login_error']);
+              }
+              if (isset($_SESSION['login_success'])) {
+                  echo '<div class="alert-message alert-success">';
+                  echo '<i class="bx bx-check-circle"></i>';
+                  echo '<span>' . $_SESSION['login_success'] . '</span>';
+                  echo '</div>';
+                  unset($_SESSION['login_success']);
+              }
+              ?>
+            </div>
+            
+            <form action="login-handler.php" method="post">
+              <div class="input-box" id="login-email-box">
+                <input type="email" class="input-field" name="email" id="login_email" required />
+                <label class="label">Email</label>
+                <i class='bx bx-user icon'></i>
+                <span class="error-message">Email not found</span>
+              </div>
+
+              <div class="input-box has-toggle" id="login-password-box">
+                <input type="password" class="input-field" name="password" id="login_password" required />
+                <label class="label">Password</label>
+                <i class='bx bx-lock-alt icon'></i>
+                <i class='bx bx-hide password-toggle' onclick="togglePassword('login_password', this)"></i>
+                <span class="error-message">Incorrect password</span>
+              </div>
+
+              <div class="remember-forgot">
+                <div class="remember-me">
+                  <input type="checkbox" id="remember" />
+                  <label for="remember">Remember me</label>
+                </div>
+                <div class="forgot">
+                  <a onclick="openForgotPasswordModal()">Forgot password?</a>
+                </div>
+              </div>
+
+              <button type="submit" class="submit-btn">Login</button>
+            </form>
+          </div>
+
+          <!-- Register Form -->
+          <div id="register-form" class="form-section">
+            <div id="register-alerts"></div>
+            
+            <form id="registration-form">
+              <div class="row-inputs">
+                <div class="input-box">
+                  <input type="text" class="input-field" name="first_name" id="first_name" required />
+                  <label class="label">First Name</label>
+                  <i class='bx bx-user icon'></i>
+                </div>
+
+                <div class="input-box">
+                  <input type="text" class="input-field" name="last_name" id="last_name" required />
+                  <label class="label">Last Name</label>
+                  <i class='bx bx-user icon'></i>
+                </div>
+              </div>
+
               <div class="input-box">
-                <input type="text" class="input-field" name="first_name" id="first_name" required />
-                <label class="label">First Name</label>
+                <input type="text" class="input-field" name="middle_name" id="middle_name" required/>
+                <label class="label">Middle Name</label>
                 <i class='bx bx-user icon'></i>
               </div>
 
               <div class="input-box">
-                <input type="text" class="input-field" name="last_name" id="last_name" required />
-                <label class="label">Last Name</label>
-                <i class='bx bx-user icon'></i>
+                <input type="email" class="input-field" name="email" id="reg_email" required />
+                <label class="label">Email</label>
+                <i class='bx bx-envelope icon'></i>
               </div>
-            </div>
 
-            <div class="input-box">
-              <input type="text" class="input-field" name="middle_name" id="middle_name" required/>
-              <label class="label">Middle Name</label>
-              <i class='bx bx-user icon'></i>
-            </div>
+              <div class="input-box has-toggle">
+                <input type="password" class="input-field" name="password" id="reg_password" required />
+                <label class="label">Password</label>
+                <i class='bx bx-lock icon'></i>
+                <i class='bx bx-hide password-toggle' onclick="togglePassword('reg_password', this)"></i>
+                <div class="password-strength">
+                  <div class="password-strength-bar"></div>
+                </div>
+                <div class="password-hint">Use 8+ characters with letters, numbers & symbols</div>
+              </div>
 
-            <div class="input-box">
-              <input type="email" class="input-field" name="email" id="reg_email" required />
-              <label class="label">Email</label>
-              <i class='bx bx-envelope icon'></i>
-            </div>
+              <div class="input-box">
+                <input type="text" class="input-field" name="phone" id="phone" required/>
+                <label class="label">Phone Number</label>
+                <i class='bx bx-phone icon'></i>
+              </div>
 
-            <div class="input-box">
-              <input type="password" class="input-field" name="password" id="reg_password" required />
-              <label class="label">Password</label>
-              <i class='bx bx-lock icon'></i>
-            </div>
-
-            <div class="input-box">
-              <input type="text" class="input-field" name="phone" id="phone" required/>
-              <label class="label">Phone Number</label>
-              <i class='bx bx-phone icon'></i>
-            </div>
-
-            <button type="submit" class="submit-btn">Create Account</button>
-          </form>
+              <button type="submit" class="submit-btn">Create Account</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -897,6 +1032,99 @@
       </form>
     </div>
   </div>
+
+  <!-- JavaScript -->
+  <script>
+    function togglePassword(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bx-hide');
+        icon.classList.add('bx-show');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('bx-show');
+        icon.classList.add('bx-hide');
+      }
+    }
+
+    // Remove error state when user starts typing
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('.input-field');
+      
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          const inputBox = this.closest('.input-box');
+          inputBox.classList.remove('error', 'success');
+        });
+      });
+    });
+
+    // Function to show error on specific field
+    function showFieldError(fieldId, message) {
+      const inputBox = document.getElementById(fieldId);
+      if (inputBox) {
+        inputBox.classList.add('error');
+        const errorMsg = inputBox.querySelector('.error-message');
+        if (errorMsg && message) {
+          errorMsg.textContent = message;
+        }
+      }
+    }
+
+    // Function to show success on specific field
+    function showFieldSuccess(fieldId) {
+      const inputBox = document.getElementById(fieldId);
+      if (inputBox) {
+        inputBox.classList.add('success');
+        inputBox.classList.remove('error');
+      }
+    }
+
+    // Password strength checker
+    document.addEventListener('DOMContentLoaded', function() {
+      const regPassword = document.getElementById('reg_password');
+      if (regPassword) {
+        regPassword.addEventListener('input', function() {
+          const password = this.value;
+          const strengthBar = this.parentElement.querySelector('.password-strength-bar');
+          const strengthContainer = this.parentElement.querySelector('.password-strength');
+          const hint = this.parentElement.querySelector('.password-hint');
+          
+          if (password.length === 0) {
+            strengthContainer.classList.remove('active');
+            hint.classList.remove('active');
+            return;
+          }
+          
+          strengthContainer.classList.add('active');
+          hint.classList.add('active');
+          
+          let strength = 0;
+          if (password.length >= 8) strength++;
+          if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+          if (/[0-9]/.test(password)) strength++;
+          if (/[^a-zA-Z0-9]/.test(password)) strength++;
+          
+          strengthBar.className = 'password-strength-bar';
+          
+          if (strength <= 2) {
+            strengthBar.classList.add('weak');
+            hint.textContent = 'Weak password - add more characters';
+            hint.style.color = '#ff4d4d';
+          } else if (strength === 3) {
+            strengthBar.classList.add('medium');
+            hint.textContent = 'Medium strength - almost there!';
+            hint.style.color = '#ffa500';
+          } else {
+            strengthBar.classList.add('strong');
+            hint.textContent = 'Strong password!';
+            hint.style.color = '#4caf50';
+          }
+        });
+      }
+    });
+  </script>
 
   <script src="auth-otp.js"></script>
 
