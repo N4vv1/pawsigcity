@@ -856,7 +856,8 @@ error_log("Number of appointments found: " . $row_count);
   }
 
   .cancel-modal.show {
-    display: flex;
+      opacity: 1;
+      visibility: visible;
   }
 
   @keyframes fadeIn {
