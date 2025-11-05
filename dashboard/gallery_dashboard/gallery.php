@@ -626,7 +626,7 @@ $result = pg_query($conn, $query);
   <h2>Pet Gallery</h2>
   
   <button class="add-btn" onclick="openAddModal()">
-    ➕ Add New User
+    ➕ Add New Image
   </button>
 
   <div class="table-container">
@@ -642,23 +642,29 @@ $result = pg_query($conn, $query);
           </tr>
         </thead>
         <tbody>
-          <?php while ($image = pg_fetch_assoc($result)): ?>
+          <?php while ($image = pg_fetch_assoc($result)): 
+            // Get the filename from the database path
+            $filename = basename($image['image_path']);
+            $image_url = 'uploads/' . $filename;
+          ?>
           <tr>
-            <td><?= $image['id'] ?></td>
+            <td><?= htmlspecialchars($image['id']) ?></td>
             <td>
-              <img src="uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>" 
+              <img src="<?= htmlspecialchars($image_url) ?>" 
                    alt="Pet Gallery Image"
                    class="image-preview"
-                   onclick="viewImage('uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>')">
+                   onclick="viewImage('<?= htmlspecialchars($image_url) ?>')">
             </td>
             <td><?= date('F j, Y', strtotime($image['uploaded_at'])) ?></td>
             <td>
               <div class="actions-cell">
-                <button class="btn btn-edit" onclick="openEditModal(<?= $image['id'] ?>, 'uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>')">
+                <button class="btn btn-edit" 
+                        onclick="openEditModal(<?= htmlspecialchars($image['id']) ?>, '<?= htmlspecialchars($image['image_path']) ?>', '<?= htmlspecialchars($image_url) ?>')">
                   Edit
                 </button>
                 <form method="POST" action="delete_image.php" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this image?')">
-                  <input type="hidden" name="image_id" value="<?= $image['id'] ?>">
+                  <input type="hidden" name="image_id" value="<?= htmlspecialchars($image['id']) ?>">
+                  <input type="hidden" name="image_path" value="<?= htmlspecialchars($image['image_path']) ?>">
                   <button type="submit" class="btn btn-delete">
                     Delete
                   </button>
@@ -775,22 +781,31 @@ function openAddModal() {
 function closeAddModal() {
   document.getElementById('addModal').style.display = 'none';
   document.getElementById('addPreview').innerHTML = '';
+  document.getElementById('imageFile').value = '';
 }
 
-function openEditModal(id, imagePath) {
+function openEditModal(id, dbImagePath, displayUrl) {
+  // Set the hidden form fields
   document.getElementById('edit_image_id').value = id;
-  document.getElementById('edit_current_path').value = imagePath;
+  document.getElementById('edit_current_path').value = dbImagePath;
   
+  // Show current image using the display URL
   document.getElementById('editCurrentImage').innerHTML = 
     '<p style="margin-bottom: 10px; font-weight: 600;">Current Image:</p>' +
-    '<img src="' + imagePath + '" style="max-width: 100%; max-height: 200px; border-radius: 8px;">';
+    '<img src="' + displayUrl + '" style="max-width: 100%; max-height: 200px; border-radius: 8px;">';
   
+  // Clear any previous preview
+  document.getElementById('editPreview').innerHTML = '';
+  document.getElementById('editImageFile').value = '';
+  
+  // Show the modal
   document.getElementById('editModal').style.display = 'flex';
 }
 
 function closeEditModal() {
   document.getElementById('editModal').style.display = 'none';
   document.getElementById('editPreview').innerHTML = '';
+  document.getElementById('editImageFile').value = '';
 }
 
 function viewImage(imageUrl) {
@@ -825,9 +840,9 @@ window.onclick = function(event) {
 </script>
 
 <?php if (isset($_SESSION['success'])): ?>
-  <div class="toast toast-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+  <div class="toast toast-success"><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
 <?php elseif (isset($_SESSION['error'])): ?>
-  <div class="toast toast-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+  <div class="toast toast-error"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
 <?php endif; ?>
 
 </body>

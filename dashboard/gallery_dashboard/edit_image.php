@@ -120,6 +120,7 @@ try {
     @chmod($destination, 0644);
 
     // At this point, file upload successful. Now update database.
+    // Store path in the same format as existing entries
     $new_image_path = 'gallery_dashboard/uploads/' . $newFileName;
 
     // Update database using parameterized query
@@ -145,6 +146,7 @@ try {
     }
 
     // Database updated successfully - now delete old image file
+    // Extract just the filename from the database path
     $old_filename = basename($current_image_path);
     $old_file = __DIR__ . '/uploads/' . $old_filename;
 
