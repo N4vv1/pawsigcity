@@ -776,7 +776,7 @@ if (!$pets) {
             </div>
           </label>
 
-          <span class="form-section-title"><i class="fas fa-ruler-combined"></i> Size & Weight (Required for Pricing)</span>
+          <span class="form-section-title"><i class="fas fa-ruler-combined"></i> Size & Weight</span>
 
           <div class="size-guide">
             <h4><i class="fas fa-info-circle"></i> Size Guidelines:</h4>
