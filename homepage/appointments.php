@@ -991,15 +991,15 @@ error_log("Number of appointments found: " . $row_count);
   .cancel-button-primary:active {
     transform: translateY(0);
   }
-  /* Success/Error Message Styling with Auto-dismiss */
+ /* Success/Error Message Styling with Auto-dismiss */
 .alert-message {
   position: fixed;
-  top: 100px; /* Adjust this value to move it further down */
-  left: 50%;
-  transform: translateX(-50%);
+  top: 90px; /* Below the navbar */
+  right: 30px; /* Right side of screen */
   z-index: 9999;
-  max-width: 600px;
-  width: 90%;
+  max-width: 400px;
+  width: auto;
+  min-width: 300px;
   padding: 16px 24px;
   border-radius: 12px;
   font-weight: 600;
@@ -1007,7 +1007,7 @@ error_log("Number of appointments found: " . $row_count);
   align-items: center;
   gap: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  animation: slideDown 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
+  animation: slideInRight 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
 }
 
 .alert-message.success {
@@ -1022,10 +1022,32 @@ error_log("Number of appointments found: " . $row_count);
   border-left: 5px solid #dc3545;
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @keyframes fadeOut {
   to {
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
+    transform: translateX(50px);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .alert-message {
+    top: 80px;
+    right: 15px;
+    left: 15px;
+    max-width: none;
+    min-width: auto;
   }
 }
   </style>
