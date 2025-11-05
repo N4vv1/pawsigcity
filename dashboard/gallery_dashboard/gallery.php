@@ -645,7 +645,7 @@ $result = pg_query($conn, $query);
           <?php while ($image = pg_fetch_assoc($result)): 
             // Get the filename from the database path
             $filename = basename($image['image_path']);
-            $image_url = 'uploads/' . $filename;
+            $image_url = './uploads/' . $filename;
           ?>
           <tr>
             <td><?= htmlspecialchars($image['id']) ?></td>
