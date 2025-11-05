@@ -993,9 +993,14 @@ if ($noShowCount > 0) {
                   <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Delete?')">Delete</a>
                 <?php endif; ?>
 
-                <?php if (!empty($row['cancel_requested']) && $status !== 'cancelled'): ?>
-                  <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;">Cancel</a>
-                <?php endif; ?>
+                  <?php if (!empty($row['cancel_requested']) && $status !== 'cancelled'): ?>
+                    <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;">Cancel</a>
+                  <?php endif; ?>
+                  
+                  <?php if (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved']) && $status !== 'cancelled'): ?>
+                    <a href="../../appointment/reschedule-approve.php?id=<?= $appointmentId ?>&action=approve" class="button secondary" style="padding: 5px 10px; font-size: 0.75rem;">Approve Reschedule</a>
+                    <a href="../../appointment/reschedule-approve.php?id=<?= $appointmentId ?>&action=reject" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;">Reject Reschedule</a>
+                  <?php endif; ?>
 
                 <a href="javascript:void(0)" class="button view-history" style="padding: 5px 10px; font-size: 0.75rem;" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
               </div>
