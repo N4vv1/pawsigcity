@@ -902,7 +902,7 @@ html {
 <!-- Main Content -->
 <main class="content">
   <h2>User Management</h2>
-  <button class="add-btn" onclick="openModal()">➕ Add New User</button>
+  <button class="add-btn" onclick="openModal()">Add New User</button>
   
   <!-- Find your table in the HTML and wrap it like this: -->
 <div class="table-wrapper">
