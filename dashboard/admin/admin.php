@@ -616,7 +616,7 @@ if ($noShowCount > 0) {
 <!-- USERS MODAL -->
 <div id="usersModal" class="modal">
   <div class="modal-content">
-    <h2>👥 User List</h2>
+    <h2>User List</h2>
     <table>
       <thead>
         <tr>
@@ -650,7 +650,7 @@ if ($noShowCount > 0) {
 <!-- PETS MODAL -->
 <div id="petsModal" class="modal">
   <div class="modal-content">
-    <h2>🐶 Pet List</h2>
+    <h2>Pet List</h2>
     <table>
       <thead>
         <tr>
@@ -685,7 +685,7 @@ if ($noShowCount > 0) {
 <!-- CANCELLED APPOINTMENTS MODAL -->
 <div id="cancelledModal" class="modal">
   <div class="modal-content">
-    <h2>❌ Cancelled Appointments</h2>
+    <h2>Cancelled Appointments</h2>
     <table>
       <thead>
         <tr>
@@ -733,7 +733,7 @@ if ($noShowCount > 0) {
 <!-- NO-SHOW APPOINTMENTS MODAL -->
 <div id="noshowModal" class="modal">
   <div class="modal-content">
-    <h2>🚫 No-Show Appointments</h2>
+    <h2>No-Show Appointments</h2>
     <table>
       <thead>
         <tr>
@@ -781,7 +781,7 @@ if ($noShowCount > 0) {
 <!-- CONFIRMED APPOINTMENTS MODAL -->
 <div id="confirmedModal" class="modal">
   <div class="modal-content">
-    <h2>✅ Confirmed Appointments</h2>
+    <h2>Confirmed Appointments</h2>
     <table>
       <thead>
         <tr>
@@ -877,7 +877,7 @@ if ($noShowCount > 0) {
 <!-- ALL APPOINTMENTS MODAL -->
 <div id="appointmentsModal" class="modal">
   <div class="modal-content" style="max-width: 1400px; max-height: 85vh; overflow-y: auto; margin-left: auto; margin-right: 85px;">
-    <h2>📋 All Appointments</h2>
+    <h2>All Appointments</h2>
     <div style="overflow-x: auto;">
     <table style="font-size: 0.85rem; min-width: 100%;">
       <thead>
@@ -890,6 +890,7 @@ if ($noShowCount > 0) {
           <th style="min-width: 80px;">Approval</th>
           <th style="min-width: 100px;">Groomer</th>
           <th style="min-width: 120px;">Notes</th>
+          <th style="min-width: 150px;">Cancel Reason</th>
           <th style="min-width: 100px;">Feedback</th>
           <th style="min-width: 180px;">Actions</th>
         </tr>
@@ -925,26 +926,27 @@ if ($noShowCount > 0) {
             <td><?= htmlspecialchars($row['package_name']) ?></td>
             <td style="font-size: 0.8rem;">
               <?= date('M d, Y g:i A', strtotime($row['appointment_date'])) ?>
-              <?php if (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
-              <?php endif; ?>
             </td>
+            
+            <!-- STATUS COLUMN - FIXED -->
             <td>
-              <?php if ($row['status'] === 'no_show'): ?>
-                <span style="color: red; font-weight: bold; font-size: 0.8rem;">No Show</span>
-              <?php elseif ($row['status'] === 'completed'): ?>
-                <span style="color: green; font-size: 0.8rem;">✓ Completed</span>
-              <?php elseif ($row['status'] === 'confirmed'): ?>
-                <span style="color: green; font-size: 0.8rem;">✓ Confirmed</span>
-              <?php elseif ($row['status'] === 'cancelled'): ?>
-                <span style="color: red; font-size: 0.8rem;">✗ Cancelled</span>
+              <?php if (!empty($row['cancel_reason']) && $row['status'] !== 'cancelled'): ?>
+                <span style="color: red; font-weight: bold; font-size: 0.8rem;">Cancel Request</span>
               <?php elseif (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
-                <span style="color: orange; font-weight: bold; font-size: 0.8rem;">⏳ Reschedule</span>
-              <?php elseif (!empty($row['cancel_requested'])): ?>
-                <span style="color: red; font-size: 0.8rem;">Cancel Req.</span>
+                <span style="color: orange; font-weight: bold; font-size: 0.8rem;">Reschedule</span>
+              <?php elseif ($row['status'] === 'no_show'): ?>
+                <span style="color: red; font-weight: bold; font-size: 0.8rem;">No Show</span>
+              <?php elseif ($row['status'] === 'cancelled'): ?>
+                <span style="color: red; font-size: 0.8rem;">Cancelled</span>
+              <?php elseif ($row['status'] === 'completed'): ?>
+                <span style="color: green; font-size: 0.8rem;">Completed</span>
+              <?php elseif ($row['status'] === 'confirmed'): ?>
+                <span style="color: green; font-size: 0.8rem;">Confirmed</span>
               <?php else: ?>
-                <span style="color: orange; font-size: 0.8rem;">⏳ Pending</span>
+                <span style="color: orange; font-size: 0.8rem;">Pending</span>
               <?php endif; ?>
             </td>
+            
             <td style="font-size: 0.8rem;">
               <?= $row['status'] === 'cancelled' ? '<span style="color:red;">✗</span>' :
                   (!empty($row['is_approved']) ? '<span style="color:green;">✓</span>' : '<span style="color:orange;">⏳</span>') ?>
@@ -953,6 +955,16 @@ if ($noShowCount > 0) {
             <td style="font-size: 0.75rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis;">
               <?= !empty($row['notes']) ? htmlspecialchars(substr($row['notes'], 0, 50)) . (strlen($row['notes']) > 50 ? '...' : '') : '-' ?>
             </td>
+            
+            <!-- CANCEL REASON COLUMN - ADDED DATA -->
+            <td style="font-size: 0.75rem; color: #d32f2f; max-width: 150px;">
+              <?php if (!empty($row['cancel_reason'])): ?>
+                <strong></strong> <?= htmlspecialchars(substr($row['cancel_reason'], 0, 60)) ?><?= strlen($row['cancel_reason']) > 60 ? '...' : '' ?>
+              <?php else: ?>
+                <span style="color: #999;">-</span>
+              <?php endif; ?>
+            </td>
+            
             <td style="font-size: 0.75rem;">
             <?php if (isset($row['rating'])): ?>
               <div class="feedback-box">
@@ -969,6 +981,7 @@ if ($noShowCount > 0) {
               <em style="color:#999; font-size: 0.7rem;">No feedback</em>
             <?php endif; ?>
           </td>
+          
             <td>
               <div class="action-buttons" style="gap: 4px;">
                 <?php
@@ -989,9 +1002,9 @@ if ($noShowCount > 0) {
                   <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Delete?')">Delete</a>
                 <?php endif; ?>
 
-                  <?php if (!empty($row['cancel_requested']) && $status !== 'cancelled'): ?>
-                    <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;">Cancel</a>
-                  <?php endif; ?>
+                <?php if (!empty($row['cancel_reason']) && $status !== 'cancelled'): ?>
+                  <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Confirm cancellation?')">Process Cancel</a>
+                <?php endif; ?>
 
                 <a href="javascript:void(0)" class="button view-history" style="padding: 5px 10px; font-size: 0.75rem;" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>
               </div>
@@ -1011,7 +1024,7 @@ if ($noShowCount > 0) {
 <!-- HISTORY MODAL -->
 <div id="historyModal" class="modal" style="justify-content: center; padding-left: 300px;">
   <div class="modal-content" id="historyContent">
-    <h3>📖 Appointment History</h3>
+    <h3>Appointment History</h3>
     <div id="historyTable">Loading...</div>
     <button onclick="closeModal('historyModal')">Close</button>
   </div>
