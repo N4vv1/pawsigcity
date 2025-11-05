@@ -998,8 +998,16 @@ if ($noShowCount > 0) {
                   <?php endif; ?>
                   
                   <?php if (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved']) && $status !== 'cancelled'): ?>
-                    <a href="../../appointment/reschedule-approve.php?id=<?= $appointmentId ?>&action=approve" class="button secondary" style="padding: 5px 10px; font-size: 0.75rem;">Approve Reschedule</a>
-                    <a href="../../appointment/reschedule-approve.php?id=<?= $appointmentId ?>&action=reject" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;">Reject Reschedule</a>
+                    <a href="../../appointment/reschedule-auto-approve.php?id=<?= $appointmentId ?>&action=approve" 
+                      class="button secondary" 
+                      style="padding: 5px 10px; font-size: 0.75rem;">
+                      Auto-Approve
+                    </a>
+                    <a href="../../appointment/reschedule-auto-approve.php?id=<?= $appointmentId ?>&action=reject" 
+                      class="button danger" 
+                      style="padding: 5px 10px; font-size: 0.75rem;">
+                      Reject
+                    </a>
                   <?php endif; ?>
 
                 <a href="javascript:void(0)" class="button view-history" style="padding: 5px 10px; font-size: 0.75rem;" onclick="viewHistory(<?= $row['user_id'] ?>)">History</a>

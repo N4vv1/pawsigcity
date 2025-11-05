@@ -996,10 +996,20 @@ error_log("Number of appointments found: " . $row_count);
               <td><?= !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : '<em>No notes yet.</em>' ?></td>
               <td>
                 <?php if ($row['status'] !== 'completed' && $row['status'] !== 'cancelled'): ?>
-                  <button class="button" type="button" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">Reschedule</button>
+                  
+                  <!-- Reschedule Button (only if not rescheduled before) -->
+                  <?php if (($row['reschedule_count'] ?? 0) < 1): ?>
+                    <button class="button" type="button" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">Reschedule</button>
+                  <?php else: ?>
+                    <span style="color: #999; font-size: 0.85rem;">(Already rescheduled)</span>
+                  <?php endif; ?>
+                  
+                  <!-- Cancel Button -->
                   <button class="button" type="button" onclick="openCancelModal(<?= $row['appointment_id'] ?>)">Cancel</button>
+                  
                 <?php endif; ?>
 
+                <!-- Feedback Section -->
                 <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
                   <button class="button" type="button" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">⭐ Feedback</button>
                 <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
