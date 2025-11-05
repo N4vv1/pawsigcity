@@ -12,14 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
     $pet_id = isset($_POST['pet_id']) ? intval($_POST['pet_id']) : null;
     $package_id = isset($_POST['package_id']) ? intval($_POST['package_id']) : null;
+    $groomer_id = isset($_POST['groomer_id']) ? intval($_POST['groomer_id']) : null;
     $recommended_package = trim($_POST['recommended_package'] ?? '');
     $appointment_date = trim($_POST['appointment_date'] ?? '');
-    $groomer_name = trim($_POST['groomer_name'] ?? '');
     $notes = trim($_POST['notes'] ?? '');
 
     // Validate required fields
-    if (!$pet_id || !$package_id || !$appointment_date) {
-        $_SESSION['error'] = "⚠️ Please complete all required fields.";
+    if (!$pet_id || !$package_id || !$appointment_date || !$groomer_id) {
+        $_SESSION['error'] = "⚠️ Please complete all required fields including groomer selection.";
         header("Location: book-appointment.php?pet_id=" . urlencode($pet_id));
         exit;
     }
@@ -37,28 +37,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // ✅ Fetch groomer name from groomer table
+    $groomer_query = pg_query_params(
+        $conn,
+        "SELECT groomer_name FROM groomer WHERE groomer_id = $1",
+        [$groomer_id]
+    );
+
+    if (!$groomer_query || pg_num_rows($groomer_query) === 0) {
+        $_SESSION['error'] = "⚠️ Invalid groomer selection.";
+        header("Location: book-appointment.php?pet_id=" . urlencode($pet_id));
+        exit;
+    }
+
+    $groomer_row = pg_fetch_assoc($groomer_query);
+    $groomer_name = $groomer_row['groomer_name'];
+
     // ✅ Insert appointment into database
     $insert_query = "
         INSERT INTO appointments 
-        (user_id, pet_id, package_id, appointment_date, groomer_name, notes, recommended_package) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        (user_id, pet_id, package_id, appointment_date, groomer_id, groomer_name, notes, recommended_package) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING appointment_id
     ";
 
     $result = pg_query_params($conn, $insert_query, [
-        $user_id, $pet_id, $package_id, $appointment_date, $groomer_name, $notes, $recommended_package
+        $user_id, 
+        $pet_id, 
+        $package_id, 
+        $appointment_date, 
+        $groomer_id, 
+        $groomer_name, 
+        $notes, 
+        $recommended_package
     ]);
 
     if ($result) {
         $row = pg_fetch_assoc($result);
         $appointment_id = $row['appointment_id'];
 
-        // Run Python script for recommendation (optional, for logging or analysis)
+        // Run Python script for recommendation (optional)
         $pythonPath = "C:\\Users\\Ivan\\AppData\\Local\\Programs\\Python\\Python313\\python.exe";
         $scriptPath = "E:\\xampp\\htdocs\\Purrfect-paws\\recommendation\\recommend.py";
         $command = "\"$pythonPath\" \"$scriptPath\" 2>&1";
         $output = shell_exec($command);
-        //file_put_contents(__DIR__ . './recommendation_log.txt', $output); // optional logging
 
         // Redirect to appointment confirmation page
         $_SESSION['success'] = "✅ Appointment booked successfully!";
