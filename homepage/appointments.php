@@ -991,7 +991,43 @@ error_log("Number of appointments found: " . $row_count);
   .cancel-button-primary:active {
     transform: translateY(0);
   }
+  /* Success/Error Message Styling with Auto-dismiss */
+.alert-message {
+  position: fixed;
+  top: 100px; /* Adjust this value to move it further down */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: 600px;
+  width: 90%;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
+}
 
+.alert-message.success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border-left: 5px solid #28a745;
+}
+
+.alert-message.error {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #721c24;
+  border-left: 5px solid #dc3545;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
   </style>
 </head>
 <body>
@@ -1037,17 +1073,20 @@ error_log("Number of appointments found: " . $row_count);
 <div class="container">
 
     <!-- Add this right after opening <div class="container"> -->
-  <?php if (isset($_SESSION['success'])): ?>
-    <div style="background:#d4edda; color:#155724; padding:15px 20px; border-radius:8px; margin-bottom:20px; border-left:4px solid #28a745; font-weight:600; animation:slideDown 0.3s ease;">
-      ✓ <?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
-    </div>
-  <?php endif; ?>
+  <!-- Add this right after opening <div class="container"> -->
+<?php if (isset($_SESSION['success'])): ?>
+  <div class="alert-message success" id="successMessage">
+    <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+    <span><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></span>
+  </div>
+<?php endif; ?>
 
-  <?php if (isset($_SESSION['error'])): ?>
-    <div style="background:#f8d7da; color:#721c24; padding:15px 20px; border-radius:8px; margin-bottom:20px; border-left:4px solid #dc3545; font-weight:600; animation:slideDown 0.3s ease;">
-      ✗ <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
-    </div>
-  <?php endif; ?>
+<?php if (isset($_SESSION['error'])): ?>
+  <div class="alert-message error" id="errorMessage">
+    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+    <span><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></span>
+  </div>
+<?php endif; ?>
 
   <?php if ($row_count > 0): ?>
     <!-- Stats Overview -->
@@ -1431,7 +1470,23 @@ window.addEventListener('resize', function() {
     document.body.style.overflow = '';
   }
 });
-
+// Auto-dismiss notifications after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+  const successMessage = document.getElementById('successMessage');
+  const errorMessage = document.getElementById('errorMessage');
+  
+  if (successMessage) {
+    setTimeout(() => {
+      successMessage.remove();
+    }, 5000);
+  }
+  
+  if (errorMessage) {
+    setTimeout(() => {
+      errorMessage.remove();
+    }, 5000);
+  }
+});
 </script>
 
 <?php if (isset($_SESSION['show_feedback_modal']) && $_SESSION['show_feedback_modal']): ?>
