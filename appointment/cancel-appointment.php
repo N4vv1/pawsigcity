@@ -13,7 +13,7 @@ $reason = trim($_POST['cancel_reason'] ?? '');
 
 if (!$appointment_id || empty($reason)) {
     $_SESSION['error'] = "Missing reason or appointment ID.";
-    header("Location: http://localhost/purrfect-paws/homepage/appointments.php");
+    header("Location: ../homepage/appointments.php");
     exit;
 }
 
@@ -21,8 +21,7 @@ $query = "
     UPDATE appointments 
     SET cancel_reason = $1, 
         cancel_requested = TRUE, 
-        cancel_approved = NULL,
-        status = 'cancellation_requested'
+        cancel_approved = NULL
     WHERE appointment_id = $2 AND user_id = $3
 ";
 
@@ -31,9 +30,9 @@ $result = pg_query_params($conn, $query, [$reason, $appointment_id, $user_id]);
 if ($result) {
     $_SESSION['success'] = "Cancellation request submitted.";
 } else {
-    $_SESSION['error'] = "Failed to submit cancellation request.";
+    $_SESSION['error'] = "Failed to submit cancellation request: " . pg_last_error($conn);
 }
 
-header("Location: http://localhost/purrfect-paws/homepage/appointments.php");
+header("Location: ../homepage/appointments.php");
 exit;
 ?>
