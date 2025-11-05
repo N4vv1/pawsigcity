@@ -148,7 +148,7 @@ try {
     // Database updated successfully - now delete old image file
     // Extract just the filename from the database path
     $old_filename = basename($current_image_path);
-    $old_file = __DIR__ . '../gallery_dashboard/uploads/' . $old_filename;
+    $old_file = __DIR__ . './uploads/' . $old_filename;
 
     if (file_exists($old_file) && is_file($old_file)) {
         @unlink($old_file);
