@@ -13,7 +13,7 @@ require_once '../../db.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once __DIR__ . '../../homepage/login/vendor/autoload.php';
+require_once __DIR__ . '/../../homepage/login/vendor/autoload.php';
 header('Content-Type: application/json');
 
 // Check database connection
@@ -29,6 +29,10 @@ if (!$conn) {
 // Function to send email via SendGrid API
 function sendOtpEmailAPI($email, $otp, $subject, $message) {
     $sendgrid_api_key = getenv('SENDGRID_API_KEY');
+    
+    // More detailed logging
+    error_log("Attempting to send email via SendGrid to: $email");
+    error_log("SendGrid API Key exists: " . ($sendgrid_api_key ? 'YES' : 'NO'));
     
     if (!$sendgrid_api_key) {
         error_log("SendGrid API key not set in environment variables");
@@ -173,12 +177,16 @@ function sendOtpEmailAPI($email, $otp, $subject, $message) {
     $error = curl_error($ch);
     curl_close($ch);
 
+    error_log("SendGrid HTTP Code: $http_code");
+    error_log("SendGrid Response: $response");
+
     if ($error) {
         error_log("SendGrid cURL Error: $error");
         return ['success' => false, 'error' => $error];
     }
 
     if ($http_code >= 200 && $http_code < 300) {
+        error_log("SendGrid email sent successfully!");
         return ['success' => true];
     } else {
         error_log("SendGrid HTTP Error: $http_code - Response: $response");
@@ -186,157 +194,15 @@ function sendOtpEmailAPI($email, $otp, $subject, $message) {
     }
 }
 
-// Function to send email via Mailgun API (Fallback)
-function sendOtpEmailMailgun($email, $otp, $subject, $message) {
-    $mailgun_domain = getenv('MAILGUN_DOMAIN');
-    $mailgun_api_key = getenv('MAILGUN_API_KEY');
-    
-    if (!$mailgun_domain || !$mailgun_api_key) {
-        return ['success' => false, 'error' => 'Mailgun not configured'];
-    }
-    
-    $emailBody = "
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body { 
-                font-family: Arial, sans-serif; 
-                line-height: 1.6; 
-                color: #333; 
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-            }
-            .container { 
-                max-width: 600px; 
-                margin: 0 auto; 
-                padding: 0;
-                background-color: #ffffff;
-            }
-            .header { 
-                background: linear-gradient(135deg, #A8E6CF 0%, #7FD4B3 100%); 
-                color: #2d5f4a; 
-                padding: 50px 30px; 
-                text-align: center; 
-                border-radius: 0;
-            }
-            .header h1 {
-                margin: 0 0 10px 0;
-                font-size: 42px;
-                font-weight: bold;
-                color: #2d5f4a;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            }
-            .header p {
-                margin: 0;
-                font-size: 18px;
-                color: #2d5f4a;
-                font-weight: 500;
-            }
-            .content { 
-                background: #ffffff; 
-                padding: 40px 30px; 
-            }
-            .content p {
-                font-size: 16px;
-                color: #333;
-                margin: 0 0 20px 0;
-            }
-            .otp-code { 
-                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                border: 3px solid #A8E6CF; 
-                padding: 25px; 
-                text-align: center; 
-                font-size: 42px; 
-                font-weight: bold; 
-                color: #2d5f4a; 
-                letter-spacing: 8px; 
-                margin: 30px 0; 
-                border-radius: 12px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            }
-            .footer { 
-                background: #2d5f4a; 
-                padding: 25px; 
-                text-align: center; 
-                font-size: 13px; 
-                color: #A8E6CF;
-            }
-            .footer p {
-                margin: 5px 0;
-            }
-            .warning { 
-                background: #fff3cd; 
-                border-left: 5px solid #ffc107; 
-                padding: 18px; 
-                margin: 25px 0; 
-                color: #856404;
-                border-radius: 5px;
-            }
-            .warning strong {
-                font-size: 16px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class='container'>
-            <div class='header'>
-                <h1>PAWsig City</h1>
-                <p>$subject</p>
-            </div>
-            <div class='content'>
-                <p>$message</p>
-                <div class='otp-code'>$otp</div>
-                <div class='warning'>
-                    <strong>⚠️ Important:</strong> This OTP will expire in 10 minutes. Do not share this code with anyone.
-                </div>
-                <p>If you didn't request this code, please ignore this email or contact our support team.</p>
-            </div>
-            <div class='footer'>
-                <p>&copy; " . date('Y') . " PAWsig City. All rights reserved.</p>
-                <p>We care for your pets when they need it most.</p>
-            </div>
-        </div>
-    </body>
-    </html>
-    ";
-
-    $ch = curl_init("https://api.mailgun.net/v3/$mailgun_domain/messages");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_USERPWD, "api:$mailgun_api_key");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, [
-        'from' => 'PAWsig City <noreply@' . $mailgun_domain . '>',
-        'to' => $email,
-        'subject' => $subject,
-        'html' => $emailBody
-    ]);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error = curl_error($ch);
-    curl_close($ch);
-
-    if ($error) {
-        error_log("Mailgun cURL Error: $error");
-        return ['success' => false, 'error' => $error];
-    }
-
-    if ($http_code >= 200 && $http_code < 300) {
-        return ['success' => true];
-    } else {
-        error_log("Mailgun HTTP Error: $http_code - Response: $response");
-        return ['success' => false, 'error' => "HTTP $http_code - $response"];
-    }
-}
-
-// Fallback: SMTP (less reliable on Render)
+// Fallback: SMTP
 function sendOtpEmailSMTP($email, $otp, $subject, $message) {
+    error_log("Attempting to send email via SMTP to: $email");
+    
     if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        error_log("PHPMailer class not found");
         return ['success' => false, 'error' => 'PHPMailer not installed'];
     }
+    
     $mail = new PHPMailer(true);
 
     try {
@@ -469,6 +335,7 @@ function sendOtpEmailSMTP($email, $otp, $subject, $message) {
         ";
 
         $mail->send();
+        error_log("SMTP email sent successfully!");
         return ['success' => true];
     } catch (Exception $e) {
         error_log("SMTP Error: {$mail->ErrorInfo}");
@@ -478,32 +345,28 @@ function sendOtpEmailSMTP($email, $otp, $subject, $message) {
 
 // Main send function with fallback strategy
 function sendOtpEmail($email, $otp, $subject, $message) {
+    error_log("=== Starting sendOtpEmail for: $email ===");
+    
     // 1. Try SendGrid first (most reliable on cloud hosting)
     if (getenv('SENDGRID_API_KEY')) {
+        error_log("Trying SendGrid...");
         $result = sendOtpEmailAPI($email, $otp, $subject, $message);
         if ($result['success']) {
-            error_log("Email sent successfully via SendGrid to: $email");
+            error_log("Email sent successfully via SendGrid");
             return $result;
         }
-        error_log("SendGrid failed, trying Mailgun: " . ($result['error'] ?? 'Unknown error'));
+        error_log("SendGrid failed: " . ($result['error'] ?? 'Unknown error'));
+    } else {
+        error_log("SendGrid API key not found in environment");
     }
     
-    // 2. Try Mailgun as fallback
-    if (getenv('MAILGUN_API_KEY') && getenv('MAILGUN_DOMAIN')) {
-        $result = sendOtpEmailMailgun($email, $otp, $subject, $message);
-        if ($result['success']) {
-            error_log("Email sent successfully via Mailgun to: $email");
-            return $result;
-        }
-        error_log("Mailgun failed, trying SMTP: " . ($result['error'] ?? 'Unknown error'));
-    }
-    
-    // 3. Try SMTP as last resort (may not work on Render)
+    // 2. Try SMTP as fallback
+    error_log("Trying SMTP as fallback...");
     $result = sendOtpEmailSMTP($email, $otp, $subject, $message);
     if (!$result['success']) {
-        error_log("All email methods failed for: $email. Last error: " . ($result['error'] ?? 'Unknown error'));
+        error_log("All email methods failed. Last error: " . ($result['error'] ?? 'Unknown error'));
     } else {
-        error_log("Email sent successfully via SMTP to: $email");
+        error_log("Email sent successfully via SMTP");
     }
     
     return $result;
@@ -517,6 +380,7 @@ function generateOtp() {
 // Store OTP in database
 function storeOtp($conn, $email, $otp, $type) {
     try {
+        error_log("Storing OTP for $email, type: $type");
         $expires = date("Y-m-d H:i:s", strtotime('+10 minutes'));
         
         // Delete old OTPs for this email and type
@@ -527,13 +391,15 @@ function storeOtp($conn, $email, $otp, $type) {
         $result = pg_query_params($conn, $query, [$email, $otp, $type, $expires]);
         
         if ($result === false) {
-            error_log("Database error: " . pg_last_error($conn));
+            $error = pg_last_error($conn);
+            error_log("Database error storing OTP: $error");
             return false;
         }
         
+        error_log("OTP stored successfully in database");
         return true;
     } catch (Exception $e) {
-        error_log("Store OTP error: " . $e->getMessage());
+        error_log("Store OTP exception: " . $e->getMessage());
         return false;
     }
 }
@@ -541,18 +407,21 @@ function storeOtp($conn, $email, $otp, $type) {
 // Verify OTP
 function verifyOtp($conn, $email, $otp, $type) {
     try {
+        error_log("Verifying OTP for $email, type: $type, OTP: $otp");
         $query = "SELECT * FROM otp_verifications WHERE email = $1 AND otp = $2 AND type = $3 AND expires_at > NOW() AND is_used = FALSE";
         $result = pg_query_params($conn, $query, [$email, $otp, $type]);
         
         if ($result && pg_num_rows($result) > 0) {
             // Mark OTP as used
             pg_query_params($conn, "UPDATE otp_verifications SET is_used = TRUE WHERE email = $1 AND otp = $2 AND type = $3", [$email, $otp, $type]);
+            error_log("OTP verified successfully");
             return true;
         }
         
+        error_log("OTP verification failed - not found or expired");
         return false;
     } catch (Exception $e) {
-        error_log("Verify OTP error: " . $e->getMessage());
+        error_log("Verify OTP exception: " . $e->getMessage());
         return false;
     }
 }
@@ -560,11 +429,13 @@ function verifyOtp($conn, $email, $otp, $type) {
 // Main handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
+    error_log("=== OTP Handler Request === Action: $action");
     
     try {
         switch ($action) {
             case 'send_forgot_otp':
                 $email = trim($_POST['email'] ?? '');
+                error_log("Forgot password OTP request for: $email");
                 
                 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     echo json_encode(['success' => false, 'message' => 'Invalid email address']);
@@ -574,12 +445,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Check if email exists
                 $check = pg_query_params($conn, "SELECT user_id FROM users WHERE email = $1", [$email]);
                 if (!$check || pg_num_rows($check) === 0) {
+                    error_log("Email not found in database: $email");
                     echo json_encode(['success' => false, 'message' => 'Email not found in our system']);
                     exit;
                 }
                 
                 // Generate and send OTP
                 $otp = generateOtp();
+                error_log("Generated OTP: $otp for $email");
                 
                 if (storeOtp($conn, $email, $otp, 'forgot_password')) {
                     $subject = "Password Reset OTP - PAWsig City";
@@ -654,6 +527,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
             case 'send_register_otp':
                 $email = trim($_POST['email'] ?? '');
+                error_log("Registration OTP request for: $email");
                 
                 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     echo json_encode(['success' => false, 'message' => 'Invalid email address']);
@@ -669,6 +543,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Generate and send OTP
                 $otp = generateOtp();
+                error_log("Generated OTP: $otp for $email");
                 
                 if (storeOtp($conn, $email, $otp, 'registration')) {
                     $subject = "Email Verification OTP - PAWsig City";
@@ -714,6 +589,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } catch (Exception $e) {
         error_log("Exception in otp-handler: " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
         echo json_encode([
             'success' => false, 
             'message' => 'An error occurred. Please try again.',
