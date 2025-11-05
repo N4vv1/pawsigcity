@@ -837,6 +837,158 @@ error_log("Number of appointments found: " . $row_count);
     transform: translateY(0);
   }
 }
+
+.cancel-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .cancel-modal.show {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .cancel-modal-content {
+    background: #fff;
+    padding: 0;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 480px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+  }
+
+  .cancel-modal-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .cancel-modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+  }
+
+  .cancel-modal-header p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: #718096;
+    line-height: 1.5;
+  }
+
+  .cancel-modal-body {
+    padding: 24px 28px;
+  }
+
+  .cancel-form-group {
+    margin-bottom: 20px;
+  }
+
+  .cancel-form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 8px;
+  }
+
+  .cancel-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #d1d5db;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 120px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .cancel-textarea:focus {
+    outline: none;
+    border-color: #81e6d9;
+    box-shadow: 0 0 0 3px rgba(129, 230, 217, 0.1);
+  }
+
+  .cancel-textarea::placeholder {
+    color: #9ca3af;
+  }
+
+  .cancel-modal-footer {
+    padding: 16px 28px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .cancel-button-secondary {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    background: #cbd5e0;
+    color: #2d3748;
+  }
+
+  .cancel-button-secondary:hover {
+    background: #a0aec0;
+  }
+
+  .cancel-button-primary {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    background: #81e6d9;
+    color: #2d3748;
+  }
+
+  .cancel-button-primary:hover {
+    background: #4fd1c5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(129, 230, 217, 0.4);
+  }
+
+  .cancel-button-primary:active {
+    transform: translateY(0);
+  }
+
   </style>
 </head>
 <body>
@@ -1024,20 +1176,38 @@ error_log("Number of appointments found: " . $row_count);
   </div>
 </div>
 
-<!-- Cancel Modal -->
-<div id="cancelModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000;">
-  <div style="background:#fff; padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative;">
-    <h3>Cancel Appointment</h3>
+<!-- Cancel Modal HTML - Replace your existing cancel modal -->
+<div id="cancelModal" class="cancel-modal">
+  <div class="cancel-modal-content">
+    <div class="cancel-modal-header">
+      <h3>Cancel Appointment</h3>
+      <p>Please let us know why you need to cancel this appointment.</p>
+    </div>
+
     <form action="../appointment/cancel-appointment.php" method="POST">
-      <input type="hidden" name="appointment_id" id="cancel_appointment_id">
-      <textarea name="cancel_reason" required placeholder="Reason for cancellation..." style="width:100%; padding:10px; border-radius:8px; margin:15px 0; border:1px solid #ddd;"></textarea>
-      <div style="text-align:right;">
-        <button type="button" onclick="closeCancelModal()" style="margin-right:10px; background:#ccc;" class="button">Close</button>
-        <button type="submit" class="button">Submit</button>
+      <div class="cancel-modal-body">
+        <input type="hidden" name="appointment_id" id="cancel_appointment_id">
+        
+        <div class="cancel-form-group">
+          <label class="cancel-form-label">Reason for cancellation</label>
+          <textarea 
+            name="cancel_reason" 
+            class="cancel-textarea"
+            required 
+            placeholder="e.g., Schedule conflict, feeling better, need to reschedule..."
+            rows="5"
+          ></textarea>
+        </div>
       </div>
-    </form>
-  </div>
-</div>
+
+      <div class="cancel-modal-footer">
+        <button type="button" onclick="closeCancelModal()" class="cancel-button-secondary">
+          Close
+        </button>
+        <button type="submit" class="cancel-button-primary">
+          Submit
+        </button>
+      </div>
 
 <!-- Reschedule Modal -->
 <div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:2000; backdrop-filter:blur(4px);">

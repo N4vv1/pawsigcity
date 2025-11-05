@@ -62,19 +62,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ";
 
     $result = pg_query_params($conn, $insert_query, [
-        $user_id, $pet_id, $package_id, $appointment_date, $groomer_id, $groomer_name, $notes, $recommended_package
+        $user_id, 
+        $pet_id, 
+        $package_id, 
+        $appointment_date, 
+        $groomer_id, 
+        $groomer_name, 
+        $notes, 
+        $recommended_package
     ]);
 
     if ($result) {
         $row = pg_fetch_assoc($result);
         $appointment_id = $row['appointment_id'];
 
-        // Run Python script for recommendation (optional, for logging or analysis)
+        // Run Python script for recommendation (optional)
         $pythonPath = "C:\\Users\\Ivan\\AppData\\Local\\Programs\\Python\\Python313\\python.exe";
         $scriptPath = "E:\\xampp\\htdocs\\Purrfect-paws\\recommendation\\recommend.py";
         $command = "\"$pythonPath\" \"$scriptPath\" 2>&1";
         $output = shell_exec($command);
-        //file_put_contents(__DIR__ . './recommendation_log.txt', $output); // optional logging
 
         // Redirect to appointment confirmation page
         $_SESSION['success'] = "✅ Appointment booked successfully!";

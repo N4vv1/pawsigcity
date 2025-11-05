@@ -876,7 +876,7 @@ if ($noShowCount > 0) {
 
 <!-- ALL APPOINTMENTS MODAL -->
 <div id="appointmentsModal" class="modal">
-  <div class="modal-content" style="max-width: 1400px; max-height: 85vh; overflow-y: auto; margin-left: auto; margin-right: 20px;">
+  <div class="modal-content" style="max-width: 1400px; max-height: 85vh; overflow-y: auto; margin-left: auto; margin-right: 85px;">
     <h2>📋 All Appointments</h2>
     <div style="overflow-x: auto;">
     <table style="font-size: 0.85rem; min-width: 100%;">
@@ -926,10 +926,6 @@ if ($noShowCount > 0) {
             <td style="font-size: 0.8rem;">
               <?= date('M d, Y g:i A', strtotime($row['appointment_date'])) ?>
               <?php if (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
-                <div style="margin-top:4px; padding:4px; background:#fff3cd; border-left:2px solid #ffc107; border-radius:3px; font-size:0.75rem;">
-                  <strong style="color:#856404;">📅 Reschedule</strong><br>
-                  <span style="color:#856404;"><?= date('M d, Y', strtotime($row['requested_date'] ?? '')) ?></span>
-                </div>
               <?php endif; ?>
             </td>
             <td>
@@ -1013,7 +1009,7 @@ if ($noShowCount > 0) {
 </div>
 
 <!-- HISTORY MODAL -->
-<div id="historyModal" class="modal">
+<div id="historyModal" class="modal" style="justify-content: center; padding-left: 300px;">
   <div class="modal-content" id="historyContent">
     <h3>📖 Appointment History</h3>
     <div id="historyTable">Loading...</div>

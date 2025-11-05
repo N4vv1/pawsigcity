@@ -1,15 +1,9 @@
 <?php
-// fetch-history.php
-require_once '../db.php'; // Adjust path as needed
+require_once '../db.php';
 
-if (!isset($_GET['user_id'])) {
-    echo '<tr><td colspan="5" style="text-align: center; color: red;">User ID not provided</td></tr>';
-    exit;
-}
+$user_id = $_GET['user_id'] ?? 0;
+if (!$user_id) exit('Invalid user ID.');
 
-$user_id = intval($_GET['user_id']);
-
-// Query to fetch appointment history
 $historyQuery = "
     SELECT 
         a.appointment_id,
@@ -31,12 +25,12 @@ $historyQuery = "
 $result = pg_query_params($conn, $historyQuery, array($user_id));
 
 if (!$result) {
-    echo '<tr><td colspan="5" style="text-align: center; color: red;">Error fetching history: ' . pg_last_error($conn) . '</td></tr>';
+    echo '<table><tr><td style="text-align: center; color: red;">Error fetching history</td></tr></table>';
     exit;
 }
 
 if (pg_num_rows($result) === 0) {
-    echo '<tr><td colspan="5" style="text-align: center; color: #666;">No appointment history found for this user.</td></tr>';
+    echo '<table><tr><td style="text-align: center; color: #666;">No appointment history found.</td></tr></table>';
     exit;
 }
 ?>
