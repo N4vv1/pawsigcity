@@ -839,7 +839,6 @@ error_log("Number of appointments found: " . $row_count);
 }
 
 .cancel-modal {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -847,10 +846,13 @@ error_log("Number of appointments found: " . $row_count);
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    animation: fadeIn 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
   }
 
   .cancel-modal.show {
@@ -1294,11 +1296,31 @@ error_log("Number of appointments found: " . $row_count);
 <script>
   function openCancelModal(id) {
     document.getElementById('cancel_appointment_id').value = id;
-    document.getElementById('cancelModal').style.display = 'flex';
+    document.getElementById('cancelModal').classList.add('show');
   }
 
   function closeCancelModal() {
-    document.getElementById('cancelModal').style.display = 'none';
+    document.getElementById('cancelModal').classList.remove('show');
+  }
+
+  // Update your window.onclick to work with the new modal
+  window.onclick = function(event) {
+    const cancelModal = document.getElementById('cancelModal');
+    const rescheduleModal = document.getElementById('rescheduleModal');
+    const feedbackModal = document.getElementById('feedbackModal');
+    
+    // For cancel modal (new design)
+    if (event.target === cancelModal) {
+      closeCancelModal();
+    }
+    
+    // For other modals (old design)
+    if (event.target === rescheduleModal) {
+      rescheduleModal.style.display = 'none';
+    }
+    if (event.target === feedbackModal) {
+      feedbackModal.style.display = 'none';
+    }
   }
 
   function openRescheduleModal(id) {
