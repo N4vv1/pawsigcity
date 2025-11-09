@@ -1,12 +1,8 @@
 <?php
-// Prevent any output before headers
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
-
-// Start output buffering immediately
 ob_start();
 
-// Increase resource limits
 @ini_set('upload_max_filesize', '10M');
 @ini_set('post_max_size', '10M');
 @ini_set('memory_limit', '256M');
@@ -16,16 +12,18 @@ session_start();
 require '../../db.php';
 require_once '../admin/check_admin.php';
 
-// Log errors to file instead of displaying
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/error.log');
+
+// Initialize Supabase Storage
+$supabaseUrl = getenv('SUPABASE_URL');
+$supabaseKey = getenv('SUPABASE_KEY');
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception('Invalid request method');
     }
 
-    // Validate required POST data
     if (!isset($_POST['image_id']) || !isset($_POST['current_image_path'])) {
         throw new Exception('Missing required data');
     }
@@ -37,14 +35,12 @@ try {
         throw new Exception('Invalid image ID');
     }
 
-    // Check if new image was uploaded
     if (!isset($_FILES['image'])) {
         throw new Exception('No file uploaded');
     }
 
     $file = $_FILES['image'];
 
-    // Check for upload errors
     if ($file['error'] !== UPLOAD_ERR_OK) {
         $upload_errors = [
             UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize',
@@ -67,12 +63,10 @@ try {
     $fileTmpName = $file['tmp_name'];
     $fileSize = $file['size'];
 
-    // Validate file exists in temp location
     if (!file_exists($fileTmpName) || !is_uploaded_file($fileTmpName)) {
         throw new Exception('Uploaded file not found');
     }
 
-    // Get and validate file extension
     $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
@@ -80,12 +74,10 @@ try {
         throw new Exception('Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP allowed');
     }
 
-    // Check file size (max 5MB)
     if ($fileSize > 5000000) {
         throw new Exception('File size too large. Maximum 5MB allowed');
     }
 
-    // Verify it's actually an image using getimagesize
     $imageInfo = @getimagesize($fileTmpName);
     if ($imageInfo === false) {
         throw new Exception('File is not a valid image');
@@ -93,88 +85,113 @@ try {
 
     // Generate unique filename
     $newFileName = uniqid('gallery_', true) . '.' . $fileExt;
-
-    // Define upload path
-    $uploadPath = __DIR__ . '/uploads/';
-
-    // Create directory if it doesn't exist
-    if (!file_exists($uploadPath)) {
-        if (!mkdir($uploadPath, 0755, true)) {
-            throw new Exception('Failed to create upload directory');
-        }
+    
+    // Read file content
+    $fileContent = file_get_contents($fileTmpName);
+    if ($fileContent === false) {
+        throw new Exception('Failed to read uploaded file');
     }
-
-    // Check if directory is writable
-    if (!is_writable($uploadPath)) {
-        throw new Exception('Upload directory is not writable');
+    
+    $mimeType = mime_content_type($fileTmpName);
+    
+    // Upload to Supabase Storage
+    $uploadUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$newFileName}";
+    
+    $ch = curl_init($uploadUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fileContent);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: Bearer {$supabaseKey}",
+        "Content-Type: {$mimeType}",
+        "x-upsert: false"
+    ]);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+    
+    if ($httpCode !== 200 && $httpCode !== 201) {
+        throw new Exception('Failed to upload to storage (HTTP ' . $httpCode . '): ' . $response);
     }
-
-    $destination = $uploadPath . $newFileName;
-
-    // Move uploaded file
-    if (!move_uploaded_file($fileTmpName, $destination)) {
-        throw new Exception('Failed to move uploaded file');
-    }
-
-    // Set proper permissions on uploaded file
-    @chmod($destination, 0644);
-
-    // At this point, file upload successful. Now update database.
-    // Store path in the same format as existing entries
-    $new_image_path = 'gallery_dashboard/uploads/' . $newFileName;
-
-    // Update database using parameterized query
+    
+    // Construct public URL for the new image
+    $new_image_path = "{$supabaseUrl}/storage/v1/object/public/gallery-images/{$newFileName}";
+    
+    // Update database
     $update_query = "UPDATE gallery SET image_path = $1, uploaded_at = NOW() WHERE id = $2";
     $result = @pg_query_params($conn, $update_query, [$new_image_path, $image_id]);
-
+    
     if (!$result) {
-        // Database update failed - delete the new uploaded file
-        if (file_exists($destination)) {
-            @unlink($destination);
-        }
+        // Database update failed - delete the newly uploaded file
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$newFileName}";
+        $ch = curl_init($deleteUrl);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$supabaseKey}"
+        ]);
+        curl_exec($ch);
+        curl_close($ch);
+        
         throw new Exception('Failed to update database: ' . pg_last_error($conn));
     }
-
-    // Check if any row was actually updated
+    
     $affected_rows = pg_affected_rows($result);
     if ($affected_rows === 0) {
-        // No row was updated - delete the new file
-        if (file_exists($destination)) {
-            @unlink($destination);
-        }
+        // No row was updated - delete the newly uploaded file
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$newFileName}";
+        $ch = curl_init($deleteUrl);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$supabaseKey}"
+        ]);
+        curl_exec($ch);
+        curl_close($ch);
+        
         throw new Exception('No image found with the given ID');
     }
-
-    // Database updated successfully - now delete old image file
-    // Extract just the filename from the database path
-    $old_filename = basename($current_image_path);
-    $old_file = __DIR__ . './uploads/' . $old_filename;
-
-    if (file_exists($old_file) && is_file($old_file)) {
-        @unlink($old_file);
+    
+    // Database updated successfully - now delete old image from Supabase Storage
+    // Extract filename from the full URL or database path
+    if (strpos($current_image_path, '/storage/v1/object/public/gallery-images/') !== false) {
+        // It's a Supabase URL
+        $old_filename = basename($current_image_path);
+        
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$old_filename}";
+        $ch = curl_init($deleteUrl);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$supabaseKey}"
+        ]);
+        $deleteResponse = curl_exec($ch);
+        $deleteHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        // Log if deletion fails but don't throw error (old file might not exist)
+        if ($deleteHttpCode !== 200 && $deleteHttpCode !== 204) {
+            error_log("Warning: Failed to delete old file from storage: " . $deleteResponse);
+        }
+    } else {
+        // Old path format (local filesystem) - just log it
+        error_log("Skipping deletion of old local file: " . $current_image_path);
     }
-
-    // Success!
+    
     $_SESSION['success'] = "Image replaced successfully!";
 
 } catch (Exception $e) {
-    // Log the error
     error_log("Edit Image Error: " . $e->getMessage());
-    
-    // Set error message for user
     $_SESSION['error'] = $e->getMessage();
 }
 
-// Close database connection
 if (isset($conn)) {
     pg_close($conn);
 }
 
-// Clear all output buffers
 while (ob_get_level()) {
     ob_end_clean();
 }
 
-// Redirect back to gallery
 header("Location: gallery.php", true, 303);
 exit();
