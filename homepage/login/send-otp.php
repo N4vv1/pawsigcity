@@ -1,5 +1,9 @@
 <?php
-session_start();
+/**
+ * Send OTP - Fixed for Your Table Structure
+ * Matches your otp_verifications table with otp_id, type, is_used
+ */
+
 header('Content-Type: application/json');
 require_once '../../db.php';
 
@@ -44,14 +48,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
     
+    // Check rate limiting (max 3 OTP requests per email per 10 minutes)
+    $rate_limit_query = "SELECT COUNT(*) as count FROM otp_verifications 
+                         WHERE email = $1 AND created_at > NOW() - INTERVAL '10 minutes'";
+    $rate_result = pg_query_params($conn, $rate_limit_query, [$email]);
+    
+    if ($rate_result) {
+        $rate_data = pg_fetch_assoc($rate_result);
+        if ($rate_data['count'] >= 3) {
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Too many requests. Please try again in 10 minutes.'
+            ]);
+            exit;
+        }
+    }
+    
+    // Delete old unverified/unused OTPs for this email and purpose
+    $delete_query = "DELETE FROM otp_verifications 
+                     WHERE email = $1 
+                     AND (purpose = $2 OR type = $2)
+                     AND is_verified = FALSE 
+                     AND is_used = FALSE";
+    pg_query_params($conn, $delete_query, [$email, $purpose]);
+    
     // Generate 6-digit OTP
     $otp = sprintf("%06d", mt_rand(1, 999999));
     
-    // Store OTP in session
-    $_SESSION['otp'] = $otp;
-    $_SESSION['otp_email'] = $email;
-    $_SESSION['otp_purpose'] = $purpose;
-    $_SESSION['otp_timestamp'] = time();
+    // Calculate expiration time (10 minutes from now)
+    $expires_at = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+    
+    // Get client IP
+    $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    
+    // Store OTP in database (using both type and purpose for compatibility)
+    $insert_query = "INSERT INTO otp_verifications 
+                     (email, otp, type, purpose, expires_at, ip_address, is_used, is_verified, created_at, attempts) 
+                     VALUES ($1, $2, $3, $4, $5, $6, FALSE, FALSE, CURRENT_TIMESTAMP, 0) 
+                     RETURNING otp_id";
+    
+    $insert_result = pg_query_params($conn, $insert_query, [
+        $email,
+        $otp,
+        $purpose,  // Store in type column
+        $purpose,  // Store in purpose column
+        $expires_at,
+        $ip_address
+    ]);
+    
+    if (!$insert_result) {
+        error_log("Failed to insert OTP: " . pg_last_error($conn));
+        echo json_encode(['success' => false, 'message' => 'Failed to generate OTP']);
+        exit;
+    }
     
     // Send OTP via email
     $mail = new PHPMailer(true);
@@ -101,10 +150,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
     } catch (Exception $e) {
         error_log("Mail Error: " . $mail->ErrorInfo);
+        
+        // Delete the OTP since email failed
+        $delete_failed = "DELETE FROM otp_verifications WHERE email = $1 AND otp = $2";
+        pg_query_params($conn, $delete_failed, [$email, $otp]);
+        
         echo json_encode(['success' => false, 'message' => 'Failed to send OTP. Please try again.']);
     }
     
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
+
+pg_close($conn);
 ?>
