@@ -1,4 +1,4 @@
-// auth-complete.js - Complete Authentication System with OTP
+// auth-otp.js - Fixed with better error handling
 
 // Global variables
 let currentEmail = '';
@@ -64,7 +64,6 @@ function openOTPModal(email, purpose) {
   document.getElementById('otpModal').classList.add('active');
   document.getElementById('otp-alerts').innerHTML = '';
   
-  // Clear and focus first input
   const otpInputs = document.querySelectorAll('.otp-input');
   otpInputs.forEach(input => {
     input.value = '';
@@ -72,7 +71,6 @@ function openOTPModal(email, purpose) {
   });
   otpInputs[0].focus();
   
-  // Start resend timer
   startResendTimer();
 }
 
@@ -89,13 +87,11 @@ function setupOTPInputs() {
     input.addEventListener('input', function(e) {
       const value = e.target.value;
       
-      // Only allow numbers
       if (!/^\d*$/.test(value)) {
         e.target.value = '';
         return;
       }
       
-      // Add filled class
       if (value) {
         e.target.classList.add('filled');
         e.target.classList.remove('error');
@@ -103,19 +99,16 @@ function setupOTPInputs() {
         e.target.classList.remove('filled');
       }
       
-      // Auto-focus next input
       if (value && index < otpInputs.length - 1) {
         otpInputs[index + 1].focus();
       }
     });
     
     input.addEventListener('keydown', function(e) {
-      // Handle backspace
       if (e.key === 'Backspace' && !e.target.value && index > 0) {
         otpInputs[index - 1].focus();
       }
       
-      // Handle paste
       if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         navigator.clipboard.readText().then(text => {
@@ -138,13 +131,18 @@ function setupOTPInputs() {
 // Send OTP
 async function sendOTP(email, purpose) {
   try {
+    console.log('Sending OTP to:', email, 'Purpose:', purpose);
+    
     const response = await fetch('send-otp.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `email=${encodeURIComponent(email)}&purpose=${encodeURIComponent(purpose)}`
     });
     
-    const data = await response.json();
+    const text = await response.text();
+    console.log('Send OTP Response:', text);
+    
+    const data = JSON.parse(text);
     return data;
   } catch (error) {
     console.error('Send OTP Error:', error);
@@ -168,13 +166,18 @@ async function verifyOTP() {
   btn.innerHTML = 'Verifying...<span class="spinner"></span>';
   
   try {
+    console.log('Verifying OTP:', otp);
+    
     const response = await fetch('verify-otp.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `otp=${encodeURIComponent(otp)}`
     });
     
-    const data = await response.json();
+    const text = await response.text();
+    console.log('Verify OTP Response:', text);
+    
+    const data = JSON.parse(text);
     
     if (data.success) {
       showAlert('otp-alerts', 'Verification successful!', 'success');
@@ -182,8 +185,8 @@ async function verifyOTP() {
       setTimeout(() => {
         closeOTPModal();
         
-        // Handle based on purpose
         if (currentPurpose === 'registration') {
+          console.log('Proceeding to complete registration...');
           completeRegistration();
         } else if (currentPurpose === 'reset_password') {
           closeForgotPasswordModal();
@@ -191,14 +194,12 @@ async function verifyOTP() {
         }
       }, 1000);
     } else {
-      // Show error on OTP inputs
       otpInputs.forEach(input => {
         input.classList.add('error');
         input.classList.remove('filled');
       });
       showAlert('otp-alerts', data.message, 'error');
       
-      // Clear inputs after error
       setTimeout(() => {
         otpInputs.forEach(input => {
           input.value = '';
@@ -208,6 +209,7 @@ async function verifyOTP() {
       }, 1500);
     }
   } catch (error) {
+    console.error('Verify OTP Error:', error);
     showAlert('otp-alerts', 'Verification failed. Please try again.', 'error');
   } finally {
     btn.disabled = false;
@@ -271,7 +273,6 @@ function setupRegistrationForm() {
       phone: document.getElementById('phone').value.trim()
     };
     
-    // Validate
     if (!formData.first_name || !formData.last_name || !formData.email || !formData.password) {
       showAlert('register-alerts', 'All required fields must be filled', 'error');
       return;
@@ -282,8 +283,8 @@ function setupRegistrationForm() {
       return;
     }
     
-    // Store form data and send OTP
     pendingFormData = formData;
+    console.log('Pending form data stored:', pendingFormData);
     
     const btn = e.target.querySelector('.submit-btn');
     const originalText = btn.innerHTML;
@@ -305,10 +306,18 @@ function setupRegistrationForm() {
 
 // Complete Registration after OTP verification
 async function completeRegistration() {
-  if (!pendingFormData) return;
+  if (!pendingFormData) {
+    console.error('No pending form data!');
+    showAlert('register-alerts', 'No registration data found. Please try again.', 'error');
+    return;
+  }
+  
+  console.log('Completing registration with data:', pendingFormData);
   
   try {
     const params = new URLSearchParams(pendingFormData);
+    
+    console.log('Sending registration request...');
     
     const response = await fetch('register-password-handler.php', {
       method: 'POST',
@@ -316,17 +325,23 @@ async function completeRegistration() {
       body: params.toString()
     });
     
-    const data = await response.json();
+    const text = await response.text();
+    console.log('Registration Response:', text);
+    
+    const data = JSON.parse(text);
     
     if (data.success) {
+      console.log('Registration successful!');
       switchTab('login');
       showAlert('login-alerts', 'Registration successful! Please login with your credentials.', 'success');
       document.getElementById('registration-form').reset();
       pendingFormData = null;
     } else {
+      console.error('Registration failed:', data.message);
       showAlert('register-alerts', data.message || 'Registration failed', 'error');
     }
   } catch (error) {
+    console.error('Registration Exception:', error);
     showAlert('register-alerts', 'An error occurred. Please try again.', 'error');
   }
 }
@@ -434,13 +449,11 @@ function setupResetPasswordForm() {
 // ===== INITIALIZATION =====
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Setup all forms
   setupOTPInputs();
   setupRegistrationForm();
   setupForgotPasswordForm();
   setupResetPasswordForm();
   
-  // Handle URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const success = urlParams.get('success');
   const error = urlParams.get('error');
@@ -456,7 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
   
-  // Close modals when clicking outside
   window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
       e.target.classList.remove('active');

@@ -1,31 +1,79 @@
 <?php
 /**
- * Send OTP - Fixed for Your Table Structure
- * Matches your otp_verifications table with otp_id, type, is_used
+ * Send OTP - Verified and slightly improved
  */
 
+// Disable error display, only log errors
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+session_start();
 header('Content-Type: application/json');
+
+// Check if database connection file exists
+if (!file_exists('../../db.php')) {
+    echo json_encode(['success' => false, 'message' => 'Database configuration file not found']);
+    exit;
+}
+
 require_once '../../db.php';
+
+// Try to find vendor/autoload.php in multiple locations
+$autoload_paths = [
+    './vendor/autoload.php',
+];
+
+$autoload_found = false;
+foreach ($autoload_paths as $path) {
+    if (file_exists($path)) {
+        require $path;
+        $autoload_found = true;
+        error_log("PHPMailer autoload found at: " . $path);
+        break;
+    }
+}
+
+if (!$autoload_found) {
+    error_log("PHPMailer autoload not found. Tried paths: " . implode(', ', $autoload_paths));
+    error_log("Current directory: " . __DIR__);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'PHPMailer not installed. Run: composer install',
+        'debug' => [
+            'current_dir' => __DIR__,
+            'tried_paths' => $autoload_paths
+        ]
+    ]);
+    exit;
+}
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require '../../vendor/autoload.php';
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+    exit;
+}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST['email']);
-    $purpose = $_POST['purpose']; // 'registration' or 'reset_password'
-    
-    if (empty($email)) {
-        echo json_encode(['success' => false, 'message' => 'Email is required']);
-        exit;
-    }
-    
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(['success' => false, 'message' => 'Invalid email format']);
-        exit;
-    }
-    
+$email = trim($_POST['email'] ?? '');
+$purpose = trim($_POST['purpose'] ?? ''); // 'registration' or 'reset_password'
+
+if (empty($email)) {
+    echo json_encode(['success' => false, 'message' => 'Email is required']);
+    exit;
+}
+
+if (empty($purpose) || !in_array($purpose, ['registration', 'reset_password'])) {
+    echo json_encode(['success' => false, 'message' => 'Invalid purpose']);
+    exit;
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid email format']);
+    exit;
+}
+
+try {
     // For registration, check if email already exists
     if ($purpose === 'registration') {
         $check_query = "SELECT user_id FROM users WHERE email = $1";
@@ -73,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     pg_query_params($conn, $delete_query, [$email, $purpose]);
     
     // Generate 6-digit OTP
-    $otp = sprintf("%06d", mt_rand(1, 999999));
+    $otp = sprintf("%06d", mt_rand(100000, 999999));
     
     // Calculate expiration time (10 minutes from now)
     $expires_at = date('Y-m-d H:i:s', strtotime('+10 minutes'));
@@ -81,7 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get client IP
     $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
     
-    // Store OTP in database (using both type and purpose for compatibility)
+    // Store OTP in database
     $insert_query = "INSERT INTO otp_verifications 
                      (email, otp, type, purpose, expires_at, ip_address, is_used, is_verified, created_at, attempts) 
                      VALUES ($1, $2, $3, $4, $5, $6, FALSE, FALSE, CURRENT_TIMESTAMP, 0) 
@@ -90,17 +138,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $insert_result = pg_query_params($conn, $insert_query, [
         $email,
         $otp,
-        $purpose,  // Store in type column
-        $purpose,  // Store in purpose column
+        $purpose,
+        $purpose,
         $expires_at,
         $ip_address
     ]);
     
     if (!$insert_result) {
-        error_log("Failed to insert OTP: " . pg_last_error($conn));
-        echo json_encode(['success' => false, 'message' => 'Failed to generate OTP']);
-        exit;
+        throw new Exception('Failed to generate OTP: ' . pg_last_error($conn));
     }
+    
+    $otp_record = pg_fetch_assoc($insert_result);
     
     // Send OTP via email
     $mail = new PHPMailer(true);
@@ -114,6 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->Password   = getenv('SMTP_PASSWORD') ?: 'iigy qtnu ojku ktsx';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
+        $mail->SMTPDebug  = 0; // Set to 2 for debugging
         
         $mail->setFrom(getenv('SMTP_USERNAME') ?: 'johnbernardmitra25@gmail.com', 'PAWsig City');
         $mail->addAddress($email);
@@ -138,7 +187,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <p style='font-size: 14px; color: #999;'>If you didn't request this, please ignore this email.</p>
                 </div>
                 <div style='background: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #999;'>
-                    <p>© 2024 PAWsig City. All rights reserved.</p>
+                    <p>© 2025 PAWsig City. All rights reserved.</p>
                 </div>
             </div>
         ";
@@ -146,21 +195,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->AltBody = "Your OTP code is: {$otp}. This code will expire in 10 minutes.";
         
         $mail->send();
-        echo json_encode(['success' => true, 'message' => 'OTP sent successfully to your email']);
+        
+        error_log("OTP sent successfully to: " . $email);
+        
+        echo json_encode([
+            'success' => true, 
+            'message' => 'OTP sent successfully to your email',
+            'otp_id' => $otp_record['otp_id']
+        ]);
         
     } catch (Exception $e) {
         error_log("Mail Error: " . $mail->ErrorInfo);
+        error_log("Mail Exception: " . $e->getMessage());
         
         // Delete the OTP since email failed
-        $delete_failed = "DELETE FROM otp_verifications WHERE email = $1 AND otp = $2";
-        pg_query_params($conn, $delete_failed, [$email, $otp]);
+        $delete_failed = "DELETE FROM otp_verifications WHERE otp_id = $1";
+        pg_query_params($conn, $delete_failed, [$otp_record['otp_id']]);
         
-        echo json_encode(['success' => false, 'message' => 'Failed to send OTP. Please try again.']);
+        // Return more detailed error for debugging
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Failed to send OTP. Please check your email configuration.',
+            'debug_error' => $e->getMessage()
+        ]);
     }
     
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+} catch (Exception $e) {
+    error_log("Send OTP Error: " . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'An error occurred. Please try again.']);
 }
 
-pg_close($conn);
+if (isset($conn)) {
+    pg_close($conn);
+}
 ?>
