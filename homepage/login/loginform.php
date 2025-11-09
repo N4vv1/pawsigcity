@@ -226,8 +226,6 @@
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
     }
 
     .tab-btn.active {
@@ -266,7 +264,6 @@
       margin-bottom: 20px;
       font-size: 14px;
       animation: slideDown 0.3s ease;
-      word-wrap: break-word;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -314,8 +311,6 @@
       transition: all 0.3s ease;
       background: #fafafa;
       outline: none;
-      -webkit-appearance: none;
-      appearance: none;
     }
 
     .input-field:focus {
@@ -385,17 +380,11 @@
       accent-color: #A8E6CF;
     }
 
-    .remember-me label {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
     .forgot a {
       color: #5fb894;
       text-decoration: none;
       font-weight: 500;
       transition: color 0.3s ease;
-      -webkit-tap-highlight-color: transparent;
       cursor: pointer;
     }
 
@@ -415,20 +404,18 @@
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(168, 230, 207, 0.4);
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
     }
 
-    .submit-btn:hover {
+    .submit-btn:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
     }
 
-    .submit-btn:active {
-      transform: translateY(0);
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
-    /* Password Toggle */
     .password-toggle {
       position: absolute;
       right: 15px;
@@ -448,85 +435,6 @@
       right: 45px;
     }
 
-    /* Error States */
-    .input-box.error .input-field {
-      border-color: #ff4d4d;
-      background: #fff5f5;
-    }
-
-    .input-box.error .icon,
-    .input-box.error .password-toggle {
-      color: #ff4d4d;
-    }
-
-    .input-box.success .input-field {
-      border-color: #4caf50;
-    }
-
-    .input-box.success .icon {
-      color: #4caf50;
-    }
-
-    .error-message {
-      display: none;
-      color: #ff4d4d;
-      font-size: 12px;
-      margin-top: 5px;
-      margin-left: 5px;
-      animation: slideDown 0.3s ease;
-    }
-
-    .input-box.error .error-message {
-      display: block;
-    }
-
-    /* Password Strength */
-    .password-strength {
-      margin-top: 8px;
-      height: 4px;
-      background: #e0e0e0;
-      border-radius: 2px;
-      overflow: hidden;
-      display: none;
-    }
-
-    .password-strength.active {
-      display: block;
-    }
-
-    .password-strength-bar {
-      height: 100%;
-      width: 0%;
-      transition: all 0.3s ease;
-      border-radius: 2px;
-    }
-
-    .password-strength-bar.weak {
-      width: 33%;
-      background: #ff4d4d;
-    }
-
-    .password-strength-bar.medium {
-      width: 66%;
-      background: #ffa500;
-    }
-
-    .password-strength-bar.strong {
-      width: 100%;
-      background: #4caf50;
-    }
-
-    .password-hint {
-      font-size: 11px;
-      color: #999;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .password-hint.active {
-      display: block;
-    }
-
     /* Modal Styles */
     .modal {
       display: none;
@@ -536,68 +444,161 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
       animation: fadeIn 0.3s ease;
-    }
-
-    .modal.active {
-      display: flex;
       align-items: center;
       justify-content: center;
     }
 
+    .modal.active {
+      display: flex;
+    }
+
     .modal-content {
       background: white;
-      padding: 35px;
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       width: 90%;
-      max-width: 450px;
-      animation: slideUp 0.3s ease;
+      max-width: 480px;
+      animation: slideUp 0.4s ease;
       position: relative;
     }
 
     @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(50px) scale(0.9);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
 
     .modal-header {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
     }
 
     .modal-header h3 {
-      font-size: 24px;
+      font-size: 26px;
       color: #2d5f4a;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      font-weight: 700;
     }
 
     .modal-header p {
       color: #666;
       font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .modal-header .email-display {
+      color: #5fb894;
+      font-weight: 600;
+      margin-top: 5px;
     }
 
     .close-modal {
       position: absolute;
-      top: 15px;
-      right: 15px;
+      top: 20px;
+      right: 20px;
       font-size: 28px;
       color: #999;
       cursor: pointer;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
       line-height: 1;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
     }
 
     .close-modal:hover {
       color: #2d5f4a;
+      background: #f0f0f0;
+      transform: rotate(90deg);
+    }
+
+    /* OTP Input Styles */
+    .otp-container {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .otp-input {
+      width: 55px;
+      height: 60px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      background: #fafafa;
+      transition: all 0.3s ease;
+      outline: none;
+      color: #2d5f4a;
+    }
+
+    .otp-input:focus {
+      border-color: #A8E6CF;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.15);
+      transform: scale(1.05);
+    }
+
+    .otp-input.filled {
+      background: linear-gradient(135deg, #A8E6CF 0%, #7FD4B3 100%);
+      border-color: #A8E6CF;
+      color: #2d5f4a;
+    }
+
+    .otp-input.error {
+      border-color: #ff4d4d;
+      background: #fff5f5;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .resend-section {
+      text-align: center;
+      margin-top: 25px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .resend-link {
+      color: #5fb894;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .resend-link:hover:not(.disabled) {
+      color: #7FD4B3;
+      text-decoration: underline;
+    }
+
+    .resend-link.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .timer {
+      color: #5fb894;
+      font-weight: 600;
     }
 
     /* Loading Spinner */
@@ -605,11 +606,12 @@
       display: inline-block;
       width: 16px;
       height: 16px;
-      border: 2px solid #f3f3f3;
+      border: 2px solid rgba(45, 95, 74, 0.2);
       border-top: 2px solid #2d5f4a;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin-left: 8px;
+      vertical-align: middle;
     }
 
     @keyframes spin {
@@ -632,39 +634,15 @@
         font-size: 36px;
       }
 
-      .brand-content p {
-        font-size: 16px;
-      }
-
-      .brand-features {
-        margin-top: 30px;
-        gap: 15px;
-      }
-
-      .feature-item {
-        padding: 12px 20px;
-      }
-
-      .feature-item i {
-        font-size: 20px;
-      }
-
-      .feature-item span {
-        font-size: 14px;
-      }
-
       .form-side {
         min-height: auto;
         padding: 40px 30px 50px;
       }
 
-      .back-button {
-        top: 20px;
-        left: 20px;
-      }
-
-      .container {
-        max-width: 600px;
+      .otp-input {
+        width: 48px;
+        height: 55px;
+        font-size: 20px;
       }
     }
 
@@ -674,37 +652,19 @@
         max-width: 95%;
       }
 
-      .brand-side {
-        min-height: auto;
-        padding: 45px 25px 35px;
-      }
-
-      .brand-content h1 {
-        font-size: 32px;
-        margin-bottom: 15px;
-        line-height: 1.2;
-      }
-
-      .brand-content p {
-        font-size: 15px;
-        line-height: 1.5;
-      }
-
-      .form-side {
-        padding: 35px 25px 45px;
-      }
-
-      .back-button {
-        top: 18px;
-        left: 18px;
-        padding: 10px 16px;
-        font-size: 14px;
-        gap: 6px;
-      }
-
       .row-inputs {
         grid-template-columns: 1fr;
         gap: 0;
+      }
+
+      .otp-input {
+        width: 45px;
+        height: 50px;
+        font-size: 18px;
+      }
+
+      .otp-container {
+        gap: 8px;
       }
     }
   </style>
@@ -760,25 +720,14 @@
               if (isset($_SESSION['login_error'])) {
                   echo '<div class="alert-message alert-error">';
                   echo '<i class="bx bx-error-circle"></i>';
-                  echo '<span>' . $_SESSION['login_error'] . '</span>';
+                  echo '<span>' . htmlspecialchars($_SESSION['login_error']) . '</span>';
                   echo '</div>';
-                  
-                  if (isset($_SESSION['error_field'])) {
-                      $field = $_SESSION['error_field'];
-                      echo "<script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                          showFieldError('login-{$field}-box', '');
-                        });
-                      </script>";
-                      unset($_SESSION['error_field']);
-                  }
-                  
                   unset($_SESSION['login_error']);
               }
               if (isset($_SESSION['login_success'])) {
                   echo '<div class="alert-message alert-success">';
                   echo '<i class="bx bx-check-circle"></i>';
-                  echo '<span>' . $_SESSION['login_success'] . '</span>';
+                  echo '<span>' . htmlspecialchars($_SESSION['login_success']) . '</span>';
                   echo '</div>';
                   unset($_SESSION['login_success']);
               }
@@ -786,19 +735,17 @@
             </div>
             
             <form action="login-handler.php" method="post">
-              <div class="input-box" id="login-email-box">
+              <div class="input-box">
                 <input type="email" class="input-field" name="email" id="login_email" required />
                 <label class="label">Email</label>
                 <i class='bx bx-user icon'></i>
-                <span class="error-message">Email not found</span>
               </div>
 
-              <div class="input-box has-toggle" id="login-password-box">
+              <div class="input-box has-toggle">
                 <input type="password" class="input-field" name="password" id="login_password" required />
                 <label class="label">Password</label>
                 <i class='bx bx-lock-alt icon'></i>
                 <i class='bx bx-hide password-toggle' onclick="togglePassword('login_password', this)"></i>
-                <span class="error-message">Incorrect password</span>
               </div>
 
               <div class="remember-forgot">
@@ -835,8 +782,8 @@
               </div>
 
               <div class="input-box">
-                <input type="text" class="input-field" name="middle_name" id="middle_name" required/>
-                <label class="label">Middle Name</label>
+                <input type="text" class="input-field" name="middle_name" id="middle_name" />
+                <label class="label">Middle Name (Optional)</label>
                 <i class='bx bx-user icon'></i>
               </div>
 
@@ -851,14 +798,10 @@
                 <label class="label">Password</label>
                 <i class='bx bx-lock icon'></i>
                 <i class='bx bx-hide password-toggle' onclick="togglePassword('reg_password', this)"></i>
-                <div class="password-strength">
-                  <div class="password-strength-bar"></div>
-                </div>
-                <div class="password-hint">Use 8+ characters with letters, numbers & symbols</div>
               </div>
 
               <div class="input-box">
-                <input type="text" class="input-field" name="phone" id="phone" required/>
+                <input type="text" class="input-field" name="phone" id="phone" required />
                 <label class="label">Phone Number</label>
                 <i class='bx bx-phone icon'></i>
               </div>
@@ -871,50 +814,130 @@
     </div>
   </div>
 
- <!-- Forgot Password Modal -->
-<div id="forgotPasswordModal" class="modal">
-  <div class="modal-content">
-    <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
-    <div class="modal-header">
-      <h3>Reset Password</h3>
-      <p>Verify your identity to reset your password</p>
+  <!-- OTP Verification Modal -->
+  <div id="otpModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeOTPModal()">&times;</span>
+      <div class="modal-header">
+        <h3>Verify Your Email</h3>
+        <p>Enter the 6-digit code sent to</p>
+        <p class="email-display" id="otp-email-display"></p>
+      </div>
+      
+      <div id="otp-alerts"></div>
+      
+      <div class="otp-container">
+        <input type="text" class="otp-input" maxlength="1" data-index="0" />
+        <input type="text" class="otp-input" maxlength="1" data-index="1" />
+        <input type="text" class="otp-input" maxlength="1" data-index="2" />
+        <input type="text" class="otp-input" maxlength="1" data-index="3" />
+        <input type="text" class="otp-input" maxlength="1" data-index="4" />
+        <input type="text" class="otp-input" maxlength="1" data-index="5" />
+      </div>
+      
+      <button type="button" class="submit-btn" id="verify-otp-btn" onclick="verifyOTP()">
+        Verify & Continue
+      </button>
+      
+      <div class="resend-section">
+        <p>Didn't receive code? <a class="resend-link" id="resend-link" onclick="resendOTP()">Resend OTP</a></p>
+        <p class="timer" id="timer"></p>
+      </div>
     </div>
-    <div id="forgot-alerts"></div>
-    <form id="forgot-password-form" action="reset-password-handler.php" method="post">
-      <div class="input-box">
-        <input type="email" class="input-field" name="email" id="forgot_email" required />
-        <label class="label">Email Address</label>
-        <i class='bx bx-envelope icon'></i>
-      </div>
-      
-      <div class="input-box has-toggle">
-        <input type="password" class="input-field" name="old_password" id="old_password" required />
-        <label class="label">Current Password</label>
-        <i class='bx bx-lock-alt icon'></i>
-        <i class='bx bx-hide password-toggle' onclick="togglePassword('old_password', this)"></i>
-      </div>
-      
-      <div class="input-box has-toggle">
-        <input type="password" class="input-field" name="new_password" id="new_password" required />
-        <label class="label">New Password</label>
-        <i class='bx bx-lock icon'></i>
-        <i class='bx bx-hide password-toggle' onclick="togglePassword('new_password', this)"></i>
-      </div>
-      
-      <div class="input-box has-toggle">
-        <input type="password" class="input-field" name="confirm_password" id="confirm_password" required />
-        <label class="label">Confirm New Password</label>
-        <i class='bx bx-lock-alt icon'></i>
-        <i class='bx bx-hide password-toggle' onclick="togglePassword('confirm_password', this)"></i>
-      </div>
-      
-      <button type="submit" class="submit-btn">Reset Password</button>
-    </form>
   </div>
-</div>
 
-  <!-- JavaScript -->
+  <!-- Forgot Password Modal -->
+  <div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+      <div class="modal-header">
+        <h3>Reset Password</h3>
+        <p>Enter your email to receive a verification code</p>
+      </div>
+      <div id="forgot-alerts"></div>
+      <form id="forgot-password-form">
+        <div class="input-box">
+          <input type="email" class="input-field" name="email" id="forgot_email" required />
+          <label class="label">Email Address</label>
+          <i class='bx bx-envelope icon'></i>
+        </div>
+        <button type="submit" class="submit-btn">Send Verification Code</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div id="resetPasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeResetPasswordModal()">&times;</span>
+      <div class="modal-header">
+        <h3>Create New Password</h3>
+        <p>Enter your new password</p>
+      </div>
+      <div id="reset-alerts"></div>
+      <form id="reset-password-form">
+        <div class="input-box has-toggle">
+          <input type="password" class="input-field" name="new_password" id="new_password" required />
+          <label class="label">New Password</label>
+          <i class='bx bx-lock icon'></i>
+          <i class='bx bx-hide password-toggle' onclick="togglePassword('new_password', this)"></i>
+        </div>
+        
+        <div class="input-box has-toggle">
+          <input type="password" class="input-field" name="confirm_password" id="confirm_password" required />
+          <label class="label">Confirm Password</label>
+          <i class='bx bx-lock-alt icon'></i>
+          <i class='bx bx-hide password-toggle' onclick="togglePassword('confirm_password', this)"></i>
+        </div>
+        
+        <button type="submit" class="submit-btn">Reset Password</button>
+      </form>
+    </div>
+  </div>
+
   <script>
+    // Global variables
+    let currentEmail = '';
+    let currentPurpose = '';
+    let resendTimer = null;
+    let resendCountdown = 60;
+    let pendingFormData = null;
+
+    // Tab switching
+    function switchTab(tab) {
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const tabButtons = document.querySelectorAll('.tab-btn');
+
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+
+      if (tab === 'login') {
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+        tabButtons[0].classList.add('active');
+      } else {
+        registerForm.classList.add('active');
+        loginForm.classList.remove('active');
+        tabButtons[1].classList.add('active');
+      }
+    }
+
+    // Alert functions
+    function showAlert(containerId, message, type) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert-message alert-${type}`;
+      alertDiv.innerHTML = `<i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error-circle'}'></i><span>${message}</span>`;
+      container.appendChild(alertDiv);
+
+      setTimeout(() => {
+        alertDiv.style.opacity = '0';
+        setTimeout(() => alertDiv.remove(), 300);
+      }, 5000);
+    }
+
+    // Password toggle
     function togglePassword(inputId, icon) {
       const input = document.getElementById(inputId);
       if (input.type === 'password') {
@@ -928,104 +951,398 @@
       }
     }
 
-    // Remove error state when user starts typing
-    document.addEventListener('DOMContentLoaded', function() {
-      const inputs = document.querySelectorAll('.input-field');
+    // OTP Modal Functions
+    function openOTPModal(email, purpose) {
+      currentEmail = email;
+      currentPurpose = purpose;
+      document.getElementById('otp-email-display').textContent = email;
+      document.getElementById('otpModal').classList.add('active');
+      document.getElementById('otp-alerts').innerHTML = '';
       
-      inputs.forEach(input => {
-        input.addEventListener('input', function() {
-          const inputBox = this.closest('.input-box');
-          inputBox.classList.remove('error', 'success');
+      // Clear and focus first input
+      const otpInputs = document.querySelectorAll('.otp-input');
+      otpInputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('filled', 'error');
+      });
+      otpInputs[0].focus();
+      
+      // Start resend timer
+      startResendTimer();
+    }
+
+    function closeOTPModal() {
+      document.getElementById('otpModal').classList.remove('active');
+      clearInterval(resendTimer);
+    }
+
+    function openForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.add('active');
+      document.getElementById('forgot_email').focus();
+    }
+
+    function closeForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.remove('active');
+      document.getElementById('forgot-password-form').reset();
+      document.getElementById('forgot-alerts').innerHTML = '';
+    }
+
+    function openResetPasswordModal() {
+      document.getElementById('resetPasswordModal').classList.add('active');
+      document.getElementById('new_password').focus();
+    }
+
+    function closeResetPasswordModal() {
+      document.getElementById('resetPasswordModal').classList.remove('active');
+      document.getElementById('reset-password-form').reset();
+      document.getElementById('reset-alerts').innerHTML = '';
+    }
+
+    // OTP Input Handling
+    document.addEventListener('DOMContentLoaded', function() {
+      const otpInputs = document.querySelectorAll('.otp-input');
+      
+      otpInputs.forEach((input, index) => {
+        input.addEventListener('input', function(e) {
+          const value = e.target.value;
+          
+          // Only allow numbers
+          if (!/^\d*$/.test(value)) {
+            e.target.value = '';
+            return;
+          }
+          
+          // Add filled class
+          if (value) {
+            e.target.classList.add('filled');
+            e.target.classList.remove('error');
+          } else {
+            e.target.classList.remove('filled');
+          }
+          
+          // Auto-focus next input
+          if (value && index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+          }
+        });
+        
+        input.addEventListener('keydown', function(e) {
+          // Handle backspace
+          if (e.key === 'Backspace' && !e.target.value && index > 0) {
+            otpInputs[index - 1].focus();
+          }
+          
+          // Handle paste
+          if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            navigator.clipboard.readText().then(text => {
+              const digits = text.replace(/\D/g, '').slice(0, 6);
+              digits.split('').forEach((digit, i) => {
+                if (otpInputs[i]) {
+                  otpInputs[i].value = digit;
+                  otpInputs[i].classList.add('filled');
+                }
+              });
+              if (digits.length === 6) {
+                verifyOTP();
+              }
+            });
+          }
         });
       });
     });
 
-    // Function to show error on specific field
-    function showFieldError(fieldId, message) {
-      const inputBox = document.getElementById(fieldId);
-      if (inputBox) {
-        inputBox.classList.add('error');
-        const errorMsg = inputBox.querySelector('.error-message');
-        if (errorMsg && message) {
-          errorMsg.textContent = message;
-        }
-      }
-    }
-
-    // Function to show success on specific field
-    function showFieldSuccess(fieldId) {
-      const inputBox = document.getElementById(fieldId);
-      if (inputBox) {
-        inputBox.classList.add('success');
-        inputBox.classList.remove('error');
-      }
-    }
-
-    // Password strength checker
-    document.addEventListener('DOMContentLoaded', function() {
-      const regPassword = document.getElementById('reg_password');
-      if (regPassword) {
-        regPassword.addEventListener('input', function() {
-          const password = this.value;
-          const strengthBar = this.parentElement.querySelector('.password-strength-bar');
-          const strengthContainer = this.parentElement.querySelector('.password-strength');
-          const hint = this.parentElement.querySelector('.password-hint');
-          
-          if (password.length === 0) {
-            strengthContainer.classList.remove('active');
-            hint.classList.remove('active');
-            return;
-          }
-          
-          strengthContainer.classList.add('active');
-          hint.classList.add('active');
-          
-          let strength = 0;
-          if (password.length >= 8) strength++;
-          if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-          if (/[0-9]/.test(password)) strength++;
-          if (/[^a-zA-Z0-9]/.test(password)) strength++;
-          
-          strengthBar.className = 'password-strength-bar';
-          
-          if (strength <= 2) {
-            strengthBar.classList.add('weak');
-            hint.textContent = 'Weak password - add more characters';
-            hint.style.color = '#ff4d4d';
-          } else if (strength === 3) {
-            strengthBar.classList.add('medium');
-            hint.textContent = 'Medium strength - almost there!';
-            hint.style.color = '#ffa500';
-          } else {
-            strengthBar.classList.add('strong');
-            hint.textContent = 'Strong password!';
-            hint.style.color = '#4caf50';
-          }
+    // Send OTP
+    async function sendOTP(email, purpose) {
+      try {
+        const response = await fetch('send-otp.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `email=${encodeURIComponent(email)}&purpose=${encodeURIComponent(purpose)}`
         });
+        
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Send OTP Error:', error);
+        return { success: false, message: 'Failed to send OTP. Please try again.' };
+      }
+    }
+
+    // Verify OTP
+    async function verifyOTP() {
+      const otpInputs = document.querySelectorAll('.otp-input');
+      const otp = Array.from(otpInputs).map(input => input.value).join('');
+      
+      if (otp.length !== 6) {
+        showAlert('otp-alerts', 'Please enter all 6 digits', 'error');
+        return;
+      }
+      
+      const btn = document.getElementById('verify-otp-btn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Verifying...<span class="spinner"></span>';
+      
+      try {
+        const response = await fetch('verify-otp.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `otp=${encodeURIComponent(otp)}`
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showAlert('otp-alerts', 'Verification successful!', 'success');
+          
+          setTimeout(() => {
+            closeOTPModal();
+            
+            // Handle based on purpose
+            if (currentPurpose === 'registration') {
+              // Complete registration
+              completeRegistration();
+            } else if (currentPurpose === 'reset_password') {
+              // Show reset password form
+              closeForgotPasswordModal();
+              openResetPasswordModal();
+            }
+          }, 1000);
+        } else {
+          // Show error on OTP inputs
+          otpInputs.forEach(input => {
+            input.classList.add('error');
+            input.classList.remove('filled');
+          });
+          showAlert('otp-alerts', data.message, 'error');
+          
+          // Clear inputs after error
+          setTimeout(() => {
+            otpInputs.forEach(input => {
+              input.value = '';
+              input.classList.remove('error');
+            });
+            otpInputs[0].focus();
+          }, 1500);
+        }
+      } catch (error) {
+        showAlert('otp-alerts', 'Verification failed. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    // Resend OTP
+    async function resendOTP() {
+      const resendLink = document.getElementById('resend-link');
+      if (resendLink.classList.contains('disabled')) return;
+      
+      resendLink.classList.add('disabled');
+      resendLink.textContent = 'Sending...';
+      
+      const result = await sendOTP(currentEmail, currentPurpose);
+      
+      if (result.success) {
+        showAlert('otp-alerts', 'New OTP sent successfully!', 'success');
+        startResendTimer();
+      } else {
+        showAlert('otp-alerts', result.message, 'error');
+        resendLink.classList.remove('disabled');
+        resendLink.textContent = 'Resend OTP';
+      }
+    }
+
+    // Resend Timer
+    function startResendTimer() {
+      const resendLink = document.getElementById('resend-link');
+      const timer = document.getElementById('timer');
+      resendCountdown = 60;
+      
+      resendLink.classList.add('disabled');
+      
+      resendTimer = setInterval(() => {
+        resendCountdown--;
+        timer.textContent = `Resend available in ${resendCountdown}s`;
+        
+        if (resendCountdown <= 0) {
+          clearInterval(resendTimer);
+          timer.textContent = '';
+          resendLink.classList.remove('disabled');
+          resendLink.textContent = 'Resend OTP';
+        }
+      }, 1000);
+    }
+
+    // Registration Form Handler
+    document.getElementById('registration-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        first_name: document.getElementById('first_name').value.trim(),
+        middle_name: document.getElementById('middle_name').value.trim(),
+        last_name: document.getElementById('last_name').value.trim(),
+        email: document.getElementById('reg_email').value.trim(),
+        password: document.getElementById('reg_password').value,
+        phone: document.getElementById('phone').value.trim()
+      };
+      
+      // Validate
+      if (!formData.first_name || !formData.last_name || !formData.email || !formData.password) {
+        showAlert('register-alerts', 'All required fields must be filled', 'error');
+        return;
+      }
+      
+      if (formData.password.length < 8) {
+        showAlert('register-alerts', 'Password must be at least 8 characters long', 'error');
+        return;
+      }
+      
+      // Store form data and send OTP
+      pendingFormData = formData;
+      
+      const btn = e.target.querySelector('.submit-btn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Sending OTP...<span class="spinner"></span>';
+      
+      const result = await sendOTP(formData.email, 'registration');
+      
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      
+      if (result.success) {
+        openOTPModal(formData.email, 'registration');
+      } else {
+        showAlert('register-alerts', result.message, 'error');
       }
     });
-    // Handle forgot password form submission
-document.getElementById('forgot-password-form').addEventListener('submit', function(e) {
-  const newPassword = document.getElementById('new_password').value;
-  const confirmPassword = document.getElementById('confirm_password').value;
-  
-  if (newPassword !== confirmPassword) {
-    e.preventDefault();
-    const alertDiv = document.getElementById('forgot-alerts');
-    alertDiv.innerHTML = '<div class="alert-message alert-error"><i class="bx bx-error-circle"></i><span>Passwords do not match!</span></div>';
-    return false;
-  }
-  
-  if (newPassword.length < 8) {
-    e.preventDefault();
-    const alertDiv = document.getElementById('forgot-alerts');
-    alertDiv.innerHTML = '<div class="alert-message alert-error"><i class="bx bx-error-circle"></i><span>Password must be at least 8 characters long!</span></div>';
-    return false;
-  }
-});
+
+    // Complete Registration
+    async function completeRegistration() {
+      if (!pendingFormData) return;
+      
+      try {
+        const params = new URLSearchParams(pendingFormData);
+        
+        const response = await fetch('register-password-handler.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          switchTab('login');
+          showAlert('login-alerts', 'Registration successful! Please login with your credentials.', 'success');
+          document.getElementById('registration-form').reset();
+          pendingFormData = null;
+        } else {
+          showAlert('register-alerts', data.message || 'Registration failed', 'error');
+        }
+      } catch (error) {
+        showAlert('register-alerts', 'An error occurred. Please try again.', 'error');
+      }
+    }
+
+    // Forgot Password Form Handler
+    document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('forgot_email').value.trim();
+      
+      const btn = e.target.querySelector('.submit-btn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Sending OTP...<span class="spinner"></span>';
+      
+      const result = await sendOTP(email, 'reset_password');
+      
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      
+      if (result.success) {
+        openOTPModal(email, 'reset_password');
+      } else {
+        showAlert('forgot-alerts', result.message, 'error');
+      }
+    });
+
+    // Reset Password Form Handler
+    document.getElementById('reset-password-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const newPassword = document.getElementById('new_password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      
+      if (newPassword.length < 8) {
+        showAlert('reset-alerts', 'Password must be at least 8 characters long', 'error');
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        showAlert('reset-alerts', 'Passwords do not match', 'error');
+        return;
+      }
+      
+      const btn = e.target.querySelector('.submit-btn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Resetting...<span class="spinner"></span>';
+      
+      try {
+        const response = await fetch('reset-password-handler.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `email=${encodeURIComponent(currentEmail)}&new_password=${encodeURIComponent(newPassword)}&confirm_password=${encodeURIComponent(confirmPassword)}`
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showAlert('reset-alerts', 'Password reset successful!', 'success');
+          setTimeout(() => {
+            closeResetPasswordModal();
+            switchTab('login');
+            showAlert('login-alerts', 'Password reset successful! Please login with your new password.', 'success');
+          }, 1500);
+        } else {
+          showAlert('reset-alerts', data.message, 'error');
+        }
+      } catch (error) {
+        showAlert('reset-alerts', 'An error occurred. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    });
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+      }
+    });
+
+    // Handle URL parameters
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const success = urlParams.get('success');
+      const error = urlParams.get('error');
+
+      if (success) {
+        showAlert('login-alerts', success, 'success');
+      }
+      if (error) {
+        showAlert('login-alerts', error, 'error');
+      }
+      
+      if (success || error) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
   </script>
-
-  <script src="./auth-otp.js"></script>
-
 </body>
 </html>

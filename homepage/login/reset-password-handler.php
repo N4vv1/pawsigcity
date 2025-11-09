@@ -1,102 +1,174 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+/**
+ * Registration Handler with OTP Verification
+ * Only allows registration after OTP verification
+ */
+
 session_start();
+header('Content-Type: application/json');
 
-// Include your database connection
-include 'db.php'; // FIXED - removed the leading slash
+require_once '../../db.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $old_password = $_POST['old_password'];
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
+// Check if request method is POST
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid request method'
+    ]);
+    exit;
+}
+
+// Check if OTP has been verified
+if (!isset($_SESSION['otp_verified']) || $_SESSION['otp_verified'] !== true) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Please verify your email with OTP first'
+    ]);
+    exit;
+}
+
+// Verify OTP purpose is for registration
+if (!isset($_SESSION['otp_purpose']) || $_SESSION['otp_purpose'] !== 'registration') {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid OTP verification purpose'
+    ]);
+    exit;
+}
+
+// Get POST data
+$first_name = isset($_POST['first_name']) ? trim($_POST['first_name']) : '';
+$middle_name = isset($_POST['middle_name']) ? trim($_POST['middle_name']) : '';
+$last_name = isset($_POST['last_name']) ? trim($_POST['last_name']) : '';
+$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
+$phone = isset($_POST['phone']) ? trim($_POST['phone']) : '';
+
+// Validate all required fields
+if (empty($first_name) || empty($last_name) || empty($email) || empty($password)) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'All required fields must be filled'
+    ]);
+    exit;
+}
+
+// Verify email matches the OTP verified email
+if (!isset($_SESSION['otp_email']) || $_SESSION['otp_email'] !== $email) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Email does not match verified OTP email'
+    ]);
+    exit;
+}
+
+// Validate email format
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid email format'
+    ]);
+    exit;
+}
+
+// Validate password length
+if (strlen($password) < 8) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Password must be at least 8 characters long'
+    ]);
+    exit;
+}
+
+// Validate phone number (basic validation)
+if (!empty($phone) && !preg_match('/^[0-9+\-\s()]+$/', $phone)) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid phone number format'
+    ]);
+    exit;
+}
+
+try {
+    // Check if email already exists
+    $check_query = "SELECT user_id FROM users WHERE email = $1";
+    $check_result = pg_query_params($conn, $check_query, [$email]);
     
-    // Validate inputs
-    if (empty($email) || empty($old_password) || empty($new_password) || empty($confirm_password)) {
-        $_SESSION['login_error'] = "All fields are required!";
-        header('Location: auth.php');
-        exit();
+    if (!$check_result) {
+        throw new Exception('Database query failed: ' . pg_last_error($conn));
     }
     
-    // Check if passwords match
-    if ($new_password !== $confirm_password) {
-        $_SESSION['login_error'] = "New passwords do not match!";
-        header('Location: auth.php');
-        exit();
+    if (pg_num_rows($check_result) > 0) {
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Email already registered'
+        ]);
+        exit;
     }
     
-    // Check password length
-    if (strlen($new_password) < 8) {
-        $_SESSION['login_error'] = "Password must be at least 8 characters long!";
-        header('Location: auth.php');
-        exit();
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    
+    // Insert new user into database
+    $insert_query = "INSERT INTO users (first_name, middle_name, last_name, email, password, phone, role, created_at, updated_at) 
+                     VALUES ($1, $2, $3, $4, $5, $6, 'customer', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) 
+                     RETURNING user_id";
+    
+    $insert_result = pg_query_params($conn, $insert_query, [
+        $first_name,
+        $middle_name,
+        $last_name,
+        $email,
+        $hashed_password,
+        $phone
+    ]);
+    
+    if (!$insert_result) {
+        throw new Exception('Failed to create account: ' . pg_last_error($conn));
     }
     
-    // Check if user exists and verify old password
-    $stmt = $conn->prepare("SELECT id, password FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $user = pg_fetch_assoc($insert_result);
     
-    if ($result->num_rows === 0) {
-        $_SESSION['login_error'] = "Email not found!";
-        header('Location: auth.php');
-        exit();
-    }
-    
-    $user = $result->fetch_assoc();
-    
-    // Verify old password
-    if (!password_verify($old_password, $user['password'])) {
-        $_SESSION['login_error'] = "Current password is incorrect!";
-        header('Location: auth.php');
-        exit();
-    }
-    
-    // Hash new password
-    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-    
-    // Update password
-    $update_stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
-    $update_stmt->bind_param("si", $hashed_password, $user['id']);
-    
-    if ($update_stmt->execute()) {
-        $_SESSION['login_success'] = "Password reset successfully! Please login with your new password.";
+    if ($user && isset($user['user_id'])) {
+        // Clear all OTP-related session data
+        unset($_SESSION['otp']);
+        unset($_SESSION['otp_email']);
+        unset($_SESSION['otp_purpose']);
+        unset($_SESSION['otp_timestamp']);
+        unset($_SESSION['otp_verified']);
+        unset($_SESSION['otp_requests']);
+        
+        // Log the registration (optional - for analytics)
+        $log_query = "INSERT INTO registration_log (user_id, registered_at, ip_address) 
+                      VALUES ($1, CURRENT_TIMESTAMP, $2)";
+        $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        
+        // Try to log, but don't fail if logging table doesn't exist
+        @pg_query_params($conn, $log_query, [$user['user_id'], $ip_address]);
+        
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Registration successful! Please login with your credentials.'
+        ]);
     } else {
-        $_SESSION['login_error'] = "Failed to reset password. Please try again.";
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Failed to create account. Please try again.'
+        ]);
     }
     
-    $stmt->close();
-    $update_stmt->close();
-    $conn->close();
+} catch (Exception $e) {
+    // Log error for debugging (in production, log to file instead)
+    error_log("Registration Error: " . $e->getMessage());
     
-    header('Location: auth.php');
-    exit();
+    echo json_encode([
+        'success' => false, 
+        'message' => 'An error occurred during registration. Please try again.'
+    ]);
+}
+
+// Close database connection
+if (isset($conn)) {
+    pg_close($conn);
 }
 ?>
-```
-
----
-
-## **Now test it:**
-
-1. Save the file
-2. Fill in the reset password form
-3. Click "Reset Password"
-4. Tell me what happens!
-
-**If you see any error messages, copy and paste them here.**
-
----
-
-## **Quick check - Where is your db.php file located?**
-
-Tell me the folder structure. For example:
-```
-pawsigcity/
-  ├── homepage/
-  │   └── login/
-  │       ├── auth.php
-  │       ├── reset-password-handler.php
-  │       └── db.php
