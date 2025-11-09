@@ -279,10 +279,25 @@ $result = pg_query($conn, $query);
       border-radius: var(--border-radius-s);
       cursor: pointer;
       transition: transform 0.3s;
+      background: #f0f0f0;
     }
 
     .image-preview:hover {
       transform: scale(1.05);
+    }
+
+    .image-error {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffebee;
+      border-radius: var(--border-radius-s);
+      color: #c62828;
+      font-size: 0.75rem;
+      text-align: center;
+      padding: 5px;
     }
 
     .actions-cell {
@@ -643,23 +658,23 @@ $result = pg_query($conn, $query);
         </thead>
         <tbody>
           <?php while ($image = pg_fetch_assoc($result)): 
-            // Get the filename from the database path
-            $filename = basename($image['image_path']);
-            $image_url = '../gallery_dashboard/uploads/' . $filename;
+            // Use the image_path directly from database (it's already the full Supabase URL)
+            $image_url = htmlspecialchars($image['image_path']);
           ?>
           <tr>
             <td><?= htmlspecialchars($image['id']) ?></td>
             <td>
-              <img src="<?= htmlspecialchars($image_url) ?>" 
+              <img src="<?= $image_url ?>" 
                    alt="Pet Gallery Image"
                    class="image-preview"
-                   onclick="viewImage('<?= htmlspecialchars($image_url) ?>')">
+                   onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'image-error\'>Image not found</div>';"
+                   onclick="viewImage('<?= $image_url ?>')">
             </td>
             <td><?= date('F j, Y', strtotime($image['uploaded_at'])) ?></td>
             <td>
               <div class="actions-cell">
                 <button class="btn btn-edit" 
-                        onclick="openEditModal(<?= htmlspecialchars($image['id']) ?>, '<?= htmlspecialchars($image['image_path']) ?>', '<?= htmlspecialchars($image_url) ?>')">
+                        onclick="openEditModal(<?= htmlspecialchars($image['id']) ?>, '<?= htmlspecialchars($image['image_path'], ENT_QUOTES) ?>', '<?= $image_url ?>')">
                   Edit
                 </button>
                 <form method="POST" action="delete_image.php" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this image?')">
@@ -792,7 +807,7 @@ function openEditModal(id, dbImagePath, displayUrl) {
   // Show current image using the display URL
   document.getElementById('editCurrentImage').innerHTML = 
     '<p style="margin-bottom: 10px; font-weight: 600;">Current Image:</p>' +
-    '<img src="' + displayUrl + '" style="max-width: 100%; max-height: 200px; border-radius: 8px;">';
+    '<img src="' + displayUrl + '" style="max-width: 100%; max-height: 200px; border-radius: 8px;" onerror="this.parentElement.innerHTML=\'<p>Current image unavailable</p>\';">';
   
   // Clear any previous preview
   document.getElementById('editPreview').innerHTML = '';
