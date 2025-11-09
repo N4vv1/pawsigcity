@@ -6,7 +6,7 @@ require_once '../admin/check_admin.php';
 // Supabase configuration - use actual values directly
 $supabaseUrl = 'https://pgapbbukmyitwuvfbgho.supabase.co';
 $supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A';
-$bucketName = 'gallery-images'; // Make sure this matches your actual bucket name
+$bucketName = 'gallery-images'; // Using gallery-images bucket
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -61,9 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         // Construct public URL
                         $imagePath = "{$supabaseUrl}/storage/v1/object/public/{$bucketName}/{$newFileName}";
                         
-                        // Insert into database
-                        pg_prepare($conn, "insert_gallery", "INSERT INTO gallery (image_path) VALUES ($1)");
-                        $result = pg_execute($conn, "insert_gallery", [$imagePath]);
+                        // Insert into database - use pg_query_params instead of pg_prepare
+                        $query = "INSERT INTO gallery (image_path) VALUES ($1)";
+                        $result = pg_query_params($conn, $query, [$imagePath]);
                         
                         if ($result) {
                             $_SESSION['success'] = "Image uploaded successfully!";
