@@ -6,7 +6,7 @@ require_once '../admin/check_admin.php';
 // Supabase configuration - use actual values directly
 $supabaseUrl = 'https://pgapbbukmyitwuvfbgho.supabase.co';
 $supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A';
-$bucketName = 'gallery-images'; // Using gallery-images bucket
+$bucketName = 'GALLERY-IMAGES';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
