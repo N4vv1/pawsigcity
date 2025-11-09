@@ -3,9 +3,10 @@ session_start();
 require '../../db.php';
 require_once '../admin/check_admin.php';
 
-// Alternative simpler approach using direct HTTP
-$supabaseUrl = getenv('https://pgapbbukmyitwuvfbgho.supabase.co');
-$supabaseKey = getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A');
+// Supabase configuration - use actual values directly
+$supabaseUrl = 'https://pgapbbukmyitwuvfbgho.supabase.co';
+$supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A';
+$bucketName = 'gallery-images'; // Make sure this matches your actual bucket name
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -26,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $fileContent = file_get_contents($fileTmpName);
                     $mimeType = mime_content_type($fileTmpName);
                     
-                    // Upload URL
-                    $uploadUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$newFileName}";
+                    // Correct Supabase Storage upload URL format
+                    $uploadUrl = "{$supabaseUrl}/storage/v1/object/{$bucketName}/{$newFileName}";
                     
-                    // Initialize cURL with more options
+                    // Initialize cURL
                     $ch = curl_init($uploadUrl);
                     curl_setopt_array($ch, [
                         CURLOPT_RETURNTRANSFER => true,
@@ -38,12 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         CURLOPT_HTTPHEADER => [
                             "Authorization: Bearer {$supabaseKey}",
                             "Content-Type: {$mimeType}",
-                            "Content-Length: " . strlen($fileContent),
                             "x-upsert: false"
                         ],
                         CURLOPT_SSL_VERIFYPEER => true,
-                        CURLOPT_TIMEOUT => 30,
-                        CURLOPT_VERBOSE => false
+                        CURLOPT_TIMEOUT => 30
                     ]);
                     
                     $response = curl_exec($ch);
@@ -53,17 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     // Log for debugging
                     error_log("=== UPLOAD DEBUG ===");
-                    error_log("Supabase URL: {$supabaseUrl}");
                     error_log("Upload URL: {$uploadUrl}");
                     error_log("HTTP Code: {$httpCode}");
                     error_log("Response: {$response}");
                     error_log("Curl Error: {$curlError}");
-                    error_log("File size: {$fileSize}");
-                    error_log("MIME type: {$mimeType}");
                     
                     if ($httpCode === 200 || $httpCode === 201) {
-                        // Success - construct public URL
-                        $imagePath = "{$supabaseUrl}/storage/v1/object/public/pet-images/{$newFileName}";
+                        // Construct public URL
+                        $imagePath = "{$supabaseUrl}/storage/v1/object/public/{$bucketName}/{$newFileName}";
                         
                         // Insert into database
                         pg_prepare($conn, "insert_gallery", "INSERT INTO gallery (image_path) VALUES ($1)");
@@ -73,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $_SESSION['success'] = "Image uploaded successfully!";
                         } else {
                             // Delete uploaded file if database insert fails
-                            $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$newFileName}";
+                            $deleteUrl = "{$supabaseUrl}/storage/v1/object/{$bucketName}/{$newFileName}";
                             $ch = curl_init($deleteUrl);
                             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
                             curl_setopt($ch, CURLOPT_HTTPHEADER, [

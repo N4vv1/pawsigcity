@@ -15,9 +15,10 @@ require_once '../admin/check_admin.php';
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/error.log');
 
-// Initialize Supabase Storage
-$supabaseUrl = getenv('https://pgapbbukmyitwuvfbgho.supabase.co');
-$supabaseKey = getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A');
+// Supabase configuration
+$supabaseUrl = 'https://pgapbbukmyitwuvfbgho.supabase.co';
+$supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A';
+$bucketName = 'gallery-images';
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -95,7 +96,7 @@ try {
     $mimeType = mime_content_type($fileTmpName);
     
     // Upload to Supabase Storage
-    $uploadUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$newFileName}";
+    $uploadUrl = "{$supabaseUrl}/storage/v1/object/{$bucketName}/{$newFileName}";
     
     $ch = curl_init($uploadUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -117,7 +118,7 @@ try {
     }
     
     // Construct public URL for the new image
-    $new_image_path = "{$supabaseUrl}/storage/v1/object/public/pet-images/{$newFileName}";
+    $new_image_path = "{$supabaseUrl}/storage/v1/object/public/{$bucketName}/{$newFileName}";
     
     // Update database
     $update_query = "UPDATE gallery SET image_path = $1, uploaded_at = NOW() WHERE id = $2";
@@ -125,7 +126,7 @@ try {
     
     if (!$result) {
         // Database update failed - delete the newly uploaded file
-        $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$newFileName}";
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/{$bucketName}/{$newFileName}";
         $ch = curl_init($deleteUrl);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -140,7 +141,7 @@ try {
     $affected_rows = pg_affected_rows($result);
     if ($affected_rows === 0) {
         // No row was updated - delete the newly uploaded file
-        $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$newFileName}";
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/{$bucketName}/{$newFileName}";
         $ch = curl_init($deleteUrl);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -153,12 +154,10 @@ try {
     }
     
     // Database updated successfully - now delete old image from Supabase Storage
-    // Extract filename from the full URL or database path
     if (strpos($current_image_path, '/storage/v1/object/public/pet-images/') !== false) {
-        // It's a Supabase URL
         $old_filename = basename($current_image_path);
         
-        $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$old_filename}";
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/{$bucketName}/{$old_filename}";
         $ch = curl_init($deleteUrl);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -169,13 +168,9 @@ try {
         $deleteHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         
-        // Log if deletion fails but don't throw error (old file might not exist)
         if ($deleteHttpCode !== 200 && $deleteHttpCode !== 204) {
             error_log("Warning: Failed to delete old file from storage: " . $deleteResponse);
         }
-    } else {
-        // Old path format (local filesystem) - just log it
-        error_log("Skipping deletion of old local file: " . $current_image_path);
     }
     
     $_SESSION['success'] = "Image replaced successfully!";
