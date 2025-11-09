@@ -4,8 +4,8 @@ require '../../db.php';
 require_once '../admin/check_admin.php';
 
 // Initialize Supabase Storage
-$supabaseUrl = getenv('SUPABASE_URL');
-$supabaseKey = getenv('SUPABASE_KEY');
+$supabaseUrl = getenv('https://pgapbbukmyitwuvfbgho.supabase.co');
+$supabaseKey = getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $image_id = intval($_POST['image_id']);
@@ -26,10 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($delete_result && pg_affected_rows($delete_result) > 0) {
                 // Delete from Supabase Storage
                 // Check if it's a Supabase URL
-                if (strpos($image_path, '/storage/v1/object/public/gallery-images/') !== false) {
+                if (strpos($image_path, '/storage/v1/object/public/pet-images/') !== false) {
                     $filename = basename($image_path);
                     
-                    $deleteUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$filename}";
+                    $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$filename}";
                     
                     $ch = curl_init($deleteUrl);
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");

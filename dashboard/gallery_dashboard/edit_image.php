@@ -16,8 +16,8 @@ ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/error.log');
 
 // Initialize Supabase Storage
-$supabaseUrl = getenv('SUPABASE_URL');
-$supabaseKey = getenv('SUPABASE_KEY');
+$supabaseUrl = getenv('https://pgapbbukmyitwuvfbgho.supabase.co');
+$supabaseKey = getenv('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnYXBiYnVrbXlpdHd1dmZiZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MjIxMTUsImV4cCI6MjA2NzI5ODExNX0.SYvqRiE7MeHzIcT4CnNbwqBPwiVKbO0dqqzbjwZzU8A');
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -117,7 +117,7 @@ try {
     }
     
     // Construct public URL for the new image
-    $new_image_path = "{$supabaseUrl}/storage/v1/object/public/gallery-images/{$newFileName}";
+    $new_image_path = "{$supabaseUrl}/storage/v1/object/public/pet-images/{$newFileName}";
     
     // Update database
     $update_query = "UPDATE gallery SET image_path = $1, uploaded_at = NOW() WHERE id = $2";
@@ -125,7 +125,7 @@ try {
     
     if (!$result) {
         // Database update failed - delete the newly uploaded file
-        $deleteUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$newFileName}";
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$newFileName}";
         $ch = curl_init($deleteUrl);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -140,7 +140,7 @@ try {
     $affected_rows = pg_affected_rows($result);
     if ($affected_rows === 0) {
         // No row was updated - delete the newly uploaded file
-        $deleteUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$newFileName}";
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$newFileName}";
         $ch = curl_init($deleteUrl);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -154,11 +154,11 @@ try {
     
     // Database updated successfully - now delete old image from Supabase Storage
     // Extract filename from the full URL or database path
-    if (strpos($current_image_path, '/storage/v1/object/public/gallery-images/') !== false) {
+    if (strpos($current_image_path, '/storage/v1/object/public/pet-images/') !== false) {
         // It's a Supabase URL
         $old_filename = basename($current_image_path);
         
-        $deleteUrl = "{$supabaseUrl}/storage/v1/object/gallery-images/{$old_filename}";
+        $deleteUrl = "{$supabaseUrl}/storage/v1/object/pet-images/{$old_filename}";
         $ch = curl_init($deleteUrl);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
