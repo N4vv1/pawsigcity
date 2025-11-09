@@ -1857,78 +1857,84 @@ function getServiceImage($serviceName) {
   </div>
 </section>
 
-    <!-- Gallery Section - NEW -->
-    <section class="gallery-section" id="gallery">
-      <h2 class="section-title">Pet Gallery</h2>
-      
-      <div class="gallery-container">
-        <?php if (pg_num_rows($result) > 0): ?>
-          <!-- 3x2 Gallery Grid -->
-          <div class="gallery-grid">
-            <?php while ($image = pg_fetch_assoc($result)): ?>
-              <div class="gallery-item" onclick="openLightbox('dashboard/gallery_dashboard/uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>')">
-                <img src="dashboard/gallery_dashboard/uploads/<?= basename(htmlspecialchars($image['image_path'])) ?>" 
-                     alt="Pet Gallery Image #<?= $image['id'] ?>">
-                <div class="gallery-overlay">
-                  <i class="fas fa-search-plus"></i>
-                  <div class="gallery-overlay-text">Click to View</div>
-                </div>
-              </div>
-            <?php endwhile; ?>
-          </div>
-
-          <!-- Pagination: 1 2 3 -->
-          <div class="pagination">
-            <!-- Previous Button -->
-            <?php if ($current_page > 1): ?>
-              <a href="?page=<?= $current_page - 1 ?>#gallery" title="Previous Page">
-                <i class="fas fa-chevron-left"></i>
-              </a>
-            <?php else: ?>
-              <span class="disabled">
-                <i class="fas fa-chevron-left"></i>
-              </span>
-            <?php endif; ?>
-
-            <!-- Page Numbers -->
-            <div class="page-numbers">
-              <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <?php if ($i == $current_page): ?>
-                  <span class="active"><?= $i ?></span>
-                <?php else: ?>
-                  <a href="?page=<?= $i ?>#gallery"><?= $i ?></a>
-                <?php endif; ?>
-              <?php endfor; ?>
+   <!-- Gallery Section - FIXED -->
+<section class="gallery-section" id="gallery">
+  <h2 class="section-title">Pet Gallery</h2>
+  
+  <div class="gallery-container">
+    <?php if (pg_num_rows($result) > 0): ?>
+      <!-- 3x2 Gallery Grid -->
+      <div class="gallery-grid">
+        <?php while ($image = pg_fetch_assoc($result)): 
+          // Use the full Supabase URL directly from the database
+          $image_url = htmlspecialchars($image['image_path']);
+        ?>
+          <div class="gallery-item" onclick="openLightbox('<?= $image_url ?>')">
+            <img src="<?= $image_url ?>" 
+                 alt="Pet Gallery Image #<?= $image['id'] ?>"
+                 onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;background:#f0f0f0;color:#999;\'>Image unavailable</div>';">
+            <div class="gallery-overlay">
+              <i class="fas fa-search-plus"></i>
+              <div class="gallery-overlay-text">Click to View</div>
             </div>
-
-            <!-- Next Button -->
-            <?php if ($current_page < $total_pages): ?>
-              <a href="?page=<?= $current_page + 1 ?>#gallery" title="Next Page">
-                <i class="fas fa-chevron-right"></i>
-              </a>
-            <?php else: ?>
-              <span class="disabled">
-                <i class="fas fa-chevron-right"></i>
-              </span>
-            <?php endif; ?>
           </div>
+        <?php endwhile; ?>
+      </div>
 
+      <!-- Pagination: 1 2 3 -->
+      <div class="pagination">
+        <!-- Previous Button -->
+        <?php if ($current_page > 1): ?>
+          <a href="?page=<?= $current_page - 1 ?>#gallery" title="Previous Page">
+            <i class="fas fa-chevron-left"></i>
+          </a>
         <?php else: ?>
-          <div class="gallery-empty">
-            <i class="fas fa-images"></i>
-            <h3>No Images Yet</h3>
-            <p>Our gallery will be filled with adorable pet photos soon!</p>
-          </div>
+          <span class="disabled">
+            <i class="fas fa-chevron-left"></i>
+          </span>
+        <?php endif; ?>
+
+        <!-- Page Numbers -->
+        <div class="page-numbers">
+          <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <?php if ($i == $current_page): ?>
+              <span class="active"><?= $i ?></span>
+            <?php else: ?>
+              <a href="?page=<?= $i ?>#gallery"><?= $i ?></a>
+            <?php endif; ?>
+          <?php endfor; ?>
+        </div>
+
+        <!-- Next Button -->
+        <?php if ($current_page < $total_pages): ?>
+          <a href="?page=<?= $current_page + 1 ?>#gallery" title="Next Page">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        <?php else: ?>
+          <span class="disabled">
+            <i class="fas fa-chevron-right"></i>
+          </span>
         <?php endif; ?>
       </div>
-    </section>
-  <!-- Lightbox Modal -->
-  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-    <div class="lightbox-content">
-      <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-      <img id="lightbox-img" src="" alt="Full size image">
-    </div>
+
+    <?php else: ?>
+      <div class="gallery-empty">
+        <i class="fas fa-images"></i>
+        <h3>No Images Yet</h3>
+        <p>Our gallery will be filled with adorable pet photos soon!</p>
+      </div>
+    <?php endif; ?>
   </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-content">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <img id="lightbox-img" src="" alt="Full size image">
+  </div>
+</div>
+
 
 
     <!-- Contact Us Section -->

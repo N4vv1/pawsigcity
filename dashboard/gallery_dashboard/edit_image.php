@@ -154,7 +154,8 @@ try {
     }
     
     // Database updated successfully - now delete old image from Supabase Storage
-    if (strpos($current_image_path, '/storage/v1/object/public/pet-images/') !== false) {
+    // Check if the path contains the bucket name
+    if (strpos($current_image_path, "/storage/v1/object/public/{$bucketName}/") !== false) {
         $old_filename = basename($current_image_path);
         
         $deleteUrl = "{$supabaseUrl}/storage/v1/object/{$bucketName}/{$old_filename}";
@@ -190,3 +191,4 @@ while (ob_get_level()) {
 
 header("Location: gallery.php", true, 303);
 exit();
+?>

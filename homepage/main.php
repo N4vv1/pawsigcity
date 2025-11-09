@@ -2105,27 +2105,22 @@ function getServiceImage($serviceName) {
   </div>
 </section>
 
-  <!-- Gallery Section - NEW -->
-    <section class="gallery-section" id="gallery">
+  <!-- Gallery Section - FIXED -->
+<section class="gallery-section" id="gallery">
   <h2 class="section-title">Pet Gallery</h2>
   
   <div class="gallery-container">
     <?php if (pg_num_rows($result) > 0): ?>
       <!-- 3x2 Gallery Grid -->
       <div class="gallery-grid">
-        <?php while ($image = pg_fetch_assoc($result)): ?>
-          <?php 
-            // Get filename from database path
-            $filename = basename($image['image_path']);
-            // Construct correct path (going up one level from homepage to root, then to dashboard)
-            $imagePath = '../dashboard/gallery_dashboard/uploads/' . $filename;
-            // Debug - remove after fixing
-            echo "<!-- DB Path: " . htmlspecialchars($image['image_path']) . " | Constructed: " . htmlspecialchars($imagePath) . " -->";
-          ?>
-          <div class="gallery-item" onclick="openLightbox('<?= htmlspecialchars($imagePath) ?>')">
-            <img src="<?= htmlspecialchars($imagePath) ?>" 
+        <?php while ($image = pg_fetch_assoc($result)): 
+          // Use the full Supabase URL directly from the database
+          $image_url = htmlspecialchars($image['image_path']);
+        ?>
+          <div class="gallery-item" onclick="openLightbox('<?= $image_url ?>')">
+            <img src="<?= $image_url ?>" 
                  alt="Pet Gallery Image #<?= $image['id'] ?>"
-                 onerror="console.error('Image failed to load:', this.src); this.parentElement.innerHTML='<div style=\'padding:20px;text-align:center;color:#999;\'>Image not found</div>';">
+                 onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;background:#f0f0f0;color:#999;\'>Image unavailable</div>';">
             <div class="gallery-overlay">
               <i class="fas fa-search-plus"></i>
               <div class="gallery-overlay-text">Click to View</div>
@@ -2181,12 +2176,13 @@ function getServiceImage($serviceName) {
 </section>
 
 <!-- Lightbox Modal -->
-<div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
-  <div class="lightbox-content" onclick="event.stopPropagation()">
-    <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-content">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
     <img id="lightbox-img" src="" alt="Full size image">
   </div>
 </div>
+
 
 <script>
 // Lightbox functions - UPDATED
