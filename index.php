@@ -75,7 +75,7 @@ function getServiceImage($serviceName) {
   <title>PAWsig City</title>
   <link rel="stylesheet" href="./homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="./homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="homepage/images/pawsig.png">
 </head>
 <body>
   <style>
@@ -1486,16 +1486,13 @@ function getServiceImage($serviceName) {
   }
 }
 .service-section {
-  padding: 80px 20px;
+  padding: 40px 20px 60px 20px; /* top right bottom left */
   background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
 }
 
 .service-section .section-title {
-  text-align: center;
-  font-size: 2.5rem;
-  color: #2c3e50;
-  margin-bottom: 40px;
-  font-weight: 700;
+  margin-bottom: 30px;
+  padding-top: 0; /* Make sure no extra padding */
 }
 
 /* Service Grid Layout */
