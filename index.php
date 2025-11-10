@@ -1486,15 +1486,19 @@ function getServiceImage($serviceName) {
   }
 }
 .service-section {
-  padding: 0; /* top right bottom left */
+  padding: 80px 20px 80px 20px;
   background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .service-section .section-title {
   text-align: center;
   font-size: 2.5rem;
   color: #2c3e50;
-  margin-bottom: 0;
+  margin-bottom: 60px;
   font-weight: 700;
 }
 
