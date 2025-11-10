@@ -75,7 +75,7 @@ function getServiceImage($serviceName) {
   <title>PAWsig City</title>
   <link rel="stylesheet" href="./homepage/style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="/homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="./homepage/images/pawsig.png">
 </head>
 <body>
   <style>
@@ -1771,8 +1771,8 @@ function getServiceImage($serviceName) {
             PAWsig City is a pet grooming shop committed to providing quality, gentle, and professional grooming services for pets of all shapes and sizes. We believe that every pet deserves to feel clean, happy, and loved — and every pet owner deserves a hassle-free booking experience.
           </p>
           <div class="social-link-list">
-            <a href="#" class="social-link"><i class="fa-brands fa-facebook"></i></a>
-            <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/pawsigcity" class="social-link"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://www.instagram.com/pawsig_city/" class="social-link"><i class="fa-brands fa-instagram"></i></a>
           </div>
         </div>
       </div>
