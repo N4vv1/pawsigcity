@@ -231,28 +231,29 @@ if (isset($_GET['id'])) {
     }
 
     .add-btn {
-      background: var(--dark-color);
-      color: var(--white-color);
-      padding: 14px 35px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-block;
-      margin-bottom: 30px;
-      cursor: pointer;
-      border: none;
-      font-size: 1rem;
-      transition: all 0.2s;
-    }
+    background: var(--dark-color);
+    color: var(--white-color);
+    padding: 14px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 30px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    .add-btn:hover {
-      background: #1a1a1a;
-      transform: translateY(-1px);
-    }
+  .add-btn:hover {
+    background: #1a1a1a;
+    transform: translateY(-1px);
+  }
 
-    .add-btn i {
-      margin-right: 8px;
-    }
+  .add-btn i {
+    font-size: 20px;
+  }
 
     /* TABLE SECTION - MATCHING SENTIMENT DASHBOARD */
     .table-section {
