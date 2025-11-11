@@ -25,17 +25,6 @@ $result = pg_query($conn, $query);
       --secondary-color: #FFE29D;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
-      --font-size-s: 0.9rem;
-      --font-size-n: 1rem;
-      --font-size-l: 1.5rem;
-      --font-size-xl: 2rem;
-      --font-weight-semi-bold: 600;
-      --font-weight-bold: 700;
-      --border-radius-s: 8px;
-      --border-radius-circle: 50%;
-      --sidebar-width: 260px;
-      --transition-speed: 0.3s;
-      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
     * {
@@ -48,50 +37,10 @@ $result = pg_query($conn, $query);
     body {
       background: var(--light-pink-color);
       display: flex;
+      min-height: 100vh;
     }
 
-    .mobile-menu-btn {
-      display: none;
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1001;
-      background: var(--primary-color);
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      cursor: pointer;
-      box-shadow: var(--shadow-light);
-      transition: var(--transition-speed);
-    }
-
-    .mobile-menu-btn i {
-      font-size: 24px;
-      color: var(--dark-color);
-    }
-
-    .mobile-menu-btn:hover {
-      background: var(--secondary-color);
-    }
-
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 998;
-      opacity: 0;
-      transition: opacity var(--transition-speed);
-    }
-
-    .sidebar-overlay.active {
-      display: block;
-      opacity: 1;
-    }
-
+    /* SIDEBAR */
     .sidebar {
       width: 260px;
       height: 100vh;
@@ -103,10 +52,10 @@ $result = pg_query($conn, $query);
       display: flex;
       flex-direction: column;
       gap: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       overflow-y: auto;
-      box-shadow: var(--shadow-light);
-      transition: transform var(--transition-speed);
       z-index: 999;
+      transition: transform 0.3s;
     }
 
     .sidebar .logo {
@@ -117,7 +66,7 @@ $result = pg_query($conn, $query);
     .sidebar .logo img {
       width: 80px;
       height: 80px;
-      border-radius: var(--border-radius-circle);
+      border-radius: 50%;
     }
 
     .menu {
@@ -132,9 +81,9 @@ $result = pg_query($conn, $query);
       padding: 10px 12px;
       text-decoration: none;
       color: var(--dark-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 14px;
       transition: background 0.3s, color 0.3s;
-      font-weight: var(--font-weight-semi-bold);
+      font-weight: 600;
     }
 
     .menu a i {
@@ -165,9 +114,9 @@ $result = pg_query($conn, $query);
       padding: 10px 12px;
       text-decoration: none;
       color: var(--dark-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 14px;
       transition: background 0.3s, color 0.3s;
-      font-weight: var(--font-weight-semi-bold);
+      font-weight: 600;
       cursor: pointer;
     }
 
@@ -190,47 +139,60 @@ $result = pg_query($conn, $query);
       font-size: 0.9rem;
     }
 
-    .content {
+    /* MAIN CONTENT */
+    main {
       margin-left: 260px;
       padding: 40px;
-      flex-grow: 1;
       width: calc(100% - 260px);
-      transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
-    h2 {
-      font-size: var(--font-size-xl);
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
       color: var(--dark-color);
-      margin-bottom: 25px;
+      margin-bottom: 10px;
     }
 
+    .header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    /* ADD BUTTON */
     .add-btn {
-      background: var(--primary-color);
-      padding: 12px 24px;
-      border-radius: var(--border-radius-s);
-      text-decoration: none;
-      color: var(--dark-color);
-      font-weight: var(--font-weight-semi-bold);
+      background: var(--dark-color);
+      color: var(--white-color);
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 20px;
-      cursor: pointer;
-      border: none;
-      font-size: var(--font-size-n);
-      transition: background 0.3s;
+      margin-bottom: 30px;
     }
 
     .add-btn:hover {
-      background: var(--secondary-color);
+      background: #1a1a1a;
+      transform: translateY(-1px);
     }
 
-    /* Table Container */
-    .table-container {
+    .add-btn i {
+      font-size: 18px;
+    }
+
+    /* TABLE SECTION */
+    .table-section {
       background: var(--white-color);
-      border-radius: var(--border-radius-s);
-      box-shadow: var(--shadow-light);
-      overflow: hidden;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
     .table-wrapper {
@@ -243,40 +205,31 @@ $result = pg_query($conn, $query);
       min-width: 800px;
     }
 
-    thead {
-      background-color: var(--primary-color);
-    }
-
-    thead th {
-      padding: 18px 20px;
+    table th,
+    table td {
+      padding: 15px 12px;
       text-align: left;
-      font-weight: var(--font-weight-semi-bold);
-      color: var(--dark-color);
-      font-size: var(--font-size-n);
-      white-space: nowrap;
-    }
-
-    tbody tr {
       border-bottom: 1px solid #f0f0f0;
-      transition: background 0.2s;
     }
 
-    tbody tr:hover {
-      background-color: #f9f9f9;
-    }
-
-    tbody td {
-      padding: 18px 20px;
+    table th {
+      background-color: #fafafa;
       color: var(--dark-color);
-      font-size: 0.95rem;
-      vertical-align: middle;
+      font-weight: 600;
+      font-size: 0.9rem;
+      position: sticky;
+      top: 0;
+    }
+
+    table tbody tr:hover {
+      background-color: #fafafa;
     }
 
     .image-preview {
       width: 80px;
       height: 80px;
       object-fit: cover;
-      border-radius: var(--border-radius-s);
+      border-radius: 8px;
       cursor: pointer;
       transition: transform 0.3s;
       background: #f0f0f0;
@@ -293,53 +246,78 @@ $result = pg_query($conn, $query);
       align-items: center;
       justify-content: center;
       background: #ffebee;
-      border-radius: var(--border-radius-s);
+      border-radius: 8px;
       color: #c62828;
       font-size: 0.75rem;
       text-align: center;
       padding: 5px;
     }
 
-    .actions-cell {
+    .actions {
       display: flex;
       gap: 8px;
-      align-items: center;
+      flex-wrap: wrap;
     }
 
-    .btn {
-      padding: 8px 16px;
-      border-radius: var(--border-radius-s);
-      font-weight: var(--font-weight-semi-bold);
+    .actions button,
+    .actions a {
+      padding: 6px 14px;
       font-size: 0.85rem;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s;
+      font-weight: 600;
       text-decoration: none;
+      border-radius: 6px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      transition: all 0.2s;
       white-space: nowrap;
+      border: none;
+      cursor: pointer;
     }
 
-    .btn-edit {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
+    .edit-btn {
+      background: rgba(76, 175, 80, 0.1);
+      color: #4CAF50;
     }
 
-    .btn-edit:hover {
-      background-color: #fdd56c;
-    }
-
-    .btn-delete {
-      background-color: #ff6b6b;
+    .edit-btn:hover {
+      background: #4CAF50;
       color: var(--white-color);
     }
 
-    .btn-delete:hover {
-      background-color: #ff4949;
+    .delete-btn {
+      background: rgba(244, 67, 54, 0.1);
+      color: #F44336;
     }
 
-    /* Modal Styles */
+    .delete-btn:hover {
+      background: #F44336;
+      color: var(--white-color);
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      color: var(--dark-color);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .empty-state p {
+      color: #666;
+    }
+
+    /* MODAL */
     .modal {
       display: none;
       position: fixed;
@@ -355,35 +333,42 @@ $result = pg_query($conn, $query);
 
     .modal-content {
       background-color: var(--white-color);
-      padding: 2rem;
-      border-radius: var(--border-radius-s);
+      padding: 35px;
+      border-radius: 12px;
       width: 100%;
       max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .modal-content h2 {
-      margin-bottom: 1rem;
+      margin-bottom: 25px;
       color: var(--dark-color);
-      text-align: center;
+      font-weight: 600;
+      font-size: 1.5rem;
     }
 
     .close {
       position: absolute;
-      right: 1rem;
-      top: 1rem;
-      font-size: 1.5rem;
+      right: 20px;
+      top: 20px;
+      font-size: 1.8rem;
       color: var(--dark-color);
       cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .close:hover {
+      color: #F44336;
     }
 
     .file-input-wrapper {
       position: relative;
       width: 100%;
-      margin-bottom: 1.5rem;
+      margin-bottom: 25px;
     }
 
     .file-input-wrapper input[type="file"] {
@@ -393,10 +378,10 @@ $result = pg_query($conn, $query);
     .file-input-label {
       display: block;
       width: 100%;
-      padding: 0.9rem;
+      padding: 20px;
       background-color: var(--light-pink-color);
       border: 2px dashed var(--medium-gray-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 8px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
@@ -407,6 +392,25 @@ $result = pg_query($conn, $query);
       background-color: var(--white-color);
     }
 
+    .file-input-label i {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 10px;
+      color: var(--dark-color);
+    }
+
+    .file-input-label strong {
+      display: block;
+      color: var(--dark-color);
+      margin-bottom: 5px;
+    }
+
+    .file-input-label p {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
     .file-preview {
       margin-top: 15px;
       text-align: center;
@@ -415,55 +419,73 @@ $result = pg_query($conn, $query);
     .file-preview img {
       max-width: 100%;
       max-height: 300px;
-      border-radius: var(--border-radius-s);
-      box-shadow: var(--shadow-light);
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
     .input-submit {
       width: 100%;
-      padding: 0.9rem;
-      background-color: var(--primary-color);
-      color: var(--dark-color);
-      font-size: var(--font-size-n);
+      padding: 12px;
+      background-color: var(--dark-color);
+      color: var(--white-color);
+      font-size: 1rem;
       border: none;
-      border-radius: var(--border-radius-s);
-      font-weight: var(--font-weight-semi-bold);
+      border-radius: 8px;
+      font-weight: 600;
       cursor: pointer;
+      transition: background 0.2s;
     }
 
     .input-submit:hover {
-      background-color: var(--secondary-color);
+      background-color: #1a1a1a;
     }
 
+    /* TOAST */
     .toast {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 14px 20px;
+      bottom: 30px;
+      right: 30px;
+      padding: 15px 25px;
       border-radius: 8px;
       font-size: 0.95rem;
       font-weight: 600;
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       z-index: 10000;
-      animation: fadeOut 4s forwards;
+      animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-out 3.7s forwards;
     }
 
     .toast-success {
-      background-color: #eaffea;
-      color: #2d8a2d;
+      background-color: var(--dark-color);
+      color: var(--white-color);
     }
 
     .toast-error {
-      background-color: #ffeaea;
-      color: #e74c3c;
+      background-color: #F44336;
+      color: var(--white-color);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
 
     @keyframes fadeOut {
-      0%, 90% { opacity: 1; }
-      100% { opacity: 0; transform: translateY(-20px); }
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
     }
 
-    /* Image View Modal */
+    /* IMAGE VIEW MODAL */
     .image-modal {
       display: none;
       position: fixed;
@@ -486,7 +508,7 @@ $result = pg_query($conn, $query);
     .image-modal-content img {
       width: 100%;
       height: auto;
-      border-radius: var(--border-radius-s);
+      border-radius: 8px;
     }
 
     .image-modal .close {
@@ -498,19 +520,45 @@ $result = pg_query($conn, $query);
       cursor: pointer;
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #666;
+    /* MOBILE */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
-    .empty-state i {
-      font-size: 4rem;
-      color: var(--medium-gray-color);
-      margin-bottom: 20px;
+    .mobile-menu-btn i {
+      font-size: 24px;
+      color: var(--dark-color);
     }
 
-    /* Responsive */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* RESPONSIVE */
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -524,45 +572,13 @@ $result = pg_query($conn, $query);
         transform: translateX(0);
       }
 
-      .content {
+      main {
         margin-left: 0;
         width: 100%;
         padding: 80px 20px 40px;
       }
 
-      table {
-        min-width: 600px;
-      }
-
-      thead th,
-      tbody td {
-        padding: 12px 10px;
-        font-size: 0.85rem;
-      }
-
-      .image-preview {
-        width: 60px;
-        height: 60px;
-      }
-
-      .actions-cell {
-        flex-direction: column;
-        gap: 6px;
-        align-items: stretch;
-      }
-
-      .btn {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-
-    @media screen and (max-width: 480px) {
-      .content {
-        padding: 70px 15px 30px;
-      }
-
-      h2 {
+      .header h1 {
         font-size: 1.5rem;
       }
 
@@ -571,12 +587,56 @@ $result = pg_query($conn, $query);
         justify-content: center;
       }
 
+      .table-section {
+        padding: 20px;
+      }
+
+      table {
+        min-width: 600px;
+        font-size: 0.85rem;
+      }
+
+      th,
+      td {
+        padding: 10px 8px;
+      }
+
+      .image-preview {
+        width: 60px;
+        height: 60px;
+      }
+
+      .actions {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .actions button,
+      .actions a {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      main {
+        padding: 70px 15px 30px;
+      }
+
+      .header h1 {
+        font-size: 1.3rem;
+      }
+
+      .table-section {
+        padding: 15px;
+      }
+
       table {
         min-width: 500px;
       }
 
       .modal-content {
-        padding: 1.5rem;
+        padding: 25px;
       }
     }
   </style>
@@ -613,17 +673,16 @@ $result = pg_query($conn, $query);
 
     <hr>
 
-     <!-- SERVICES DROPDOWN -->
-      <div class="dropdown">
-        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
-          <span><i class='bx bx-spa'></i> Services</span>
-          <i class='bx bx-chevron-down'></i>
-        </a>
-        <div class="dropdown-menu">
-          <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
-          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
-        </div>
+    <div class="dropdown">
+      <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+        <span><i class='bx bx-spa'></i> Services</span>
+        <i class='bx bx-chevron-down'></i>
+      </a>
+      <div class="dropdown-menu">
+        <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
+        <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
       </div>
+    </div>
 
     <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
@@ -637,14 +696,20 @@ $result = pg_query($conn, $query);
 </aside>
 
 <!-- Main Content -->
-<main class="content">
-  <h2>Pet Gallery</h2>
+<main>
+  <!-- Header -->
+  <div class="header">
+    <h1>Pet Gallery</h1>
+    <p>Manage your pet gallery images</p>
+  </div>
   
+  <!-- Add Button -->
   <button class="add-btn" onclick="openAddModal()">
-    ➕ Add New Image
+    <i class='bx bx-plus'></i> Add New Image
   </button>
 
-  <div class="table-container">
+  <!-- Gallery Table -->
+  <div class="table-section">
     <div class="table-wrapper">
       <?php if (pg_num_rows($result) > 0): ?>
       <table>
@@ -658,7 +723,6 @@ $result = pg_query($conn, $query);
         </thead>
         <tbody>
           <?php while ($image = pg_fetch_assoc($result)): 
-            // Use the image_path directly from database (it's already the full Supabase URL)
             $image_url = htmlspecialchars($image['image_path']);
           ?>
           <tr>
@@ -672,16 +736,16 @@ $result = pg_query($conn, $query);
             </td>
             <td><?= date('F j, Y', strtotime($image['uploaded_at'])) ?></td>
             <td>
-              <div class="actions-cell">
-                <button class="btn btn-edit" 
+              <div class="actions">
+                <button class="edit-btn" 
                         onclick="openEditModal(<?= htmlspecialchars($image['id']) ?>, '<?= htmlspecialchars($image['image_path'], ENT_QUOTES) ?>', '<?= $image_url ?>')">
-                  Edit
+                  <i class='bx bx-edit'></i> Edit
                 </button>
                 <form method="POST" action="delete_image.php" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this image?')">
                   <input type="hidden" name="image_id" value="<?= htmlspecialchars($image['id']) ?>">
                   <input type="hidden" name="image_path" value="<?= htmlspecialchars($image['image_path']) ?>">
-                  <button type="submit" class="btn btn-delete">
-                    Delete
+                  <button type="submit" class="delete-btn">
+                    <i class='bx bx-trash'></i> Delete
                   </button>
                 </form>
               </div>
@@ -710,9 +774,9 @@ $result = pg_query($conn, $query);
       <div class="file-input-wrapper">
         <input type="file" id="imageFile" name="image" accept="image/*" required onchange="previewImage(this, 'addPreview')">
         <label for="imageFile" class="file-input-label">
-          <i class='bx bx-upload' style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+          <i class='bx bx-upload'></i>
           <strong>Choose Image File</strong>
-          <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">JPG, PNG, GIF, WEBP (Max 5MB)</p>
+          <p>JPG, PNG, GIF, WEBP (Max 5MB)</p>
         </label>
         <div id="addPreview" class="file-preview"></div>
       </div>
@@ -733,16 +797,16 @@ $result = pg_query($conn, $query);
       <input type="hidden" id="edit_image_id" name="image_id">
       <input type="hidden" id="edit_current_path" name="current_image_path">
 
-      <div class="file-preview" id="editCurrentImage" style="margin-bottom: 15px;">
-        <p style="margin-bottom: 10px; font-weight: 600;">Current Image:</p>
+      <div class="file-preview" id="editCurrentImage" style="margin-bottom: 20px;">
+        <p style="margin-bottom: 10px; font-weight: 600; color: var(--dark-color);">Current Image:</p>
       </div>
 
       <div class="file-input-wrapper">
         <input type="file" id="editImageFile" name="image" accept="image/*" required onchange="previewImage(this, 'editPreview')">
         <label for="editImageFile" class="file-input-label">
-          <i class='bx bx-upload' style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
+          <i class='bx bx-upload'></i>
           <strong>Choose New Image</strong>
-          <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">JPG, PNG, GIF, WEBP (Max 5MB)</p>
+          <p>JPG, PNG, GIF, WEBP (Max 5MB)</p>
         </label>
         <div id="editPreview" class="file-preview"></div>
       </div>
@@ -762,31 +826,27 @@ $result = pg_query($conn, $query);
   </div>
 </div>
 
+<!-- Toast Notification -->
+<?php if (isset($_SESSION['success'])): ?>
+  <div class="toast toast-success"><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
+<?php elseif (isset($_SESSION['error'])): ?>
+  <div class="toast toast-error"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
+<?php endif; ?>
+
 <script>
 function toggleDropdown(event) {
   event.preventDefault();
   event.stopPropagation();
   const dropdown = event.currentTarget.nextElementSibling;
-  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  const isVisible = dropdown.style.display === 'block';
+  dropdown.style.display = isVisible ? 'none' : 'block';
 }
-
-document.addEventListener('click', function(event) {
-  if (!event.target.closest('.dropdown')) {
-    const dropdowns = document.getElementsByClassName("dropdown-menu");
-    for (let i = 0; i < dropdowns.length; i++) {
-      dropdowns[i].style.display = 'none';
-    }
-  }
-});
 
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
-  
-  if (sidebar && overlay) {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-  }
+  sidebar.classList.toggle('active');
+  overlay.classList.toggle('active');
 }
 
 function openAddModal() {
@@ -800,20 +860,16 @@ function closeAddModal() {
 }
 
 function openEditModal(id, dbImagePath, displayUrl) {
-  // Set the hidden form fields
   document.getElementById('edit_image_id').value = id;
   document.getElementById('edit_current_path').value = dbImagePath;
   
-  // Show current image using the display URL
   document.getElementById('editCurrentImage').innerHTML = 
-    '<p style="margin-bottom: 10px; font-weight: 600;">Current Image:</p>' +
+    '<p style="margin-bottom: 10px; font-weight: 600; color: var(--dark-color);">Current Image:</p>' +
     '<img src="' + displayUrl + '" style="max-width: 100%; max-height: 200px; border-radius: 8px;" onerror="this.parentElement.innerHTML=\'<p>Current image unavailable</p>\';">';
   
-  // Clear any previous preview
   document.getElementById('editPreview').innerHTML = '';
   document.getElementById('editImageFile').value = '';
   
-  // Show the modal
   document.getElementById('editModal').style.display = 'flex';
 }
 
@@ -845,20 +901,27 @@ function previewImage(input, previewId) {
   }
 }
 
-window.onclick = function(event) {
+// Close modals when clicking outside
+document.addEventListener('click', function(event) {
   const addModal = document.getElementById('addModal');
   const editModal = document.getElementById('editModal');
   
   if (event.target === addModal) closeAddModal();
   if (event.target === editModal) closeEditModal();
-}
-</script>
+});
 
-<?php if (isset($_SESSION['success'])): ?>
-  <div class="toast toast-success"><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
-<?php elseif (isset($_SESSION['error'])): ?>
-  <div class="toast toast-error"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
-<?php endif; ?>
+// Close sidebar on mobile when clicking menu links
+document.addEventListener('DOMContentLoaded', function() {
+  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
+  menuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        toggleSidebar();
+      }
+    });
+  });
+});
+</script>
 
 </body>
 </html>

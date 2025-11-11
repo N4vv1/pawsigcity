@@ -90,9 +90,8 @@ if (isset($_GET['id'])) {
       --secondary-color: #FFE29D;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
-      --positive-color: #4CAF50;
-      --neutral-color: #FF9800;
-      --negative-color: #F44336;
+      --edit-color: #4CAF50;
+      --delete-color: #F44336;
     }
 
     * {
@@ -230,32 +229,33 @@ if (isset($_GET['id'])) {
       font-size: 0.95rem;
     }
 
+    /* ADD BUTTON - UPDATED */
     .add-btn {
-    background: var(--dark-color);
-    color: var(--white-color);
-    padding: 14px 30px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
+      background: var(--dark-color);
+      color: var(--white-color);
+      padding: 14px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  .add-btn:hover {
-    background: #1a1a1a;
-    transform: translateY(-1px);
-  }
+    .add-btn:hover {
+      background: #1a1a1a;
+      transform: translateY(-1px);
+    }
 
-  .add-btn i {
-    font-size: 20px;
-  }
+    .add-btn i {
+      font-size: 20px;
+    }
 
-    /* TABLE SECTION - MATCHING SENTIMENT DASHBOARD */
+    /* TABLE SECTION */
     .table-section {
       background: var(--white-color);
       padding: 35px;
@@ -307,17 +307,17 @@ if (isset($_GET['id'])) {
 
     .role-badge.admin {
       background: rgba(244, 67, 54, 0.1);
-      color: var(--negative-color);
+      color: var(--delete-color);
     }
 
     .role-badge.customer {
       background: rgba(76, 175, 80, 0.1);
-      color: var(--positive-color);
+      color: var(--edit-color);
     }
 
     .role-badge.groomer {
       background: rgba(255, 152, 0, 0.1);
-      color: var(--neutral-color);
+      color: #FF9800;
     }
 
     .role-badge.receptionist {
@@ -325,6 +325,7 @@ if (isset($_GET['id'])) {
       color: #2d8a5d;
     }
 
+    /* UPDATED ACTION BUTTONS */
     .actions {
       display: flex;
       gap: 8px;
@@ -336,28 +337,30 @@ if (isset($_GET['id'])) {
       font-weight: 600;
       text-decoration: none;
       border-radius: 6px;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       transition: all 0.2s;
     }
 
     .edit-btn {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--edit-color);
     }
 
     .edit-btn:hover {
-      background-color: #fdd56c;
-      transform: translateY(-1px);
-    }
-
-    .delete-btn {
-      background-color: #ff6b6b;
+      background: var(--edit-color);
       color: var(--white-color);
     }
 
+    .delete-btn {
+      background: rgba(244, 67, 54, 0.1);
+      color: var(--delete-color);
+    }
+
     .delete-btn:hover {
-      background-color: #ff4949;
-      transform: translateY(-1px);
+      background: var(--delete-color);
+      color: var(--white-color);
     }
 
     /* MODAL */
@@ -376,7 +379,7 @@ if (isset($_GET['id'])) {
 
     .modal-content {
       background-color: var(--white-color);
-      padding: 2rem;
+      padding: 35px;
       border-radius: 12px;
       width: 100%;
       max-width: 500px;
@@ -384,92 +387,85 @@ if (isset($_GET['id'])) {
       overflow-y: auto;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .modal-content h2 {
-      margin-bottom: 1.5rem;
+      margin-bottom: 25px;
       color: var(--dark-color);
-      text-align: center;
       font-size: 1.5rem;
+      font-weight: 600;
     }
 
     .close {
       position: absolute;
-      right: 1rem;
-      top: 1rem;
-      font-size: 1.5rem;
-      color: var(--dark-color);
+      right: 20px;
+      top: 20px;
+      font-size: 1.8rem;
+      color: #999;
       cursor: pointer;
       transition: color 0.2s;
     }
 
     .close:hover {
-      color: var(--negative-color);
+      color: var(--dark-color);
     }
 
     /* Input Form Styles */
     .input_box {
       position: relative;
-      margin-bottom: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .input_box label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+      font-weight: 500;
+      font-size: 0.9rem;
     }
 
     .input-field {
       width: 100%;
-      padding: 0.9rem 2.5rem;
-      border: 1px solid var(--medium-gray-color);
+      padding: 12px 15px;
+      border: 1px solid #ddd;
       border-radius: 8px;
       background-color: var(--light-pink-color);
       font-size: 1rem;
       color: var(--dark-color);
+      transition: all 0.2s;
     }
 
     .input-field:focus {
       outline: none;
       border-color: var(--primary-color);
       background-color: var(--white-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
     }
 
-    .label {
-      position: absolute;
-      left: 2.5rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.9rem;
-      color: var(--dark-color);
-      transition: 0.3s ease;
-      pointer-events: none;
-    }
-
-    .input-field:focus + .label,
-    .input-field:valid + .label {
-      top: -0.6rem;
-      left: 1rem;
-      background-color: var(--white-color);
-      padding: 0 0.3rem;
-      font-size: 0.75rem;
-      color: var(--primary-color);
-    }
-
-    .icon {
-      position: absolute;
-      top: 50%;
-      left: 0.8rem;
-      transform: translateY(-50%);
-      font-size: 1.2rem;
-      color: var(--dark-color);
-    }
-
+    /* SUBMIT BUTTON - UPDATED */
     .input-submit {
       width: 100%;
-      padding: 0.9rem;
-      background-color: var(--dark-color);
-      color: var(--white-color);
-      font-size: 1rem;
-      border: none;
+      padding: 14px;
       border-radius: 8px;
+      border: none;
+      background-color: var(--dark-color);
       font-weight: 600;
+      color: var(--white-color);
       cursor: pointer;
       transition: all 0.2s;
+      font-size: 1rem;
     }
 
     .input-submit:hover {
@@ -486,12 +482,11 @@ if (isset($_GET['id'])) {
       border-radius: 8px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       z-index: 10000;
-      display: none;
-      animation: slideIn 0.3s ease-out;
-      font-weight: 600;
+      animation: slideInToast 0.3s ease-out;
+      font-weight: 500;
     }
 
-    @keyframes slideIn {
+    @keyframes slideInToast {
       from {
         transform: translateX(400px);
         opacity: 0;
@@ -503,12 +498,12 @@ if (isset($_GET['id'])) {
     }
 
     .toast-success {
-      background-color: var(--dark-color);
+      background: var(--edit-color);
       color: white;
     }
 
     .toast-error {
-      background-color: var(--negative-color);
+      background: var(--delete-color);
       color: white;
     }
 
@@ -602,7 +597,7 @@ if (isset($_GET['id'])) {
 
       .modal-content {
         width: 95%;
-        padding: 20px;
+        padding: 25px;
       }
     }
 
@@ -656,8 +651,8 @@ if (isset($_GET['id'])) {
         <span><i class='bx bx-user'></i> Users</span>
         <i class='bx bx-chevron-down'></i>
       </a>
-      <div class="dropdown-menu">
-        <a href="../manage_accounts/accounts.php"><i class='bx bx-user-circle'></i> All Users</a>
+      <div class="dropdown-menu" style="display: block;">
+        <a href="../manage_accounts/accounts.php" class="active"><i class='bx bx-user-circle'></i> All Users</a>
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
       </div>
     </div>
@@ -732,8 +727,12 @@ if (isset($_GET['id'])) {
             </td>
             <td>
               <div class="actions">
-                <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">Edit</a>
-                <a href="delete.php?id=<?= $user['user_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+                <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">
+                  <i class='bx bx-edit'></i> Edit
+                </a>
+                <a href="delete.php?id=<?= $user['user_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this user?')">
+                  <i class='bx bx-trash'></i> Delete
+                </a>
               </div>
             </td>
           </tr>
@@ -754,42 +753,37 @@ if (isset($_GET['id'])) {
       <input type="hidden" name="create_user" value="1">
 
       <div class="input_box">
-        <input type="text" class="input-field" name="first_name" required />
-        <label class="label">First Name</label>
-        <i class='bx bx-user icon'></i>
+        <label>First Name</label>
+        <input type="text" class="input-field" name="first_name" placeholder="Enter first name" required />
       </div>
 
       <div class="input_box">
-        <input type="text" class="input-field" name="middle_name" />
-        <label class="label">Middle Name</label>
-        <i class='bx bx-user icon'></i>
+        <label>Middle Name</label>
+        <input type="text" class="input-field" name="middle_name" placeholder="Enter middle name (optional)" />
       </div>
 
       <div class="input_box">
-        <input type="text" class="input-field" name="last_name" required />
-        <label class="label">Last Name</label>
-        <i class='bx bx-user icon'></i>
+        <label>Last Name</label>
+        <input type="text" class="input-field" name="last_name" placeholder="Enter last name" required />
       </div>
 
       <div class="input_box">
-        <input type="email" class="input-field" name="email" required />
-        <label class="label">Email</label>
-        <i class='bx bx-envelope icon'></i>
+        <label>Email Address</label>
+        <input type="email" class="input-field" name="email" placeholder="Enter email address" required />
       </div>
 
       <div class="input_box">
-        <input type="password" class="input-field" name="password" required />
-        <label class="label">Password</label>
-        <i class='bx bx-lock-alt icon'></i>
+        <label>Password</label>
+        <input type="password" class="input-field" name="password" placeholder="Enter password" required />
       </div>
 
       <div class="input_box">
-        <input type="text" class="input-field" name="phone" required />
-        <label class="label">Phone Number</label>
-        <i class='bx bx-phone icon'></i>
+        <label>Phone Number</label>
+        <input type="text" class="input-field" name="phone" placeholder="Enter phone number" required />
       </div>
 
       <div class="input_box">
+        <label>Role</label>
         <select class="input-field" name="role" required>
           <option value="" disabled selected>Select Role</option>
           <option value="admin">Admin</option>
@@ -797,13 +791,9 @@ if (isset($_GET['id'])) {
           <option value="groomer">Groomer</option>
           <option value="receptionist">Receptionist</option>
         </select>
-        <label class="label">Role</label>
-        <i class='bx bx-id-card icon'></i>
       </div>
       
-      <div class="input_box">
-        <input type="submit" class="input-submit" value="Create Account" />
-      </div>
+      <input type="submit" class="input-submit" value="Create User Account" />
     </form>
   </div>
 </div>
@@ -818,45 +808,35 @@ if (isset($_GET['id'])) {
       <input type="hidden" name="user_id" value="<?= $edit_user['user_id'] ?>">
       
       <div class="input_box">
+        <label>First Name</label>
         <input type="text" name="first_name" class="input-field" value="<?= htmlspecialchars($edit_user['first_name']) ?>" required>
-        <label class="label">First Name</label>
-        <i class='bx bx-user icon'></i>
       </div>
 
       <div class="input_box">
+        <label>Middle Name</label>
         <input type="text" name="middle_name" class="input-field" value="<?= htmlspecialchars($edit_user['middle_name']) ?>">
-        <label class="label">Middle Name</label>
-        <i class='bx bx-user icon'></i>
       </div>
 
       <div class="input_box">
+        <label>Last Name</label>
         <input type="text" name="last_name" class="input-field" value="<?= htmlspecialchars($edit_user['last_name']) ?>" required>
-        <label class="label">Last Name</label>
-        <i class='bx bx-user icon'></i>
       </div>
 
       <div class="input_box">
+        <label>Email Address</label>
         <input type="email" name="email" class="input-field" value="<?= htmlspecialchars($edit_user['email']) ?>" required>
-        <label class="label">Email</label>
-        <i class='bx bx-envelope icon'></i>
       </div>
 
       <div class="input_box">
+        <label>Phone Number</label>
         <input type="text" name="phone" class="input-field" value="<?= htmlspecialchars($edit_user['phone']) ?>" required>
-        <label class="label">Phone</label>
-        <i class='bx bx-phone icon'></i>
       </div>
 
-      <div class="input_box">
-        <input type="submit" name="update_user" class="input-submit" value="Update User">
-      </div>
+      <input type="submit" name="update_user" class="input-submit" value="Update User">
     </form>
   </div>
 </div>
 <?php endif; ?>
-
-<!-- Toast Notification -->
-<div id="toast" class="toast"></div>
 
 <script>
 function toggleDropdown(event) {
@@ -918,22 +898,24 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
-  
-  // Show toast if exists
-  <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
-    const toast = document.getElementById('toast');
-    <?php if (isset($_SESSION['success'])): ?>
-      toast.className = 'toast toast-success';
-      toast.textContent = '✅ <?= $_SESSION['success']; unset($_SESSION['success']); ?>';
-    <?php elseif (isset($_SESSION['error'])): ?>
-      toast.className = 'toast toast-error';
-      toast.textContent = '❌ <?= $_SESSION['error']; unset($_SESSION['error']); ?>';
-    <?php endif; ?>
-    toast.style.display = 'block';
-    setTimeout(() => toast.style.display = 'none', 4000);
-  <?php endif; ?>
 });
 </script>
+
+<?php if (isset($_SESSION['success'])): ?>
+  <div class="toast toast-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+  <script>
+    setTimeout(() => {
+      document.querySelector('.toast').style.display = 'none';
+    }, 4000);
+  </script>
+<?php elseif (isset($_SESSION['error'])): ?>
+  <div class="toast toast-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+  <script>
+    setTimeout(() => {
+      document.querySelector('.toast').style.display = 'none';
+    }, 4000);
+  </script>
+<?php endif; ?>
 
 </body>
 </html>
