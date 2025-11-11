@@ -264,22 +264,30 @@ if (isset($_GET['id'])) {
       margin-bottom: 25px;
     }
 
-    .add-btn {
-      background: var(--primary-color);
-      padding: 10px 20px;
-      border-radius: var(--border-radius-s);
-      text-decoration: none;
-      color: var(--dark-color);
-      font-weight: var(--font-weight-semi-bold);
-      display: inline-block;
-      margin-bottom: 20px;
-      cursor: pointer;
-      border: none;
-    }
+   .add-btn {
+  background: var(--dark-color);
+  color: var(--white-color);
+  padding: 14px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .add-btn:hover {
-      background: var(--secondary-color);
-    }
+.add-btn:hover {
+  background: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+.add-btn i {
+  font-size: 20px;
+}
 
     .table-wrapper {
   background: var(--white-color);
@@ -605,10 +613,15 @@ tbody tr:hover {
         font-size: 1.8rem;
       }
       
+       .header h1 {
+    font-size: 1.5rem;
+      }
+      
       .add-btn {
         padding: 12px 20px;
         font-size: 0.95rem;
       }
+    }
       
       .table-wrapper {
         margin: 0 -20px;
@@ -663,11 +676,22 @@ tbody tr:hover {
         margin-bottom: 15px;
       }
       
-      .add-btn {
-        width: 100%;
-        padding: 12px;
-        text-align: center;
-      }
+       .header h1 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+  }
+  
+  .header p {
+    font-size: 0.85rem;
+  }
+  
+  .add-btn {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    justify-content: center;
+  }
+}
 
       .sidebar .logo img {
         width: 60px;

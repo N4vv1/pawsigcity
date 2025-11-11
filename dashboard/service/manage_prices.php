@@ -249,7 +249,20 @@ if (isset($_GET['edit'])) {
       border-top: 1px solid var(--secondary-color);
       margin: 9px 0;
     }
+    .header {
+  margin-bottom: 30px;
+}
 
+.header h1 {
+  font-size: 2rem;
+  color: var(--dark-color);
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: #666;
+  font-size: 0.95rem;
+}
     .dropdown {
       position: relative;
     }
@@ -300,111 +313,150 @@ if (isset($_GET['edit'])) {
       margin-bottom: 10px;
     }
 
-    .service-info {
-      background: var(--white-color);
-      padding: 20px;
-      border-radius: var(--border-radius-s);
-      margin-bottom: 25px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
+ .service-info {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
 
-    .service-info h3 {
-      color: var(--primary-color);
-      margin-bottom: 10px;
-    }
+.service-info h3 {
+  color: var(--dark-color);
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
 
-    .service-info p {
-      color: #666;
-      line-height: 1.6;
-    }
+.service-info p {
+  color: var(--dark-color);
+  line-height: 1.6;
+  opacity: 0.9;
+}
 
-    .back-btn {
-      background: #6c757d;
-      padding: 10px 20px;
-      border-radius: var(--border-radius-s);
-      text-decoration: none;
-      color: var(--white-color);
-      font-weight: var(--font-weight-semi-bold);
-      display: inline-block;
-      margin-bottom: 20px;
-      margin-right: 10px;
-    }
+   .back-btn {
+  background: #6c757d;
+  padding: 10px 20px;
+  border-radius: var(--border-radius-s);
+  text-decoration: none;
+  color: var(--white-color);
+  font-weight: var(--font-weight-semi-bold);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  margin-right: 10px;
+  transition: all 0.2s;
+}
 
-    .back-btn:hover {
-      background: #5a6268;
-    }
+.back-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
 
-    .add-btn {
-      background: var(--primary-color);
-      padding: 10px 20px;
-      border-radius: var(--border-radius-s);
-      text-decoration: none;
-      color: var(--dark-color);
-      font-weight: var(--font-weight-semi-bold);
-      display: inline-block;
-      margin-bottom: 20px;
-      cursor: pointer;
-      border: none;
-    }
+.back-btn i {
+  font-size: 18px;
+}
 
-    .add-btn:hover {
-      background: var(--secondary-color);
-    }
+.add-btn {
+  background: var(--dark-color);
+  color: var(--white-color);
+  padding: 14px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      margin-bottom: 20px;
-    }
+.add-btn:hover {
+  background: #1a1a1a;
+  transform: translateY(-1px);
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: var(--white-color);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      min-width: 700px;
-    }
+.add-btn i {
+  font-size: 20px;
+}
 
-    th, td {
-      padding: 14px 10px;
-      border: 1px solid var(--medium-gray-color);
-      text-align: center;
-    }
+  .table-wrapper {
+  background: var(--white-color);
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
 
-    th {
-      background: var(--primary-color);
-      font-weight: var(--font-weight-bold);
-      color: var(--dark-color);
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: transparent;
+  box-shadow: none;
+  min-width: 700px;
+}
 
-    .actions a {
-      padding: 6px 14px;
-      font-size: var(--font-size-s);
-      font-weight: var(--font-weight-semi-bold);
-      text-decoration: none;
-      margin: 0 5px;
-      border-radius: var(--border-radius-s);
-      display: inline-block;
-    }
+th, td {
+  padding: 15px 12px;
+  text-align: left;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+}
 
-    .edit-btn {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
-    }
+th {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: var(--dark-color);
+  font-size: 0.9rem;
+  position: sticky;
+  top: 0;
+}
 
-    .edit-btn:hover {
-      background-color: #fdd56c;
-    }
+tbody tr:hover {
+  background-color: #fafafa;
+}
 
-    .delete-btn {
-      background-color: #ff6b6b;
-      color: var(--white-color);
-    }
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-    .delete-btn:hover {
-      background-color: #ff4949;
-    }
+.actions a {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.edit-btn {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.edit-btn:hover {
+  background: #4CAF50;
+  color: var(--white-color);
+}
+
+.delete-btn {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
+
+.delete-btn:hover {
+  background: #F44336;
+  color: var(--white-color);
+}
 
     .empty-state {
       text-align: center;
@@ -591,32 +643,52 @@ if (isset($_GET['edit'])) {
         font-size: 1.6rem;
       }
       
-      .add-btn, .back-btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-      }
-      
-      .table-wrapper {
-        margin: 0 -20px;
-        padding: 0 20px;
-      }
-      
-      table {
-        font-size: 0.85rem;
-      }
+       .add-btn, .back-btn {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+  
+  .table-wrapper {
+    padding: 20px;
+  }
+  
+  table {
+    font-size: 0.85rem;
+  }
 
-      th, td {
-        padding: 10px 8px;
-        white-space: nowrap;
-      }
-
-      .modal-content {
-        width: 95%;
-        padding: 20px;
-      }
-    }
+  th, td {
+    padding: 10px 8px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .actions a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+ .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .service-info {
+    padding: 20px;
+  }
+  
+  .service-info h3 {
+    font-size: 1.1rem;
+  }
 
     @media screen and (max-width: 480px) {
+       .header h1 {
+    font-size: 1.3rem;
+  }
+   .header p {
+    font-size: 0.85rem;
+  }
       .content {
         padding: 70px 15px 30px;
       }
@@ -625,25 +697,31 @@ if (isset($_GET['edit'])) {
         font-size: 1.4rem;
       }
 
-      .service-info {
-        padding: 15px;
-      }
+       .service-info {
+    padding: 15px;
+  }
+  
+  .service-info h3 {
+    font-size: 1rem;
+  }
 
-      .add-btn, .back-btn {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-      }
-      
-      table {
-        min-width: 650px;
-        font-size: 0.75rem;
-      }
+  .add-btn, .back-btn {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  table {
+    min-width: 650px;
+    font-size: 0.75rem;
+  }
 
-      th, td {
-        padding: 8px 5px;
-      }
-    }
+  th, td {
+    padding: 8px 5px;
+  }
+}
   </style>
 </head>
 <body>
@@ -702,52 +780,69 @@ if (isset($_GET['edit'])) {
 </aside>
 
 <!-- Main Content -->
+<!-- Main Content -->
 <main class="content">
-  <h2>Manage Pricing</h2>
+  <!-- Header -->
+  <div class="header">
+    <h1>Manage Pricing</h1>
+    <p>Configure pricing tiers for <?= htmlspecialchars($service['name']) ?></p>
+  </div>
   
   <div class="service-info">
     <h3><?= htmlspecialchars($service['name']) ?></h3>
     <p><?= htmlspecialchars($service['description']) ?></p>
   </div>
 
-  <a href="services.php" class="back-btn">← Back to Services</a>
-  <button class="add-btn" onclick="openModal()">➕ Add Price Tier</button>
+  <a href="services.php" class="back-btn">
+    <i class='bx bx-arrow-back'></i> Back to Services
+  </a>
+  <button class="add-btn" onclick="openModal()">
+    <i class='bx bx-plus'></i> Add Price Tier
+  </button>
   
   <?php if (pg_num_rows($prices) > 0): ?>
   <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Species</th>
-          <th>Size</th>
-          <th>Weight Range</th>
-          <th>Price</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($price = pg_fetch_assoc($prices)): ?>
-        <tr>
-          <td><strong><?= htmlspecialchars($price['species']) ?></strong></td>
-          <td><?= htmlspecialchars($price['size'] ?: 'N/A') ?></td>
-          <td>
-            <?php if ($price['min_weight'] && $price['max_weight']): ?>
-              <?= htmlspecialchars($price['min_weight']) ?> - <?= htmlspecialchars($price['max_weight']) ?>
-            <?php elseif ($price['min_weight']): ?>
-              <?= htmlspecialchars($price['min_weight']) ?>
-            <?php else: ?>
-              <span style="color: #999;">No weight range</span>
-            <?php endif; ?>
-          </td>
-          <td><strong style="color: var(--primary-color);">₱<?= number_format($price['price'], 2) ?></strong></td>
-          <td class="actions">
-            <a href="?id=<?= $package_id ?>&edit=<?= $price['price_id'] ?>" class="edit-btn">Edit</a>
-            <a href="?id=<?= $package_id ?>&delete_price=<?= $price['price_id'] ?>" class="delete-btn" onclick="return confirm('Delete this price?')">Delete</a>
-          </td>
-        </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Species</th>
+            <th>Size</th>
+            <th>Weight Range</th>
+            <th>Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php while ($price = pg_fetch_assoc($prices)): ?>
+          <tr>
+            <td><strong><?= htmlspecialchars($price['species']) ?></strong></td>
+            <td><?= htmlspecialchars($price['size'] ?: 'N/A') ?></td>
+            <td>
+              <?php if ($price['min_weight'] && $price['max_weight']): ?>
+                <?= htmlspecialchars($price['min_weight']) ?> - <?= htmlspecialchars($price['max_weight']) ?> kg
+              <?php elseif ($price['min_weight']): ?>
+                <?= htmlspecialchars($price['min_weight']) ?> kg+
+              <?php else: ?>
+                <span style="color: #999;">No weight range</span>
+              <?php endif; ?>
+            </td>
+            <td><strong style="color: #4CAF50;">₱<?= number_format($price['price'], 2) ?></strong></td>
+            <td>
+              <div class="actions">
+                <a href="?id=<?= $package_id ?>&edit=<?= $price['price_id'] ?>" class="edit-btn">
+                  <i class='bx bx-edit'></i> Edit
+                </a>
+                <a href="?id=<?= $package_id ?>&delete_price=<?= $price['price_id'] ?>" class="delete-btn" onclick="return confirm('Delete this price?')">
+                  <i class='bx bx-trash'></i> Delete
+                </a>
+              </div>
+            </td>
+          </tr>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
+    </div>
   </div>
   <?php else: ?>
   <div class="empty-state">
@@ -756,7 +851,6 @@ if (isset($_GET['edit'])) {
     <p>Click "Add Price Tier" to create pricing for this service.</p>
   </div>
   <?php endif; ?>
-
   <!-- Add Price Modal -->
   <div id="priceModal" class="modal">
     <div class="modal-content">
