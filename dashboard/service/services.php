@@ -85,17 +85,8 @@ if (isset($_GET['id'])) {
       --secondary-color: #FFE29D;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
-      --font-size-s: 0.9rem;
-      --font-size-n: 1rem;
-      --font-size-l: 1.5rem;
-      --font-size-xl: 2rem;
-      --font-weight-semi-bold: 600;
-      --font-weight-bold: 700;
-      --border-radius-s: 8px;
-      --border-radius-circle: 50%;
-      --sidebar-width: 260px;
-      --transition-speed: 0.3s;
-      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+      --edit-color: #4CAF50;
+      --delete-color: #F44336;
     }
 
     * {
@@ -108,8 +99,10 @@ if (isset($_GET['id'])) {
     body {
       background: var(--light-pink-color);
       display: flex;
+      min-height: 100vh;
     }
 
+    /* MOBILE MENU BUTTON */
     .mobile-menu-btn {
       display: none;
       position: fixed;
@@ -121,8 +114,8 @@ if (isset($_GET['id'])) {
       border-radius: 8px;
       padding: 12px;
       cursor: pointer;
-      box-shadow: var(--shadow-light);
-      transition: var(--transition-speed);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: 0.3s;
     }
 
     .mobile-menu-btn i {
@@ -134,6 +127,7 @@ if (isset($_GET['id'])) {
       background: var(--secondary-color);
     }
 
+    /* SIDEBAR OVERLAY */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -144,7 +138,7 @@ if (isset($_GET['id'])) {
       background: rgba(0, 0, 0, 0.5);
       z-index: 998;
       opacity: 0;
-      transition: opacity var(--transition-speed);
+      transition: opacity 0.3s;
     }
 
     .sidebar-overlay.active {
@@ -152,6 +146,7 @@ if (isset($_GET['id'])) {
       opacity: 1;
     }
 
+    /* SIDEBAR */
     .sidebar {
       width: 260px;
       height: 100vh;
@@ -164,8 +159,8 @@ if (isset($_GET['id'])) {
       flex-direction: column;
       gap: 20px;
       overflow-y: auto;
-      box-shadow: var(--shadow-light);
-      transition: transform var(--transition-speed);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s;
       z-index: 999;
     }
 
@@ -177,7 +172,7 @@ if (isset($_GET['id'])) {
     .sidebar .logo img {
       width: 80px;
       height: 80px;
-      border-radius: var(--border-radius-circle);
+      border-radius: 50%;
     }
 
     .menu {
@@ -192,9 +187,9 @@ if (isset($_GET['id'])) {
       padding: 10px 12px;
       text-decoration: none;
       color: var(--dark-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 8px;
       transition: background 0.3s, color 0.3s;
-      font-weight: var(--font-weight-semi-bold);
+      font-weight: 600;
     }
 
     .menu a i {
@@ -214,6 +209,7 @@ if (isset($_GET['id'])) {
       margin: 9px 0;
     }
 
+    /* DROPDOWN */
     .dropdown {
       position: relative;
     }
@@ -225,9 +221,9 @@ if (isset($_GET['id'])) {
       padding: 10px 12px;
       text-decoration: none;
       color: var(--dark-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 8px;
       transition: background 0.3s, color 0.3s;
-      font-weight: var(--font-weight-semi-bold);
+      font-weight: 600;
       cursor: pointer;
     }
 
@@ -250,163 +246,181 @@ if (isset($_GET['id'])) {
       font-size: 0.9rem;
     }
 
+    /* MAIN CONTENT */
     .content {
       margin-left: 260px;
       padding: 40px;
       flex-grow: 1;
       width: calc(100% - 260px);
-      transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
-    h2 {
-      font-size: var(--font-size-xl);
+    /* HEADER */
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
       color: var(--dark-color);
-      margin-bottom: 25px;
+      margin-bottom: 10px;
     }
 
-   .add-btn {
-  background: var(--dark-color);
-  color: var(--white-color);
-  padding: 14px 30px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: 30px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
+    .header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
 
-.add-btn:hover {
-  background: #1a1a1a;
-  transform: translateY(-1px);
-}
+    /* ADD BUTTON */
+    .add-btn {
+      background: var(--dark-color);
+      color: var(--white-color);
+      padding: 14px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.add-btn i {
-  font-size: 20px;
-}
+    .add-btn:hover {
+      background: #1a1a1a;
+      transform: translateY(-1px);
+    }
 
+    .add-btn i {
+      font-size: 20px;
+    }
+
+    /* TABLE SECTION */
     .table-wrapper {
-  background: var(--white-color);
-  padding: 35px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  margin-bottom: 20px;
-}
+      background: var(--white-color);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
+    }
 
-.table-wrapper h3 {
-  font-size: 1.3rem;
-  margin-bottom: 25px;
-  color: var(--dark-color);
-  font-weight: 600;
-}
+    .table-wrapper h3 {
+      font-size: 1.3rem;
+      margin-bottom: 25px;
+      color: var(--dark-color);
+      font-weight: 600;
+    }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: transparent;
-  box-shadow: none;
-  min-width: 800px;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: transparent;
+      box-shadow: none;
+      min-width: 800px;
+    }
 
-th, td {
-  padding: 15px 12px;
-  text-align: left;
-  border: none;
-  border-bottom: 1px solid #f0f0f0;
-}
+    th, td {
+      padding: 15px 12px;
+      text-align: left;
+      border: none;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.95rem;
+    }
 
-th {
-  background-color: #fafafa;
-  font-weight: 600;
-  color: var(--dark-color);
-  font-size: 0.9rem;
-  position: sticky;
-  top: 0;
-}
+    th {
+      background-color: #fafafa;
+      font-weight: 600;
+      color: var(--dark-color);
+      font-size: 0.9rem;
+      position: sticky;
+      top: 0;
+    }
 
-tbody tr:hover {
-  background-color: #fafafa;
-}
+    tbody tr:hover {
+      background-color: #fafafa;
+    }
 
-.status-badge {
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: inline-block;
-}
+    /* STATUS BADGE */
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-block;
+    }
 
-.status-active {
-  background: rgba(76, 175, 80, 0.1);
-  color: #4CAF50;
-}
+    .status-active {
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--edit-color);
+    }
 
-.status-inactive {
-  background: rgba(244, 67, 54, 0.1);
-  color: #F44336;
-}
+    .status-inactive {
+      background: rgba(244, 67, 54, 0.1);
+      color: var(--delete-color);
+    }
 
-.actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+    /* ACTION BUTTONS */
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-.actions a {
-  padding: 6px 14px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 6px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
+    .actions a {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
 
-.view-btn {
-  background: rgba(23, 162, 184, 0.1);
-  color: #17a2b8;
-}
+    .view-btn {
+      background: rgba(23, 162, 184, 0.1);
+      color: #17a2b8;
+    }
 
-.view-btn:hover {
-  background: #17a2b8;
-  color: var(--white-color);
-}
+    .view-btn:hover {
+      background: #17a2b8;
+      color: var(--white-color);
+    }
 
-.edit-btn {
-  background: rgba(76, 175, 80, 0.1);
-  color: #4CAF50;
-}
+    .edit-btn {
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--edit-color);
+    }
 
-.edit-btn:hover {
-  background: #4CAF50;
-  color: var(--white-color);
-}
+    .edit-btn:hover {
+      background: var(--edit-color);
+      color: var(--white-color);
+    }
 
-.delete-btn {
-  background: rgba(244, 67, 54, 0.1);
-  color: #F44336;
-}
+    .delete-btn {
+      background: rgba(244, 67, 54, 0.1);
+      color: var(--delete-color);
+    }
 
-.delete-btn:hover {
-  background: #F44336;
-  color: var(--white-color);
-}
+    .delete-btn:hover {
+      background: var(--delete-color);
+      color: var(--white-color);
+    }
 
+    /* MODAL */
     .modal {
       display: none;
       position: fixed;
       z-index: 9999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
       background-color: rgba(0,0,0,0.5);
       justify-content: center;
       align-items: center;
@@ -414,108 +428,97 @@ tbody tr:hover {
 
     .modal-content {
       background-color: var(--white-color);
-      padding: 2rem;
-      border-radius: var(--border-radius-s);
+      padding: 35px;
+      border-radius: 12px;
       width: 100%;
       max-width: 600px;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .modal-content h2 {
-      margin-bottom: 1rem;
+      margin-bottom: 25px;
       color: var(--dark-color);
-      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
     }
 
     .close {
       position: absolute;
-      right: 1rem;
-      top: 1rem;
-      font-size: 1.5rem;
-      color: var(--dark-color);
+      right: 20px;
+      top: 20px;
+      font-size: 1.8rem;
+      color: #999;
       cursor: pointer;
+      transition: color 0.2s;
     }
 
+    .close:hover {
+      color: var(--dark-color);
+    }
+
+    /* INPUT FIELDS */
     .input_box {
       position: relative;
-      margin-bottom: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .input_box label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--dark-color);
+      font-weight: 500;
+      font-size: 0.9rem;
     }
 
     .input-field {
       width: 100%;
-      padding: 0.9rem 2.5rem;
-      border: 1px solid var(--medium-gray-color);
-      border-radius: var(--border-radius-s);
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
       background-color: var(--light-pink-color);
-      font-size: var(--font-size-n);
+      font-size: 1rem;
       color: var(--dark-color);
       font-family: "Montserrat", sans-serif;
+      transition: all 0.2s;
     }
 
     textarea.input-field {
       min-height: 120px;
       resize: vertical;
-      padding-top: 1rem;
+      font-family: "Montserrat", sans-serif;
     }
 
     .input-field:focus {
       outline: none;
       border-color: var(--primary-color);
       background-color: var(--white-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
     }
 
-    .label {
-      position: absolute;
-      left: 2.5rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: var(--font-size-s);
-      color: var(--dark-color);
-      transition: 0.3s ease;
-      pointer-events: none;
-      background-color: transparent;
-    }
-
-    textarea.input-field + .label {
-      top: 1.2rem;
-      transform: none;
-    }
-
-    .input-field:focus + .label,
-    .input-field:valid + .label {
-      top: -0.6rem;
-      left: 1rem;
-      background-color: var(--white-color);
-      padding: 0 0.3rem;
-      font-size: 0.75rem;
-      color: var(--primary-color);
-    }
-
-    .icon {
-      position: absolute;
-      top: 50%;
-      left: 0.8rem;
-      transform: translateY(-50%);
-      font-size: 1.2rem;
-      color: var(--dark-color);
-    }
-
-    textarea.input-field ~ .icon {
-      top: 1.2rem;
-      transform: none;
-    }
-
+    /* CHECKBOX */
     .checkbox-wrapper {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 1.5rem;
-      padding: 0.9rem;
+      margin-bottom: 20px;
+      padding: 12px 15px;
       background-color: var(--light-pink-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 8px;
     }
 
     .checkbox-wrapper input[type="checkbox"] {
@@ -525,71 +528,67 @@ tbody tr:hover {
     }
 
     .checkbox-wrapper label {
-      font-size: var(--font-size-n);
+      font-size: 1rem;
       color: var(--dark-color);
       cursor: pointer;
-      font-weight: var(--font-weight-semi-bold);
+      font-weight: 500;
     }
 
+    /* SUBMIT BUTTON */
     .input-submit {
       width: 100%;
-      padding: 0.9rem;
-      background-color: var(--primary-color);
-      color: var(--dark-color);
-      font-size: var(--font-size-n);
+      padding: 14px;
+      border-radius: 8px;
       border: none;
-      border-radius: var(--border-radius-s);
-      font-weight: var(--font-weight-semi-bold);
+      background-color: var(--dark-color);
+      font-weight: 600;
+      color: var(--white-color);
       cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
     }
 
     .input-submit:hover {
-      background-color: var(--secondary-color);
+      background-color: #1a1a1a;
+      transform: translateY(-1px);
     }
 
+    /* TOAST */
     .toast {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 14px 20px;
+      bottom: 30px;
+      right: 30px;
+      padding: 15px 25px;
       border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       z-index: 10000;
-      animation: fadeOut 4s forwards;
+      animation: slideInToast 0.3s ease-out;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    @keyframes slideInToast {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
 
     .toast-success {
-      background-color: #eaffea;
-      color: #2d8a2d;
+      background: var(--edit-color);
+      color: white;
     }
 
     .toast-error {
-      background-color: #ffeaea;
-      color: #e74c3c;
-    }
-
-    @keyframes fadeOut {
-      0%, 90% { opacity: 1; }
-      100% { opacity: 0; transform: translateY(-20px); }
+      background: var(--delete-color);
+      color: white;
     }
 
     /* RESPONSIVE */
-    @media screen and (min-width: 769px) and (max-width: 1024px) {
-      .content {
-        padding: 30px;
-      }
-      
-      table {
-        font-size: 0.9rem;
-      }
-      
-      th, td {
-        padding: 12px 8px;
-      }
-    }
-
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -609,32 +608,31 @@ tbody tr:hover {
         padding: 80px 20px 40px;
       }
       
-      h2 {
-        font-size: 1.8rem;
+      .header h1 {
+        font-size: 1.5rem;
       }
-      
-       .header h1 {
-    font-size: 1.5rem;
+
+      .header p {
+        font-size: 0.85rem;
       }
       
       .add-btn {
         padding: 12px 20px;
         font-size: 0.95rem;
       }
-    }
       
       .table-wrapper {
-        margin: 0 -20px;
-        padding: 0 20px;
+        padding: 20px;
+        overflow-x: auto;
       }
       
       table {
+        min-width: 700px;
         font-size: 0.85rem;
       }
 
       th, td {
         padding: 10px 8px;
-        white-space: nowrap;
       }
       
       .actions a {
@@ -648,21 +646,17 @@ tbody tr:hover {
 
       .modal-content {
         width: 95%;
-        padding: 20px;
+        padding: 25px;
         max-height: 85vh;
       }
       
       .input-field {
-        padding: 0.8rem 2.2rem;
+        padding: 12px;
         font-size: 16px;
       }
       
-      .label {
+      .input_box label {
         font-size: 0.85rem;
-      }
-      
-      .input_box {
-        margin-bottom: 1.3rem;
       }
     }
 
@@ -671,45 +665,24 @@ tbody tr:hover {
         padding: 70px 15px 30px;
       }
       
-      h2 {
-        font-size: 1.5rem;
-        margin-bottom: 15px;
+      .header h1 {
+        font-size: 1.3rem;
+        margin-bottom: 8px;
       }
-      
-       .header h1 {
-    font-size: 1.3rem;
-    margin-bottom: 8px;
-  }
   
-  .header p {
-    font-size: 0.85rem;
-  }
+      .header p {
+        font-size: 0.85rem;
+      }
   
-  .add-btn {
-    width: 100%;
-    padding: 12px;
-    text-align: center;
-    justify-content: center;
-  }
-}
-
-      .sidebar .logo img {
-        width: 60px;
-        height: 60px;
+      .add-btn {
+        width: 100%;
+        padding: 12px;
+        text-align: center;
+        justify-content: center;
       }
 
-      .menu a {
-        padding: 8px 10px;
-        font-size: 0.9rem;
-      }
-
-      .menu a i {
-        font-size: 18px;
-      }
-      
       .table-wrapper {
-        margin: 0 -15px;
-        padding: 0 15px;
+        padding: 15px;
       }
       
       table {
@@ -736,22 +709,7 @@ tbody tr:hover {
       }
       
       .input-field {
-        padding: 0.75rem 2rem;
-      }
-      
-      .icon {
-        font-size: 1rem;
-      }
-    }
-
-    @media screen and (max-width: 360px) {
-      table {
-        min-width: 650px;
-        font-size: 0.7rem;
-      }
-      
-      th, td {
-        padding: 6px 4px;
+        padding: 10px;
       }
     }
   </style>
@@ -790,16 +748,16 @@ tbody tr:hover {
     <hr>
 
     <!-- SERVICES DROPDOWN -->
-      <div class="dropdown">
-        <a href="javascript:void(0)" class="dropdown-toggle active" onclick="toggleDropdown(event)">
-          <span><i class='bx bx-spa'></i> Services</span>
-          <i class='bx bx-chevron-down'></i>
-        </a>
-        <div class="dropdown-menu">
-          <a href="services.php" class="active"><i class='bx bx-list-ul'></i> All Services</a>
-          <a href="manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
-        </div>
+    <div class="dropdown">
+      <a href="javascript:void(0)" class="dropdown-toggle active" onclick="toggleDropdown(event)">
+        <span><i class='bx bx-spa'></i> Services</span>
+        <i class='bx bx-chevron-down'></i>
+      </a>
+      <div class="dropdown-menu" style="display: block;">
+        <a href="services.php" class="active"><i class='bx bx-list-ul'></i> All Services</a>
+        <a href="manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
       </div>
+    </div>
 
     <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
@@ -814,137 +772,136 @@ tbody tr:hover {
 
 <!-- Main Content -->
 <main class="content">
-  <h2>Service Management</h2>
-  <button class="add-btn" onclick="openModal()">➕ Add New Service</button>
+  <!-- Header -->
+  <div class="header">
+    <h1>Service Management</h1>
+    <p>Manage all services and packages</p>
+  </div>
+
+  <button class="add-btn" onclick="openModal()">
+    <i class='bx bx-plus'></i> Add New Service
+  </button>
   
-<div class="table-wrapper">
-  <h3>All Services</h3>
-  
-  <div style="overflow-x: auto;">
-    <table>
-      <thead>
-        <tr>
-          <th>Service ID</th>
-          <th>Service Name</th>
-          <th>Description</th>
-          <th>Price Range</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($service = pg_fetch_assoc($services)): ?>
-        <tr>
-          <td><?= $service['package_id'] ?></td>
-          <td><strong><?= htmlspecialchars($service['name']) ?></strong></td>
-          <td style="max-width: 300px;">
-            <?= htmlspecialchars(substr($service['description'], 0, 80)) ?>...
-          </td>
-          <td>
-            <?php if ($service['min_price']): ?>
-              <?php if ($service['min_price'] == $service['max_price']): ?>
-                ₱<?= number_format($service['min_price'], 2) ?>
+  <div class="table-wrapper">
+    <h3>All Services</h3>
+    
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Service ID</th>
+            <th>Service Name</th>
+            <th>Description</th>
+            <th>Price Range</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php while ($service = pg_fetch_assoc($services)): ?>
+          <tr>
+            <td><?= $service['package_id'] ?></td>
+            <td><strong><?= htmlspecialchars($service['name']) ?></strong></td>
+            <td style="max-width: 300px;">
+              <?= htmlspecialchars(substr($service['description'], 0, 80)) ?>...
+            </td>
+            <td>
+              <?php if ($service['min_price']): ?>
+                <?php if ($service['min_price'] == $service['max_price']): ?>
+                  ₱<?= number_format($service['min_price'], 2) ?>
+                <?php else: ?>
+                  ₱<?= number_format($service['min_price'], 2) ?> - ₱<?= number_format($service['max_price'], 2) ?>
+                <?php endif; ?>
               <?php else: ?>
-                ₱<?= number_format($service['min_price'], 2) ?> - ₱<?= number_format($service['max_price'], 2) ?>
+                <span style="color: #999;">No pricing set</span>
               <?php endif; ?>
-            <?php else: ?>
-              <span style="color: #999;">No pricing set</span>
-            <?php endif; ?>
-          </td>
-          <td>
-            <?php if ($service['is_active'] == 't'): ?>
-              <span class="status-badge status-active">Active</span>
-            <?php else: ?>
-              <span class="status-badge status-inactive">Inactive</span>
-            <?php endif; ?>
-          </td>
-          <td>
-            <div class="actions">
-              <a href="manage_prices.php?id=<?= $service['package_id'] ?>" class="view-btn">
-                <i class='bx bx-dollar'></i> Pricing
-              </a>
-              <a href="?id=<?= $service['package_id'] ?>" class="edit-btn">
-                <i class='bx bx-edit'></i> Edit
-              </a>
-              <a href="delete_service.php?id=<?= $service['package_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this service?')">
-                <i class='bx bx-trash'></i> Delete
-              </a>
-            </div>
-          </td>
-        </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
+            </td>
+            <td>
+              <?php if ($service['is_active'] == 't'): ?>
+                <span class="status-badge status-active">Active</span>
+              <?php else: ?>
+                <span class="status-badge status-inactive">Inactive</span>
+              <?php endif; ?>
+            </td>
+            <td>
+              <div class="actions">
+                <a href="manage_prices.php?id=<?= $service['package_id'] ?>" class="view-btn">
+                  <i class='bx bx-dollar'></i> Pricing
+                </a>
+                <a href="?id=<?= $service['package_id'] ?>" class="edit-btn">
+                  <i class='bx bx-edit'></i> Edit
+                </a>
+                <a href="delete_service.php?id=<?= $service['package_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this service?')">
+                  <i class='bx bx-trash'></i> Delete
+                </a>
+              </div>
+            </td>
+          </tr>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Add Service Modal -->
+<div id="serviceModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeAddModal()">&times;</span>
+    <h2>Create New Service</h2>
+
+    <form method="POST">
+      <input type="hidden" name="create_service" value="1">
+
+      <div class="input_box">
+        <label>Service Name</label>
+        <input type="text" class="input-field" name="name" placeholder="Enter service name" required />
+      </div>
+
+      <div class="input_box">
+        <label>Description</label>
+        <textarea class="input-field" name="description" placeholder="Enter service description" required></textarea>
+      </div>
+
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="is_active" name="is_active" checked>
+        <label for="is_active">Active Service (Visible to customers)</label>
+      </div>
+      
+      <input type="submit" class="input-submit" value="Create Service" />
+    </form>
   </div>
 </div>
 
-  <!-- Add Service Modal -->
-  <div id="serviceModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeAddModal()">&times;</span>
-      <h2>Create New Service</h2>
+<!-- Edit Service Modal -->
+<?php if (isset($edit_service)): ?>
+<div id="editModal" class="modal" style="display:flex;">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+    <h2>Edit Service</h2>
+    <form method="POST">
+      <input type="hidden" name="package_id" value="<?= $edit_service['package_id'] ?>">
+      
+      <div class="input_box">
+        <label>Service Name</label>
+        <input type="text" name="name" class="input-field" value="<?= htmlspecialchars($edit_service['name']) ?>" required>
+      </div>
 
-      <form method="POST">
-        <input type="hidden" name="create_service" value="1">
+      <div class="input_box">
+        <label>Description</label>
+        <textarea name="description" class="input-field" required><?= htmlspecialchars($edit_service['description']) ?></textarea>
+      </div>
 
-        <div class="input_box">
-          <input type="text" class="input-field" name="name" required />
-          <label class="label">Service Name</label>
-          <i class='bx bx-spa icon'></i>
-        </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="edit_is_active" name="is_active" <?= $edit_service['is_active'] == 't' ? 'checked' : '' ?>>
+        <label for="edit_is_active">Active Service (Visible to customers)</label>
+      </div>
 
-        <div class="input_box">
-          <textarea class="input-field" name="description" required></textarea>
-          <label class="label">Description</label>
-          <i class='bx bx-detail icon'></i>
-        </div>
-
-        <div class="checkbox-wrapper">
-          <input type="checkbox" id="is_active" name="is_active" checked>
-          <label for="is_active">Active Service (Visible to customers)</label>
-        </div>
-        
-        <div class="input_box">
-          <input type="submit" class="input-submit" value="Create Service" />
-        </div>
-      </form>
-    </div>
+      <input type="submit" name="update_service" class="input-submit" value="Update Service">
+    </form>
   </div>
-
-  <!-- Edit Service Modal -->
-  <?php if (isset($edit_service)): ?>
-  <div id="editModal" class="modal" style="display:flex;">
-    <div class="modal-content">
-      <span class="close" onclick="closeEditModal()">&times;</span>
-      <h2>Edit Service</h2>
-      <form method="POST">
-        <input type="hidden" name="package_id" value="<?= $edit_service['package_id'] ?>">
-        
-        <div class="input_box">
-          <input type="text" name="name" class="input-field" value="<?= htmlspecialchars($edit_service['name']) ?>" required>
-          <label class="label">Service Name</label>
-          <i class='bx bx-spa icon'></i>
-        </div>
-
-        <div class="input_box">
-          <textarea name="description" class="input-field" required><?= htmlspecialchars($edit_service['description']) ?></textarea>
-          <label class="label">Description</label>
-          <i class='bx bx-detail icon'></i>
-        </div>
-
-        <div class="checkbox-wrapper">
-          <input type="checkbox" id="edit_is_active" name="is_active" <?= $edit_service['is_active'] == 't' ? 'checked' : '' ?>>
-          <label for="edit_is_active">Active Service (Visible to customers)</label>
-        </div>
-
-        <div class="input_box">
-          <input type="submit" name="update_service" class="input-submit" value="Update Service">
-        </div>
-      </form>
-    </div>
-  </div>
-  <?php endif; ?>
-</main>
+</div>
+<?php endif; ?>
 
 <script>
 function toggleDropdown(event) {
@@ -958,9 +915,7 @@ document.addEventListener('click', function(event) {
   if (!event.target.closest('.dropdown')) {
     const dropdowns = document.getElementsByClassName("dropdown-menu");
     for (let i = 0; i < dropdowns.length; i++) {
-      if (!dropdowns[i].closest('.dropdown').querySelector('.dropdown-toggle').classList.contains('active')) {
-        dropdowns[i].style.display = 'none';
-      }
+      dropdowns[i].style.display = 'none';
     }
   }
 });
@@ -1013,8 +968,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <?php if (isset($_SESSION['success'])): ?>
   <div class="toast toast-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+  <script>
+    setTimeout(() => {
+      document.querySelector('.toast').style.display = 'none';
+    }, 4000);
+  </script>
 <?php elseif (isset($_SESSION['error'])): ?>
   <div class="toast toast-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+  <script>
+    setTimeout(() => {
+      document.querySelector('.toast').style.display = 'none';
+    }, 4000);
+  </script>
 <?php endif; ?>
 
 </body>
