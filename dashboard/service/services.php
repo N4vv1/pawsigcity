@@ -282,86 +282,116 @@ if (isset($_GET['id'])) {
     }
 
     .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      margin-bottom: 20px;
-    }
+  background: var(--white-color);
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: var(--white-color);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      min-width: 800px;
-    }
+.table-wrapper h3 {
+  font-size: 1.3rem;
+  margin-bottom: 25px;
+  color: var(--dark-color);
+  font-weight: 600;
+}
 
-    th, td {
-      padding: 14px 10px;
-      border: 1px solid var(--medium-gray-color);
-      text-align: center;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: transparent;
+  box-shadow: none;
+  min-width: 800px;
+}
 
-    th {
-      background: var(--primary-color);
-      font-weight: var(--font-weight-bold);
-      color: var(--dark-color);
-    }
+th, td {
+  padding: 15px 12px;
+  text-align: left;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+}
 
-    .status-badge {
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: inline-block;
-    }
+th {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: var(--dark-color);
+  font-size: 0.9rem;
+  position: sticky;
+  top: 0;
+}
 
-    .status-active {
-      background: #d4edda;
-      color: #155724;
-    }
+tbody tr:hover {
+  background-color: #fafafa;
+}
 
-    .status-inactive {
-      background: #f8d7da;
-      color: #721c24;
-    }
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
 
-    .actions a {
-      padding: 6px 14px;
-      font-size: var(--font-size-s);
-      font-weight: var(--font-weight-semi-bold);
-      text-decoration: none;
-      margin: 0 5px;
-      border-radius: var(--border-radius-s);
-      display: inline-block;
-    }
+.status-active {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
 
-    .view-btn {
-      background-color: #17a2b8;
-      color: var(--white-color);
-    }
+.status-inactive {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
 
-    .view-btn:hover {
-      background-color: #138496;
-    }
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-    .edit-btn {
-      background-color: var(--secondary-color);
-      color: var(--dark-color);
-    }
+.actions a {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
 
-    .edit-btn:hover {
-      background-color: #fdd56c;
-    }
+.view-btn {
+  background: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+}
 
-    .delete-btn {
-      background-color: #ff6b6b;
-      color: var(--white-color);
-    }
+.view-btn:hover {
+  background: #17a2b8;
+  color: var(--white-color);
+}
 
-    .delete-btn:hover {
-      background-color: #ff4949;
-    }
+.edit-btn {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.edit-btn:hover {
+  background: #4CAF50;
+  color: var(--white-color);
+}
+
+.delete-btn {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
+
+.delete-btn:hover {
+  background: #F44336;
+  color: var(--white-color);
+}
 
     .modal {
       display: none;
@@ -763,7 +793,10 @@ if (isset($_GET['id'])) {
   <h2>Service Management</h2>
   <button class="add-btn" onclick="openModal()">➕ Add New Service</button>
   
-  <div class="table-wrapper">
+<div class="table-wrapper">
+  <h3>All Services</h3>
+  
+  <div style="overflow-x: auto;">
     <table>
       <thead>
         <tr>
@@ -780,7 +813,7 @@ if (isset($_GET['id'])) {
         <tr>
           <td><?= $service['package_id'] ?></td>
           <td><strong><?= htmlspecialchars($service['name']) ?></strong></td>
-          <td style="text-align: left; padding-left: 15px;">
+          <td style="max-width: 300px;">
             <?= htmlspecialchars(substr($service['description'], 0, 80)) ?>...
           </td>
           <td>
@@ -801,16 +834,25 @@ if (isset($_GET['id'])) {
               <span class="status-badge status-inactive">Inactive</span>
             <?php endif; ?>
           </td>
-          <td class="actions">
-            <a href="manage_prices.php?id=<?= $service['package_id'] ?>" class="view-btn">Pricing</a>
-            <a href="?id=<?= $service['package_id'] ?>" class="edit-btn">Edit</a>
-            <a href="delete_service.php?id=<?= $service['package_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this service?')">Delete</a>
+          <td>
+            <div class="actions">
+              <a href="manage_prices.php?id=<?= $service['package_id'] ?>" class="view-btn">
+                <i class='bx bx-dollar'></i> Pricing
+              </a>
+              <a href="?id=<?= $service['package_id'] ?>" class="edit-btn">
+                <i class='bx bx-edit'></i> Edit
+              </a>
+              <a href="delete_service.php?id=<?= $service['package_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this service?')">
+                <i class='bx bx-trash'></i> Delete
+              </a>
+            </div>
           </td>
         </tr>
         <?php endwhile; ?>
       </tbody>
     </table>
   </div>
+</div>
 
   <!-- Add Service Modal -->
   <div id="serviceModal" class="modal">
