@@ -1492,6 +1492,7 @@ function getServiceImage($serviceName) {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  scroll-margin-top: 100px;
 }
 
 .service-section .section-title {
