@@ -147,11 +147,9 @@ if (isset($_GET['test_email']) && $autoload_found) {
         'status' => 'testing'
     ];
     
+    $test_email = $_GET['test_email'];
+    
     try {
-        use PHPMailer\PHPMailer\PHPMailer;
-        use PHPMailer\PHPMailer\Exception;
-        
-        $test_email = $_GET['test_email'];
         
         if (!filter_var($test_email, FILTER_VALIDATE_EMAIL)) {
             $results['checks']['email_send']['status'] = 'error';
