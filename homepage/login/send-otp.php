@@ -66,10 +66,12 @@ if (empty($purpose) || !in_array($purpose, ['registration', 'reset_password', 'f
     exit;
 }
 
-// Normalize purpose naming (use reset_password as standard)
-if ($purpose === 'forgot_password') {
-    $purpose = 'reset_password';
+// Normalize purpose naming (use forgot_password to match database constraint)
+if ($purpose === 'reset_password') {
+    $purpose = 'forgot_password';
 }
+
+error_log("Normalized purpose: $purpose");
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['success' => false, 'message' => 'Invalid email format']);
@@ -210,11 +212,17 @@ try {
         
         error_log("SMTP Config - Host: smtp.gmail.com, Port: 587, User: " . $mail->Username);
         
+        error_log("SMTP Config - Host: smtp.gmail.com, Port: 587, User: " . $mail->Username);
+        
         $mail->setFrom($mail->Username, 'PAWsig City');
         $mail->addAddress($email);
         
+        // Add reply-to
+        $mail->addReplyTo($mail->Username, 'PAWsig City');
+        
         $mail->isHTML(true);
         $mail->Subject = 'Your OTP Code - PAWsig City';
+        $mail->CharSet = 'UTF-8';
         
         $purpose_text = $purpose === 'registration' ? 'complete your registration' : 'reset your password';
         
@@ -242,7 +250,7 @@ try {
         
         error_log("Attempting to send email...");
         $mail->send();
-        error_log("Email sent successfully to $email for purpose: $purpose");
+        error_log("✓ Email sent successfully to $email for purpose: $purpose");
         
         echo json_encode([
             'success' => true, 
@@ -251,16 +259,21 @@ try {
         ]);
         
     } catch (Exception $e) {
-        error_log("Mail Error: " . $mail->ErrorInfo);
-        error_log("Mail Exception: " . $e->getMessage());
+        error_log("✗ Mail Error: " . $mail->ErrorInfo);
+        error_log("✗ Mail Exception: " . $e->getMessage());
+        error_log("✗ Stack Trace: " . $e->getTraceAsString());
         
         // Clean up failed OTP
         $delete_failed = "DELETE FROM otp_verifications WHERE otp_id = $1";
         pg_query_params($conn, $delete_failed, [$otp_record['otp_id']]);
+        error_log("Cleaned up failed OTP record");
         
+        // Return detailed error for debugging
         echo json_encode([
             'success' => false, 
-            'message' => 'Failed to send email. Please try again.'
+            'message' => 'Failed to send email. Please check server logs.',
+            'error_detail' => $e->getMessage(),
+            'smtp_error' => $mail->ErrorInfo ?? 'None'
         ]);
     }
     

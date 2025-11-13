@@ -30,7 +30,7 @@ if (!isset($_SESSION['otp_purpose']) || !in_array($_SESSION['otp_purpose'], $val
     error_log("Invalid OTP purpose: " . ($_SESSION['otp_purpose'] ?? 'not set'));
     echo json_encode([
         'success' => false, 
-        'message' => 'Invalid OTP verification purpose',
+        'message' => 'Invalid OTP verification purpose. Please verify your email first.',
         'debug' => 'Expected reset_password or forgot_password, got: ' . ($_SESSION['otp_purpose'] ?? 'not set')
     ]);
     exit;
