@@ -1,4 +1,5 @@
 <?php
+session_start();
 include '../db.php'; // connection file
 
 $query = "
@@ -71,6 +72,59 @@ $packages_result = pg_query($conn, $packages_query);
     body {
       background: var(--light-pink-color);
       display: flex;
+    }
+
+    /* NOTIFICATION MESSAGES */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 20px;
+      border-radius: var(--border-radius-s);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10000;
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .notification.success {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .notification.error {
+      background-color: #FF6B6B;
+      color: white;
+    }
+
+    .notification i {
+      font-size: 24px;
+    }
+
+    .notification .close-notification {
+      margin-left: auto;
+      cursor: pointer;
+      font-size: 20px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .notification .close-notification:hover {
+      opacity: 1;
     }
 
     /* MOBILE MENU BUTTON */
@@ -203,7 +257,7 @@ $packages_result = pg_query($conn, $packages_query);
 
     table {
       width: 100%;
-      min-width: 900px; /* Prevents table from getting too cramped */
+      min-width: 900px;
       border-collapse: collapse;
       background-color: var(--white-color);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -406,22 +460,18 @@ $packages_result = pg_query($conn, $packages_query);
     }
 
     @media screen and (max-width: 768px) {
-      /* Show mobile menu button */
       .mobile-menu-btn {
         display: block;
       }
 
-      /* Hide sidebar off-screen by default */
       .sidebar {
         transform: translateX(-100%);
       }
 
-      /* Show sidebar when active */
       .sidebar.active {
         transform: translateX(0);
       }
 
-      /* Adjust content area */
       .content {
         margin-left: 0;
         width: 100%;
@@ -458,6 +508,12 @@ $packages_result = pg_query($conn, $packages_query);
 
       .modal-content h2 {
         font-size: 1.3rem;
+      }
+
+      .notification {
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
       }
     }
 
@@ -535,6 +591,25 @@ $packages_result = pg_query($conn, $packages_query);
 </head>
 <body>
 
+<!-- Notification Messages -->
+<?php if (isset($_SESSION['success_message'])): ?>
+<div class="notification success" id="notification">
+  <i class='bx bx-check-circle'></i>
+  <span><?= htmlspecialchars($_SESSION['success_message']) ?></span>
+  <span class="close-notification" onclick="closeNotification()">&times;</span>
+</div>
+<?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error_message'])): ?>
+<div class="notification error" id="notification">
+  <i class='bx bx-error-circle'></i>
+  <span><?= htmlspecialchars($_SESSION['error_message']) ?></span>
+  <span class="close-notification" onclick="closeNotification()">&times;</span>
+</div>
+<?php unset($_SESSION['error_message']); ?>
+<?php endif; ?>
+
 <!-- Mobile Menu Button -->
 <button class="mobile-menu-btn" onclick="toggleSidebar()">
   <i class='bx bx-menu'></i>
@@ -606,7 +681,7 @@ $packages_result = pg_query($conn, $packages_query);
                   Edit
                 </button>
                 <button class="cancel-btn-table"
-                        onclick="if(confirm('Cancel this appointment?')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }">
+                        onclick="if(confirm('Cancel this appointment? The customer will be notified via email.')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }">
                   Cancel
                 </button>
               </div>
@@ -677,6 +752,24 @@ function toggleSidebar() {
   }
 }
 
+function closeNotification() {
+  const notification = document.getElementById('notification');
+  if (notification) {
+    notification.style.animation = 'slideOut 0.3s ease-out';
+    setTimeout(() => {
+      notification.remove();
+    }, 300);
+  }
+}
+
+// Auto-hide notification after 5 seconds
+setTimeout(() => {
+  const notification = document.getElementById('notification');
+  if (notification) {
+    closeNotification();
+  }
+}, 5000);
+
 // Close sidebar when clicking a link on mobile
 document.addEventListener('DOMContentLoaded', function() {
   const menuLinks = document.querySelectorAll('.menu a');
@@ -725,6 +818,19 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
+<style>
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+</style>
 
 </body>
 </html>
