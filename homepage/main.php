@@ -357,6 +357,7 @@ function getServiceImage($serviceName) {
     transition: all 0.2s ease;
     border-left: 3px solid transparent;
     white-space: nowrap;
+    text-align: left;
   }
 
   .dropdown-menu a:hover {
@@ -533,6 +534,7 @@ function getServiceImage($serviceName) {
     display: block;
     transition: all 0.3s ease;
     position: relative;
+    text-align: left;
   }
 
   .dropdown-menu a::before {
