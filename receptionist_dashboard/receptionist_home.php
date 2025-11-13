@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../db.php'; // connection file
+include '../db.php';
 
 $query = "
     SELECT 
@@ -28,11 +28,9 @@ if (!$result) {
     die("Query failed: " . pg_last_error($conn));
 }
 
-// Get all groomers for the dropdown
 $groomers_query = "SELECT DISTINCT groomer_name FROM groomer ORDER BY groomer_name";
 $groomers_result = pg_query($conn, $groomers_query);
 
-// Get all packages for the dropdown
 $packages_query = "SELECT package_id, name FROM packages ORDER BY name";
 $packages_result = pg_query($conn, $packages_query);
 ?>
@@ -53,6 +51,7 @@ $packages_result = pg_query($conn, $packages_query);
       --secondary-color: #FFE29D;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
+      --disabled-color: #e0e0e0;
       --font-size-s: 0.9rem;
       --font-size-n: 1rem;
       --font-size-l: 1.5rem;
@@ -78,7 +77,6 @@ $packages_result = pg_query($conn, $packages_query);
       display: flex;
     }
 
-    /* NOTIFICATION MESSAGES */
     .notification {
       position: fixed;
       top: 20px;
@@ -102,6 +100,17 @@ $packages_result = pg_query($conn, $packages_query);
       to {
         transform: translateX(0);
         opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
       }
     }
 
@@ -131,7 +140,6 @@ $packages_result = pg_query($conn, $packages_query);
       opacity: 1;
     }
 
-    /* MOBILE MENU BUTTON */
     .mobile-menu-btn {
       display: none;
       position: fixed;
@@ -156,7 +164,6 @@ $packages_result = pg_query($conn, $packages_query);
       background: var(--secondary-color);
     }
 
-    /* SIDEBAR OVERLAY */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -237,7 +244,6 @@ $packages_result = pg_query($conn, $packages_query);
       margin: 9px 0;
     }
 
-    /* Content */
     .content {
       margin-left: 260px;
       padding: 40px;
@@ -253,7 +259,6 @@ $packages_result = pg_query($conn, $packages_query);
       margin-bottom: 25px;
     }
 
-    /* Table Container for horizontal scroll on mobile */
     .table-container {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -287,7 +292,6 @@ $packages_result = pg_query($conn, $packages_query);
       background-color: #ffe29d33;
     }
 
-    /* Action buttons in table */
     .action-buttons {
       display: flex;
       gap: 8px;
@@ -305,12 +309,20 @@ $packages_result = pg_query($conn, $packages_query);
       transition: all 0.3s;
     }
 
+    /* UPDATED: Disabled button styles */
+    .action-buttons button:disabled {
+      background-color: var(--disabled-color) !important;
+      color: #999 !important;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
     .edit-btn {
       background-color: var(--primary-color);
       color: var(--dark-color);
     }
 
-    .edit-btn:hover {
+    .edit-btn:hover:not(:disabled) {
       background-color: var(--secondary-color);
     }
 
@@ -319,11 +331,10 @@ $packages_result = pg_query($conn, $packages_query);
       color: #fff;
     }
 
-    .cancel-btn-table:hover {
+    .cancel-btn-table:hover:not(:disabled) {
       background-color: #FF4949;
     }
 
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -446,7 +457,6 @@ $packages_result = pg_query($conn, $packages_query);
       color: black;
     }
 
-    /* RESPONSIVE DESIGN */
     @media screen and (max-width: 1024px) {
       table {
         font-size: 0.9rem;
@@ -595,7 +605,6 @@ $packages_result = pg_query($conn, $packages_query);
 </head>
 <body>
 
-<!-- Notification Messages -->
 <?php if (isset($_SESSION['success_message'])): ?>
 <div class="notification success" id="notification">
   <i class='bx bx-check-circle'></i>
@@ -614,15 +623,12 @@ $packages_result = pg_query($conn, $packages_query);
 <?php unset($_SESSION['error_message']); ?>
 <?php endif; ?>
 
-<!-- Mobile Menu Button -->
 <button class="mobile-menu-btn" onclick="toggleSidebar()">
   <i class='bx bx-menu'></i>
 </button>
 
-<!-- Sidebar Overlay -->
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-<!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo">
     <img src="../homepage/images/pawsig.png" alt="Logo" />
@@ -632,7 +638,6 @@ $packages_result = pg_query($conn, $packages_query);
   </nav>
 </aside>
 
-<!-- Main Content -->
 <main class="content">
   <h2>All Appointments</h2>
   <div class="table-container">
@@ -640,31 +645,35 @@ $packages_result = pg_query($conn, $packages_query);
       <thead>
         <tr>
           <th>#</th>
-        <th>Appointment ID</th>
-        <th>Date</th>
-        <th>Customer</th>
-        <th>Package</th>
-        <th>Pet Name</th>
-        <th>Breed</th>
-        <th>Status</th>
-        <th>Groomer</th>
-        <th>Actions</th>
+          <th>Appointment ID</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Package</th>
+          <th>Pet Name</th>
+          <th>Breed</th>
+          <th>Status</th>
+          <th>Groomer</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <?php $counter = 1; ?>
         <?php while ($row = pg_fetch_assoc($result)): ?>
+          <?php
+            $status = strtolower($row['status']);
+            // Check if status is completed or cancelled
+            $is_disabled = ($status === 'completed' || $status === 'cancelled');
+          ?>
           <tr>
             <td><?= $counter++ ?></td>
-              <td><?= htmlspecialchars($row['appointment_id'] ?? '') ?></td>
-              <td><?= htmlspecialchars($row['appointment_date'] ?? '') ?></td>
-              <td><?= htmlspecialchars($row['customer_name'] ?? 'N/A') ?></td>
-              <td><?= htmlspecialchars($row['package_name'] ?? 'N/A') ?></td>
-              <td><?= htmlspecialchars($row['pet_name'] ?? 'N/A') ?></td>
-              <td><?= htmlspecialchars($row['pet_breed'] ?? 'N/A') ?></td>
+            <td><?= htmlspecialchars($row['appointment_id'] ?? '') ?></td>
+            <td><?= htmlspecialchars($row['appointment_date'] ?? '') ?></td>
+            <td><?= htmlspecialchars($row['customer_name'] ?? 'N/A') ?></td>
+            <td><?= htmlspecialchars($row['package_name'] ?? 'N/A') ?></td>
+            <td><?= htmlspecialchars($row['pet_name'] ?? 'N/A') ?></td>
+            <td><?= htmlspecialchars($row['pet_breed'] ?? 'N/A') ?></td>
             <td>
               <?php
-                $status = strtolower($row['status']); 
                 $status_color = match($status) {
                   'confirmed' => '#4CAF50',
                   'completed' => '#2196F3',
@@ -683,11 +692,13 @@ $packages_result = pg_query($conn, $packages_query);
                         data-date="<?= $row['appointment_date'] ?>"
                         data-package="<?= $row['package_id'] ?>"
                         data-status="<?= $row['status'] ?>"
-                        data-groomer="<?= htmlspecialchars($row['groomer_name']) ?>">
+                        data-groomer="<?= htmlspecialchars($row['groomer_name']) ?>"
+                        <?= $is_disabled ? 'disabled title="Cannot edit completed/cancelled appointments"' : '' ?>>
                   Edit
                 </button>
                 <button class="cancel-btn-table"
-                        onclick="if(confirm('Cancel this appointment? The customer will be notified via email.')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }">
+                        onclick="if(confirm('Cancel this appointment? The customer will be notified via email.')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }"
+                        <?= $is_disabled ? 'disabled title="Already completed/cancelled"' : '' ?>>
                   Cancel
                 </button>
               </div>
@@ -699,7 +710,6 @@ $packages_result = pg_query($conn, $packages_query);
   </div>
 </main>
 
-<!-- Edit Modal -->
 <div id="editModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
@@ -768,7 +778,6 @@ function closeNotification() {
   }
 }
 
-// Auto-hide notification after 5 seconds
 setTimeout(() => {
   const notification = document.getElementById('notification');
   if (notification) {
@@ -776,7 +785,6 @@ setTimeout(() => {
   }
 }, 5000);
 
-// Close sidebar when clicking a link on mobile
 document.addEventListener('DOMContentLoaded', function() {
   const menuLinks = document.querySelectorAll('.menu a');
   menuLinks.forEach(link => {
@@ -790,13 +798,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Modal functionality
   const modal = document.getElementById("editModal");
   const closeBtn = modal.querySelector(".close");
   const editButtons = document.querySelectorAll(".edit-btn");
 
   editButtons.forEach(btn => {
     btn.addEventListener("click", () => {
+      // Don't open modal if button is disabled
+      if (btn.disabled) return;
+      
       document.getElementById("modalAppointmentId").value = btn.dataset.id;
       
       let dateValue = btn.dataset.date;
@@ -824,19 +834,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-
-<style>
-@keyframes slideOut {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-</style>
 
 </body>
 </html>
