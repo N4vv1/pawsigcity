@@ -1391,7 +1391,7 @@ function getServiceImage($serviceName) {
   position: absolute;
   width: 50px;
   height: 50px;
-  background-image: url('../pawsigcity/homepage/images/pawsig.png');
+  background-image: url('../pawsigcity/homepage/images/pawsig2.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

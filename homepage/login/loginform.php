@@ -827,7 +827,7 @@ header("Expires: 0");
               </div>
 
               <div class="input-box has-toggle">
-                <input type="password" class="input-field" name="password" id="login_password" required autocomplete="new-password" />
+                <input type="password" class="input-field" name="password" id="login_password" required autocomplete="current-password" />
                 <label class="label">Password</label>
                 <i class='bx bx-lock-alt icon'></i>
                 <i class='bx bx-hide password-toggle' onclick="togglePassword('login_password', this)"></i>
@@ -984,7 +984,7 @@ header("Expires: 0");
       <div id="forgot-alerts"></div>
       <form id="forgot-password-form">
         <div class="input-box">
-          <input type="email" class="input-field" name="email" id="forgot_email" required />
+          <input type="email" class="input-field" name="email" id="forgot_email" required autocomplete="new-password"/>
           <label class="label">Email Address</label>
           <i class='bx bx-envelope icon'></i>
         </div>

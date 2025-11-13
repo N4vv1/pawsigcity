@@ -722,6 +722,7 @@ if (!$pets) {
     transition: all 0.2s ease;
     border-left: 3px solid transparent;
     white-space: nowrap;
+    text-align: left;
   }
 
   .dropdown-menu a:hover {
@@ -1683,7 +1684,7 @@ if (!$pets) {
                   </div>
                   <div class="form-group full-width">
                     <label>New Password (optional)</label>
-                    <input type="password" name="password" placeholder="Leave blank to keep current">
+                    <input type="password" name="password" placeholder="Leave blank to keep current" autocomplete="new-password">
                   </div>
                   <div class="form-actions">
                     <button type="submit" class="btn-save">Save Changes</button>

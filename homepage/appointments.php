@@ -581,6 +581,7 @@ error_log("Number of appointments found: " . $row_count);
     transition: all 0.2s ease;
     border-left: 3px solid transparent;
     white-space: nowrap;
+    text-align: left;
   }
 
   .dropdown-menu a:hover {
