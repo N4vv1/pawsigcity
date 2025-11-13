@@ -50,7 +50,6 @@
       z-index: 0;
     }
 
-    /* Left Side - Branding */
     .brand-side {
       flex: 1;
       background: linear-gradient(135deg, #A8E6CF 0%, #7FD4B3 100%);
@@ -141,7 +140,6 @@
       font-weight: 500;
     }
 
-    /* Right Side - Form */
     .form-side {
       flex: 1;
       background: #ffffff;
@@ -435,7 +433,6 @@
       right: 45px;
     }
 
-    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -524,7 +521,6 @@
       transform: rotate(90deg);
     }
 
-    /* OTP Input Styles */
     .otp-container {
       display: flex;
       gap: 12px;
@@ -601,7 +597,6 @@
       font-weight: 600;
     }
 
-    /* Loading Spinner */
     .spinner {
       display: inline-block;
       width: 16px;
@@ -619,7 +614,6 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Responsive Design */
     @media (max-width: 968px) {
       body {
         flex-direction: column;
@@ -671,7 +665,6 @@
 </head>
 <body>
 
-  <!-- Left Side - Branding -->
   <div class="brand-side">
     <a href="../../index.php" class="back-button">
       <i class='bx bx-arrow-back'></i> Back
@@ -698,7 +691,6 @@
     </div>
   </div>
 
-  <!-- Right Side - Form -->
   <div class="form-side">
     <div class="container">
       <div class="form-container">
@@ -713,7 +705,6 @@
         </div>
 
         <div class="form-content">
-          <!-- Login Form -->
           <div id="login-form" class="form-section active">
             <div id="login-alerts">
               <?php
@@ -762,7 +753,6 @@
             </form>
           </div>
 
-          <!-- Register Form -->
           <div id="register-form" class="form-section">
             <div id="register-alerts"></div>
             
@@ -814,7 +804,6 @@
     </div>
   </div>
 
-  <!-- OTP Verification Modal -->
   <div id="otpModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeOTPModal()">&times;</span>
@@ -846,7 +835,6 @@
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
   <div id="forgotPasswordModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
@@ -866,7 +854,6 @@
     </div>
   </div>
 
-  <!-- Reset Password Modal -->
   <div id="resetPasswordModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeResetPasswordModal()">&times;</span>
@@ -896,14 +883,12 @@
   </div>
 
   <script>
-    // Global variables
     let currentEmail = '';
     let currentPurpose = '';
     let resendTimer = null;
     let resendCountdown = 60;
     let pendingFormData = null;
 
-    // Tab switching
     function switchTab(tab) {
       const loginForm = document.getElementById('login-form');
       const registerForm = document.getElementById('register-form');
@@ -922,7 +907,6 @@
       }
     }
 
-    // Alert functions
     function showAlert(containerId, message, type) {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
@@ -937,7 +921,6 @@
       }, 5000);
     }
 
-    // Password toggle
     function togglePassword(inputId, icon) {
       const input = document.getElementById(inputId);
       if (input.type === 'password') {
@@ -951,7 +934,6 @@
       }
     }
 
-    // OTP Modal Functions
     function openOTPModal(email, purpose) {
       currentEmail = email;
       currentPurpose = purpose;
@@ -959,7 +941,6 @@
       document.getElementById('otpModal').classList.add('active');
       document.getElementById('otp-alerts').innerHTML = '';
       
-      // Clear and focus first input
       const otpInputs = document.querySelectorAll('.otp-input');
       otpInputs.forEach(input => {
         input.value = '';
@@ -967,7 +948,6 @@
       });
       otpInputs[0].focus();
       
-      // Start resend timer
       startResendTimer();
     }
 
@@ -998,7 +978,6 @@
       document.getElementById('reset-alerts').innerHTML = '';
     }
 
-    // OTP Input Handling
     document.addEventListener('DOMContentLoaded', function() {
       const otpInputs = document.querySelectorAll('.otp-input');
       
@@ -1006,13 +985,11 @@
         input.addEventListener('input', function(e) {
           const value = e.target.value;
           
-          // Only allow numbers
           if (!/^\d*$/.test(value)) {
             e.target.value = '';
             return;
           }
           
-          // Add filled class
           if (value) {
             e.target.classList.add('filled');
             e.target.classList.remove('error');
@@ -1020,19 +997,16 @@
             e.target.classList.remove('filled');
           }
           
-          // Auto-focus next input
           if (value && index < otpInputs.length - 1) {
             otpInputs[index + 1].focus();
           }
         });
         
         input.addEventListener('keydown', function(e) {
-          // Handle backspace
           if (e.key === 'Backspace' && !e.target.value && index > 0) {
             otpInputs[index - 1].focus();
           }
           
-          // Handle paste
           if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
             e.preventDefault();
             navigator.clipboard.readText().then(text => {
@@ -1050,9 +1024,23 @@
           }
         });
       });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const success = urlParams.get('success');
+      const error = urlParams.get('error');
+
+      if (success) {
+        showAlert('login-alerts', success, 'success');
+      }
+      if (error) {
+        showAlert('login-alerts', error, 'error');
+      }
+      
+      if (success || error) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     });
 
-    // Send OTP
     async function sendOTP(email, purpose) {
       try {
         const response = await fetch('send-otp.php', {
@@ -1069,7 +1057,6 @@
       }
     }
 
-    // Verify OTP
     async function verifyOTP() {
       const otpInputs = document.querySelectorAll('.otp-input');
       const otp = Array.from(otpInputs).map(input => input.value).join('');
@@ -1099,25 +1086,19 @@
           setTimeout(() => {
             closeOTPModal();
             
-            // Handle based on purpose
             if (currentPurpose === 'registration') {
-              // Complete registration
               completeRegistration();
             } else if (currentPurpose === 'reset_password') {
-              // Show reset password form
-              closeForgotPasswordModal();
               openResetPasswordModal();
             }
           }, 1000);
         } else {
-          // Show error on OTP inputs
           otpInputs.forEach(input => {
             input.classList.add('error');
             input.classList.remove('filled');
           });
           showAlert('otp-alerts', data.message, 'error');
           
-          // Clear inputs after error
           setTimeout(() => {
             otpInputs.forEach(input => {
               input.value = '';
@@ -1134,7 +1115,6 @@
       }
     }
 
-    // Resend OTP
     async function resendOTP() {
       const resendLink = document.getElementById('resend-link');
       if (resendLink.classList.contains('disabled')) return;
@@ -1154,7 +1134,6 @@
       }
     }
 
-    // Resend Timer
     function startResendTimer() {
       const resendLink = document.getElementById('resend-link');
       const timer = document.getElementById('timer');
@@ -1175,7 +1154,6 @@
       }, 1000);
     }
 
-    // Registration Form Handler
     document.getElementById('registration-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -1188,7 +1166,6 @@
         phone: document.getElementById('phone').value.trim()
       };
       
-      // Validate
       if (!formData.first_name || !formData.last_name || !formData.email || !formData.password) {
         showAlert('register-alerts', 'All required fields must be filled', 'error');
         return;
@@ -1199,7 +1176,6 @@
         return;
       }
       
-      // Store form data and send OTP
       pendingFormData = formData;
       
       const btn = e.target.querySelector('.submit-btn');
@@ -1219,7 +1195,6 @@
       }
     });
 
-    // Complete Registration
     async function completeRegistration() {
       if (!pendingFormData) return;
       
@@ -1247,7 +1222,6 @@
       }
     }
 
-    // Forgot Password Form Handler
     document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -1264,13 +1238,13 @@
       btn.innerHTML = originalText;
       
       if (result.success) {
+        closeForgotPasswordModal();
         openOTPModal(email, 'reset_password');
       } else {
         showAlert('forgot-alerts', result.message, 'error');
       }
     });
 
-    // Reset Password Form Handler
     document.getElementById('reset-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -1319,28 +1293,9 @@
       }
     });
 
-    // Close modals when clicking outside
     window.addEventListener('click', (e) => {
       if (e.target.classList.contains('modal')) {
         e.target.classList.remove('active');
-      }
-    });
-
-    // Handle URL parameters
-    window.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const success = urlParams.get('success');
-      const error = urlParams.get('error');
-
-      if (success) {
-        showAlert('login-alerts', success, 'success');
-      }
-      if (error) {
-        showAlert('login-alerts', error, 'error');
-      }
-      
-      if (success || error) {
-        window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
   </script>
