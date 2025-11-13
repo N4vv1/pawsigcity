@@ -18,7 +18,7 @@ $query = "
     FROM appointments a
     LEFT JOIN packages p ON a.package_id::text = p.package_id
     LEFT JOIN pets pet ON a.pet_id = pet.pet_id
-    LEFT JOIN users u ON a.user_id::text = u.user_id
+    LEFT JOIN users u ON LPAD(a.user_id::text, 5, '0') = u.user_id
     ORDER BY a.appointment_date DESC
 ";
 
@@ -664,7 +664,7 @@ $packages_result = pg_query($conn, $packages_query);
               <td><?= htmlspecialchars($row['pet_breed'] ?? 'N/A') ?></td>
             <td>
               <?php
-                $status = strtolower($row['status']);
+                $status = strtolower($row['status']); 
                 $status_color = match($status) {
                   'confirmed' => '#4CAF50',
                   'completed' => '#2196F3',
