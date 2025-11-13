@@ -433,6 +433,95 @@
       right: 45px;
     }
 
+    /* Password Strength Indicator */
+    .password-strength {
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+
+    .strength-bar {
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .strength-bar-fill {
+      height: 100%;
+      width: 0%;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .strength-bar-fill.weak {
+      width: 33%;
+      background: #ff4d4d;
+    }
+
+    .strength-bar-fill.medium {
+      width: 66%;
+      background: #ffa500;
+    }
+
+    .strength-bar-fill.strong {
+      width: 100%;
+      background: #28a745;
+    }
+
+    .strength-text {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .strength-text.weak {
+      color: #ff4d4d;
+    }
+
+    .strength-text.medium {
+      color: #ffa500;
+    }
+
+    .strength-text.strong {
+      color: #28a745;
+    }
+
+    .password-requirements {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .requirement {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      transition: color 0.3s ease;
+    }
+
+    .requirement i {
+      font-size: 14px;
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+
+    .requirement.met {
+      color: #28a745;
+    }
+
+    .requirement.met i {
+      color: #28a745;
+    }
+
+    .requirement.unmet {
+      color: #999;
+    }
+
+    .requirement.unmet i {
+      color: #ccc;
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -790,6 +879,36 @@
                 <i class='bx bx-hide password-toggle' onclick="togglePassword('reg_password', this)"></i>
               </div>
 
+              <!-- Password Strength Indicator -->
+              <div class="password-strength" id="password-strength" style="display: none;">
+                <div class="strength-bar">
+                  <div class="strength-bar-fill" id="strength-bar-fill"></div>
+                </div>
+                <div class="strength-text" id="strength-text"></div>
+                <div class="password-requirements">
+                  <div class="requirement" id="req-length">
+                    <i class='bx bx-x-circle'></i>
+                    <span>At least 8 characters</span>
+                  </div>
+                  <div class="requirement" id="req-uppercase">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One uppercase letter (A-Z)</span>
+                  </div>
+                  <div class="requirement" id="req-lowercase">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One lowercase letter (a-z)</span>
+                  </div>
+                  <div class="requirement" id="req-number">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One number (0-9)</span>
+                  </div>
+                  <div class="requirement" id="req-special">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One special character (!@#$%^&*)</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="input-box">
                 <input type="text" class="input-field" name="phone" id="phone" required />
                 <label class="label">Phone Number</label>
@@ -1025,6 +1144,18 @@
         });
       });
 
+      // Password Strength Checker
+      const regPasswordInput = document.getElementById('reg_password');
+      const strengthIndicator = document.getElementById('password-strength');
+      
+      regPasswordInput.addEventListener('focus', function() {
+        strengthIndicator.style.display = 'block';
+      });
+      
+      regPasswordInput.addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+      });
+
       const urlParams = new URLSearchParams(window.location.search);
       const success = urlParams.get('success');
       const error = urlParams.get('error');
@@ -1040,6 +1171,69 @@
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
+
+    function checkPasswordStrength(password) {
+      const strengthBar = document.getElementById('strength-bar-fill');
+      const strengthText = document.getElementById('strength-text');
+      
+      // Requirements
+      const hasLength = password.length >= 8;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+      
+      // Update requirement indicators
+      updateRequirement('req-length', hasLength);
+      updateRequirement('req-uppercase', hasUppercase);
+      updateRequirement('req-lowercase', hasLowercase);
+      updateRequirement('req-number', hasNumber);
+      updateRequirement('req-special', hasSpecial);
+      
+      // Calculate strength
+      let strength = 0;
+      if (hasLength) strength++;
+      if (hasUppercase) strength++;
+      if (hasLowercase) strength++;
+      if (hasNumber) strength++;
+      if (hasSpecial) strength++;
+      
+      // Update strength bar and text
+      strengthBar.className = 'strength-bar-fill';
+      strengthText.className = 'strength-text';
+      
+      if (password.length === 0) {
+        strengthBar.style.width = '0%';
+        strengthText.textContent = '';
+      } else if (strength <= 2) {
+        strengthBar.classList.add('weak');
+        strengthText.classList.add('weak');
+        strengthText.textContent = 'Weak Password';
+      } else if (strength <= 4) {
+        strengthBar.classList.add('medium');
+        strengthText.classList.add('medium');
+        strengthText.textContent = 'Medium Password';
+      } else {
+        strengthBar.classList.add('strong');
+        strengthText.classList.add('strong');
+        strengthText.textContent = 'Strong Password';
+      }
+    }
+    
+    function updateRequirement(elementId, isMet) {
+      const element = document.getElementById(elementId);
+      const icon = element.querySelector('i');
+      
+      if (isMet) {
+        element.classList.add('met');
+        element.classList.remove('unmet');
+        icon.className = 'bx bx-check-circle';
+      } else {
+        element.classList.add('unmet');
+        element.classList.remove('met');
+        icon.className = 'bx bx-x-circle';
+      }
+    }
 
     async function sendOTP(email, purpose) {
       try {
@@ -1171,8 +1365,20 @@
         return;
       }
       
+      // Enhanced password validation
       if (formData.password.length < 8) {
         showAlert('register-alerts', 'Password must be at least 8 characters long', 'error');
+        return;
+      }
+
+      // Check all password requirements
+      const hasUppercase = /[A-Z]/.test(formData.password);
+      const hasLowercase = /[a-z]/.test(formData.password);
+      const hasNumber = /[0-9]/.test(formData.password);
+      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+
+      if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+        showAlert('register-alerts', 'Password must meet all complexity requirements', 'error');
         return;
       }
       
