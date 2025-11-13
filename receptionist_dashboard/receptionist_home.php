@@ -13,7 +13,7 @@ $query = "
         pet.name AS pet_name,
         pet.breed AS pet_breed
     FROM appointments a
-    JOIN packages p ON a.package_id = p.package_id
+    JOIN packages p ON a.package_id = p.package_id::integer
     JOIN pets pet ON a.pet_id = pet.pet_id
     ORDER BY a.appointment_date DESC
 ";
