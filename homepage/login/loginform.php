@@ -909,6 +909,21 @@
                 </div>
               </div>
 
+              <div class="input-box has-toggle">
+                <input type="password" class="input-field" name="confirm_password" id="reg_confirm_password" required />
+                <label class="label">Confirm Password</label>
+                <i class='bx bx-lock-alt icon'></i>
+                <i class='bx bx-hide password-toggle' onclick="togglePassword('reg_confirm_password', this)"></i>
+              </div>
+
+              <!-- Password Match Indicator -->
+              <div class="password-match" id="password-match" style="display: none; margin-top: -15px; margin-bottom: 15px;">
+                <div class="requirement" id="req-match">
+                  <i class='bx bx-x-circle'></i>
+                  <span>Passwords match</span>
+                </div>
+              </div>
+
               <div class="input-box">
                 <input type="text" class="input-field" name="phone" id="phone" required />
                 <label class="label">Phone Number</label>
@@ -1154,6 +1169,19 @@
       
       regPasswordInput.addEventListener('input', function() {
         checkPasswordStrength(this.value);
+        checkPasswordMatch();
+      });
+
+      // Password Match Checker
+      const regConfirmPasswordInput = document.getElementById('reg_confirm_password');
+      const matchIndicator = document.getElementById('password-match');
+      
+      regConfirmPasswordInput.addEventListener('focus', function() {
+        matchIndicator.style.display = 'block';
+      });
+      
+      regConfirmPasswordInput.addEventListener('input', function() {
+        checkPasswordMatch();
       });
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -1232,6 +1260,16 @@
         element.classList.add('unmet');
         element.classList.remove('met');
         icon.className = 'bx bx-x-circle';
+      }
+    }
+
+    function checkPasswordMatch() {
+      const password = document.getElementById('reg_password').value;
+      const confirmPassword = document.getElementById('reg_confirm_password').value;
+      
+      if (confirmPassword.length > 0) {
+        const passwordsMatch = password === confirmPassword;
+        updateRequirement('req-match', passwordsMatch);
       }
     }
 
@@ -1351,12 +1389,15 @@
     document.getElementById('registration-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      const password = document.getElementById('reg_password').value;
+      const confirmPassword = document.getElementById('reg_confirm_password').value;
+      
       const formData = {
         first_name: document.getElementById('first_name').value.trim(),
         middle_name: document.getElementById('middle_name').value.trim(),
         last_name: document.getElementById('last_name').value.trim(),
         email: document.getElementById('reg_email').value.trim(),
-        password: document.getElementById('reg_password').value,
+        password: password,
         phone: document.getElementById('phone').value.trim()
       };
       
@@ -1379,6 +1420,12 @@
 
       if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
         showAlert('register-alerts', 'Password must meet all complexity requirements', 'error');
+        return;
+      }
+
+      // Check if passwords match
+      if (password !== confirmPassword) {
+        showAlert('register-alerts', 'Passwords do not match', 'error');
         return;
       }
       
