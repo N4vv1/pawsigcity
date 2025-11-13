@@ -771,42 +771,42 @@ header("Expires: 0");
           <div id="register-form" class="form-section">
             <div id="register-alerts"></div>
             
-            <form id="registration-form">
+            <form id="registration-form" autocomplete="off">
               <div class="row-inputs">
                 <div class="input-box">
-                  <input type="text" class="input-field" name="first_name" id="first_name" required />
+                  <input type="text" class="input-field" name="first_name" id="first_name" required autocomplete="off" />
                   <label class="label">First Name</label>
                   <i class='bx bx-user icon'></i>
                 </div>
 
                 <div class="input-box">
-                  <input type="text" class="input-field" name="last_name" id="last_name" required />
+                  <input type="text" class="input-field" name="last_name" id="last_name" required autocomplete="off" />
                   <label class="label">Last Name</label>
                   <i class='bx bx-user icon'></i>
                 </div>
               </div>
 
               <div class="input-box">
-                <input type="text" class="input-field" name="middle_name" id="middle_name" />
+                <input type="text" class="input-field" name="middle_name" id="middle_name" autocomplete="off" />
                 <label class="label">Middle Name (Optional)</label>
                 <i class='bx bx-user icon'></i>
               </div>
 
               <div class="input-box">
-                <input type="email" class="input-field" name="email" id="reg_email" required />
+                <input type="email" class="input-field" name="email" id="reg_email" required autocomplete="off" />
                 <label class="label">Email</label>
                 <i class='bx bx-envelope icon'></i>
               </div>
 
               <div class="input-box has-toggle">
-                <input type="password" class="input-field" name="password" id="reg_password" required />
+                <input type="password" class="input-field" name="password" id="reg_password" required autocomplete="new-password" />
                 <label class="label">Password</label>
                 <i class='bx bx-lock icon'></i>
                 <i class='bx bx-hide password-toggle' onclick="togglePassword('reg_password', this)"></i>
               </div>
 
               <div class="input-box">
-                <input type="text" class="input-field" name="phone" id="phone" required />
+                <input type="text" class="input-field" name="phone" id="phone" required autocomplete="off" />
                 <label class="label">Phone Number</label>
                 <i class='bx bx-phone icon'></i>
               </div>
