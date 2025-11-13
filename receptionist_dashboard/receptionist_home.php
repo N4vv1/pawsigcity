@@ -11,10 +11,14 @@ $query = "
         p.package_id,
         p.name AS package_name,
         pet.name AS pet_name,
-        pet.breed AS pet_breed
+        pet.breed AS pet_breed,
+        u.first_name,
+        u.last_name,
+        CONCAT(u.first_name, ' ', u.last_name) AS customer_name
     FROM appointments a
     LEFT JOIN packages p ON a.package_id::text = p.package_id
     LEFT JOIN pets pet ON a.pet_id = pet.pet_id
+    LEFT JOIN users u ON a.user_id::text = u.user_id
     ORDER BY a.appointment_date DESC
 ";
 
@@ -636,14 +640,15 @@ $packages_result = pg_query($conn, $packages_query);
       <thead>
         <tr>
           <th>#</th>
-          <th>Appointment ID</th>
-          <th>Date</th>
-          <th>Package</th>
-          <th>Pet Name</th>
-          <th>Breed</th>
-          <th>Status</th>
-          <th>Groomer</th>
-          <th>Actions</th>
+        <th>Appointment ID</th>
+        <th>Date</th>
+        <th>Customer</th>
+        <th>Package</th>
+        <th>Pet Name</th>
+        <th>Breed</th>
+        <th>Status</th>
+        <th>Groomer</th>
+        <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -651,11 +656,12 @@ $packages_result = pg_query($conn, $packages_query);
         <?php while ($row = pg_fetch_assoc($result)): ?>
           <tr>
             <td><?= $counter++ ?></td>
-            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-            <td><?= htmlspecialchars($row['appointment_date']) ?></td>
-            <td><?= htmlspecialchars($row['package_name']) ?></td>
-            <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['pet_breed']) ?></td>
+              <td><?= htmlspecialchars($row['appointment_id'] ?? '') ?></td>
+              <td><?= htmlspecialchars($row['appointment_date'] ?? '') ?></td>
+              <td><?= htmlspecialchars($row['customer_name'] ?? 'N/A') ?></td>
+              <td><?= htmlspecialchars($row['package_name'] ?? 'N/A') ?></td>
+              <td><?= htmlspecialchars($row['pet_name'] ?? 'N/A') ?></td>
+              <td><?= htmlspecialchars($row['pet_breed'] ?? 'N/A') ?></td>
             <td>
               <?php
                 $status = strtolower($row['status']);
