@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\Exception;
 
 // Check for autoload in multiple possible locations
 $autoload_paths = [
-    '../vendor/autoload.php',
+    './vendor/autoload.php',
     '../../vendor/autoload.php',
     './vendor/autoload.php',
     '../../../vendor/autoload.php',
