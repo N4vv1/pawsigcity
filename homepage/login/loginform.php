@@ -1,4 +1,9 @@
-<?php session_start(); ?>
+<?php session_start(); 
+// Prevent browser caching
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -734,7 +739,7 @@
               ?>
             </div>
             
-            <form action="login-handler.php" method="post">
+            <form action="login-handler.php" method="post" autocomplete="off">
               <div class="input-box">
                 <input type="email" class="input-field" name="email" id="login_email" required />
                 <label class="label">Email</label>
@@ -742,7 +747,7 @@
               </div>
 
               <div class="input-box has-toggle">
-                <input type="password" class="input-field" name="password" id="login_password" required />
+                <input type="password" class="input-field" name="password" id="login_password" required autocomplete="new-password" />
                 <label class="label">Password</label>
                 <i class='bx bx-lock-alt icon'></i>
                 <i class='bx bx-hide password-toggle' onclick="togglePassword('login_password', this)"></i>
