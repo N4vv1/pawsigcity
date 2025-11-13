@@ -13,8 +13,8 @@ $query = "
         pet.name AS pet_name,
         pet.breed AS pet_breed
     FROM appointments a
-    JOIN packages p ON a.package_id::text = p.package_id
-    JOIN pets pet ON a.pet_id = pet.pet_id
+    LEFT JOIN packages p ON a.package_id::text = p.package_id
+    LEFT JOIN pets pet ON a.pet_id = pet.pet_id
     ORDER BY a.appointment_date DESC
 ";
 
