@@ -1,7 +1,6 @@
 <?php
 /**
- * Send OTP - Debug Version
- * Use this temporarily to see what's happening
+ * Send OTP - FIXED VERSION (Consistent naming)
  */
 
 error_reporting(E_ALL);
@@ -11,16 +10,13 @@ ini_set('log_errors', 1);
 session_start();
 header('Content-Type: application/json');
 
-// Log the request
 error_log("=== SEND OTP REQUEST ===");
 error_log("POST data: " . print_r($_POST, true));
-error_log("Session before: " . print_r($_SESSION, true));
 
 if (!file_exists('../../db.php')) {
     echo json_encode([
         'success' => false, 
-        'message' => 'Database configuration file not found',
-        'debug' => 'db.php missing'
+        'message' => 'Database configuration file not found'
     ]);
     exit;
 }
@@ -41,8 +37,7 @@ foreach ($autoload_paths as $path) {
 if (!$autoload_found) {
     echo json_encode([
         'success' => false, 
-        'message' => 'PHPMailer not installed',
-        'debug' => 'Run: composer install'
+        'message' => 'PHPMailer not installed'
     ]);
     exit;
 }
@@ -51,11 +46,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Invalid request method',
-        'debug' => 'Method: ' . $_SERVER["REQUEST_METHOD"]
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
     exit;
 }
 
@@ -64,36 +55,31 @@ $purpose = trim($_POST['purpose'] ?? '');
 
 error_log("Parsed - Email: $email, Purpose: $purpose");
 
+// Validate purpose - accept both naming conventions
 if (empty($email)) {
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Email is required',
-        'debug' => 'email field empty'
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Email is required']);
     exit;
 }
 
-if (empty($purpose) || !in_array($purpose, ['registration', 'reset_password'])) {
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Invalid purpose',
-        'debug' => "Purpose: '$purpose'"
-    ]);
+if (empty($purpose) || !in_array($purpose, ['registration', 'reset_password', 'forgot_password'])) {
+    echo json_encode(['success' => false, 'message' => 'Invalid purpose']);
     exit;
+}
+
+// Normalize purpose naming (use reset_password as standard)
+if ($purpose === 'forgot_password') {
+    $purpose = 'reset_password';
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode([
-        'success' => false, 
-        'message' => 'Invalid email format',
-        'debug' => "Email: $email"
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Invalid email format']);
     exit;
 }
 
 try {
     // Check email based on purpose
     if ($purpose === 'registration') {
+        error_log("Checking if email exists for registration...");
         $check_query = "SELECT user_id FROM users WHERE email = $1";
         $check_result = pg_query_params($conn, $check_query, [$email]);
         
@@ -103,16 +89,14 @@ try {
         }
         
         if (pg_num_rows($check_result) > 0) {
-            echo json_encode([
-                'success' => false, 
-                'message' => 'Email already registered',
-                'debug' => 'Email exists in database'
-            ]);
+            error_log("Email already exists - cannot register");
+            echo json_encode(['success' => false, 'message' => 'Email already registered']);
             exit;
         }
         error_log("Registration check passed - email doesn't exist");
     }
     
+    // For password reset, email MUST exist
     if ($purpose === 'reset_password') {
         error_log("Checking if email exists for password reset...");
         
@@ -125,20 +109,20 @@ try {
         }
         
         $row_count = pg_num_rows($check_result);
-        error_log("Query returned $row_count rows");
+        error_log("Query returned $row_count rows for email: $email");
         
+        // Exit if email NOT found
         if ($row_count === 0) {
-            error_log("Email not found in database for reset");
+            error_log("Email NOT found in database - cannot reset password");
             echo json_encode([
                 'success' => false, 
-                'message' => 'Email not found',
-                'debug' => 'No user with this email exists'
+                'message' => 'No account found with this email address'
             ]);
             exit;
         }
         
         $user = pg_fetch_assoc($check_result);
-        error_log("User found: " . print_r($user, true));
+        error_log("User found for password reset: User ID = " . $user['user_id']);
     }
     
     // Rate limiting
@@ -154,18 +138,17 @@ try {
         if ($rate_data['count'] >= 3) {
             echo json_encode([
                 'success' => false, 
-                'message' => 'Too many requests. Please try again in 10 minutes.',
-                'debug' => 'Rate limit exceeded'
+                'message' => 'Too many requests. Please try again in 10 minutes.'
             ]);
             exit;
         }
     }
     
-    // Delete old OTPs
-    error_log("Deleting old OTPs...");
+    // Delete old OTPs for this email and purpose (check both type and purpose fields)
+    error_log("Deleting old OTPs for email: $email, purpose: $purpose");
     $delete_query = "DELETE FROM otp_verifications 
                      WHERE email = $1 
-                     AND purpose = $2
+                     AND (purpose = $2 OR type = $2)
                      AND is_verified = FALSE 
                      AND is_used = FALSE";
     $delete_result = pg_query_params($conn, $delete_query, [$email, $purpose]);
@@ -177,12 +160,12 @@ try {
     
     // Generate OTP
     $otp = sprintf("%06d", mt_rand(100000, 999999));
-    error_log("Generated OTP: $otp");
+    error_log("Generated OTP: $otp for purpose: $purpose");
     
     $expires_at = date('Y-m-d H:i:s', strtotime('+10 minutes'));
     $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
     
-    // Insert OTP
+    // Insert OTP - set BOTH type and purpose to the same value for consistency
     error_log("Inserting OTP into database...");
     $insert_query = "INSERT INTO otp_verifications 
                      (email, otp, type, purpose, expires_at, ip_address, is_used, is_verified, created_at, attempts) 
@@ -192,8 +175,8 @@ try {
     $insert_result = pg_query_params($conn, $insert_query, [
         $email,
         $otp,
-        $purpose,
-        $purpose,
+        $purpose,      // type = purpose (both set to 'reset_password' or 'registration')
+        $purpose,      // purpose = purpose
         $expires_at,
         $ip_address
     ]);
@@ -204,7 +187,7 @@ try {
     }
     
     $otp_record = pg_fetch_assoc($insert_result);
-    error_log("OTP inserted with ID: " . $otp_record['otp_id']);
+    error_log("OTP inserted with ID: " . $otp_record['otp_id'] . " (type=$purpose, purpose=$purpose)");
     
     // Send email
     error_log("Preparing to send email...");
@@ -252,33 +235,25 @@ try {
         
         error_log("Attempting to send email...");
         $mail->send();
-        error_log("Email sent successfully!");
+        error_log("Email sent successfully to $email for purpose: $purpose");
         
         echo json_encode([
             'success' => true, 
             'message' => 'OTP sent successfully to your email',
-            'otp_id' => $otp_record['otp_id'],
-            'debug' => [
-                'email' => $email,
-                'purpose' => $purpose,
-                'otp_id' => $otp_record['otp_id']
-            ]
+            'otp_id' => $otp_record['otp_id']
         ]);
         
     } catch (Exception $e) {
         error_log("Mail Error: " . $mail->ErrorInfo);
         error_log("Mail Exception: " . $e->getMessage());
         
+        // Clean up failed OTP
         $delete_failed = "DELETE FROM otp_verifications WHERE otp_id = $1";
         pg_query_params($conn, $delete_failed, [$otp_record['otp_id']]);
         
         echo json_encode([
             'success' => false, 
-            'message' => 'Failed to send email',
-            'debug' => [
-                'error' => $e->getMessage(),
-                'mailer_error' => $mail->ErrorInfo
-            ]
+            'message' => 'Failed to send email. Please try again.'
         ]);
     }
     
@@ -288,12 +263,7 @@ try {
     
     echo json_encode([
         'success' => false, 
-        'message' => 'An error occurred. Please try again.',
-        'debug' => [
-            'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
-        ]
+        'message' => 'An error occurred. Please try again.'
     ]);
 }
 

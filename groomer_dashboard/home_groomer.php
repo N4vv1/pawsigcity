@@ -12,7 +12,7 @@ $groomer_id = $_SESSION['groomer_id'];
 
 // Get groomer's current status - FIXED: Changed 'groomer' to 'groomers' table
 $status_query = pg_query_params($conn, "
-    SELECT is_active, last_active 
+    SELECT is_active, last_active s
     FROM groomer
     WHERE groomer_id = $1
 ", [$groomer_id]);
