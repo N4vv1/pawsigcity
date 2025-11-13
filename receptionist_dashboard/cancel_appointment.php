@@ -11,27 +11,41 @@ $autoload_paths = [
     '../vendor/autoload.php',
     '../../vendor/autoload.php',
     './vendor/autoload.php',
-    '../../../vendor/autoload.php'
+    '../../../vendor/autoload.php',
+    '../homepage/login/vendor/autoload.php'
 ];
 
 $autoload_found = false;
+$loaded_path = '';
 foreach ($autoload_paths as $path) {
     if (file_exists($path)) {
         require $path;
         $autoload_found = true;
+        $loaded_path = $path;
+        error_log("✓ Autoload found at: " . realpath($path));
         break;
     }
 }
 
 if (!$autoload_found) {
+    error_log("✗ Autoload not found in any path");
     $_SESSION['error_message'] = "Email system not configured. Appointment cancelled but notification not sent.";
-    // Continue anyway - cancellation is more important than email
+}
+
+// Check if PHPMailer class exists after loading
+if ($autoload_found) {
+    if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        error_log("✓ PHPMailer class is available");
+    } else {
+        error_log("✗ PHPMailer class NOT available even though autoload was loaded from: $loaded_path");
+        $autoload_found = false; // Disable email sending
+    }
 }
 
 // Validate appointment ID
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     $_SESSION['error_message'] = "No appointment ID provided.";
-    header("Location: receptionist_dashboard.php");
+    header("Location: receptionist_home.php");
     exit();
 }
 
@@ -40,7 +54,7 @@ $appointment_id = intval($_GET['id']);
 
 if ($appointment_id <= 0) {
     $_SESSION['error_message'] = "Invalid appointment ID.";
-    header("Location: receptionist_dashboard.php");
+    header("Location: receptionist_home.php");
     exit();
 }
 
@@ -49,6 +63,7 @@ pg_query($conn, "BEGIN");
 
 try {
     // Get appointment details and user email BEFORE canceling
+    // FIXED: Added type casting for joins
     $query = "
         SELECT 
             a.appointment_id,
@@ -56,14 +71,14 @@ try {
             a.status,
             a.user_id,
             u.email AS user_email,
-            u.name AS user_name,
+            CONCAT(u.first_name, ' ', u.last_name) AS user_name,
             p.name AS package_name,
             pet.name AS pet_name,
             pet.breed AS pet_breed
         FROM appointments a
-        JOIN packages p ON a.package_id = p.package_id
-        JOIN pets pet ON a.pet_id = pet.pet_id
-        JOIN users u ON a.user_id = u.user_id
+        LEFT JOIN packages p ON a.package_id::text = p.package_id
+        LEFT JOIN pets pet ON a.pet_id = pet.pet_id
+        LEFT JOIN users u ON a.user_id::text = u.user_id
         WHERE a.appointment_id = $1
     ";
     
@@ -86,7 +101,7 @@ try {
     }
     
     // Update appointment status to cancelled - USE PARAMETERIZED QUERY
-    $update_query = "UPDATE appointments SET status = 'cancelled' WHERE appointment_id = $1";
+    $update_query = "UPDATE appointments SET status = 'cancelled', updated_at = NOW() WHERE appointment_id = $1";
     $update_result = pg_query_params($conn, $update_query, array($appointment_id));
     
     if (!$update_result) {
@@ -100,10 +115,10 @@ try {
     
     // Send email notification (only if PHPMailer is available)
     $email_sent = false;
-    if ($autoload_found && !empty($appointment['user_email'])) {
-        $mail = new PHPMailer(true);
-        
+    if ($autoload_found && class_exists('PHPMailer\PHPMailer\PHPMailer') && !empty($appointment['user_email'])) {
         try {
+            $mail = new PHPMailer(true);
+            
             // Server settings - Same as your working OTP configuration
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
@@ -211,7 +226,7 @@ try {
     }
     
     // Redirect to dashboard
-    header("Location: receptionist_dashboard.php");
+    header("Location: receptionist_home.php");
     exit();
     
 } catch (Exception $e) {
@@ -220,7 +235,7 @@ try {
     error_log("Cancellation Error for appointment #{$appointment_id}: " . $e->getMessage());
     
     $_SESSION['error_message'] = $e->getMessage();
-    header("Location: receptionist_dashboard.php");
+    header("Location: receptionist_home.php");
     exit();
 }
 
