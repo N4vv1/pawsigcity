@@ -2,46 +2,57 @@
 session_start();
 include '../db.php';
 
-// Import PHPMailer classes
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-// FIXED: More comprehensive autoload path checking
-$autoload_paths = [
-    __DIR__ . '/vendor/autoload.php',
-    __DIR__ . '/../vendor/autoload.php',
-    __DIR__ . '/../../vendor/autoload.php',
-    __DIR__ . '/../../../vendor/autoload.php',
-    dirname(dirname(__DIR__)) . '/vendor/autoload.php',
-    $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php'
-];
-
-$autoload_found = false;
-$loaded_path = '';
-
-foreach ($autoload_paths as $path) {
-    if (file_exists($path)) {
-        require_once $path;
-        $autoload_found = true;
-        $loaded_path = $path;
-        error_log("✓ Autoload found at: " . realpath($path));
-        break;
+// Function to find and load PHPMailer
+function loadPHPMailer() {
+    // Try to find composer autoload
+    $possible_paths = [
+        __DIR__ . '/vendor/autoload.php',
+        __DIR__ . '/../vendor/autoload.php',
+        __DIR__ . '/../../vendor/autoload.php',
+        __DIR__ . '/../../../vendor/autoload.php',
+        dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php',
+        $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php',
+    ];
+    
+    foreach ($possible_paths as $path) {
+        if (file_exists($path)) {
+            require_once $path;
+            if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+                error_log("✓ PHPMailer loaded from: " . realpath($path));
+                return true;
+            }
+        }
     }
+    
+    // Try direct include as fallback
+    $direct_paths = [
+        __DIR__ . '/vendor/phpmailer/phpmailer/src/PHPMailer.php',
+        __DIR__ . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php',
+        __DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php',
+    ];
+    
+    foreach ($direct_paths as $path) {
+        if (file_exists($path)) {
+            $base_path = dirname($path);
+            require_once $path;
+            require_once $base_path . '/Exception.php';
+            require_once $base_path . '/SMTP.php';
+            error_log("✓ PHPMailer loaded directly from: " . realpath($path));
+            return true;
+        }
+    }
+    
+    error_log("✗ PHPMailer not found. Current dir: " . __DIR__);
+    return false;
 }
 
-if (!$autoload_found) {
-    error_log("✗ Autoload not found. Checked paths: " . implode(', ', $autoload_paths));
-    error_log("Current directory: " . __DIR__);
-    error_log("Document root: " . $_SERVER['DOCUMENT_ROOT']);
-}
+// Load PHPMailer
+$phpmailer_loaded = loadPHPMailer();
 
-// Check if PHPMailer class exists
-$phpmailer_available = false;
-if ($autoload_found && class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-    $phpmailer_available = true;
-    error_log("✓ PHPMailer class is available");
-} else {
-    error_log("✗ PHPMailer class NOT available");
+// Import classes if loaded via composer
+if ($phpmailer_loaded) {
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
 }
 
 // Validate appointment ID
@@ -63,7 +74,7 @@ if ($appointment_id <= 0) {
 pg_query($conn, "BEGIN");
 
 try {
-    // Get appointment details BEFORE canceling
+    // Get appointment details
     $query = "
         SELECT 
             a.appointment_id,
@@ -94,7 +105,6 @@ try {
     
     $appointment = pg_fetch_assoc($result);
     
-    // Check if already cancelled
     if ($appointment['status'] === 'cancelled') {
         throw new Exception("This appointment is already cancelled.");
     }
@@ -103,38 +113,48 @@ try {
     $update_query = "UPDATE appointments SET status = 'cancelled', updated_at = NOW() WHERE appointment_id = $1";
     $update_result = pg_query_params($conn, $update_query, array($appointment_id));
     
-    if (!$update_result) {
-        throw new Exception("Failed to cancel appointment: " . pg_last_error($conn));
+    if (!$update_result || pg_affected_rows($update_result) == 0) {
+        throw new Exception("Failed to cancel appointment.");
     }
     
-    if (pg_affected_rows($update_result) == 0) {
-        throw new Exception("No appointment was updated.");
-    }
+    // Commit the cancellation
+    pg_query($conn, "COMMIT");
     
-    // Send email notification
+    // Try to send email notification
     $email_sent = false;
-    if ($phpmailer_available && !empty($appointment['user_email'])) {
+    $email_error = '';
+    
+    if ($phpmailer_loaded && !empty($appointment['user_email'])) {
         try {
             $mail = new PHPMailer(true);
+            
+            // Enable verbose debug output for troubleshooting
+            $mail->SMTPDebug  = 0; // Set to 2 for debugging
+            $mail->Debugoutput = function($str, $level) {
+                error_log("SMTP Debug level $level: $str");
+            };
             
             // Server settings
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'johnbernardmitra25@gmail.com';
-            $mail->Password   = 'iigy qtnu ojku ktsx';
+            $mail->Password   = 'iigy qtnu ojku ktsx'; // App password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
-            $mail->SMTPDebug  = 0;
             $mail->CharSet    = 'UTF-8';
             
+            // Timeout settings
+            $mail->Timeout    = 30;
+            $mail->SMTPKeepAlive = false;
+            
             // Recipients
-            $mail->setFrom($mail->Username, 'PAWsig City');
+            $mail->setFrom('johnbernardmitra25@gmail.com', 'PAWsig City');
             $mail->addAddress($appointment['user_email'], $appointment['user_name']);
             
             // Content
             $mail->isHTML(true);
-            $mail->Subject = 'Appointment Cancellation Notice - PAWsig City';
+            $mail->Subject = 'Appointment Cancellation - PAWsig City';
             
             $appointment_date = date('F d, Y g:i A', strtotime($appointment['appointment_date']));
             
@@ -146,7 +166,7 @@ try {
                 <div style='padding: 30px; background: #ffffff;'>
                     <h2 style='color: #FF6B6B; margin-top: 0;'>Appointment Cancelled</h2>
                     <p style='font-size: 16px; color: #666;'>Dear {$appointment['user_name']},</p>
-                    <p style='font-size: 16px; color: #666;'>We regret to inform you that your appointment has been cancelled.</p>
+                    <p style='font-size: 16px; color: #666;'>Your appointment has been cancelled.</p>
                     
                     <div style='background: #fff5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #FF6B6B;'>
                         <h3 style='color: #FF6B6B; margin-top: 0;'>Appointment Details</h3>
@@ -168,54 +188,57 @@ try {
                                 <td style='padding: 8px 0; color: #333;'>{$appointment['package_name']}</td>
                             </tr>
                             <tr>
-                                <td style='padding: 8px 0; font-weight: bold; color: #555;'>Scheduled Date:</td>
+                                <td style='padding: 8px 0; font-weight: bold; color: #555;'>Date:</td>
                                 <td style='padding: 8px 0; color: #333;'>{$appointment_date}</td>
-                            </tr>
-                            <tr>
-                                <td style='padding: 8px 0; font-weight: bold; color: #555;'>Status:</td>
-                                <td style='padding: 8px 0;'><span style='color: #FF6B6B; font-weight: bold;'>CANCELLED</span></td>
                             </tr>
                         </table>
                     </div>
                     
-                    <p style='font-size: 16px; color: #666;'>If you have any questions or would like to reschedule, please contact us.</p>
-                    
+                    <p style='font-size: 16px; color: #666;'>If you have questions, please contact us.</p>
                     <p style='font-size: 16px; color: #333; margin-top: 30px;'>Best regards,<br><strong>PAWsig City Team</strong></p>
                 </div>
                 <div style='background: #f5f5f5; padding: 20px; text-align: center; font-size: 12px; color: #999;'>
-                    <p style='margin: 0;'>This is an automated message. Please do not reply to this email.</p>
-                    <p style='margin: 10px 0 0 0;'>© 2025 PAWsig City. All rights reserved.</p>
+                    <p style='margin: 0;'>© 2025 PAWsig City. All rights reserved.</p>
                 </div>
             </div>
             ";
             
-            $mail->AltBody = "Dear {$appointment['user_name']},\n\nYour appointment has been cancelled.\n\nAppointment Details:\nID: #{$appointment_id}\nPet: {$appointment['pet_name']} ({$appointment['pet_breed']})\nPackage: {$appointment['package_name']}\nDate: {$appointment_date}\nStatus: CANCELLED\n\nIf you have any questions, please contact us.\n\nBest regards,\nPAWsig City Team";
+            $mail->AltBody = "Dear {$appointment['user_name']},\n\nYour appointment has been cancelled.\n\nAppointment ID: #{$appointment_id}\nPet: {$appointment['pet_name']} ({$appointment['pet_breed']})\nPackage: {$appointment['package_name']}\nDate: {$appointment_date}\n\nIf you have questions, please contact us.\n\nBest regards,\nPAWsig City Team";
             
-            $mail->send();
-            $email_sent = true;
-            error_log("✓ Cancellation email sent to {$appointment['user_email']}");
+            if ($mail->send()) {
+                $email_sent = true;
+                error_log("✓ Email sent successfully to {$appointment['user_email']}");
+            } else {
+                $email_error = $mail->ErrorInfo;
+                error_log("✗ Email send failed: " . $mail->ErrorInfo);
+            }
             
         } catch (Exception $e) {
-            error_log("✗ Email error: " . $mail->ErrorInfo);
-            error_log("✗ Exception: " . $e->getMessage());
+            $email_error = $e->getMessage();
+            error_log("✗ Email exception: " . $e->getMessage());
+            if (isset($mail)) {
+                error_log("✗ PHPMailer Error: " . $mail->ErrorInfo);
+            }
         }
     } else {
-        if (!$phpmailer_available) {
-            error_log("✗ PHPMailer not available for appointment #{$appointment_id}");
+        if (!$phpmailer_loaded) {
+            $email_error = "PHPMailer not loaded";
+            error_log("✗ PHPMailer not loaded");
         }
         if (empty($appointment['user_email'])) {
+            $email_error = "No user email found";
             error_log("✗ No user email for appointment #{$appointment_id}");
         }
     }
     
-    // Commit transaction
-    pg_query($conn, "COMMIT");
-    
-    // Success message
+    // Set success message
     if ($email_sent) {
         $_SESSION['success_message'] = "Appointment #{$appointment_id} cancelled successfully. Email notification sent to {$appointment['user_email']}.";
     } else {
-        $_SESSION['success_message'] = "Appointment #{$appointment_id} cancelled successfully. Note: Email notification could not be sent.";
+        $_SESSION['success_message'] = "Appointment #{$appointment_id} cancelled successfully.";
+        if (!empty($email_error)) {
+            $_SESSION['success_message'] .= " (Email notification failed: $email_error)";
+        }
     }
     
     header("Location: receptionist_home.php");
@@ -223,7 +246,7 @@ try {
     
 } catch (Exception $e) {
     pg_query($conn, "ROLLBACK");
-    error_log("Cancellation error for appointment #{$appointment_id}: " . $e->getMessage());
+    error_log("Cancellation error: " . $e->getMessage());
     
     $_SESSION['error_message'] = $e->getMessage();
     header("Location: receptionist_home.php");
