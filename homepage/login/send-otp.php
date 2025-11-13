@@ -98,8 +98,8 @@ try {
         error_log("Registration check passed - email doesn't exist");
     }
     
-    // For password reset, email MUST exist
-    if ($purpose === 'reset_password') {
+    // For password reset, email MUST exist - CHECK AFTER NORMALIZATION
+    if ($purpose === 'forgot_password') {  // ✅ FIXED: Check for 'forgot_password' instead of 'reset_password'
         error_log("Checking if email exists for password reset...");
         
         $check_query = "SELECT user_id, email FROM users WHERE email = $1";
@@ -177,7 +177,7 @@ try {
     $insert_result = pg_query_params($conn, $insert_query, [
         $email,
         $otp,
-        $purpose,      // type = purpose (both set to 'reset_password' or 'registration')
+        $purpose,      // type = purpose (both set to 'forgot_password' or 'registration')
         $purpose,      // purpose = purpose
         $expires_at,
         $ip_address
@@ -203,14 +203,12 @@ try {
         $mail->Password   = getenv('SMTP_PASSWORD') ?: 'iigy qtnu ojku ktsx';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
-        $mail->SMTPDebug  = 2; // Enable debug output temporarily
+        $mail->SMTPDebug  = 0; // Set to 0 for production
         
         // Verify credentials are set
         if (empty($mail->Username) || empty($mail->Password)) {
             throw new Exception('SMTP credentials not configured');
         }
-        
-        error_log("SMTP Config - Host: smtp.gmail.com, Port: 587, User: " . $mail->Username);
         
         error_log("SMTP Config - Host: smtp.gmail.com, Port: 587, User: " . $mail->Username);
         
@@ -271,9 +269,8 @@ try {
         // Return detailed error for debugging
         echo json_encode([
             'success' => false, 
-            'message' => 'Failed to send email. Please check server logs.',
-            'error_detail' => $e->getMessage(),
-            'smtp_error' => $mail->ErrorInfo ?? 'None'
+            'message' => 'Failed to send email. Please try again.',
+            'error_detail' => $e->getMessage()
         ]);
     }
     
