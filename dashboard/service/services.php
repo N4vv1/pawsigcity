@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_service'])) {
         [$name, $description, $is_active]);
 
     if ($result) {
-        $_SESSION['success'] = "Service created successfully.";
+        $_SESSION['success'] = "Service created successfully!";
     } else {
         $_SESSION['error'] = "Failed to create service.";
     }
@@ -34,9 +34,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_service'])) {
         [$name, $description, $is_active, $id]);
 
     if ($result) {
-        $_SESSION['success'] = "Service updated successfully.";
+        $_SESSION['success'] = "Service updated successfully!";
     } else {
         $_SESSION['error'] = "Failed to update service.";
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Handle service deletion
+if (isset($_GET['delete_id'])) {
+    $delete_id = intval($_GET['delete_id']);
+    
+    $result = pg_query_params($conn, "DELETE FROM packages WHERE package_id = $1", [$delete_id]);
+    
+    if ($result) {
+        $_SESSION['success'] = "Service deleted successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to delete service.";
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
@@ -369,7 +384,8 @@ if (isset($_GET['id'])) {
       flex-wrap: wrap;
     }
 
-    .actions a {
+    .actions a,
+    .actions button {
       padding: 6px 14px;
       font-size: 0.85rem;
       font-weight: 600;
@@ -380,6 +396,9 @@ if (isset($_GET['id'])) {
       gap: 5px;
       transition: all 0.2s;
       white-space: nowrap;
+      border: none;
+      cursor: pointer;
+      font-family: "Montserrat", sans-serif;
     }
 
     .view-btn {
@@ -553,18 +572,24 @@ if (isset($_GET['id'])) {
       transform: translateY(-1px);
     }
 
-    /* TOAST */
+    /* ENHANCED TOAST NOTIFICATION */
     .toast {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      padding: 15px 25px;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      padding: 16px 24px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       z-index: 10000;
-      animation: slideInToast 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 400px;
       font-weight: 500;
       font-size: 0.95rem;
+      animation: slideInToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      opacity: 0;
     }
 
     @keyframes slideInToast {
@@ -578,14 +603,54 @@ if (isset($_GET['id'])) {
       }
     }
 
+    @keyframes slideOutToast {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .toast.hide {
+      animation: slideOutToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
     .toast-success {
-      background: var(--edit-color);
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
       color: white;
     }
 
     .toast-error {
-      background: var(--delete-color);
+      background: linear-gradient(135deg, #F44336 0%, #e53935 100%);
       color: white;
+    }
+
+    .toast i {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .toast-message {
+      flex: 1;
+    }
+
+    .toast-close {
+      cursor: pointer;
+      font-size: 20px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toast-close:hover {
+      opacity: 1;
     }
 
     /* RESPONSIVE */
@@ -635,7 +700,8 @@ if (isset($_GET['id'])) {
         padding: 10px 8px;
       }
       
-      .actions a {
+      .actions a,
+      .actions button {
         padding: 8px 12px;
         min-height: 36px;
         display: inline-flex;
@@ -657,6 +723,13 @@ if (isset($_GET['id'])) {
       
       .input_box label {
         font-size: 0.85rem;
+      }
+
+      .toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        min-width: auto;
       }
     }
 
@@ -695,7 +768,8 @@ if (isset($_GET['id'])) {
         font-size: 0.75rem;
       }
       
-      .actions a {
+      .actions a,
+      .actions button {
         padding: 6px 10px;
         font-size: 0.75rem;
       }
@@ -831,9 +905,9 @@ if (isset($_GET['id'])) {
                 <a href="?id=<?= $service['package_id'] ?>" class="edit-btn">
                   <i class='bx bx-edit'></i> Edit
                 </a>
-                <a href="delete_service.php?id=<?= $service['package_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this service?')">
+                <button onclick="confirmDelete(<?= $service['package_id'] ?>)" class="delete-btn">
                   <i class='bx bx-trash'></i> Delete
-                </a>
+                </button>
               </div>
             </td>
           </tr>
@@ -904,6 +978,50 @@ if (isset($_GET['id'])) {
 <?php endif; ?>
 
 <script>
+// Toast Notification System
+function showToast(message, type = 'success') {
+  // Remove any existing toasts
+  const existingToasts = document.querySelectorAll('.toast');
+  existingToasts.forEach(toast => toast.remove());
+
+  // Create new toast
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  const icon = type === 'success' ? 'bx-check-circle' : 'bx-error-circle';
+  
+  toast.innerHTML = `
+    <i class='bx ${icon}'></i>
+    <span class="toast-message">${message}</span>
+    <i class='bx bx-x toast-close' onclick="closeToast(this)"></i>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Trigger animation
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  
+  // Auto hide after 4 seconds
+  setTimeout(() => {
+    hideToast(toast);
+  }, 4000);
+}
+
+function hideToast(toast) {
+  toast.classList.add('hide');
+  setTimeout(() => {
+    toast.remove();
+  }, 400);
+}
+
+function closeToast(closeBtn) {
+  const toast = closeBtn.closest('.toast');
+  hideToast(toast);
+}
+
+// Dropdown functionality
 function toggleDropdown(event) {
   event.preventDefault();
   event.stopPropagation();
@@ -920,6 +1038,7 @@ document.addEventListener('click', function(event) {
   }
 });
 
+// Sidebar toggle
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
@@ -930,6 +1049,7 @@ function toggleSidebar() {
   }
 }
 
+// Modal functions
 function openModal() {
   document.getElementById('serviceModal').style.display = 'flex';
 }
@@ -943,6 +1063,14 @@ function closeEditModal() {
   window.history.replaceState(null, null, window.location.pathname);
 }
 
+// Delete confirmation
+function confirmDelete(serviceId) {
+  if (confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+    window.location.href = '?delete_id=' + serviceId;
+  }
+}
+
+// Close modals when clicking outside
 document.addEventListener('click', function(event) {
   const addModal = document.getElementById('serviceModal');
   const editModal = document.getElementById('editModal');
@@ -951,6 +1079,7 @@ document.addEventListener('click', function(event) {
   if (event.target === editModal) closeEditModal();
 });
 
+// Close sidebar on menu link click (mobile)
 document.addEventListener('DOMContentLoaded', function() {
   const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
   menuLinks.forEach(link => {
@@ -967,19 +1096,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php if (isset($_SESSION['success'])): ?>
-  <div class="toast toast-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
   <script>
-    setTimeout(() => {
-      document.querySelector('.toast').style.display = 'none';
-    }, 4000);
+    showToast('<?= addslashes($_SESSION['success']); ?>', 'success');
   </script>
+  <?php unset($_SESSION['success']); ?>
 <?php elseif (isset($_SESSION['error'])): ?>
-  <div class="toast toast-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
   <script>
-    setTimeout(() => {
-      document.querySelector('.toast').style.display = 'none';
-    }, 4000);
+    showToast('<?= addslashes($_SESSION['error']); ?>', 'error');
   </script>
+  <?php unset($_SESSION['error']); ?>
 <?php endif; ?>
 
 </body>

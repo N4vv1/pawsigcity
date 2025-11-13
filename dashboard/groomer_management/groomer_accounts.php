@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_groomer'])) {
         );
 
         if ($result) {
-            $_SESSION['success'] = "Groomer account created successfully.";
+            $_SESSION['success'] = "Groomer account created successfully!";
         } else {
             $_SESSION['error'] = "Something went wrong: " . pg_last_error($conn);
         }
@@ -45,9 +45,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_groomer'])) {
     );
 
     if ($result) {
-        $_SESSION['success'] = "Groomer updated successfully.";
+        $_SESSION['success'] = "Groomer updated successfully!";
     } else {
         $_SESSION['error'] = "Failed to update groomer: " . pg_last_error($conn);
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Handle groomer deletion
+if (isset($_GET['delete_id'])) {
+    $delete_id = intval($_GET['delete_id']);
+    
+    $result = pg_query_params($conn, "DELETE FROM groomer WHERE groomer_id = $1", [$delete_id]);
+    
+    if ($result) {
+        $_SESSION['success'] = "Groomer deleted successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to delete groomer: " . pg_last_error($conn);
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
@@ -123,6 +138,8 @@ if (isset($_GET['id'])) {
       gap: 20px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       overflow-y: auto;
+      z-index: 999;
+      transition: transform 0.3s;
     }
 
     .sidebar .logo {
@@ -339,7 +356,8 @@ if (isset($_GET['id'])) {
       gap: 8px;
     }
 
-    .actions a {
+    .actions a,
+    .actions button {
       padding: 6px 14px;
       font-size: 0.85rem;
       font-weight: 600;
@@ -349,6 +367,9 @@ if (isset($_GET['id'])) {
       align-items: center;
       gap: 5px;
       transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: "Montserrat", sans-serif;
     }
 
     .edit-btn {
@@ -375,7 +396,7 @@ if (isset($_GET['id'])) {
     .modal {
       display: none;
       position: fixed;
-      z-index: 999;
+      z-index: 9999;
       left: 0;
       top: 0;
       width: 100%;
@@ -391,6 +412,8 @@ if (isset($_GET['id'])) {
       border-radius: 12px;
       width: 100%;
       max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
       position: relative;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       animation: slideIn 0.3s ease-out;
@@ -447,13 +470,16 @@ if (isset($_GET['id'])) {
       padding: 12px 15px;
       border-radius: 8px;
       border: 1px solid #ddd;
+      background-color: var(--light-pink-color);
       font-size: 1rem;
+      color: var(--dark-color);
       transition: all 0.2s;
     }
 
     .input-field:focus {
       outline: none;
       border-color: var(--primary-color);
+      background-color: var(--white-color);
       box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
     }
 
@@ -476,17 +502,24 @@ if (isset($_GET['id'])) {
       transform: translateY(-1px);
     }
 
-    /* TOAST */
+    /* ENHANCED TOAST NOTIFICATION */
     .toast {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      padding: 15px 25px;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      z-index: 9999;
-      animation: slideInToast 0.3s ease-out;
+      padding: 16px 24px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 400px;
       font-weight: 500;
+      font-size: 0.95rem;
+      animation: slideInToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      opacity: 0;
     }
 
     @keyframes slideInToast {
@@ -500,21 +533,108 @@ if (isset($_GET['id'])) {
       }
     }
 
+    @keyframes slideOutToast {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .toast.hide {
+      animation: slideOutToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
     .toast-success {
-      background: var(--edit-color);
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
       color: white;
     }
 
     .toast-error {
-      background: var(--delete-color);
+      background: linear-gradient(135deg, #F44336 0%, #e53935 100%);
       color: white;
+    }
+
+    .toast i {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .toast-message {
+      flex: 1;
+    }
+
+    .toast-close {
+      cursor: pointer;
+      font-size: 20px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toast-close:hover {
+      opacity: 1;
+    }
+
+    /* MOBILE MENU BUTTON */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: 0.3s;
+    }
+
+    .mobile-menu-btn i {
+      font-size: 24px;
+      color: var(--dark-color);
+    }
+
+    .mobile-menu-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+      opacity: 1;
     }
 
     /* MOBILE RESPONSIVE */
     @media screen and (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+
       .sidebar {
         transform: translateX(-100%);
-        z-index: 1000;
       }
 
       .sidebar.active {
@@ -524,7 +644,11 @@ if (isset($_GET['id'])) {
       main {
         margin-left: 0;
         width: 100%;
-        padding: 20px;
+        padding: 80px 20px 40px;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
       }
 
       .stats-card {
@@ -538,6 +662,7 @@ if (isset($_GET['id'])) {
       }
 
       table {
+        min-width: 600px;
         font-size: 0.85rem;
       }
 
@@ -548,18 +673,57 @@ if (isset($_GET['id'])) {
 
       .actions {
         flex-direction: column;
+        gap: 5px;
       }
 
       .modal-content {
         width: 95%;
         padding: 25px;
-        max-height: 90vh;
-        overflow-y: auto;
+      }
+
+      .toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        min-width: auto;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      main {
+        padding: 70px 15px 30px;
+      }
+
+      .header h1 {
+        font-size: 1.3rem;
+      }
+
+      .add-btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      table {
+        min-width: 500px;
+        font-size: 0.75rem;
+      }
+
+      table th,
+      table td {
+        padding: 8px 5px;
       }
     }
   </style>
 </head>
 <body>
+
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" onclick="toggleSidebar()">
+  <i class='bx bx-menu'></i>
+</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- Sidebar -->
 <aside class="sidebar">
@@ -632,92 +796,139 @@ if (isset($_GET['id'])) {
   <div class="table-section">
     <h2>All Groomers</h2>
     
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php if ($groomers && pg_num_rows($groomers) > 0): ?>
-          <?php 
-          // Reset pointer since we used it for count
-          pg_result_seek($groomers, 0);
-          while($g = pg_fetch_assoc($groomers)): 
-          ?>
-            <tr>
-              <td><?= $g['groomer_id'] ?></td>
-              <td><?= htmlspecialchars($g['groomer_name']) ?></td>
-              <td><?= htmlspecialchars($g['email']) ?></td>
-              <td class="actions">
-                <a href="?id=<?= $g['groomer_id'] ?>" class="edit-btn">
-                  <i class='bx bx-edit'></i> Edit
-                </a>
-                <a href="delete_groomer.php?id=<?= $g['groomer_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this groomer?')">
-                  <i class='bx bx-trash'></i> Delete
-                </a>
-              </td>
-            </tr>
-          <?php endwhile; ?>
-        <?php else: ?>
-          <tr><td colspan="4" style="text-align: center; color: #999;">No groomers found</td></tr>
-        <?php endif; ?>
-      </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if ($groomers && pg_num_rows($groomers) > 0): ?>
+            <?php 
+            // Reset pointer since we used it for count
+            pg_result_seek($groomers, 0);
+            while($g = pg_fetch_assoc($groomers)): 
+            ?>
+              <tr>
+                <td><?= $g['groomer_id'] ?></td>
+                <td><?= htmlspecialchars($g['groomer_name']) ?></td>
+                <td><?= htmlspecialchars($g['email']) ?></td>
+                <td>
+                  <div class="actions">
+                    <a href="?id=<?= $g['groomer_id'] ?>" class="edit-btn">
+                      <i class='bx bx-edit'></i> Edit
+                    </a>
+                    <button onclick="confirmDelete(<?= $g['groomer_id'] ?>)" class="delete-btn">
+                      <i class='bx bx-trash'></i> Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <?php endwhile; ?>
+          <?php else: ?>
+            <tr><td colspan="4" style="text-align: center; color: #999;">No groomers found</td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
   </div>
+</main>
 
-  <!-- Add Groomer Modal -->
-  <div id="groomerModal" class="modal">
+<!-- Add Groomer Modal -->
+<div id="groomerModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h2>Create New Groomer</h2>
+    <form method="POST">
+      <input type="hidden" name="create_groomer" value="1">
+      <div class="input_box">
+        <label>Groomer Name</label>
+        <input type="text" name="groomer_name" class="input-field" placeholder="Enter groomer name" required>
+      </div>
+      <div class="input_box">
+        <label>Email Address</label>
+        <input type="email" name="email" class="input-field" placeholder="Enter email address" required>
+      </div>
+      <div class="input_box">
+        <label>Password</label>
+        <input type="password" name="password" class="input-field" placeholder="Enter password" required>
+      </div>
+      <input type="submit" class="input-submit" value="Create Groomer Account">
+    </form>
+  </div>
+</div>
+
+<!-- Edit Groomer Modal -->
+<?php if(isset($edit_groomer)): ?>
+  <div id="editGroomerModal" class="modal" style="display:flex;">
     <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2>Create New Groomer</h2>
+      <span class="close" onclick="closeEditModal()">&times;</span>
+      <h2>Edit Groomer</h2>
       <form method="POST">
-        <input type="hidden" name="create_groomer" value="1">
+        <input type="hidden" name="groomer_id" value="<?= $edit_groomer['groomer_id'] ?>">
         <div class="input_box">
           <label>Groomer Name</label>
-          <input type="text" name="groomer_name" class="input-field" placeholder="Enter groomer name" required>
+          <input type="text" name="groomer_name" class="input-field" value="<?= htmlspecialchars($edit_groomer['groomer_name']) ?>" required>
         </div>
         <div class="input_box">
           <label>Email Address</label>
-          <input type="email" name="email" class="input-field" placeholder="Enter email address" required>
+          <input type="email" name="email" class="input-field" value="<?= htmlspecialchars($edit_groomer['email']) ?>" required>
         </div>
-        <div class="input_box">
-          <label>Password</label>
-          <input type="password" name="password" class="input-field" placeholder="Enter password" required>
-        </div>
-        <input type="submit" class="input-submit" value="Create Groomer Account">
+        <input type="submit" name="update_groomer" class="input-submit" value="Update Groomer">
       </form>
     </div>
   </div>
-
-  <!-- Edit Groomer Modal -->
-  <?php if(isset($edit_groomer)): ?>
-    <div id="editGroomerModal" class="modal" style="display:flex;">
-      <div class="modal-content">
-        <span class="close" onclick="closeEditModal()">&times;</span>
-        <h2>Edit Groomer</h2>
-        <form method="POST">
-          <input type="hidden" name="groomer_id" value="<?= $edit_groomer['groomer_id'] ?>">
-          <div class="input_box">
-            <label>Groomer Name</label>
-            <input type="text" name="groomer_name" class="input-field" value="<?= htmlspecialchars($edit_groomer['groomer_name']) ?>" required>
-          </div>
-          <div class="input_box">
-            <label>Email Address</label>
-            <input type="email" name="email" class="input-field" value="<?= htmlspecialchars($edit_groomer['email']) ?>" required>
-          </div>
-          <input type="submit" name="update_groomer" class="input-submit" value="Update Groomer">
-        </form>
-      </div>
-    </div>
-  <?php endif; ?>
-
-</main>
+<?php endif; ?>
 
 <script>
+// Toast Notification System
+function showToast(message, type = 'success') {
+  // Remove any existing toasts
+  const existingToasts = document.querySelectorAll('.toast');
+  existingToasts.forEach(toast => toast.remove());
+
+  // Create new toast
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  const icon = type === 'success' ? 'bx-check-circle' : 'bx-error-circle';
+  
+  toast.innerHTML = `
+    <i class='bx ${icon}'></i>
+    <span class="toast-message">${message}</span>
+    <i class='bx bx-x toast-close' onclick="closeToast(this)"></i>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Trigger animation
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  
+  // Auto hide after 4 seconds
+  setTimeout(() => {
+    hideToast(toast);
+  }, 4000);
+}
+
+function hideToast(toast) {
+  toast.classList.add('hide');
+  setTimeout(() => {
+    toast.remove();
+  }, 400);
+}
+
+function closeToast(closeBtn) {
+  const toast = closeBtn.closest('.toast');
+  hideToast(toast);
+}
+
+// Dropdown functionality
 function toggleDropdown(event) {
   event.preventDefault();
   event.stopPropagation();
@@ -734,39 +945,73 @@ document.addEventListener('click', function(event) {
   }
 });
 
+// Sidebar toggle
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+}
+
+// Modal functions
 function openModal() { 
   document.getElementById('groomerModal').style.display='flex'; 
 }
 
 function closeModal() { 
-  document.getElementById('groomerModal').style.display='none'; 
+  document.getElementById('groomerModal').style.display='none';
 }
 
 function closeEditModal() { 
   document.getElementById('editGroomerModal').style.display='none'; 
-  window.history.replaceState(null,null,window.location.pathname); 
+  window.history.replaceState(null, null, window.location.pathname); 
 }
 
+// Delete confirmation
+function confirmDelete(groomerId) {
+  if (confirm('Are you sure you want to delete this groomer? This action cannot be undone.')) {
+    window.location.href = '?delete_id=' + groomerId;
+  }
+}
+
+// Close modals when clicking outside
 document.addEventListener('click', function(event) {
   const modal = document.getElementById('groomerModal');
-  if(event.target === modal) closeModal();
+  const editModal = document.getElementById('editGroomerModal');
+  
+  if (event.target === modal) closeModal();
+  if (event.target === editModal) closeEditModal();
+});
+
+// Close sidebar on menu link click (mobile)
+document.addEventListener('DOMContentLoaded', function() {
+  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
+  menuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    });
+  });
 });
 </script>
 
 <?php if (isset($_SESSION['success'])): ?>
-  <div class="toast toast-success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
   <script>
-    setTimeout(() => {
-      document.querySelector('.toast').style.display = 'none';
-    }, 4000);
+    showToast('<?= addslashes($_SESSION['success']); ?>', 'success');
   </script>
+  <?php unset($_SESSION['success']); ?>
 <?php elseif (isset($_SESSION['error'])): ?>
-  <div class="toast toast-error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
   <script>
-    setTimeout(() => {
-      document.querySelector('.toast').style.display = 'none';
-    }, 4000);
+    showToast('<?= addslashes($_SESSION['error']); ?>', 'error');
   </script>
+  <?php unset($_SESSION['error']); ?>
 <?php endif; ?>
 
 </body>
