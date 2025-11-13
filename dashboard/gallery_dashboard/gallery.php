@@ -440,31 +440,41 @@ $result = pg_query($conn, $query);
       background-color: #1a1a1a;
     }
 
-    /* TOAST */
+    /* TOAST NOTIFICATIONS */
     .toast {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      padding: 15px 25px;
-      border-radius: 8px;
+      padding: 16px 24px;
+      border-radius: 10px;
       font-size: 0.95rem;
       font-weight: 600;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
       z-index: 10000;
-      animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-out 3.7s forwards;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      animation: slideInRight 0.4s ease-out, fadeOutRight 0.4s ease-out 3.6s forwards;
+    }
+
+    .toast i {
+      font-size: 1.4rem;
     }
 
     .toast-success {
-      background-color: var(--dark-color);
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
       color: var(--white-color);
+      border-left: 4px solid #2e7d32;
     }
 
     .toast-error {
-      background-color: #F44336;
+      background: linear-gradient(135deg, #F44336 0%, #e53935 100%);
       color: var(--white-color);
+      border-left: 4px solid #c62828;
     }
 
-    @keyframes slideIn {
+    @keyframes slideInRight {
       from {
         transform: translateX(400px);
         opacity: 0;
@@ -475,13 +485,14 @@ $result = pg_query($conn, $query);
       }
     }
 
-    @keyframes fadeOut {
+    @keyframes fadeOutRight {
       from {
         opacity: 1;
+        transform: translateX(0);
       }
       to {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateX(100px);
       }
     }
 
@@ -615,6 +626,13 @@ $result = pg_query($conn, $query);
       .actions a {
         width: 100%;
         justify-content: center;
+      }
+
+      .toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        min-width: auto;
       }
     }
 
@@ -826,11 +844,17 @@ $result = pg_query($conn, $query);
   </div>
 </div>
 
-<!-- Toast Notification -->
+<!-- Toast Notifications -->
 <?php if (isset($_SESSION['success'])): ?>
-  <div class="toast toast-success"><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
+  <div class="toast toast-success">
+    <i class='bx bx-check-circle'></i>
+    <span><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></span>
+  </div>
 <?php elseif (isset($_SESSION['error'])): ?>
-  <div class="toast toast-error"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
+  <div class="toast toast-error">
+    <i class='bx bx-error-circle'></i>
+    <span><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></span>
+  </div>
 <?php endif; ?>
 
 <script>
@@ -919,6 +943,14 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleSidebar();
       }
     });
+  });
+
+  // Auto-hide toast notifications
+  const toasts = document.querySelectorAll('.toast');
+  toasts.forEach(toast => {
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 4000);
   });
 });
 </script>

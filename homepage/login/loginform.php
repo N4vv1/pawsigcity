@@ -55,7 +55,6 @@ header("Expires: 0");
       z-index: 0;
     }
 
-    /* Left Side - Branding */
     .brand-side {
       flex: 1;
       background: linear-gradient(135deg, #A8E6CF 0%, #7FD4B3 100%);
@@ -146,7 +145,6 @@ header("Expires: 0");
       font-weight: 500;
     }
 
-    /* Right Side - Form */
     .form-side {
       flex: 1;
       background: #ffffff;
@@ -440,7 +438,95 @@ header("Expires: 0");
       right: 45px;
     }
 
-    /* Modal Styles */
+    /* Password Strength Indicator */
+    .password-strength {
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+
+    .strength-bar {
+      height: 4px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .strength-bar-fill {
+      height: 100%;
+      width: 0%;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .strength-bar-fill.weak {
+      width: 33%;
+      background: #ff4d4d;
+    }
+
+    .strength-bar-fill.medium {
+      width: 66%;
+      background: #ffa500;
+    }
+
+    .strength-bar-fill.strong {
+      width: 100%;
+      background: #28a745;
+    }
+
+    .strength-text {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .strength-text.weak {
+      color: #ff4d4d;
+    }
+
+    .strength-text.medium {
+      color: #ffa500;
+    }
+
+    .strength-text.strong {
+      color: #28a745;
+    }
+
+    .password-requirements {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .requirement {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      transition: color 0.3s ease;
+    }
+
+    .requirement i {
+      font-size: 14px;
+      color: #ccc;
+      transition: color 0.3s ease;
+    }
+
+    .requirement.met {
+      color: #28a745;
+    }
+
+    .requirement.met i {
+      color: #28a745;
+    }
+
+    .requirement.unmet {
+      color: #999;
+    }
+
+    .requirement.unmet i {
+      color: #ccc;
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -529,7 +615,6 @@ header("Expires: 0");
       transform: rotate(90deg);
     }
 
-    /* OTP Input Styles */
     .otp-container {
       display: flex;
       gap: 12px;
@@ -606,7 +691,6 @@ header("Expires: 0");
       font-weight: 600;
     }
 
-    /* Loading Spinner */
     .spinner {
       display: inline-block;
       width: 16px;
@@ -624,7 +708,6 @@ header("Expires: 0");
       100% { transform: rotate(360deg); }
     }
 
-    /* Responsive Design */
     @media (max-width: 968px) {
       body {
         flex-direction: column;
@@ -676,7 +759,6 @@ header("Expires: 0");
 </head>
 <body>
 
-  <!-- Left Side - Branding -->
   <div class="brand-side">
     <a href="../../index.php" class="back-button">
       <i class='bx bx-arrow-back'></i> Back
@@ -703,7 +785,6 @@ header("Expires: 0");
     </div>
   </div>
 
-  <!-- Right Side - Form -->
   <div class="form-side">
     <div class="container">
       <div class="form-container">
@@ -718,7 +799,6 @@ header("Expires: 0");
         </div>
 
         <div class="form-content">
-          <!-- Login Form -->
           <div id="login-form" class="form-section active">
             <div id="login-alerts">
               <?php
@@ -767,7 +847,6 @@ header("Expires: 0");
             </form>
           </div>
 
-          <!-- Register Form -->
           <div id="register-form" class="form-section">
             <div id="register-alerts"></div>
             
@@ -805,6 +884,51 @@ header("Expires: 0");
                 <i class='bx bx-hide password-toggle' onclick="togglePassword('reg_password', this)"></i>
               </div>
 
+              <!-- Password Strength Indicator -->
+              <div class="password-strength" id="password-strength" style="display: none;">
+                <div class="strength-bar">
+                  <div class="strength-bar-fill" id="strength-bar-fill"></div>
+                </div>
+                <div class="strength-text" id="strength-text"></div>
+                <div class="password-requirements">
+                  <div class="requirement" id="req-length">
+                    <i class='bx bx-x-circle'></i>
+                    <span>At least 8 characters</span>
+                  </div>
+                  <div class="requirement" id="req-uppercase">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One uppercase letter (A-Z)</span>
+                  </div>
+                  <div class="requirement" id="req-lowercase">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One lowercase letter (a-z)</span>
+                  </div>
+                  <div class="requirement" id="req-number">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One number (0-9)</span>
+                  </div>
+                  <div class="requirement" id="req-special">
+                    <i class='bx bx-x-circle'></i>
+                    <span>One special character (!@#$%^&*)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="input-box has-toggle">
+                <input type="password" class="input-field" name="confirm_password" id="reg_confirm_password" required />
+                <label class="label">Confirm Password</label>
+                <i class='bx bx-lock-alt icon'></i>
+                <i class='bx bx-hide password-toggle' onclick="togglePassword('reg_confirm_password', this)"></i>
+              </div>
+
+              <!-- Password Match Indicator -->
+              <div class="password-match" id="password-match" style="display: none; margin-top: -15px; margin-bottom: 15px;">
+                <div class="requirement" id="req-match">
+                  <i class='bx bx-x-circle'></i>
+                  <span>Passwords match</span>
+                </div>
+              </div>
+
               <div class="input-box">
                 <input type="text" class="input-field" name="phone" id="phone" required autocomplete="off" />
                 <label class="label">Phone Number</label>
@@ -819,7 +943,6 @@ header("Expires: 0");
     </div>
   </div>
 
-  <!-- OTP Verification Modal -->
   <div id="otpModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeOTPModal()">&times;</span>
@@ -851,7 +974,6 @@ header("Expires: 0");
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
   <div id="forgotPasswordModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
@@ -871,7 +993,6 @@ header("Expires: 0");
     </div>
   </div>
 
-  <!-- Reset Password Modal -->
   <div id="resetPasswordModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeResetPasswordModal()">&times;</span>
@@ -901,14 +1022,12 @@ header("Expires: 0");
   </div>
 
   <script>
-    // Global variables
     let currentEmail = '';
     let currentPurpose = '';
     let resendTimer = null;
     let resendCountdown = 60;
     let pendingFormData = null;
 
-    // Tab switching
     function switchTab(tab) {
       const loginForm = document.getElementById('login-form');
       const registerForm = document.getElementById('register-form');
@@ -927,7 +1046,6 @@ header("Expires: 0");
       }
     }
 
-    // Alert functions
     function showAlert(containerId, message, type) {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
@@ -942,7 +1060,6 @@ header("Expires: 0");
       }, 5000);
     }
 
-    // Password toggle
     function togglePassword(inputId, icon) {
       const input = document.getElementById(inputId);
       if (input.type === 'password') {
@@ -956,7 +1073,6 @@ header("Expires: 0");
       }
     }
 
-    // OTP Modal Functions
     function openOTPModal(email, purpose) {
       currentEmail = email;
       currentPurpose = purpose;
@@ -964,7 +1080,6 @@ header("Expires: 0");
       document.getElementById('otpModal').classList.add('active');
       document.getElementById('otp-alerts').innerHTML = '';
       
-      // Clear and focus first input
       const otpInputs = document.querySelectorAll('.otp-input');
       otpInputs.forEach(input => {
         input.value = '';
@@ -972,7 +1087,6 @@ header("Expires: 0");
       });
       otpInputs[0].focus();
       
-      // Start resend timer
       startResendTimer();
     }
 
@@ -1003,7 +1117,6 @@ header("Expires: 0");
       document.getElementById('reset-alerts').innerHTML = '';
     }
 
-    // OTP Input Handling
     document.addEventListener('DOMContentLoaded', function() {
       const otpInputs = document.querySelectorAll('.otp-input');
       
@@ -1011,13 +1124,11 @@ header("Expires: 0");
         input.addEventListener('input', function(e) {
           const value = e.target.value;
           
-          // Only allow numbers
           if (!/^\d*$/.test(value)) {
             e.target.value = '';
             return;
           }
           
-          // Add filled class
           if (value) {
             e.target.classList.add('filled');
             e.target.classList.remove('error');
@@ -1025,19 +1136,16 @@ header("Expires: 0");
             e.target.classList.remove('filled');
           }
           
-          // Auto-focus next input
           if (value && index < otpInputs.length - 1) {
             otpInputs[index + 1].focus();
           }
         });
         
         input.addEventListener('keydown', function(e) {
-          // Handle backspace
           if (e.key === 'Backspace' && !e.target.value && index > 0) {
             otpInputs[index - 1].focus();
           }
           
-          // Handle paste
           if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
             e.preventDefault();
             navigator.clipboard.readText().then(text => {
@@ -1055,9 +1163,121 @@ header("Expires: 0");
           }
         });
       });
+
+      // Password Strength Checker
+      const regPasswordInput = document.getElementById('reg_password');
+      const strengthIndicator = document.getElementById('password-strength');
+      
+      regPasswordInput.addEventListener('focus', function() {
+        strengthIndicator.style.display = 'block';
+      });
+      
+      regPasswordInput.addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+        checkPasswordMatch();
+      });
+
+      // Password Match Checker
+      const regConfirmPasswordInput = document.getElementById('reg_confirm_password');
+      const matchIndicator = document.getElementById('password-match');
+      
+      regConfirmPasswordInput.addEventListener('focus', function() {
+        matchIndicator.style.display = 'block';
+      });
+      
+      regConfirmPasswordInput.addEventListener('input', function() {
+        checkPasswordMatch();
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const success = urlParams.get('success');
+      const error = urlParams.get('error');
+
+      if (success) {
+        showAlert('login-alerts', success, 'success');
+      }
+      if (error) {
+        showAlert('login-alerts', error, 'error');
+      }
+      
+      if (success || error) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     });
 
-    // Send OTP
+    function checkPasswordStrength(password) {
+      const strengthBar = document.getElementById('strength-bar-fill');
+      const strengthText = document.getElementById('strength-text');
+      
+      // Requirements
+      const hasLength = password.length >= 8;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+      
+      // Update requirement indicators
+      updateRequirement('req-length', hasLength);
+      updateRequirement('req-uppercase', hasUppercase);
+      updateRequirement('req-lowercase', hasLowercase);
+      updateRequirement('req-number', hasNumber);
+      updateRequirement('req-special', hasSpecial);
+      
+      // Calculate strength
+      let strength = 0;
+      if (hasLength) strength++;
+      if (hasUppercase) strength++;
+      if (hasLowercase) strength++;
+      if (hasNumber) strength++;
+      if (hasSpecial) strength++;
+      
+      // Update strength bar and text
+      strengthBar.className = 'strength-bar-fill';
+      strengthText.className = 'strength-text';
+      
+      if (password.length === 0) {
+        strengthBar.style.width = '0%';
+        strengthText.textContent = '';
+      } else if (strength <= 2) {
+        strengthBar.classList.add('weak');
+        strengthText.classList.add('weak');
+        strengthText.textContent = 'Weak Password';
+      } else if (strength <= 4) {
+        strengthBar.classList.add('medium');
+        strengthText.classList.add('medium');
+        strengthText.textContent = 'Medium Password';
+      } else {
+        strengthBar.classList.add('strong');
+        strengthText.classList.add('strong');
+        strengthText.textContent = 'Strong Password';
+      }
+    }
+    
+    function updateRequirement(elementId, isMet) {
+      const element = document.getElementById(elementId);
+      const icon = element.querySelector('i');
+      
+      if (isMet) {
+        element.classList.add('met');
+        element.classList.remove('unmet');
+        icon.className = 'bx bx-check-circle';
+      } else {
+        element.classList.add('unmet');
+        element.classList.remove('met');
+        icon.className = 'bx bx-x-circle';
+      }
+    }
+
+    function checkPasswordMatch() {
+      const password = document.getElementById('reg_password').value;
+      const confirmPassword = document.getElementById('reg_confirm_password').value;
+      
+      if (confirmPassword.length > 0) {
+        const passwordsMatch = password === confirmPassword;
+        updateRequirement('req-match', passwordsMatch);
+      }
+    }
+
     async function sendOTP(email, purpose) {
       try {
         const response = await fetch('send-otp.php', {
@@ -1074,7 +1294,6 @@ header("Expires: 0");
       }
     }
 
-    // Verify OTP
     async function verifyOTP() {
       const otpInputs = document.querySelectorAll('.otp-input');
       const otp = Array.from(otpInputs).map(input => input.value).join('');
@@ -1104,25 +1323,19 @@ header("Expires: 0");
           setTimeout(() => {
             closeOTPModal();
             
-            // Handle based on purpose
             if (currentPurpose === 'registration') {
-              // Complete registration
               completeRegistration();
             } else if (currentPurpose === 'reset_password') {
-              // Show reset password form
-              closeForgotPasswordModal();
               openResetPasswordModal();
             }
           }, 1000);
         } else {
-          // Show error on OTP inputs
           otpInputs.forEach(input => {
             input.classList.add('error');
             input.classList.remove('filled');
           });
           showAlert('otp-alerts', data.message, 'error');
           
-          // Clear inputs after error
           setTimeout(() => {
             otpInputs.forEach(input => {
               input.value = '';
@@ -1139,7 +1352,6 @@ header("Expires: 0");
       }
     }
 
-    // Resend OTP
     async function resendOTP() {
       const resendLink = document.getElementById('resend-link');
       if (resendLink.classList.contains('disabled')) return;
@@ -1159,7 +1371,6 @@ header("Expires: 0");
       }
     }
 
-    // Resend Timer
     function startResendTimer() {
       const resendLink = document.getElementById('resend-link');
       const timer = document.getElementById('timer');
@@ -1180,31 +1391,49 @@ header("Expires: 0");
       }, 1000);
     }
 
-    // Registration Form Handler
     document.getElementById('registration-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const password = document.getElementById('reg_password').value;
+      const confirmPassword = document.getElementById('reg_confirm_password').value;
       
       const formData = {
         first_name: document.getElementById('first_name').value.trim(),
         middle_name: document.getElementById('middle_name').value.trim(),
         last_name: document.getElementById('last_name').value.trim(),
         email: document.getElementById('reg_email').value.trim(),
-        password: document.getElementById('reg_password').value,
+        password: password,
         phone: document.getElementById('phone').value.trim()
       };
       
-      // Validate
       if (!formData.first_name || !formData.last_name || !formData.email || !formData.password) {
         showAlert('register-alerts', 'All required fields must be filled', 'error');
         return;
       }
       
+      // Enhanced password validation
       if (formData.password.length < 8) {
         showAlert('register-alerts', 'Password must be at least 8 characters long', 'error');
         return;
       }
+
+      // Check all password requirements
+      const hasUppercase = /[A-Z]/.test(formData.password);
+      const hasLowercase = /[a-z]/.test(formData.password);
+      const hasNumber = /[0-9]/.test(formData.password);
+      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+
+      if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+        showAlert('register-alerts', 'Password must meet all complexity requirements', 'error');
+        return;
+      }
+
+      // Check if passwords match
+      if (password !== confirmPassword) {
+        showAlert('register-alerts', 'Passwords do not match', 'error');
+        return;
+      }
       
-      // Store form data and send OTP
       pendingFormData = formData;
       
       const btn = e.target.querySelector('.submit-btn');
@@ -1224,7 +1453,6 @@ header("Expires: 0");
       }
     });
 
-    // Complete Registration
     async function completeRegistration() {
       if (!pendingFormData) return;
       
@@ -1252,7 +1480,6 @@ header("Expires: 0");
       }
     }
 
-    // Forgot Password Form Handler
     document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -1269,13 +1496,13 @@ header("Expires: 0");
       btn.innerHTML = originalText;
       
       if (result.success) {
+        closeForgotPasswordModal();
         openOTPModal(email, 'reset_password');
       } else {
         showAlert('forgot-alerts', result.message, 'error');
       }
     });
 
-    // Reset Password Form Handler
     document.getElementById('reset-password-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -1324,28 +1551,9 @@ header("Expires: 0");
       }
     });
 
-    // Close modals when clicking outside
     window.addEventListener('click', (e) => {
       if (e.target.classList.contains('modal')) {
         e.target.classList.remove('active');
-      }
-    });
-
-    // Handle URL parameters
-    window.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const success = urlParams.get('success');
-      const error = urlParams.get('error');
-
-      if (success) {
-        showAlert('login-alerts', success, 'success');
-      }
-      if (error) {
-        showAlert('login-alerts', error, 'error');
-      }
-      
-      if (success || error) {
-        window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
   </script>
