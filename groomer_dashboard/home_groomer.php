@@ -378,6 +378,157 @@ if (!$result) {
       margin-bottom: 20px;
     }
 
+    /* Password Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1002;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      animation: slideDown 0.3s;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      color: var(--dark-color);
+    }
+
+    .modal-header i {
+      font-size: 24px;
+      color: #f44336;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .modal-body {
+      margin-bottom: 20px;
+    }
+
+    .modal-body p {
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .password-input-group {
+      position: relative;
+    }
+
+    .password-input-group input {
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .password-input-group input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+      font-size: 20px;
+      padding: 5px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .modal-btn-cancel {
+      background-color: #f5f5f5;
+      color: var(--dark-color);
+    }
+
+    .modal-btn-cancel:hover {
+      background-color: #e0e0e0;
+    }
+
+    .modal-btn-confirm {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+    }
+
+    .modal-btn-confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+    }
+
+    .modal-btn-confirm:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      color: #f44336;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -490,6 +641,30 @@ if (!$result) {
   <?php endif; ?>
 </main>
 
+<!-- Password Verification Modal -->
+<div id="passwordModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <i class='bx bx-lock-alt'></i>
+      <h3>Admin Verification Required</h3>
+    </div>
+    <div class="modal-body">
+      <p>Please enter the admin password to go offline:</p>
+      <div class="password-input-group">
+        <input type="password" id="adminPassword" placeholder="Enter admin password" />
+        <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility()">
+          <i class='bx bx-hide' id="passwordIcon"></i>
+        </button>
+      </div>
+      <div class="error-message" id="passwordError">Incorrect password. Please try again.</div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-btn modal-btn-cancel" onclick="cancelOffline()">Cancel</button>
+      <button type="button" class="modal-btn modal-btn-confirm" onclick="verifyPassword()">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <script>
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
@@ -515,13 +690,100 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Status Toggle Handler - FIXED: Proper state management
+// Status Toggle Handler - FIXED: Proper state management with password verification
 const statusToggle = document.getElementById('statusToggle');
 const statusLabel = document.getElementById('statusLabel');
+const passwordModal = document.getElementById('passwordModal');
+const adminPasswordInput = document.getElementById('adminPassword');
+const passwordError = document.getElementById('passwordError');
 
 statusToggle.addEventListener('change', function() {
   const isActive = this.checked;
   
+  // If going offline, require password
+  if (!isActive) {
+    // Show password modal
+    passwordModal.style.display = 'block';
+    adminPasswordInput.value = '';
+    passwordError.classList.remove('show');
+    adminPasswordInput.focus();
+  } else {
+    // Going online - no password needed
+    updateStatus(true);
+  }
+});
+
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById('adminPassword');
+  const passwordIcon = document.getElementById('passwordIcon');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    passwordIcon.className = 'bx bx-show';
+  } else {
+    passwordInput.type = 'password';
+    passwordIcon.className = 'bx bx-hide';
+  }
+}
+
+function cancelOffline() {
+  passwordModal.style.display = 'none';
+  statusToggle.checked = true; // Revert to online
+}
+
+function verifyPassword() {
+  const password = adminPasswordInput.value;
+  
+  if (!password) {
+    passwordError.textContent = 'Please enter a password';
+    passwordError.classList.add('show');
+    return;
+  }
+  
+  // Send password to server for verification
+  fetch('verify_admin_password.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password: password })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Password correct - proceed to go offline
+      passwordModal.style.display = 'none';
+      updateStatus(false);
+    } else {
+      // Password incorrect
+      passwordError.textContent = data.message || 'Incorrect password. Please try again.';
+      passwordError.classList.add('show');
+      adminPasswordInput.value = '';
+      adminPasswordInput.focus();
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    passwordError.textContent = 'Error verifying password. Please try again.';
+    passwordError.classList.add('show');
+  });
+}
+
+// Allow Enter key to submit password
+adminPasswordInput.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    verifyPassword();
+  }
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(e) {
+  if (e.target === passwordModal) {
+    cancelOffline();
+  }
+});
+
+function updateStatus(isActive) {
   fetch('update_status.php', {
     method: 'POST',
     headers: {
@@ -538,16 +800,16 @@ statusToggle.addEventListener('change', function() {
     } else {
       showAlert('Failed to update status', 'error');
       // Revert toggle if failed
-      this.checked = !isActive;
+      statusToggle.checked = !isActive;
     }
   })
   .catch(error => {
     console.error('Error:', error);
     showAlert('Error updating status', 'error');
     // Revert toggle if error
-    this.checked = !isActive;
+    statusToggle.checked = !isActive;
   });
-});
+}
 
 // Complete Appointment Handler
 function completeAppointment(appointmentId) {
