@@ -201,7 +201,14 @@ try {
         $mail->Password   = getenv('SMTP_PASSWORD') ?: 'iigy qtnu ojku ktsx';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
-        $mail->SMTPDebug  = 0;
+        $mail->SMTPDebug  = 2; // Enable debug output temporarily
+        
+        // Verify credentials are set
+        if (empty($mail->Username) || empty($mail->Password)) {
+            throw new Exception('SMTP credentials not configured');
+        }
+        
+        error_log("SMTP Config - Host: smtp.gmail.com, Port: 587, User: " . $mail->Username);
         
         $mail->setFrom($mail->Username, 'PAWsig City');
         $mail->addAddress($email);
