@@ -167,7 +167,7 @@ if ($selected_pet_id) {
   <title>PAWsig City | Book</title>
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="../homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="../homepage/images/pawsig2.png">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
@@ -1377,7 +1377,7 @@ select option:disabled:hover {
   <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
+      <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
     </a>
     
     <!-- Hamburger Menu Button -->

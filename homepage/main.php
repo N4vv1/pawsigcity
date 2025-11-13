@@ -107,7 +107,7 @@ function getServiceImage($serviceName) {
   <title>PAWsig City | Homepage</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="icon" type="image/png" href="./images/pawsig.png">
+  <link rel="icon" type="image/png" href="./images/pawsig2.png">
 
   <style>
        /* Base navbar styles */
@@ -587,7 +587,7 @@ function getServiceImage($serviceName) {
  <header>
   <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig.png" alt="Logo" class="icon" />
+      <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
     </a>
     
     <!-- Hamburger Menu Button -->
@@ -2014,7 +2014,7 @@ function getServiceImage($serviceName) {
     <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="./images/about.jpg" alt="About Our Shop" class="about-image" />
+          <img src="./images/pawsig2.png" alt="About Our Shop" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>

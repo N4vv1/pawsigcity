@@ -12,7 +12,7 @@ header("Expires: 0");
   <title>PAWsig City | Authentication</title>
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig2.png">
   <style>
     * {
       margin: 0;
