@@ -154,10 +154,10 @@ if ($selected_pet_id) {
         SELECT pp.price_id, pp.package_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
         FROM package_prices pp
         JOIN packages p ON pp.package_id = p.package_id
-        WHERE pp.species = $1 
-        AND pp.size = $2
-        AND pp.min_weight <= $3 
-        AND pp.max_weight >= $3
+        WHERE pp.species = $1::text 
+        AND pp.size = $2::text
+        AND pp.min_weight <= $3::numeric 
+        AND pp.max_weight >= $3::numeric
         ORDER BY p.name, pp.price
     ", [$valid_pet['species'], $valid_pet['size'], $valid_pet['weight']]);
 
@@ -1708,9 +1708,10 @@ select option:disabled:hover {
       submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
     }
   }
-  const packageSelect = document.getElementById('price_id');
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('appointment_date');
+    const packageSelect = document.getElementById('package_id'); // ← Changed from 'price_id' to 'package_id'
+    
     if (dateInput) {
       dateInput.addEventListener('change', updateAvailabilityIndicator);
       dateInput.addEventListener('input', updateAvailabilityIndicator);
@@ -1719,13 +1720,13 @@ select option:disabled:hover {
       const today = now.toISOString().split('T')[0];
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
+    }
 
-
-       if (packageSelect) {
-    packageSelect.addEventListener('change', updatePriceDisplay);
-    // Trigger on page load if option is pre-selected
-    updatePriceDisplay();
-  }
+    // Add null check for package select
+    if (packageSelect) {
+      packageSelect.addEventListener('change', updatePriceDisplay);
+      // Trigger on page load if option is pre-selected
+      updatePriceDisplay();
     }
 
     // Flatpickr initialization
