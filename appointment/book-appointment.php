@@ -244,7 +244,6 @@ if ($selected_pet_id) {
     }
     
     error_log("Found " . pg_num_rows($packages_result) . " matching packages");
-}
 ?>
 
 <!DOCTYPE html>
