@@ -1751,7 +1751,7 @@ if (!$pets) {
   </div>
 
   <!-- Pet Edit Form -->
-  <div id="pet-edit-'<?= $pet_id ?>'" class="edit-form">
+  <div id="pet-edit-<?= $pet_id ?>" class="edit-form">
     <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
       
