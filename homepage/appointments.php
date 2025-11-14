@@ -101,10 +101,10 @@ if ($row_count > 0) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PAWsig City | My Appointments</title>
+  <title>PAWsig City | Appointments</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="./images/pawsig2.png">
   
   <style>
@@ -132,40 +132,33 @@ if ($row_count > 0) {
       min-height: 100vh;
     }
 
-    header {
-      background: var(--white-color);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
+    /* KEEP ORIGINAL NAVBAR STYLES */
+    .section-content {
+      max-width: 1200px;
+      margin: auto;
     }
 
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 40px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .navbar-logo img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
+      padding: 15px 30px;
+      position: relative;
+      z-index: 100;
     }
 
     .nav-menu {
       display: flex;
       align-items: center;
       list-style: none;
+      margin: 0;
+      padding: 0;
       gap: 5px;
     }
 
     .nav-item {
       position: relative;
+      list-style: none;
     }
 
     .nav-link {
@@ -173,85 +166,295 @@ if ($row_count > 0) {
       padding: 8px 16px;
       display: flex;
       align-items: center;
-      color: var(--dark-color);
+      color: #2c3e50;
       font-weight: 500;
       transition: all 0.3s ease;
       border-radius: 8px;
-      font-size: 0.95rem;
     }
 
-    .nav-link:hover, .nav-link.active {
-      background-color: rgba(168, 230, 207, 0.15);
+    .nav-link:hover {
+      background-color: rgba(168, 230, 207, 0.1);
       color: #16a085;
     }
 
-    .nav-link i {
-      margin-right: 6px;
-    }
-
-    .dropdown {
-      position: relative;
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: white;
-      min-width: 220px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: all 0.3s ease;
-      margin-top: 8px;
-      padding: 8px 0;
-      list-style: none;
-    }
-
-    .dropdown:hover .dropdown-menu {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .dropdown-menu a {
-      display: block;
-      padding: 12px 20px;
-      color: var(--dark-color);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      border-left: 3px solid transparent;
-    }
-
-    .dropdown-menu a:hover {
-      background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
-      border-left-color: var(--primary-color);
-      padding-left: 24px;
+    .nav-link.active {
+      background-color: rgba(168, 230, 207, 0.15);
       color: #16a085;
     }
 
     .hamburger {
       display: none;
-      flex-direction: column;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 8px;
     }
 
-    .hamburger span {
-      width: 28px;
-      height: 3px;
-      background-color: var(--dark-color);
-      transition: all 0.3s ease;
-      border-radius: 3px;
-      margin: 3px 0;
+    @media (min-width: 1025px) {
+      .dropdown {
+        position: relative;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        min-width: 220px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        margin-top: 8px;
+        padding: 8px 0;
+        z-index: 1000;
+        list-style: none;
+        pointer-events: none;
+      }
+
+      .dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .dropdown-menu:hover {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .dropdown-menu li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .dropdown-menu a {
+        display: block;
+        padding: 12px 20px;
+        color: #2c3e50;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+        white-space: nowrap;
+        text-align: left;
+      }
+
+      .dropdown-menu a:hover {
+        background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
+        border-left-color: #A8E6CF;
+        padding-left: 24px;
+        color: #16a085;
+      }
+
+      .profile-icon {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .profile-icon::after {
+        content: '\f078';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 0.7rem;
+        margin-left: 4px;
+        transition: transform 0.3s ease;
+      }
+
+      .dropdown:hover .profile-icon::after {
+        transform: rotate(180deg);
+      }
     }
 
+    @media (max-width: 1024px) {
+      .hamburger {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 8px;
+        z-index: 1001;
+        width: 40px;
+        height: 40px;
+        position: relative;
+      }
+
+      .hamburger span {
+        width: 28px;
+        height: 3px;
+        background-color: #2c3e50;
+        transition: all 0.3s ease;
+        border-radius: 3px;
+        display: block;
+        position: relative;
+      }
+
+      .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg);
+        position: absolute;
+        top: 50%;
+        margin-top: -1.5px;
+      }
+
+      .hamburger.active span:nth-child(2) {
+        opacity: 0;
+        transform: scale(0);
+      }
+
+      .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg);
+        position: absolute;
+        top: 50%;
+        margin-top: -1.5px;
+      }
+
+      .nav-menu {
+        position: fixed;
+        right: -100%;
+        top: 0;
+        flex-direction: column;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        width: 320px;
+        text-align: left;
+        transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+        padding: 100px 0 30px 0;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 999;
+        align-items: stretch;
+        gap: 0;
+      }
+
+      .nav-menu.active {
+        right: 0;
+      }
+
+      .nav-item {
+        margin: 0;
+        padding: 0;
+        border-bottom: 1px solid #e9ecef;
+        position: relative;
+      }
+
+      .nav-link {
+        font-size: 1.1rem;
+        padding: 18px 30px;
+        display: block;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        width: 100%;
+      }
+
+      .nav-link:hover {
+        background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
+        padding-left: 40px;
+        color: #16a085;
+      }
+
+      .nav-link i {
+        margin-right: 12px;
+        font-size: 1.2rem;
+        color: #A8E6CF;
+      }
+
+      .profile-icon {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+
+      .profile-icon::after {
+        content: 'Profile Menu';
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 1rem;
+      }
+
+      .dropdown-menu {
+        position: relative;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        box-shadow: none;
+        background-color: #f1f3f5;
+        margin: 0;
+        border-radius: 0;
+        padding: 8px 0;
+        list-style: none;
+      }
+
+      .dropdown.active .dropdown-menu {
+        display: block;
+      }
+
+      .dropdown-menu li {
+        margin: 0;
+        border-bottom: none;
+        list-style: none;
+      }
+
+      .dropdown-menu a {
+        padding: 14px 30px 14px 50px;
+        font-size: 0.95rem;
+        color: #495057;
+        display: block;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .dropdown-menu a::before {
+        content: '•';
+        position: absolute;
+        left: 35px;
+        color: #A8E6CF;
+        font-size: 1.2rem;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: #e9ecef;
+        padding-left: 55px;
+        color: #16a085;
+      }
+
+      .nav-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-overlay.active {
+        display: block;
+        opacity: 1;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .hamburger {
+        display: none;
+      }
+      
+      .nav-overlay {
+        display: none;
+      }
+    }
+
+    /* MAIN CONTENT - NEW DESIGN */
     main {
       padding: 120px 40px 60px;
       max-width: 1400px;
@@ -699,64 +902,9 @@ if ($row_count > 0) {
       justify-content: flex-end;
     }
 
-    @media (max-width: 1024px) {
-      .hamburger {
-        display: flex;
-      }
-
-      .nav-menu {
-        position: fixed;
-        right: -100%;
-        top: 0;
-        flex-direction: column;
-        background: var(--white-color);
-        width: 320px;
-        height: 100vh;
-        padding: 100px 30px 30px;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
-        transition: right 0.4s;
-        overflow-y: auto;
-        align-items: stretch;
-        gap: 0;
-      }
-
-      .nav-menu.active {
-        right: 0;
-      }
-
-      .nav-item {
-        border-bottom: 1px solid #f0f0f0;
-      }
-
-      .nav-link {
-        padding: 18px 0;
-        font-size: 1.1rem;
-      }
-
-      .dropdown-menu {
-        position: relative;
-        display: none;
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-        box-shadow: none;
-        background-color: #f8f8f8;
-        margin: 0;
-        border-radius: 0;
-      }
-
-      .dropdown.active .dropdown-menu {
-        display: block;
-      }
-    }
-
     @media (max-width: 768px) {
       main {
         padding: 100px 20px 40px;
-      }
-
-      .navbar {
-        padding: 15px 20px;
       }
 
       .stats-grid {
@@ -813,9 +961,9 @@ if ($row_count > 0) {
 <body>
 
 <header>
-  <nav class="navbar">
+  <nav class="navbar section-content">
     <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig2.png" alt="Logo" />
+      <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
     </a>
     
     <button class="hamburger" id="hamburger">
@@ -823,6 +971,8 @@ if ($row_count > 0) {
       <span></span>
       <span></span>
     </button>
+
+    <div class="nav-overlay" id="nav-overlay"></div>
 
     <ul class="nav-menu" id="nav-menu">
       <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
@@ -832,7 +982,7 @@ if ($row_count > 0) {
       <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
       <li class="nav-item dropdown" id="profile-dropdown">
         <a href="#" class="nav-link profile-icon active">
-          <i class="fas fa-user"></i> Profile
+          <i class="fas fa-user"></i>
         </a>
         <ul class="dropdown-menu">
           <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
@@ -1193,24 +1343,59 @@ if ($row_count > 0) {
 <script>
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
+const navOverlay = document.getElementById('nav-overlay');
 const profileDropdown = document.getElementById('profile-dropdown');
 
 hamburger.addEventListener('click', function() {
+  hamburger.classList.toggle('active');
   navMenu.classList.toggle('active');
+  navOverlay.classList.toggle('active');
+  document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+});
+
+navOverlay.addEventListener('click', function() {
+  hamburger.classList.remove('active');
+  navMenu.classList.remove('active');
+  navOverlay.classList.remove('active');
+  profileDropdown.classList.remove('active');
+  document.body.style.overflow = '';
 });
 
 document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
   link.addEventListener('click', function() {
-    if (window.innerWidth <= 1024) {
-      navMenu.classList.remove('active');
-    }
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    document.body.style.overflow = '';
   });
 });
 
 profileDropdown.addEventListener('click', function(e) {
-  if (window.innerWidth <= 1024 && e.target.closest('.profile-icon')) {
-    e.preventDefault();
-    this.classList.toggle('active');
+  if (window.innerWidth <= 1024) {
+    if (e.target.closest('.profile-icon')) {
+      e.preventDefault();
+      this.classList.toggle('active');
+    }
+  }
+});
+
+document.querySelectorAll('.dropdown-menu a').forEach(link => {
+  link.addEventListener('click', function() {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 1024) {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
   }
 });
 
