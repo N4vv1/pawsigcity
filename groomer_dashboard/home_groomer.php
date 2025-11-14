@@ -32,17 +32,18 @@ $query = "
     SELECT 
         a.appointment_id,
         a.appointment_date,
-        p.package_id,
+        a.package_id,
         p.name AS package_name,
         pet.name AS pet_name,
         pet.breed AS pet_breed,
         (u.first_name || ' ' || u.last_name) AS username,
         u.first_name,
-        u.last_name
+        u.last_name,
+        a.groomer_id as assigned_groomer
     FROM appointments a
-    JOIN packages p ON a.package_id::text = p.package_id
+    JOIN packages p ON a.package_id = p.price_id
     JOIN pets pet ON a.pet_id = pet.pet_id
-    JOIN users u ON pet.user_id::text = u.user_id
+    JOIN users u ON pet.user_id = u.user_id
     WHERE a.status = 'confirmed'
       AND a.groomer_id = $1
     ORDER BY a.appointment_date ASC
