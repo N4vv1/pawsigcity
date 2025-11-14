@@ -29,8 +29,13 @@ if (!empty($password)) {
 $result = pg_query_params($conn, $query, $params);
 
 if ($result) {
-    header("Location: pet-profile.php?success=1");
+    $_SESSION['notification'] = "Account updated successfully!";
+    $_SESSION['notification_type'] = 'success';
+    header("Location: pet-profile.php");
     exit;
 } else {
-    echo "Error updating account: " . pg_last_error($conn);
+    $_SESSION['notification'] = "Error updating account: " . pg_last_error($conn);
+    $_SESSION['notification_type'] = 'error';
+    header("Location: pet-profile.php");
+    exit;
 }

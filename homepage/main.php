@@ -2060,11 +2060,14 @@ section[id] {
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
-         <p class="text">
-  PAWsig City is a dedicated pet grooming shop that focuses on giving pets a comfortable, gentle, and high-quality grooming experience. Our team understands that every pet is unique, so we make sure to handle each one with care, patience, and professionalism. Whether it’s a simple bath, a full grooming session, or a special treatment, we aim to help pets look good, feel good, and stay healthy.
-  <br><br>
-  We also want to make things easier for pet owners. That’s why we offer a smooth and hassle-free appointment system, so you can book your pet’s grooming session anytime without stress. At PAWsig City, our goal is not just to groom pets but to build trust with owners and create a friendly, safe environment where pets are always treated with love.
+        <p class="text">
+  PAWsig City is a dedicated pet grooming shop that focuses on giving pets a comfortable, gentle, and high-quality grooming experience. We understand that every pet has its own personality and needs, which is why our team takes the time to get to know each one. From energetic pups to anxious or senior pets, we ensure every grooming session is handled with care, patience, and professionalism. Whether it’s a simple bath, a complete grooming makeover, or a specialized treatment, we work to make pets look their best while keeping their health, hygiene, and comfort as our top priorities. Our goal is to make every visit a positive experience where pets feel safe, relaxed, and genuinely cared for.
 </p>
+
+<p class="text">
+  We also want to make things easier for pet owners by offering a smooth and stress-free booking experience. Our online appointment system lets you schedule your pet’s grooming session anytime, anywhere—without the hassle of long waiting lines or complicated processes. At PAWsig City, we believe that great grooming is built on trust, both with pets and the people who love them. That’s why we strive to create a warm and welcoming environment, provide transparent services, and ensure every pet receives the love, attention, and respect they deserve. Your pet’s happiness and well-being are at the heart of everything we do.
+</p>
+
 
           <div class="social-link-list">
             <a href="https://www.facebook.com/pawsigcity" class="social-link"><i class="fa-brands fa-facebook"></i></a>

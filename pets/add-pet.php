@@ -289,16 +289,69 @@ if (!$pets) {
     gap: 10px;
   }
 
-  .alert-success {
-    background: #d4edda;
-    color: #155724;
-    border-left: 5px solid #28a745;
-  }
-
   .alert-error {
     background: #f8d7da;
     color: #721c24;
     border-left: 5px solid #dc3545;
+  }
+
+  /* SUCCESS NOTIFICATION TOAST */
+  .success-notification {
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 18px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(40, 167, 69, 0.3);
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10000;
+    animation: slideInRight 0.5s ease, slideOutRight 0.5s ease 4.5s;
+    opacity: 0;
+  }
+
+  .success-notification i {
+    font-size: 24px;
+    animation: checkmark 0.6s ease;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes checkmark {
+    0% {
+      transform: scale(0) rotate(-45deg);
+    }
+    50% {
+      transform: scale(1.2) rotate(0deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
   }
 
   /* RESPONSIVE */
@@ -331,6 +384,13 @@ if (!$pets) {
     }
     .add-pet-container {
       padding: 140px 20px 40px;
+    }
+    .success-notification {
+      top: 80px;
+      right: 20px;
+      left: 20px;
+      font-size: 14px;
+      padding: 14px 18px;
     }
   }
 
@@ -713,6 +773,15 @@ if (!$pets) {
 </header>
 
 <div class="add-pet-container">
+  
+  <?php if (isset($_SESSION['success'])): ?>
+    <div class="success-notification" id="successNotification">
+      <i class="fas fa-check-circle"></i>
+      <span><?= $_SESSION['success'] ?></span>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+  <?php endif; ?>
+
   <div class="form-wrapper">
       <form method="POST" action="add-pet-handler.php" enctype="multipart/form-data">
         <div class="form-grid">
@@ -723,14 +792,6 @@ if (!$pets) {
               <?= $_SESSION['error'] ?>
             </div>
             <?php unset($_SESSION['error']); ?>
-          <?php endif; ?>
-
-          <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success">
-              <i class="fas fa-check-circle"></i>
-              <?= $_SESSION['success'] ?>
-            </div>
-            <?php unset($_SESSION['success']); ?>
           <?php endif; ?>
 
           <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
@@ -935,9 +996,18 @@ if (!$pets) {
         navOverlay.classList.remove('active');
         profileDropdown.classList.remove('active');
         document.body.style.overflow = '';
-  }
-});
+      }
+    });
+  </script>
 
+  <script>
+    // Auto-hide success notification after 5 seconds
+    const successNotification = document.getElementById('successNotification');
+    if (successNotification) {
+      setTimeout(() => {
+        successNotification.remove();
+      }, 5000);
+    }
   </script>
 </body>
 </html>
