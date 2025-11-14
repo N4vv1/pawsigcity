@@ -49,12 +49,6 @@ function loadPHPMailer() {
 // Load PHPMailer
 $phpmailer_loaded = loadPHPMailer();
 
-// Import classes if loaded via composer
-if ($phpmailer_loaded) {
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\Exception;
-}
-
 // Validate appointment ID
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     $_SESSION['error_message'] = "No appointment ID provided.";
@@ -126,7 +120,8 @@ try {
     
     if ($phpmailer_loaded && !empty($appointment['user_email'])) {
         try {
-            $mail = new PHPMailer(true);
+            // Use fully qualified class name to avoid namespace issues
+            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
             
             // Enable verbose debug output for troubleshooting
             $mail->SMTPDebug  = 0; // Set to 2 for debugging
@@ -140,7 +135,7 @@ try {
             $mail->SMTPAuth   = true;
             $mail->Username   = 'johnbernardmitra25@gmail.com';
             $mail->Password   = 'iigy qtnu ojku ktsx'; // App password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
             
