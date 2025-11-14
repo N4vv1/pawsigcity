@@ -3,7 +3,7 @@ session_start();
 require '../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pet_id = ($_POST['pet_id']);
+    $pet_id = intval($_POST['pet_id']);
     $name = trim($_POST['name'] ?? '');
     $breed = trim($_POST['breed'] ?? '');
     $age = !empty($_POST['age']) ? floatval($_POST['age']) : null;
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nail_trimming = trim($_POST['nail_trimming'] ?? '');
     $haircut_style = trim($_POST['haircut_style'] ?? '');
 
-    // Handle photo upload to Supabase Storage (if provided)
+    // ✅ Handle photo upload to Supabase Storage (if provided)
     $photo_url = null;
     
     if (isset($_FILES['photo_url']) && $_FILES['photo_url']['error'] === UPLOAD_ERR_OK) {
@@ -35,8 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $supabase_key = getenv('SUPABASE_KEY');
 
             if (!$supabase_url || !$supabase_key) {
-                $_SESSION['notification'] = "Supabase configuration missing.";
-                $_SESSION['notification_type'] = 'error';
+                $_SESSION['error'] = "❌ Supabase configuration missing.";
                 header('Location: pet-profile.php');
                 exit;
             }
@@ -90,20 +89,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } else {
                 error_log("Supabase upload failed. HTTP Code: $http_code, Response: $response");
-                $_SESSION['notification'] = "Failed to upload photo. Please try again.";
-                $_SESSION['notification_type'] = 'error';
+                $_SESSION['error'] = "❌ Failed to upload photo. Please try again.";
                 header('Location: pet-profile.php');
                 exit;
             }
         } else {
-            $_SESSION['notification'] = "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.";
-            $_SESSION['notification_type'] = 'warning';
+            $_SESSION['error'] = "⚠️ Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.";
             header('Location: pet-profile.php');
             exit;
         }
     }
 
-    // Update pet info
+    // ✅ Update pet info
     if ($photo_url !== null) {
         $query = "
             UPDATE pets 
@@ -125,16 +122,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$result) {
-        $_SESSION['notification'] = "Failed to update pet profile: " . pg_last_error($conn);
-        $_SESSION['notification_type'] = 'error';
+        $_SESSION['error'] = "❌ Failed to update pet profile: " . pg_last_error($conn);
         header("Location: pet-profile.php");
         exit;
     }
 
-    // Update or Insert Health Info
+    // ✅ Update or Insert Health Info
     $health_check = pg_query_params($conn, "SELECT health_id FROM health_info WHERE pet_id = $1", [$pet_id]);
     
     if (pg_num_rows($health_check) > 0) {
+        // Update existing
         $health_query = "
             UPDATE health_info 
             SET allergies = $1, medications = $2, medical_conditions = $3
@@ -142,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ";
         pg_query_params($conn, $health_query, [$allergies, $medications, $medical_conditions, $pet_id]);
     } else {
+        // Insert new
         $health_query = "
             INSERT INTO health_info (pet_id, allergies, medications, medical_conditions)
             VALUES ($1, $2, $3, $4)
@@ -149,10 +147,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         pg_query_params($conn, $health_query, [$pet_id, $allergies, $medications, $medical_conditions]);
     }
 
-    // Update or Insert Behavior Preferences
+    // ✅ Update or Insert Behavior Preferences
     $behavior_check = pg_query_params($conn, "SELECT preference_id FROM behavior_preferences WHERE pet_id = $1", [$pet_id]);
     
     if (pg_num_rows($behavior_check) > 0) {
+        // Update existing
         $behavior_query = "
             UPDATE behavior_preferences 
             SET behavior_notes = $1, nail_trimming = $2, haircut_style = $3
@@ -160,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ";
         pg_query_params($conn, $behavior_query, [$behavior_notes, $nail_trimming, $haircut_style, $pet_id]);
     } else {
+        // Insert new
         $behavior_query = "
             INSERT INTO behavior_preferences (pet_id, behavior_notes, nail_trimming, haircut_style)
             VALUES ($1, $2, $3, $4)
@@ -167,8 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         pg_query_params($conn, $behavior_query, [$pet_id, $behavior_notes, $nail_trimming, $haircut_style]);
     }
 
-    $_SESSION['notification'] = "Pet profile updated successfully!";
-    $_SESSION['notification_type'] = 'success';
+    $_SESSION['success'] = "✅ Pet profile updated successfully!";
     header("Location: pet-profile.php");
     exit;
 }
