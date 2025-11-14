@@ -10,7 +10,7 @@ if (!isset($_SESSION['groomer_id'])) {
 
 $groomer_id = $_SESSION['groomer_id'];
 
-// FIXED: Fetch ONLY completed appointments for THIS groomer using groomer_id filter
+// FIXED: Fetch ONLY completed appointments for THIS groomer with type casting
 $query = "
     SELECT 
         a.appointment_id,
@@ -24,9 +24,9 @@ $query = "
         u.last_name,
         COALESCE(TO_CHAR(a.updated_at, 'YYYY-MM-DD HH24:MI:SS'), 'Not yet completed') AS completed_date
     FROM appointments a
-    JOIN packages p ON a.package_id = p.package_id
+    JOIN packages p ON a.package_id::text = p.package_id
     JOIN pets pet ON a.pet_id = pet.pet_id
-    JOIN users u ON pet.user_id = u.user_id
+    JOIN users u ON pet.user_id::text = u.user_id
     WHERE a.status = 'completed'
     AND a.groomer_id = $1
     ORDER BY a.updated_at DESC
@@ -55,6 +55,7 @@ if (!$result) {
       --secondary-color: #FFE29D;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
+      --edit-color: #4CAF50;
       --font-size-s: 0.9rem;
       --font-size-n: 1rem;
       --font-size-l: 1.5rem;
@@ -78,6 +79,7 @@ if (!$result) {
     body {
       background: var(--light-pink-color);
       display: flex;
+      min-height: 100vh;
     }
 
     .mobile-menu-btn {
@@ -162,7 +164,7 @@ if (!$result) {
       padding: 10px 12px;
       text-decoration: none;
       color: var(--dark-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 14px;
       transition: background 0.3s, color 0.3s;
       font-weight: var(--font-weight-semi-bold);
     }
@@ -192,62 +194,88 @@ if (!$result) {
       transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
-    h2 {
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
       font-size: var(--font-size-xl);
       color: var(--dark-color);
-      margin-bottom: 25px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 0.95rem;
     }
 
     .stats-card {
-      background: white;
-      padding: 20px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, #8fd4b8 100%);
+      padding: 30px;
       border-radius: 12px;
-      margin-bottom: 25px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       text-align: center;
+      color: var(--dark-color);
     }
 
     .stats-card h3 {
-      color: var(--primary-color);
-      font-size: 2.5rem;
+      font-size: 3rem;
       margin-bottom: 8px;
+      font-weight: 700;
     }
 
     .stats-card p {
-      color: #666;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    /* TABLE SECTION */
+    .table-section {
+      background: var(--white-color);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      overflow-x: auto;
+    }
+
+    .table-section h2 {
+      font-size: 1.3rem;
+      margin-bottom: 25px;
+      color: var(--dark-color);
+      font-weight: 600;
     }
 
     table {
       width: 100%;
+      min-width: 1000px;
       border-collapse: collapse;
-      background-color: var(--white-color);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     th, td {
-      padding: 14px 10px;
-      border: 1px solid var(--medium-gray-color);
-      text-align: center;
+      padding: 15px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
     }
 
     th {
-      background: var(--primary-color);
-      font-weight: var(--font-weight-bold);
+      background-color: #fafafa;
       color: var(--dark-color);
+      font-weight: 600;
+      font-size: 0.9rem;
+      position: sticky;
+      top: 0;
     }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    tr:hover {
-      background-color: #ffe29d33;
+    tbody tr:hover {
+      background-color: #fafafa;
     }
 
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
+      padding: 80px 20px;
       color: #666;
     }
 
@@ -255,6 +283,29 @@ if (!$result) {
       font-size: 80px;
       color: #ddd;
       margin-bottom: 20px;
+      display: block;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      color: var(--dark-color);
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      color: #999;
+    }
+
+    @media screen and (max-width: 1024px) {
+      table {
+        font-size: 0.85rem;
+        min-width: 900px;
+      }
+
+      th, td {
+        padding: 12px 10px;
+      }
     }
 
     @media screen and (max-width: 768px) {
@@ -276,12 +327,74 @@ if (!$result) {
         padding: 80px 20px 40px;
       }
 
+      .header h1 {
+        font-size: 1.6rem;
+      }
+
+      .stats-card {
+        padding: 25px;
+      }
+
+      .stats-card h3 {
+        font-size: 2.5rem;
+      }
+
+      .stats-card p {
+        font-size: 1rem;
+      }
+
+      .table-section {
+        padding: 20px;
+      }
+
       table {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+        min-width: 800px;
       }
 
       th, td {
         padding: 10px 8px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .content {
+        padding: 70px 10px 30px;
+      }
+
+      .sidebar .logo img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .menu a {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+
+      .header h1 {
+        font-size: 1.4rem;
+      }
+
+      .stats-card {
+        padding: 20px;
+      }
+
+      .stats-card h3 {
+        font-size: 2rem;
+      }
+
+      .stats-card p {
+        font-size: 0.9rem;
+      }
+
+      table {
+        font-size: 0.75rem;
+        min-width: 700px;
+      }
+
+      th, td {
+        padding: 8px 5px;
       }
     }
   </style>
@@ -310,7 +423,10 @@ if (!$result) {
 </aside>
 
 <main class="content">
-  <h2>My Completed Appointments</h2>
+  <div class="header">
+    <h1>Completed Appointments History</h1>
+    <p>View your completed grooming sessions and track your performance</p>
+  </div>
 
   <div class="stats-card">
     <h3><?= pg_num_rows($result) ?></h3>
@@ -318,46 +434,51 @@ if (!$result) {
   </div>
 
   <?php if (pg_num_rows($result) == 0): ?>
-    <div class="empty-state">
-      <i class='bx bx-history'></i>
-      <h3>No Completed Appointments Yet</h3>
-      <p>Completed appointments will appear here</p>
+    <div class="table-section">
+      <div class="empty-state">
+        <i class='bx bx-history'></i>
+        <h3>No Completed Appointments Yet</h3>
+        <p>Completed appointments will appear here</p>
+      </div>
     </div>
   <?php else: ?>
-    <table>
-      <thead>
-        <tr>
-          <th>Appointment ID</th>
-          <th>Appointment Date</th>
-          <th>Completed Date</th>
-          <th>Package</th>
-          <th>Pet Name</th>
-          <th>Breed</th>
-          <th>Customer</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($row = pg_fetch_assoc($result)): ?>
+    <div class="table-section">
+      <h2>Appointment History</h2>
+      <table>
+        <thead>
           <tr>
-            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-            <td><?= htmlspecialchars(date('M d, Y h:i A', strtotime($row['appointment_date']))) ?></td>
-            <td>
-              <?php 
-              if ($row['completed_date'] !== 'Not yet completed') {
-                echo htmlspecialchars(date('M d, Y h:i A', strtotime($row['completed_date'])));
-              } else {
-                echo htmlspecialchars($row['completed_date']);
-              }
-              ?>
-            </td>
-            <td><?= htmlspecialchars($row['package_name']) ?></td>
-            <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['pet_breed']) ?></td>
-            <td><?= htmlspecialchars($row['customer_name']) ?></td>
+            <th>Appointment ID</th>
+            <th>Appointment Date</th>
+            <th>Completed Date</th>
+            <th>Package</th>
+            <th>Pet Name</th>
+            <th>Breed</th>
+            <th>Customer</th>
           </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <?php while ($row = pg_fetch_assoc($result)): ?>
+            <tr>
+              <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+              <td><?= htmlspecialchars(date('M d, Y h:i A', strtotime($row['appointment_date']))) ?></td>
+              <td>
+                <?php 
+                if ($row['completed_date'] !== 'Not yet completed') {
+                  echo htmlspecialchars(date('M d, Y h:i A', strtotime($row['completed_date'])));
+                } else {
+                  echo htmlspecialchars($row['completed_date']);
+                }
+                ?>
+              </td>
+              <td><?= htmlspecialchars($row['package_name']) ?></td>
+              <td><?= htmlspecialchars($row['pet_name']) ?></td>
+              <td><?= htmlspecialchars($row['pet_breed']) ?></td>
+              <td><?= htmlspecialchars($row['customer_name']) ?></td>
+            </tr>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
+    </div>
   <?php endif; ?>
 </main>
 
