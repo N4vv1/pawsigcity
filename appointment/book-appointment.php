@@ -1708,9 +1708,10 @@ select option:disabled:hover {
       submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
     }
   }
-  const packageSelect = document.getElementById('package_id');
-  document.addEventListener('DOMContentLoaded', function () {
+ document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('appointment_date');
+    const packageSelect = document.getElementById('package_id'); // ← Moved inside
+    
     if (dateInput) {
       dateInput.addEventListener('change', updateAvailabilityIndicator);
       dateInput.addEventListener('input', updateAvailabilityIndicator);
@@ -1719,13 +1720,13 @@ select option:disabled:hover {
       const today = now.toISOString().split('T')[0];
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
+    }
 
-
-       if (packageSelect) {
-    packageSelect.addEventListener('change', updatePriceDisplay);
-    // Trigger on page load if option is pre-selected
-    updatePriceDisplay();
-  }
+    // Setup package select listener
+    if (packageSelect) {
+      packageSelect.addEventListener('change', updatePriceDisplay);
+      // Trigger on page load if option is pre-selected
+      updatePriceDisplay();
     }
 
     // Flatpickr initialization
@@ -1847,23 +1848,33 @@ select option:disabled:hover {
       }
     });
   });
-// Validate groomer selection on form submit
-document.querySelector('.booking-form').addEventListener('submit', function(e) {
-  const groomerSelect = document.getElementById('groomer_id');
-  const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
-  
-  if (selectedOption.disabled) {
-    e.preventDefault();
-    alert('Please select an available groomer. The selected groomer is currently offline.');
-    return false;
-  }
 
-  // Validate package selection
-  const packageSelect = document.getElementById('price_id');
-  if (!packageSelect.value) {
-    e.preventDefault();
-    alert('Please select a service package.');
-    return false;
+// Validate groomer selection on form submit - wrap in DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  const bookingForm = document.querySelector('.booking-form');
+  
+  if (bookingForm) {
+    bookingForm.addEventListener('submit', function(e) {
+      const groomerSelect = document.getElementById('groomer_id');
+      const packageSelect = document.getElementById('package_id'); // ← FIXED: Changed from 'price_id'
+      
+      // Validate package selection first
+      if (!packageSelect || !packageSelect.value) {
+        e.preventDefault();
+        alert('Please select a service package.');
+        return false;
+      }
+      
+      // Validate groomer selection
+      if (groomerSelect) {
+        const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
+        if (selectedOption && selectedOption.disabled) {
+          e.preventDefault();
+          alert('Please select an available groomer. The selected groomer is currently offline.');
+          return false;
+        }
+      }
+    });
   }
 });
 </script>
