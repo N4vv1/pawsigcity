@@ -24,6 +24,16 @@ if (!$pets) {
     echo "Query Error: " . pg_last_error($conn);
     exit;
 }
+
+// Get notification message from session if exists
+$notification = '';
+$notification_type = 'success';
+if (isset($_SESSION['notification'])) {
+    $notification = $_SESSION['notification'];
+    $notification_type = $_SESSION['notification_type'] ?? 'success';
+    unset($_SESSION['notification']);
+    unset($_SESSION['notification_type']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -52,6 +62,161 @@ if (!$pets) {
       left: 0;
       right: 0;
       z-index: 1000;
+    }
+
+    /* ========================================
+       NOTIFICATION STYLES
+       ======================================== */
+    .notification {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      min-width: 350px;
+      max-width: 500px;
+      padding: 16px 24px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 9999;
+      opacity: 0;
+      animation: slideDown 0.4s ease forwards;
+      border-left: 5px solid;
+    }
+
+    .notification.success {
+      border-left-color: #10b981;
+    }
+
+    .notification.error {
+      border-left-color: #ef4444;
+    }
+
+    .notification.warning {
+      border-left-color: #f59e0b;
+    }
+
+    .notification.info {
+      border-left-color: #3b82f6;
+    }
+
+    .notification.hide {
+      animation: slideUp 0.4s ease forwards;
+    }
+
+    @keyframes slideDown {
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+    }
+
+    .notification-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+
+    .notification.success .notification-icon {
+      background: #10b981;
+    }
+
+    .notification.error .notification-icon {
+      background: #ef4444;
+    }
+
+    .notification.warning .notification-icon {
+      background: #f59e0b;
+    }
+
+    .notification.info .notification-icon {
+      background: #3b82f6;
+    }
+
+    .notification-content {
+      flex: 1;
+      color: #2a2a2a;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .notification-close {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: #9ca3af;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+      border-radius: 4px;
+    }
+
+    .notification-close:hover {
+      color: #6b7280;
+      background: #f3f4f6;
+    }
+
+    .notification-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: currentColor;
+      opacity: 0.3;
+      border-radius: 0 0 0 12px;
+      animation: progress 5s linear forwards;
+    }
+
+    @keyframes progress {
+      from {
+        width: 100%;
+      }
+      to {
+        width: 0%;
+      }
+    }
+
+    /* Mobile responsive for notifications */
+    @media (max-width: 768px) {
+      .notification {
+        min-width: 90%;
+        max-width: 90%;
+        top: 90px;
+        padding: 14px 18px;
+      }
+
+      .notification-content {
+        font-size: 13px;
+      }
+
+      .notification-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
     }
 
     .container {
@@ -944,708 +1109,78 @@ if (!$pets) {
     display: none;
   }
 }
-
-/* ============================================
-   RESPONSIVE DESIGN - ALL DEVICES
-   ============================================ */
-
-/* Large Desktop (1400px+) */
-@media (min-width: 1400px) {
-  .container {
-    max-width: 1800px;
-  }
-  
-  .main-grid {
-    grid-template-columns: 500px 1fr;
-    gap: 30px;
-  }
-}
-
-/* Standard Desktop (1025px - 1399px) */
-@media (min-width: 1025px) and (max-width: 1399px) {
-  .container {
-    max-width: 1400px;
-  }
-  
-  .main-grid {
-    grid-template-columns: 420px 1fr;
-    gap: 20px;
-  }
-}
-
-/* Tablet Landscape (769px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  body {
-    padding-top: 120px;
-  }
-
-  .container {
-    padding: 15px 20px;
-  }
-
-  .main-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .sidebar {
-    position: static;
-  }
-
-  .user-card {
-    margin-bottom: 20px;
-  }
-
-  .pet-header {
-    grid-template-columns: 90px 1fr auto;
-    gap: 15px;
-  }
-
-  .pet-meta {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .pet-meta span {
-    font-size: 12px;
-    padding: 3px 8px;
-  }
-
-  .info-row {
-    grid-template-columns: 160px 1fr;
-    gap: 12px;
-  }
-
-  .form-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-}
-
-/* Tablet Portrait (601px - 768px) */
-@media (min-width: 601px) and (max-width: 768px) {
-  body {
-    padding-top: 110px;
-  }
-
-  .container {
-    padding: 12px 18px;
-  }
-
-  .main-grid {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .sidebar {
-    position: static;
-  }
-
-  .user-card {
-    margin-bottom: 18px;
-  }
-
-  .pet-header {
-    grid-template-columns: 80px 1fr;
-    gap: 15px;
-  }
-
-  .pet-avatar {
-    width: 80px;
-    height: 80px;
-  }
-
-  .pet-info h3 {
-    font-size: 20px;
-  }
-
-  .pet-meta {
-    gap: 8px;
-  }
-
-  .pet-meta span {
-    font-size: 12px;
-    padding: 3px 8px;
-  }
-
-  .pet-actions {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .pet-actions form {
-    flex: 1;
-  }
-
-  .btn-edit,
-  .btn-delete {
-    width: 100%;
-    padding: 10px 12px;
-  }
-
-  .info-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-    padding: 12px 0;
-  }
-
-  .info-row strong {
-    color: #A8E6CF;
-    font-weight: 600;
-  }
-
-  .tabs {
-    gap: 6px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .tab {
-    padding: 10px 14px;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .edit-form {
-    padding: 18px;
-  }
-}
-
-/* Mobile Landscape (481px - 600px) */
-@media (min-width: 481px) and (max-width: 600px) {
-  body {
-    padding-top: 100px;
-  }
-
-  .container {
-    padding: 10px 15px;
-  }
-
-  .main-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .sidebar {
-    position: static;
-  }
-
-  .user-card {
-    padding: 20px;
-    margin-bottom: 15px;
-  }
-
-  .user-card h2 {
-    font-size: 17px;
-  }
-
-  .user-info h3 {
-    font-size: 18px;
-  }
-
-  .user-info p {
-    font-size: 13px;
-  }
-
-  .main-content h1 {
-    font-size: 18px;
-    padding: 18px;
-  }
-
-  .pet-card {
-    padding: 18px;
-    margin-bottom: 15px;
-  }
-
-  .pet-header {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 12px;
-  }
-
-  .pet-avatar {
-    width: 90px;
-    height: 90px;
-    margin: 0 auto;
-  }
-
-  .pet-info h3 {
-    font-size: 19px;
-    margin-bottom: 10px;
-  }
-
-  .pet-meta {
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .pet-meta span {
-    font-size: 11px;
-    padding: 3px 8px;
-  }
-
-  .pet-actions {
-    flex-direction: row;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .pet-actions form {
-    flex: 1;
-  }
-
-  .btn-edit,
-  .btn-delete {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 12px;
-  }
-
-  .tabs {
-    gap: 5px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 5px;
-  }
-
-  .tab {
-    padding: 10px 12px;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
-  .info-row {
-    grid-template-columns: 1fr;
-    gap: 5px;
-    padding: 10px 0;
-  }
-
-  .info-row strong {
-    color: #A8E6CF;
-    font-weight: 600;
-    font-size: 12px;
-  }
-
-  .info-row span {
-    font-size: 12px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .form-group label {
-    font-size: 12px;
-  }
-
-  .form-group input,
-  .form-group select {
-    padding: 9px 11px;
-    font-size: 12px;
-  }
-
-  .edit-form {
-    padding: 16px;
-  }
-
-  .btn-save,
-  .btn-cancel {
-    padding: 10px 16px;
-    font-size: 13px;
-  }
-
-  .empty-state {
-    padding: 40px 15px;
-  }
-
-  .empty-state i {
-    font-size: 50px;
-  }
-
-  .empty-state p {
-    font-size: 14px;
-  }
-}
-
-/* Mobile Portrait (320px - 480px) */
-@media (max-width: 480px) {
-  body {
-    padding-top: 90px;
-  }
-
-  .container {
-    padding: 8px 12px;
-  }
-
-  .main-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .sidebar {
-    position: static;
-  }
-
-  .user-card {
-    padding: 18px;
-    margin-bottom: 12px;
-    border-radius: 14px;
-  }
-
-  .user-card h2 {
-    font-size: 16px;
-    margin-bottom: 15px;
-  }
-
-  .user-info h3 {
-    font-size: 17px;
-    margin-bottom: 10px;
-  }
-
-  .user-info p {
-    font-size: 12px;
-    margin: 6px 0;
-  }
-
-  .user-info p i {
-    width: 16px;
-    font-size: 12px;
-  }
-
-  .edit-btn {
-    padding: 9px 16px;
-    font-size: 13px;
-    margin-top: 12px;
-  }
-
-  .main-content h1 {
-    font-size: 17px;
-    padding: 16px;
-    margin-bottom: 12px;
-  }
-
-  .main-content h1 i {
-    font-size: 20px;
-  }
-
-  .pet-card {
-    padding: 16px;
-    margin-bottom: 12px;
-    border-radius: 14px;
-  }
-
-  .pet-header {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 12px;
-    padding-bottom: 12px;
-  }
-
-  .pet-avatar {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-    border-radius: 10px;
-  }
-
-  .pet-info h3 {
-    font-size: 18px;
-    margin-bottom: 8px;
-  }
-
-  .pet-meta {
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .pet-meta span {
-    font-size: 11px;
-    padding: 3px 7px;
-  }
-
-  .pet-meta i {
-    font-size: 10px;
-  }
-
-  .pet-actions {
-    flex-direction: row;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .pet-actions form {
-    flex: 1;
-  }
-
-  .btn-edit,
-  .btn-delete {
-    width: 100%;
-    padding: 9px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .btn-edit i,
-  .btn-delete i {
-    font-size: 11px;
-  }
-
-  .tabs {
-    gap: 5px;
-    margin-bottom: 12px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .tab {
-    padding: 9px 12px;
-    font-size: 11px;
-    white-space: nowrap;
-    border-radius: 5px;
-  }
-
-  .info-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 9px 0;
-  }
-
-  .info-row strong {
-    color: #A8E6CF;
-    font-weight: 600;
-    font-size: 11px;
-  }
-
-  .info-row span {
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  .edit-form {
-    padding: 14px;
-    border-radius: 10px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .form-group {
-    gap: 5px;
-  }
-
-  .form-group label {
-    font-size: 11px;
-  }
-
-  .form-group input,
-  .form-group select {
-    padding: 8px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .form-actions {
-    gap: 8px;
-    margin-top: 8px;
-  }
-
-  .btn-save,
-  .btn-cancel {
-    padding: 9px 14px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .empty-state {
-    padding: 35px 12px;
-    border-radius: 14px;
-  }
-
-  .empty-state i {
-    font-size: 45px;
-    margin-bottom: 12px;
-  }
-
-  .empty-state p {
-    font-size: 13px;
-    margin-bottom: 15px;
-  }
-
-  .empty-state a {
-    padding: 10px 20px;
-    font-size: 13px;
-    border-radius: 6px;
-  }
-}
-
-/* Extra Small Mobile (320px) */
-@media (max-width: 360px) {
-  .pet-meta span {
-    font-size: 10px;
-    padding: 2px 6px;
-  }
-
-  .btn-edit,
-  .btn-delete {
-    padding: 8px 8px;
-    font-size: 11px;
-  }
-
-  .tab {
-    padding: 8px 10px;
-    font-size: 10px;
-  }
-
-  .info-row strong {
-    font-size: 10px;
-  }
-
-  .info-row span {
-    font-size: 11px;
-  }
-}
-
-/* Landscape Orientation Optimization */
-@media (max-height: 600px) and (orientation: landscape) {
-  body {
-    padding-top: 80px;
-  }
-
-  .sidebar {
-    position: static;
-  }
-
-  .user-card {
-    margin-bottom: 15px;
-  }
-
-  .pet-card {
-    margin-bottom: 15px;
-  }
-
-  .edit-form {
-    max-height: 400px;
-    overflow-y: auto;
-  }
-}
-
-/* Touch Device Improvements */
-@media (hover: none) and (pointer: coarse) {
-  .btn-edit,
-  .btn-delete,
-  .edit-btn,
-  .tab {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .pet-actions {
-    gap: 12px;
-  }
-
-  .tabs {
-    padding-bottom: 8px;
-  }
-}
-
-/* Print Styles */
-@media print {
-  body {
-    background: white;
-    padding-top: 0;
-  }
-
-  header,
-  .hamburger,
-  .nav-overlay,
-  .pet-actions,
-  .edit-btn,
-  .edit-form {
-    display: none !important;
-  }
-
-  .container {
-    max-width: 100%;
-    padding: 0;
-  }
-
-  .main-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .pet-card {
-    page-break-inside: avoid;
-    box-shadow: none;
-    border: 1px solid #ddd;
-  }
-}
   </style>
 </head>
 <body>
-   <header>
-  <nav class="navbar section-content">
-    <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
-    </a>
-    
-    <!-- Hamburger Menu Button -->
-    <button class="hamburger" id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+  <!-- Notification Container -->
+  <?php if (!empty($notification)): ?>
+    <div class="notification <?= htmlspecialchars($notification_type) ?>" id="notification">
+      <div class="notification-icon">
+        <?php if ($notification_type === 'success'): ?>
+          <i class="fas fa-check"></i>
+        <?php elseif ($notification_type === 'error'): ?>
+          <i class="fas fa-times"></i>
+        <?php elseif ($notification_type === 'warning'): ?>
+          <i class="fas fa-exclamation"></i>
+        <?php else: ?>
+          <i class="fas fa-info"></i>
+        <?php endif; ?>
+      </div>
+      <div class="notification-content">
+        <?= htmlspecialchars($notification) ?>
+      </div>
+      <button class="notification-close" onclick="closeNotification()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="notification-progress"></div>
+    </div>
+  <?php endif; ?>
 
-    <!-- Overlay for mobile -->
-    <div class="nav-overlay" id="nav-overlay"></div>
+  <header>
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
+      </a>
+      
+      <!-- Hamburger Menu Button -->
+      <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
-    <ul class="nav-menu" id="nav-menu">
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
-      <li class="nav-item dropdown" id="profile-dropdown">
-        <a href="#" class="nav-link profile-icon active">
-          <i class="fas fa-user"></i>
-        </a>
-        <ul class="dropdown-menu">
-          <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-          <li><a href="../pets/add-pet.php">Add Pet</a></li>
-          <li><a href="../appointment/book-appointment.php">Book</a></li>
-          <li><a href="../homepage/appointments.php">Appointments</a></li>
-          <li><a href="../ai/templates/index.html">Help Center</a></li>
-          <li><a href="../homepage/logout/logout.php">Logout</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+      <!-- Overlay for mobile -->
+      <div class="nav-overlay" id="nav-overlay"></div>
+
+      <ul class="nav-menu" id="nav-menu">
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li class="nav-item dropdown" id="profile-dropdown">
+          <a href="#" class="nav-link profile-icon active">
+            <i class="fas fa-user"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="../pets/add-pet.php">Add Pet</a></li>
+            <li><a href="../appointment/book-appointment.php">Book</a></li>
+            <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../ai/templates/index.html">Help Center</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
   <div class="container">
     <div class="main-grid">
       <!-- Sidebar - User Account -->
       <aside class="sidebar">
         <div class="user-card">
-          <h2></i> My Account</h2>
+          <h2>My Account</h2>
           <?php if (!empty($user)): ?>
             <div class="user-info">
               <h3><?= htmlspecialchars($user['first_name'] ?? '') ?> <?= htmlspecialchars($user['last_name'] ?? '') ?></h3>
@@ -1701,7 +1236,6 @@ if (!$pets) {
 
       <!-- Main Content - Pets -->
       <main class="main-content">
-
         <?php if (pg_num_rows($pets) > 0): ?>
           <?php while ($pet = pg_fetch_assoc($pets)):
               $pet_id = $pet['pet_id'];
@@ -1715,41 +1249,99 @@ if (!$pets) {
               $behavior = pg_fetch_assoc($behavior_result);
           ?>
 
- <div class="pet-card">
-  <div class="pet-header">
-    <img src="<?= htmlspecialchars($pet['photo_url']) ?>" 
-        alt="<?= htmlspecialchars($pet['name']) ?>"
-        class="pet-avatar"
-        onerror="this.onerror=null;this.src='../uploads/default.jpg';">
-    <div class="pet-info">
-      <h3><?= htmlspecialchars($pet['name']) ?></h3>
-      <div class="pet-meta">
-        <span><i class="fas fa-dog"></i> <?= htmlspecialchars($pet['breed']) ?></span>
-        <span><i class="fas fa-calendar"></i> <?= htmlspecialchars($pet['age']) ?> years</span>
-        <span><i class="fas fa-venus-mars"></i> <?= htmlspecialchars($pet['gender']) ?></span>
-        <span><i class="fas fa-palette"></i> <?= htmlspecialchars($pet['color']) ?></span>
-        <span><i class="fas fa-birthday-cake"></i> <?= htmlspecialchars($pet['birthday']) ?></span>
-        <?php if (!empty($pet['size'])): ?>
-          <span><i class="fas fa-ruler-combined"></i> <?= htmlspecialchars($pet['size']) ?></span>
-        <?php endif; ?>
-        <?php if (!empty($pet['weight'])): ?>
-          <span><i class="fas fa-weight"></i> <?= htmlspecialchars($pet['weight']) ?> kg</span>
-        <?php endif; ?>
-      </div>
-    </div>
-    <div class="pet-actions">
-      <button class="btn-edit" onclick="togglePetEdit('<?= $pet_id ?>')">
-        <i class="fas fa-edit"></i> Edit
-      </button>
-      <form action="delete-pet.php" method="POST" onsubmit="return confirm('Delete this pet?');">
-        <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
-        <button type="submit" class="btn-delete">
-          <i class="fas fa-trash"></i> Delete
-        </button>
-      </form>
-    </div>
-  </div>
+          <div class="pet-card">
+            <div class="pet-header">
+              <img src="<?= htmlspecialchars($pet['photo_url']) ?>" 
+                  alt="<?= htmlspecialchars($pet['name']) ?>"
+                  class="pet-avatar"
+                  onerror="this.onerror=null;this.src='../uploads/default.jpg';">
+              <div class="pet-info">
+                <h3><?= htmlspecialchars($pet['name']) ?></h3>
+                <div class="pet-meta">
+                  <span><i class="fas fa-dog"></i> <?= htmlspecialchars($pet['breed']) ?></span>
+                  <span><i class="fas fa-calendar"></i> <?= htmlspecialchars($pet['age']) ?> years</span>
+                  <span><i class="fas fa-venus-mars"></i> <?= htmlspecialchars($pet['gender']) ?></span>
+                  <span><i class="fas fa-palette"></i> <?= htmlspecialchars($pet['color']) ?></span>
+                  <span><i class="fas fa-birthday-cake"></i> <?= htmlspecialchars($pet['birthday']) ?></span>
+                  <?php if (!empty($pet['size'])): ?>
+                    <span><i class="fas fa-ruler-combined"></i> <?= htmlspecialchars($pet['size']) ?></span>
+                  <?php endif; ?>
+                  <?php if (!empty($pet['weight'])): ?>
+                    <span><i class="fas fa-weight"></i> <?= htmlspecialchars($pet['weight']) ?> kg</span>
+                  <?php endif; ?>
+                </div>
+              </div>
+              <div class="pet-actions">
+                <button class="btn-edit" onclick="togglePetEdit('<?= $pet_id ?>')">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <form action="delete-pet.php" method="POST" onsubmit="return confirm('Delete this pet?');">
+                  <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
+                  <button type="submit" class="btn-delete">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </form>
+              </div>
+            </div>
 
+<<<<<<< HEAD
+            <!-- Pet Edit Form -->
+            <div id="pet-edit-<?= $pet_id ?>" class="edit-form">
+              <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
+                
+                <!-- Basic Information Section -->
+                <h4 style="margin: 0 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #A8E6CF; padding-bottom: 8px;">
+                  <i class="fas fa-paw"></i> Basic Information
+                </h4>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" value="<?= htmlspecialchars($pet['name']) ?>" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Breed</label>
+                    <input type="text" name="breed" value="<?= htmlspecialchars($pet['breed']) ?>" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" step="0.1" name="age" value="<?= htmlspecialchars($pet['age']) ?>" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender" required>
+                      <option value="Male" <?= $pet['gender'] == 'Male' ? 'selected' : '' ?>>Male</option>
+                      <option value="Female" <?= $pet['gender'] == 'Female' ? 'selected' : '' ?>>Female</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Color</label>
+                    <input type="text" name="color" value="<?= htmlspecialchars($pet['color']) ?>" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Birthday</label>
+                    <input type="date" name="birthday" value="<?= htmlspecialchars($pet['birthday']) ?>" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Size</label>
+                    <select name="size">
+                      <option value="">Select size</option>
+                      <option value="Small" <?= ($pet['size'] ?? '') == 'Small' ? 'selected' : '' ?>>Small</option>
+                      <option value="Medium" <?= ($pet['size'] ?? '') == 'Medium' ? 'selected' : '' ?>>Medium</option>
+                      <option value="Large" <?= ($pet['size'] ?? '') == 'Large' ? 'selected' : '' ?>>Large</option>
+                      <option value="Extra Large" <?= ($pet['size'] ?? '') == 'Extra Large' ? 'selected' : '' ?>>Extra Large</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" step="0.1" name="weight" value="<?= htmlspecialchars($pet['weight'] ?? '') ?>" placeholder="e.g., 5.5">
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Photo</label>
+                    <input type="file" name="photo_url">
+                  </div>
+                </div>
+=======
   <!-- Pet Edit Form -->
   <div id="pet-edit-<?= $pet_id ?>" class="edit-form">
     <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
@@ -1808,97 +1400,97 @@ if (!$pets) {
           <input type="file" name="photo_url">
         </div>
       </div>
+>>>>>>> 67da6980bcf20b1465b4755a97be057e5c00150a
 
-      <!-- Health Information Section -->
-      <h4 style="margin: 20px 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #FFE29D; padding-bottom: 8px;">
-        <i class="fas fa-heartbeat"></i> Health Information
-      </h4>
-      <div class="form-grid">
-        <div class="form-group full-width">
-          <label>Allergies</label>
-          <textarea name="allergies" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="List any allergies (e.g., chicken, dairy, pollen)"><?= htmlspecialchars($health['allergies'] ?? '') ?></textarea>
-        </div>
-        <div class="form-group full-width">
-          <label>Medications</label>
-          <textarea name="medications" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Current medications and dosages"><?= htmlspecialchars($health['medications'] ?? '') ?></textarea>
-        </div>
-        <div class="form-group full-width">
-          <label>Medical Conditions</label>
-          <textarea name="medical_conditions" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Any medical conditions or health concerns"><?= htmlspecialchars($health['medical_conditions'] ?? '') ?></textarea>
-        </div>
-      </div>
+                <!-- Health Information Section -->
+                <h4 style="margin: 20px 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #FFE29D; padding-bottom: 8px;">
+                  <i class="fas fa-heartbeat"></i> Health Information
+                </h4>
+                <div class="form-grid">
+                  <div class="form-group full-width">
+                    <label>Allergies</label>
+                    <textarea name="allergies" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="List any allergies"><?= htmlspecialchars($health['allergies'] ?? '') ?></textarea>
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Medications</label>
+                    <textarea name="medications" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Current medications"><?= htmlspecialchars($health['medications'] ?? '') ?></textarea>
+                  </div>
+                  <div class="form-group full-width">
+                    <label>Medical Conditions</label>
+                    <textarea name="medical_conditions" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Any medical conditions"><?= htmlspecialchars($health['medical_conditions'] ?? '') ?></textarea>
+                  </div>
+                </div>
 
-      <!-- Behavior & Preferences Section -->
-      <h4 style="margin: 20px 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #B4A7D6; padding-bottom: 8px;">
-        <i class="fas fa-heart"></i> Behavior & Preferences
-      </h4>
-      <div class="form-grid">
-        <div class="form-group full-width">
-          <label>Behavior Notes</label>
-          <textarea name="behavior_notes" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Temperament, likes, dislikes, special handling instructions"><?= htmlspecialchars($behavior['behavior_notes'] ?? '') ?></textarea>
-        </div>
-        <div class="form-group">
-          <label>Nail Trimming</label>
-          <select name="nail_trimming">
-            <option value="">Select preference</option>
-            <option value="Yes" <?= ($behavior['nail_trimming'] ?? '') == 'Yes' ? 'selected' : '' ?>>Yes</option>
-            <option value="No" <?= ($behavior['nail_trimming'] ?? '') == 'No' ? 'selected' : '' ?>>No</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Haircut Style</label>
-          <input type="text" name="haircut_style" value="<?= htmlspecialchars($behavior['haircut_style'] ?? '') ?>" placeholder="e.g., Puppy cut, Lion cut">
-        </div>
-      </div>
+                <!-- Behavior & Preferences Section -->
+                <h4 style="margin: 20px 0 15px 0; color: #2a2a2a; font-size: 15px; font-weight: 600; border-bottom: 2px solid #B4A7D6; padding-bottom: 8px;">
+                  <i class="fas fa-heart"></i> Behavior & Preferences
+                </h4>
+                <div class="form-grid">
+                  <div class="form-group full-width">
+                    <label>Behavior Notes</label>
+                    <textarea name="behavior_notes" rows="3" style="padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; resize: vertical;" placeholder="Temperament, likes, dislikes"><?= htmlspecialchars($behavior['behavior_notes'] ?? '') ?></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Nail Trimming</label>
+                    <select name="nail_trimming">
+                      <option value="">Select preference</option>
+                      <option value="Yes" <?= ($behavior['nail_trimming'] ?? '') == 'Yes' ? 'selected' : '' ?>>Yes</option>
+                      <option value="No" <?= ($behavior['nail_trimming'] ?? '') == 'No' ? 'selected' : '' ?>>No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Haircut Style</label>
+                    <input type="text" name="haircut_style" value="<?= htmlspecialchars($behavior['haircut_style'] ?? '') ?>" placeholder="e.g., Puppy cut">
+                  </div>
+                </div>
 
-      <!-- ONLY ONE form-actions section -->
-      <div class="form-actions">
-        <button type="submit" class="btn-save">Save Changes</button>
-        <button type="button" class="btn-cancel" onclick="togglePetEdit('<?= $pet_id ?>')">Cancel</button>
-      </div>
-    </form>
-  </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn-save">Save Changes</button>
+                  <button type="button" class="btn-cancel" onclick="togglePetEdit('<?= $pet_id ?>')">Cancel</button>
+                </div>
+              </form>
+            </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('<?= $pet_id ?>', 'health')">Health Info</button>
-    <button class="tab" onclick="switchTab('<?= $pet_id ?>', 'behavior')">Behavior & Preferences</button>
-  </div>
+            <!-- Tabs -->
+            <div class="tabs">
+              <button class="tab active" onclick="switchTab('<?= $pet_id ?>', 'health')">Health Info</button>
+              <button class="tab" onclick="switchTab('<?= $pet_id ?>', 'behavior')">Behavior & Preferences</button>
+            </div>
 
-  <!-- Health Tab -->
-  <div id="health-<?= $pet_id ?>" class="tab-content active">
-    <div class="info-row">
-      <strong>Allergies</strong>
-      <span><?= htmlspecialchars($health['allergies'] ?? 'None') ?></span>
-    </div>
-    <div class="info-row">
-      <strong>Medications</strong>
-      <span><?= htmlspecialchars($health['medications'] ?? 'None') ?></span>
-    </div>
-    <div class="info-row">
-      <strong>Medical Conditions</strong>
-      <span><?= htmlspecialchars($health['medical_conditions'] ?? 'None') ?></span>
-    </div>
-  </div>
+            <!-- Health Tab -->
+            <div id="health-<?= $pet_id ?>" class="tab-content active">
+              <div class="info-row">
+                <strong>Allergies</strong>
+                <span><?= htmlspecialchars($health['allergies'] ?? 'None') ?></span>
+              </div>
+              <div class="info-row">
+                <strong>Medications</strong>
+                <span><?= htmlspecialchars($health['medications'] ?? 'None') ?></span>
+              </div>
+              <div class="info-row">
+                <strong>Medical Conditions</strong>
+                <span><?= htmlspecialchars($health['medical_conditions'] ?? 'None') ?></span>
+              </div>
+            </div>
 
-  <!-- Behavior Tab -->
-  <div id="behavior-<?= $pet_id ?>" class="tab-content">
-    <div class="info-row">
-      <strong>Behavior Notes</strong>
-      <span><?= htmlspecialchars($behavior['behavior_notes'] ?? 'None') ?></span>
-    </div>
-    <div class="info-row">
-      <strong>Nail Trimming</strong>
-      <span><?= htmlspecialchars($behavior['nail_trimming'] ?? 'Not specified') ?></span>
-    </div>
-    <div class="info-row">
-      <strong>Haircut Style</strong>
-      <span><?= htmlspecialchars($behavior['haircut_style'] ?? 'None') ?></span>
-    </div>
-  </div>
-</div>
+            <!-- Behavior Tab -->
+            <div id="behavior-<?= $pet_id ?>" class="tab-content">
+              <div class="info-row">
+                <strong>Behavior Notes</strong>
+                <span><?= htmlspecialchars($behavior['behavior_notes'] ?? 'None') ?></span>
+              </div>
+              <div class="info-row">
+                <strong>Nail Trimming</strong>
+                <span><?= htmlspecialchars($behavior['nail_trimming'] ?? 'Not specified') ?></span>
+              </div>
+              <div class="info-row">
+                <strong>Haircut Style</strong>
+                <span><?= htmlspecialchars($behavior['haircut_style'] ?? 'None') ?></span>
+              </div>
+            </div>
+          </div>
 
-<?php endwhile; ?>
+          <?php endwhile; ?>
         <?php else: ?>
           <div class="empty-state">
             <i class="fas fa-paw"></i>
@@ -1912,123 +1504,142 @@ if (!$pets) {
     </div>
   </div>
 
-<script>
-function switchTab(petId, tabName) {
-  // petId is now a string like "00006P"
-  const healthTab = document.getElementById(`health-${petId}`);
-  if (!healthTab) {
-    console.error(`Could not find pet card for pet ID: ${petId}`);
-    return;
-  }
-  
-  const petCard = healthTab.closest('.pet-card');
-  if (!petCard) {
-    console.error(`Could not find parent pet-card for pet ID: ${petId}`);
-    return;
-  }
-  
-  const tabs = petCard.querySelectorAll('.tab');
-  const contents = petCard.querySelectorAll('.tab-content');
-  
-  tabs.forEach(tab => tab.classList.remove('active'));
-  contents.forEach(content => content.classList.remove('active'));
-  
-  event.target.classList.add('active');
-  
-  const targetContent = document.getElementById(`${tabName}-${petId}`);
-  if (targetContent) {
-    targetContent.classList.add('active');
-  }
-}
-
-function togglePetEdit(petId) {
-  // petId is now a string like "00006P"
-  const form = document.getElementById(`pet-edit-${petId}`);
-  if (form) {
-    form.classList.toggle('show');
-  } else {
-    console.error(`Could not find edit form for pet ID: ${petId}`);
-  }
-}
-
-function toggleUserEdit() {
-  const form = document.getElementById('user-edit-form');
-  if (form) {
-    form.classList.toggle('show');
-  } else {
-    console.error('Could not find user edit form');
-  }
-}
-
-// Hamburger Menu Toggle
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('nav-menu');
-const navOverlay = document.getElementById('nav-overlay');
-const profileDropdown = document.getElementById('profile-dropdown');
-
-if (hamburger) {
-  hamburger.addEventListener('click', function() {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-    navOverlay.classList.toggle('active');
-    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-  });
-}
-
-// Close menu when clicking overlay
-if (navOverlay) {
-  navOverlay.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    if (profileDropdown) profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-}
-
-// Close menu when clicking on regular nav links
-document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
-  link.addEventListener('click', function() {
-    if (hamburger) hamburger.classList.remove('active');
-    if (navMenu) navMenu.classList.remove('active');
-    if (navOverlay) navOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-});
-
-// Handle profile dropdown - ONLY for mobile (click to toggle)
-if (profileDropdown) {
-  profileDropdown.addEventListener('click', function(e) {
-    if (window.innerWidth <= 1024) {
-      if (e.target.closest('.profile-icon')) {
-        e.preventDefault();
-        this.classList.toggle('active');
+  <script>
+    // Notification Auto-Hide Function
+    function closeNotification() {
+      const notification = document.getElementById('notification');
+      if (notification) {
+        notification.classList.add('hide');
+        setTimeout(() => {
+          notification.remove();
+        }, 400);
       }
     }
-  });
-}
 
-// Close menu when clicking dropdown items
-document.querySelectorAll('.dropdown-menu a').forEach(link => {
-  link.addEventListener('click', function() {
-    if (hamburger) hamburger.classList.remove('active');
-    if (navMenu) navMenu.classList.remove('active');
-    if (navOverlay) navOverlay.classList.remove('active');
-    if (profileDropdown) profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-});
+    // Auto-hide notification after 5 seconds
+    window.addEventListener('DOMContentLoaded', function() {
+      const notification = document.getElementById('notification');
+      if (notification) {
+        setTimeout(() => {
+          closeNotification();
+        }, 5000);
+      }
+    });
 
-// Reset on window resize
-window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) {
-    if (hamburger) hamburger.classList.remove('active');
-    if (navMenu) navMenu.classList.remove('active');
-    if (navOverlay) navOverlay.classList.remove('active');
-    if (profileDropdown) profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-});
-</script>
+    function switchTab(petId, tabName) {
+      const healthTab = document.getElementById(`health-${petId}`);
+      if (!healthTab) {
+        console.error(`Could not find pet card for pet ID: ${petId}`);
+        return;
+      }
+      
+      const petCard = healthTab.closest('.pet-card');
+      if (!petCard) {
+        console.error(`Could not find parent pet-card for pet ID: ${petId}`);
+        return;
+      }
+      
+      const tabs = petCard.querySelectorAll('.tab');
+      const contents = petCard.querySelectorAll('.tab-content');
+      
+      tabs.forEach(tab => tab.classList.remove('active'));
+      contents.forEach(content => content.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      
+      const targetContent = document.getElementById(`${tabName}-${petId}`);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+    }
+
+    function togglePetEdit(petId) {
+      const form = document.getElementById(`pet-edit-${petId}`);
+      if (form) {
+        form.classList.toggle('show');
+      } else {
+        console.error(`Could not find edit form for pet ID: ${petId}`);
+      }
+    }
+
+    function toggleUserEdit() {
+      const form = document.getElementById('user-edit-form');
+      if (form) {
+        form.classList.toggle('show');
+      } else {
+        console.error('Could not find user edit form');
+      }
+    }
+
+    // Hamburger Menu Toggle
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const navOverlay = document.getElementById('nav-overlay');
+    const profileDropdown = document.getElementById('profile-dropdown');
+
+    if (hamburger) {
+      hamburger.addEventListener('click', function() {
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+        navOverlay.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+      });
+    }
+
+    // Close menu when clicking overlay
+    if (navOverlay) {
+      navOverlay.addEventListener('click', function() {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        if (profileDropdown) profileDropdown.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    }
+
+    // Close menu when clicking on regular nav links
+    document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+      link.addEventListener('click', function() {
+        if (hamburger) hamburger.classList.remove('active');
+        if (navMenu) navMenu.classList.remove('active');
+        if (navOverlay) navOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // Handle profile dropdown - ONLY for mobile (click to toggle)
+    if (profileDropdown) {
+      profileDropdown.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024) {
+          if (e.target.closest('.profile-icon')) {
+            e.preventDefault();
+            this.classList.toggle('active');
+          }
+        }
+      });
+    }
+
+    // Close menu when clicking dropdown items
+    document.querySelectorAll('.dropdown-menu a').forEach(link => {
+      link.addEventListener('click', function() {
+        if (hamburger) hamburger.classList.remove('active');
+        if (navMenu) navMenu.classList.remove('active');
+        if (navOverlay) navOverlay.classList.remove('active');
+        if (profileDropdown) profileDropdown.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // Reset on window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 1024) {
+        if (hamburger) hamburger.classList.remove('active');
+        if (navMenu) navMenu.classList.remove('active');
+        if (navOverlay) navOverlay.classList.remove('active');
+        if (profileDropdown) profileDropdown.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
 </body>
 </html>

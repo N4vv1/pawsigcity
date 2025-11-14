@@ -14,9 +14,11 @@ if (isset($_POST['pet_id'])) {
     $delete = pg_query_params($conn, "DELETE FROM pets WHERE pet_id = $1", [$pet_id]);
 
     if ($delete) {
-        $_SESSION['success'] = "Pet deleted successfully.";
+        $_SESSION['notification'] = "Pet deleted successfully!";
+        $_SESSION['notification_type'] = 'success';
     } else {
-        $_SESSION['success'] = "Error deleting pet: " . pg_last_error($conn);
+        $_SESSION['notification'] = "Error deleting pet: " . pg_last_error($conn);
+        $_SESSION['notification_type'] = 'error';
     }
 }
 
