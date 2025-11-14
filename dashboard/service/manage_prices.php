@@ -12,11 +12,20 @@ if (!isset($_GET['id'])) {
 
 $package_id = trim($_GET['id']);
 
-// Get service details (only active services)
-$service_query = "SELECT * FROM packages WHERE package_id = $1 AND (deleted_at IS NULL OR deleted_at = '')";
+// Check if deleted_at column exists
+$column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='packages' AND column_name='deleted_at'");
+$has_deleted_at = $column_check && pg_num_rows($column_check) > 0;
+
+// Get service details (only active services if deleted_at exists)
+if ($has_deleted_at) {
+    $service_query = "SELECT * FROM packages WHERE package_id = $1 AND deleted_at IS NULL";
+} else {
+    $service_query = "SELECT * FROM packages WHERE package_id = $1";
+}
+
 $service_result = pg_query_params($conn, $service_query, [$package_id]);
 
-if (pg_num_rows($service_result) == 0) {
+if (!$service_result || pg_num_rows($service_result) == 0) {
     $_SESSION['error'] = "Service not found.";
     header("Location: services.php");
     exit;
@@ -79,33 +88,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_price'])) {
 if (isset($_GET['delete_price'])) {
     $price_id = intval($_GET['delete_price']);
     
-    // Archive the price tier by setting deleted_at timestamp
-    $delete_query = "UPDATE package_prices SET deleted_at = NOW() WHERE price_id = $1";
+    // Check if deleted_at column exists in package_prices
+    $price_column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='package_prices' AND column_name='deleted_at'");
+    
+    if (pg_num_rows($price_column_check) > 0) {
+        // Archive the price tier by setting deleted_at timestamp
+        $delete_query = "UPDATE package_prices SET deleted_at = NOW() WHERE price_id = $1";
+        $message = "✓ Price tier archived successfully!";
+    } else {
+        // Fallback to regular delete
+        $delete_query = "DELETE FROM package_prices WHERE price_id = $1";
+        $message = "✓ Price tier deleted successfully!";
+    }
+    
     $result = pg_query_params($conn, $delete_query, [$price_id]);
 
     if ($result) {
-        $_SESSION['success'] = "✓ Price tier archived successfully!";
+        $_SESSION['success'] = $message;
     } else {
-        $_SESSION['error'] = "✗ Failed to archive price tier. Please try again.";
+        $_SESSION['error'] = "✗ Failed to process price tier. Please try again.";
     }
     header("Location: ?id=" . urlencode($package_id));
     exit;
 }
 
 // Get all active prices for this service
-$prices_query = "SELECT * FROM package_prices 
-                 WHERE package_id = $1 
-                 AND (deleted_at IS NULL OR deleted_at = '')
-                 ORDER BY species, size, price";
+$price_column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='package_prices' AND column_name='deleted_at'");
+$has_price_deleted_at = pg_num_rows($price_column_check) > 0;
+
+if ($has_price_deleted_at) {
+    $prices_query = "SELECT * FROM package_prices 
+                     WHERE package_id = $1 
+                     AND (deleted_at IS NULL OR deleted_at = '')
+                     ORDER BY species, size, price";
+} else {
+    $prices_query = "SELECT * FROM package_prices 
+                     WHERE package_id = $1 
+                     ORDER BY species, size, price";
+}
+
 $prices = pg_query_params($conn, $prices_query, [$package_id]);
 
 // If editing specific price
 $edit_price = null;
 if (isset($_GET['edit'])) {
    $edit_id = intval($_GET['edit']);
-  $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1 AND (deleted_at IS NULL OR deleted_at = '')";
+   
+   if ($has_price_deleted_at) {
+       $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1 AND (deleted_at IS NULL OR deleted_at = '')";
+   } else {
+       $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1";
+   }
+   
   $result = pg_query_params($conn, $get_price_query, [$edit_id]);
-  $edit_price = pg_fetch_assoc($result);
+  if ($result && pg_num_rows($result) > 0) {
+      $edit_price = pg_fetch_assoc($result);
+  }
 }
 ?>
 
@@ -846,8 +884,8 @@ if (isset($_GET['edit'])) {
                 <a href="?id=<?= urlencode($package_id) ?>&edit=<?= $price['price_id'] ?>" class="edit-btn">
                   <i class='bx bx-edit'></i> Edit
                 </a>
-                <a href="?id=<?= urlencode($package_id) ?>&delete_price=<?= $price['price_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to archive this price tier?')">
-                  <i class='bx bx-archive'></i> Archive
+                <a href="?id=<?= urlencode($package_id) ?>&delete_price=<?= $price['price_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to <?= $has_price_deleted_at ? 'archive' : 'delete' ?> this price tier?')">
+                  <i class='bx bx-<?= $has_price_deleted_at ? 'archive' : 'trash' ?>'></i> <?= $has_price_deleted_at ? 'Archive' : 'Delete' ?>
                 </a>
               </div>
             </td>
