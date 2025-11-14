@@ -2,6 +2,9 @@
 session_start();
 require '../db.php';
 
+// ✅ Debug session
+error_log("DEBUG - Session started. User ID from session: " . (isset($_SESSION['user_id']) ? "'{$_SESSION['user_id']}'" : "NOT SET"));
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../homepage/login/loginform.php");
     exit;
@@ -75,21 +78,37 @@ while ($groomer = pg_fetch_assoc($groomers_result)) {
     $groomers_array[] = $groomer;
 }
 
-// ✅ Check pet ownership if selected - WITH IMPROVED DEBUGGING
 if ($selected_pet_id) {
-    // ✅ Clean and prepare IDs
+    // Clean and prepare IDs
     $selected_pet_id = trim((string)$selected_pet_id);
     $user_id_trimmed = trim((string)$user_id);
     
-    // ✅ Enhanced debugging
+    // Enhanced debugging
     error_log("=== PET VALIDATION START ===");
     error_log("Selected Pet ID: '{$selected_pet_id}' (length: " . strlen($selected_pet_id) . ")");
     error_log("User ID: '{$user_id_trimmed}' (length: " . strlen($user_id_trimmed) . ")");
+    error_log("Pet ID raw from GET: '" . ($_GET['pet_id'] ?? 'NOT SET') . "'");
     
-    // ✅ Query with TRIM to handle any whitespace issues
+    // First, let's see ALL pets for this user
+    $user_pets_check = pg_query_params(
+        $conn,
+        "SELECT pet_id, name, user_id FROM pets WHERE user_id = $1",
+        [$user_id_trimmed]
+    );
+    
+    error_log("Pets found for user {$user_id_trimmed}:");
+    $found_match = false;
+    while ($up = pg_fetch_assoc($user_pets_check)) {
+        error_log("  - {$up['name']}: pet_id='{$up['pet_id']}', user_id='{$up['user_id']}'");
+        if ($up['pet_id'] === $selected_pet_id) {
+            $found_match = true;
+        }
+    }
+    
+    // Now try the actual validation query
     $pet_check = pg_query_params(
         $conn,
-        "SELECT * FROM pets WHERE TRIM(pet_id) = TRIM($1) AND TRIM(user_id) = TRIM($2)",
+        "SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2",
         [$selected_pet_id, $user_id_trimmed]
     );
     
@@ -100,17 +119,17 @@ if ($selected_pet_id) {
     
     $valid_pet = pg_fetch_assoc($pet_check);
     
-    // ✅ Debug query result
+    // Debug query result
     if ($valid_pet) {
         error_log("✓ Pet found: " . $valid_pet['name']);
-        error_log("Pet details: " . print_r($valid_pet, true));
     } else {
-        error_log("✗ No pet found with given pet_id and user_id combination");
+        error_log("✗ No pet found with query");
+        error_log("Match found in user pets list: " . ($found_match ? "YES" : "NO"));
         
-        // ✅ Additional check: Does the pet exist at all?
+        // Check if pet exists at all
         $pet_exists_check = pg_query_params(
             $conn,
-            "SELECT pet_id, user_id, name FROM pets WHERE TRIM(pet_id) = TRIM($1)",
+            "SELECT pet_id, user_id, name FROM pets WHERE pet_id = $1",
             [$selected_pet_id]
         );
         
@@ -121,27 +140,26 @@ if ($selected_pet_id) {
             error_log("  - Pet ID: '{$pet_data['pet_id']}'");
             error_log("  - Pet's User ID: '{$pet_data['user_id']}'");
             error_log("  - Session User ID: '{$user_id_trimmed}'");
-            error_log("  - Match: " . ($pet_data['user_id'] === $user_id_trimmed ? "YES" : "NO"));
+            error_log("  - IDs Match: " . ($pet_data['user_id'] === $user_id_trimmed ? "YES" : "NO"));
+            error_log("  - Pet ID Match: " . ($pet_data['pet_id'] === $selected_pet_id ? "YES" : "NO"));
+            
+            // Character-by-character comparison
+            error_log("Character comparison for user_id:");
+            error_log("  DB: " . bin2hex($pet_data['user_id']));
+            error_log("  Session: " . bin2hex($user_id_trimmed));
             
             $_SESSION['error'] = "This pet doesn't belong to your account. Please select your own pet.";
         } else {
             error_log("Pet does NOT exist in database with pet_id: '{$selected_pet_id}'");
-            
-            // Show all pets for this user for debugging
-            $user_pets = pg_query_params($conn, "SELECT pet_id, name FROM pets WHERE user_id = $1", [$user_id_trimmed]);
-            error_log("User's pets:");
-            while ($up = pg_fetch_assoc($user_pets)) {
-                error_log("  - {$up['name']} (ID: {$up['pet_id']})");
-            }
-            
             $_SESSION['error'] = "Invalid pet selection. The pet ID doesn't exist.";
         }
         
+        error_log("=== PET VALIDATION END ===");
         header("Location: book-appointment.php");
         exit;
     }
-
-    // ✅ CRITICAL: Verify pet has required size information
+    
+    // CRITICAL: Verify pet has required size information
     if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
         $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
         error_log("✗ Pet missing required info:");
@@ -156,6 +174,9 @@ if ($selected_pet_id) {
     
     error_log("✓ Pet validation PASSED");
     error_log("=== PET VALIDATION END ===");
+    
+    // ... rest of your API call code ...
+}
 
     // API call for package recommendation
     $api_url = "https://pawsigcity-1.onrender.com/recommend";
