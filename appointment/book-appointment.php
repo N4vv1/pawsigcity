@@ -2,7 +2,7 @@
 session_start();
 require '../db.php';
 
-// ✅ Clear any previous errors when loading the pet selection page
+// Clear any previous errors when loading the pet selection page
 if (!isset($_GET['pet_id'])) {
     unset($_SESSION['error']);
     unset($_SESSION['success']);
@@ -17,29 +17,58 @@ $user_id = $_SESSION['user_id'];
 $selected_pet_id = isset($_GET['pet_id']) ? $_GET['pet_id'] : null;
 $package_id = isset($_GET['package_id']) ? $_GET['package_id'] : null;
 
-// ✅ Initialize ALL variables at the top
+// Initialize ALL variables at the top
 $valid_pet = null;
 $packages_result = null;
 $recommended_package = null;
 $groomers_array = [];
 
-// ✅ Fetch user's pets securely
+// Fetch user's pets securely
 $pets_result = pg_query_params(
     $conn,
     "SELECT * FROM pets WHERE user_id = $1",
     [$user_id]
 );
 
-// ✅ Function to get appointment counts by date and hour
-function getAppointmentCounts($conn) {
+// Function to get detailed appointment statistics by date
+function getAppointmentStatsByDate($conn) {
+    $query = "
+        SELECT 
+            DATE(appointment_date) as date,
+            COUNT(*) AS total_appointments,
+            COUNT(CASE WHEN EXTRACT(HOUR FROM appointment_date) BETWEEN 9 AND 12 THEN 1 END) as morning_count,
+            COUNT(CASE WHEN EXTRACT(HOUR FROM appointment_date) BETWEEN 13 AND 18 THEN 1 END) as afternoon_count
+        FROM appointments 
+        WHERE appointment_date >= CURRENT_DATE
+        AND status IN ('confirmed', 'pending')
+        GROUP BY DATE(appointment_date)
+        ORDER BY DATE(appointment_date)
+    ";
+    
+    $result = pg_query($conn, $query);
+    $stats = [];
+
+    while ($row = pg_fetch_assoc($result)) {
+        $stats[$row['date']] = [
+            'total' => (int)$row['total_appointments'],
+            'morning' => (int)$row['morning_count'],
+            'afternoon' => (int)$row['afternoon_count']
+        ];
+    }
+
+    return $stats;
+}
+
+// Function to get appointment counts by date and hour
+function getAppointmentCountsByHour($conn) {
     $query = "
         SELECT 
             DATE(appointment_date) as date,
             EXTRACT(HOUR FROM appointment_date) AS hour,
             COUNT(*) AS appointment_count
         FROM appointments 
-        WHERE appointment_date >= NOW()
-        AND status != 'cancelled'
+        WHERE appointment_date >= CURRENT_DATE
+        AND status IN ('confirmed', 'pending')
         GROUP BY DATE(appointment_date), EXTRACT(HOUR FROM appointment_date)
     ";
     
@@ -60,9 +89,10 @@ function getAppointmentCounts($conn) {
     return $counts;
 }
 
-$appointment_counts = getAppointmentCounts($conn);
+$appointment_stats = getAppointmentStatsByDate($conn);
+$appointment_counts = getAppointmentCountsByHour($conn);
 
-// ✅ Fetch groomers with their active status
+// Fetch groomers with their active status
 $groomers_query = "
     SELECT groomer_id, groomer_name, is_active 
     FROM groomer 
@@ -75,7 +105,7 @@ if (!$groomers_result) {
     die("Groomer query failed: " . pg_last_error($conn));
 }
 
-// ✅ Store groomers in an array to reuse and avoid pointer issues
+// Store groomers in an array to reuse and avoid pointer issues
 $groomers_array = [];
 while ($groomer = pg_fetch_assoc($groomers_result)) {
     $groomers_array[] = $groomer;
@@ -155,7 +185,7 @@ if ($selected_pet_id) {
     
     error_log("=== PET VALIDATION END ===");
 
-    // ✅ API call for package recommendation - INSIDE THE IF BLOCK
+    // API call for package recommendation - INSIDE THE IF BLOCK
     $api_url = "https://pawsigcity-1.onrender.com/recommend";
     $payload = json_encode([
         "breed" => $valid_pet['breed'],
@@ -200,7 +230,7 @@ if ($selected_pet_id) {
         }
     }
 
-    // ✅ CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
+    // CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
     $packages_result = pg_query_params($conn, "
         SELECT pp.price_id, pp.package_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
         FROM package_prices pp
@@ -212,7 +242,7 @@ if ($selected_pet_id) {
         ORDER BY p.name, pp.price
     ", [$valid_pet['species'], $valid_pet['size'], $valid_pet['weight']]);
 
-    // ✅ Check if any packages are available
+    // Check if any packages are available
     if (pg_num_rows($packages_result) === 0) {
         error_log("No packages found for: {$valid_pet['species']}, {$valid_pet['size']}, {$valid_pet['weight']}kg");
         $_SESSION['error'] = "⚠️ No packages available for a {$valid_pet['size']} {$valid_pet['species']} weighing {$valid_pet['weight']} kg. Please contact support.";
@@ -221,7 +251,6 @@ if ($selected_pet_id) {
     }
     
     error_log("Found " . pg_num_rows($packages_result) . " matching packages");
-
 }
 ?>
 
@@ -232,1252 +261,1174 @@ if ($selected_pet_id) {
   <link rel="stylesheet" href="../homepage/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="icon" type="image/png" href="../homepage/images/pawsig2.png">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
- <style>
-  * {
-    box-sizing: border-box;
-  }
-
-  
-  /* Add these styles to fix the navbar at the top */
-  header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
-  }
-
-  /* Adjust body padding to prevent content from hiding under navbar */
-  body {
-    padding-top: 80px; /* Adjust this value based on your navbar height */
-  }
-
-  .header-wrapper {
-    margin: 0;
-    padding: 0;
-  }
-
-  .form-wrapper {
-    margin-top: 80px;
-    padding: 20px;
-    min-height: calc(100vh - 100px);
-  }
-
-  .page-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0;
-    background-color: transparent;
-    box-shadow: none;
-  }
-
-  .content-grid {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 24px;
-    align-items: start;
-  }
-
-  /* Pet Profile Card - Left Side */
-  .pet-profile-card {
-    background: #fff;
-    border-radius: 24px;
-    padding: 32px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 100px;
-  }
-
-  .pet-image-container {
-    width: 100%;
-    height: 280px;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 24px;
-    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 24px rgba(168, 230, 207, 0.3);
-  }
-
-  .pet-image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .pet-placeholder {
-    font-size: 120px;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  .pet-info {
-    text-align: center;
-  }
-
-  .pet-name {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0 0 8px 0;
-  }
-
-  .pet-breed {
-    font-size: 1.1rem;
-    color: #7f8c8d;
-    margin: 0 0 20px 0;
-    font-weight: 500;
-  }
-
-  .pet-details {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 2px solid #f0f0f0;
-  }
-
-  .pet-detail-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .pet-detail-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 20px;
-  }
-
-  .pet-detail-label {
-    font-size: 0.75rem;
-    color: #95a5a6;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .pet-detail-value {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #2c3e50;
-  }
-
-    /* Size Info Badge */
-  .size-info-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-top: 12px;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  }
-
-  /* Booking Form - Right Side */
-  .booking-section {
-    background: #fff;
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    min-height: 600px;
-  }
-
-  h2 {
-    color: #2c3e50;
-    margin: 0 0 32px 0;
-    font-weight: 700;
-    font-size: 2rem;
-  }
-
-  .booking-form {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  label {
-    font-weight: 600;
-    color: #34495e;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1rem;
-  }
-
-  label i {
-    color: #A8E6CF;
-    font-size: 1.1rem;
-  }
-
-  select,
-  input[type="text"],
-  textarea {
-    width: 100%;
-    padding: 14px 18px;
-    font-size: 1rem;
-    font-family: inherit;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    background-color: #f8f9fa;
-    color: #333;
-    transition: all 0.3s ease;
-  }
-
-  select:focus,
-  input[type="text"]:focus,
-  textarea:focus {
-    border-color: #A8E6CF;
-    box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.2);
-    outline: none;
-    background-color: #fff;
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 120px;
-  }
-
-  .recommendation-box {
-    background: linear-gradient(135deg, #e8fff3 0%, #d4f5e5 100%);
-    border-left: 5px solid #A8E6CF;
-    padding: 20px;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #2c3e50;
-    box-shadow: 0 4px 12px rgba(168, 230, 207, 0.2);
-  }
-
-  .recommend {
-    color: #16a085;
-    font-weight: bold;
-    font-size: 1.1rem;
-  }
-
-    /* Locked Package Notice */
-  .locked-notice {
-    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-    border-left: 5px solid #ff9800;
-    padding: 16px 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #e65100;
-    font-weight: 500;
-  }
-
-  .locked-notice i {
-    font-size: 1.5rem;
-  }   
-
-  .submit-btn {
-    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
-    border: none;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-weight: 600;
-    color: #252525;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1.1rem;
-    margin-top: 12px;
-    box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
-  }
-
-  .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
-  }
-
-  .submit-btn:disabled {
-    background: #ccc !important;
-    color: #666 !important;
-    cursor: not-allowed !important;
-    opacity: 0.6 !important;
-    transform: none !important;
-    box-shadow: none !important;
-  }
-
-  .alert-success,
-  .alert-error {
-    padding: 16px 20px;
-    border-radius: 12px;
-    font-weight: 500;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 2px solid #c3e6cb;
-  }
-
-  .alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 2px solid #f5c6cb;
-  }
-
-  .availability-indicator {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: #ccc;
-    color: white;
-    font-size: 0.75rem;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .availability-indicator.show {
-    opacity: 1;
-  }
-
-  .availability-indicator.full {
-    background: #e57373;
-  }
-
-  .availability-indicator.available {
-    background: #81c784;
-  }
-
-  .datetime-container {
-    position: relative;
-  }
-
-  .legend-container {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 12px;
-    border: 2px solid #e0e0e0;
-  }
-
-  .legend-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #34495e;
-    margin-bottom: 12px;
-  }
-
-  .legend-items {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-  }
-
-  .legend-color {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid #ccc;
-  }
-
-  .legend-color.available {
-    background-color: #e8f5e8;
-  }
-
-  .legend-color.busy {
-    background-color: #fff3e0;
-  }
-
-  .legend-color.full {
-    background-color: #ffebee;
-  }
-
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: #3498db;
-    font-weight: 600;
-    margin-bottom: 24px;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    background: #f0f8ff;
-  }
-
-  .back-link:hover {
-    background: #3498db;
-    color: white;
-    transform: translateX(-4px);
-  }
-
-  /* Pet Selection Cards */
-  .pets-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-    margin-top: 24px;
-  }
-
-  .pet-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .pet-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  }
-
-  .pet-card-image {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 16px;
-    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .pet-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .pet-card-name {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 4px;
-  }
-
-  .pet-card-breed {
-    font-size: 1rem;
-    color: #7f8c8d;
-    margin-bottom: 16px;
-  }
-
-  .pet-card .btn {
-    width: 100%;
-    background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
-    border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-weight: 600;
-    color: #252525;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-  }
-
-  .pet-card .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
-  }
-
-  @media (max-width: 1200px) {
-    .content-grid {
-      grid-template-columns: 1fr;
+  <style>
+    * {
+      box-sizing: border-box;
     }
 
-    .pet-profile-card {
-      position: relative;
+    header {
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-  }
 
-  @media (max-width: 768px) {
+    body {
+      padding-top: 80px;
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .header-wrapper {
+      margin: 0;
+      padding: 0;
+    }
+
     .form-wrapper {
-      padding: 12px;
+      margin-top: 80px;
+      padding: 20px;
+      min-height: calc(100vh - 100px);
     }
 
-    .booking-section {
-      padding: 24px;
+    .page-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0;
+      background-color: transparent;
+      box-shadow: none;
     }
 
+    .content-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* Pet Profile Card - Left Side */
     .pet-profile-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 100px;
+    }
+
+    .pet-image-container {
+      width: 100%;
+      height: 280px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(168, 230, 207, 0.3);
+    }
+
+    .pet-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .pet-placeholder {
+      font-size: 120px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .pet-info {
+      text-align: center;
+    }
+
+    .pet-name {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 0 0 8px 0;
+    }
+
+    .pet-breed {
+      font-size: 1.1rem;
+      color: #7f8c8d;
+      margin: 0 0 20px 0;
+      font-weight: 500;
+    }
+
+    .pet-details {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    .pet-detail-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pet-detail-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    .pet-detail-label {
+      font-size: 0.75rem;
+      color: #95a5a6;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pet-detail-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .size-info-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 12px;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Booking Form - Right Side */
+    .booking-section {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      min-height: 600px;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin: 0 0 32px 0;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    .booking-form {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+    }
+
+    label i {
+      color: #A8E6CF;
+      font-size: 1.1rem;
+    }
+
+    select,
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      background-color: #f8f9fa;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #A8E6CF;
+      box-shadow: 0 0 0 4px rgba(168, 230, 207, 0.2);
+      outline: none;
+      background-color: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    /* Calendar Styles */
+    .calendar-container {
+      background: #f8f9fa;
+      border-radius: 16px;
       padding: 24px;
+      margin-bottom: 20px;
+      border: 2px solid #e0e0e0;
     }
 
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .calendar-header h3 {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+    }
+
+    .calendar-nav button {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #34495e;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .calendar-nav button:hover {
+      background: #A8E6CF;
+      border-color: #A8E6CF;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-weight: 600;
+      color: #7f8c8d;
+      padding: 12px 0;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: white;
+      position: relative;
+      padding: 8px;
+      min-height: 80px;
+    }
+
+    .calendar-day:hover:not(.disabled):not(.other-month) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-color: #A8E6CF;
+    }
+
+    .calendar-day.disabled {
+      background: #f0f0f0;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.3;
+      cursor: not-allowed;
+      background: #fafafa;
+    }
+
+    .calendar-day.selected {
+      background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+      border-color: #A8E6CF;
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 6px 20px rgba(168, 230, 207, 0.4);
+    }
+
+    .calendar-day.today {
+      border-color: #3498db;
+      border-width: 3px;
+    }
+
+    .day-number {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .day-indicator {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .day-indicator.available {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .day-indicator.busy {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .day-indicator.full {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Time Slot Selection */
+    .time-slots-container {
+      margin-top: 20px;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .time-slots-container.show {
+      display: block;
+    }
+
+    .time-slots-header {
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #e8fff3 0%, #d4f5e5 100%);
+      border-radius: 10px;
+      border-left: 4px solid #A8E6CF;
+    }
+
+    .time-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+    }
+
+    .time-slot {
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: white;
+      font-weight: 600;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .time-slot:hover:not(.disabled) {
+      border-color: #A8E6CF;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(168, 230, 207, 0.3);
+    }
+
+    .time-slot.selected {
+      background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+      border-color: #A8E6CF;
+      color: white;
+      box-shadow: 0 6px 20px rgba(168, 230, 207, 0.4);
+    }
+
+    .time-slot.disabled {
+      background: #f0f0f0;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .time-slot-badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 8px;
+      display: inline-block;
+      font-weight: 700;
+    }
+
+    .time-slot-badge.full {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .time-slot-badge.available {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .recommendation-box {
+      background: linear-gradient(135deg, #e8fff3 0%, #d4f5e5 100%);
+      border-left: 5px solid #A8E6CF;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #2c3e50;
+      box-shadow: 0 4px 12px rgba(168, 230, 207, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .recommend {
+      color: #16a085;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .locked-notice {
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+      border-left: 5px solid #ff9800;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #e65100;
+      font-weight: 500;
+    }
+
+    .locked-notice i {
+      font-size: 1.5rem;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      color: #252525;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+      margin-top: 12px;
+      box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
+      font-family: inherit;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 230, 207, 0.5);
+    }
+
+    .submit-btn:disabled {
+      background: #ccc !important;
+      color: #666 !important;
+      cursor: not-allowed !important;
+      opacity: 0.6 !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .alert-success,
+    .alert-error {
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 2px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 2px solid #f5c6cb;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #3498db;
+      font-weight: 600;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: #f0f8ff;
+    }
+
+    .back-link:hover {
+      background: #3498db;
+      color: white;
+      transform: translateX(-4px);
+    }
+
+    /* Pet Selection Cards */
     .pets-grid {
-      grid-template-columns: 1fr;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
     }
-  }
-
-/* Burger Menu Styles */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: space-around;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 8px;
-  z-index: 1001;
-  width: 40px;
-  height: 40px;
-  position: relative;
-}
-
-.hamburger span {
-  width: 28px;
-  height: 3px;
-  background-color: #2c3e50;
-  transition: all 0.3s ease;
-  border-radius: 3px;
-  display: block;
-  position: relative;
-}
-
-/* Hamburger animation when active */
-.hamburger.active span:nth-child(1) {
-  transform: rotate(45deg);
-  position: absolute;
-  top: 50%;
-  margin-top: -1.5px;
-}
-
-.hamburger.active span:nth-child(2) {
-  opacity: 0;
-  transform: scale(0);
-}
-
-.hamburger.active span:nth-child(3) {
-  transform: rotate(-45deg);
-  position: absolute;
-  top: 50%;
-  margin-top: -1.5px;
-}
-
-/* Mobile Menu Styles */
-@media (max-width: 1024px) {
-  .hamburger {
-    display: flex;
-  }
-
-  .nav-menu {
-    position: fixed;
-    right: -100%;
-    top: 0;
-    flex-direction: column;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    width: 320px;
-    text-align: left;
-    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
-    padding: 100px 0 30px 0;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 999;
-  }
-
-  .nav-menu.active {
-    right: 0;
-  }
-
-  .nav-item {
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .nav-link {
-    font-size: 1.1rem;
-    padding: 18px 30px;
-    display: block;
-    color: #2c3e50;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    position: relative;
-  }
-
-  .nav-link:hover {
-    background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
-    padding-left: 40px;
-    color: #16a085;
-  }
-
-  .nav-link i {
-    margin-right: 12px;
-    font-size: 1.2rem;
-    color: #A8E6CF;
-  }
-
-  .profile-icon {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .profile-icon::after {
-    content: 'Profile Menu';
-    font-size: 1rem;
-  }
-
-  /* Dropdown adjustments for mobile */
-  .dropdown-menu {
-    position: relative;
-    display: none;
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    box-shadow: none;
-    background-color: #f1f3f5;
-    margin: 0;
-    border-radius: 0;
-    padding: 8px 0;
-  }
-
-  .dropdown.active .dropdown-menu {
-    display: block;
-  }
-
-  .dropdown-menu li {
-    margin: 0;
-    border-bottom: none;
-  }
-
-  .dropdown-menu a {
-    padding: 14px 30px 14px 50px;
-    font-size: 0.95rem;
-    color: #495057;
-    display: block;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .dropdown-menu a::before {
-    content: 'â€¢';
-    position: absolute;
-    left: 35px;
-    color: #A8E6CF;
-    font-size: 1.2rem;
-  }
-
-  .dropdown-menu a:hover {
-    background-color: #e9ecef;
-    padding-left: 55px;
-    color: #16a085;
-  }
-
-  /* Overlay for mobile menu */
-  .nav-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 998;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .nav-overlay.active {
-    display: block;
-    opacity: 1;
-  }
-}
-@media (min-width: 1025px) {
-  .dropdown {
-    position: relative;
-  }
-
-  .dropdown-menu {
-    position: absolute;
-    top: calc(100% + 5px); /* Position it below with small gap */
-    right: 0;
-    background: white;
-    min-width: 220px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    padding: 8px 0;
-    z-index: 1000;
-    pointer-events: none; /* Prevents menu from blocking hover */
-  }
-
-  /* Show dropdown on hover */
-  .dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto; /* Enable interactions when visible */
-  }
-
-  /* Keep dropdown visible when hovering over it */
-  .dropdown-menu:hover {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .dropdown-menu li {
-    margin: 0;
-    list-style: none;
-  }
-
-  .dropdown-menu a {
-    display: block;
-    padding: 12px 20px;
-    color: #2c3e50;
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-left: 3px solid transparent;
-    white-space: nowrap;
-    text-align: left;
-  }
-
-  .dropdown-menu a:hover {
-    background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
-    border-left-color: #A8E6CF;
-    padding-left: 24px;
-    color: #16a085;
-  }
-
-  /* Arrow indicator for dropdown */
-  .profile-icon::after {
-    content: '\f078'; /* FontAwesome down arrow */
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    font-size: 0.7rem;
-    margin-left: 6px;
-    transition: transform 0.3s ease;
-  }
-
-  .dropdown:hover .profile-icon::after {
-    transform: rotate(180deg);
-  }
-
-  /* Make sure profile icon doesn't block dropdown */
-  .profile-icon {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-  }
-}
-
-/* Mobile Dropdown Styles - Keep as click-based */
-@media (max-width: 1024px) {
-  .hamburger {
-    display: flex;
-  }
-
-  .nav-menu {
-    position: fixed;
-    right: -100%;
-    top: 0;
-    flex-direction: column;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    width: 320px;
-    text-align: left;
-    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
-    padding: 100px 0 30px 0;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 999;
-  }
-
-  .nav-menu.active {
-    right: 0;
-  }
-
-  .nav-item {
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .nav-link {
-    font-size: 1.1rem;
-    padding: 18px 30px;
-    display: block;
-    color: #2c3e50;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    position: relative;
-  }
-
-  .nav-link:hover {
-    background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
-    padding-left: 40px;
-    color: #16a085;
-  }
-
-  .nav-link i {
-    margin-right: 12px;
-    font-size: 1.2rem;
-    color: #A8E6CF;
-  }
-
-  .profile-icon {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-  }
-
-  .profile-icon::after {
-    content: 'Profile Menu';
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 1rem;
-  }
-
-  /* Base navbar styles */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  position: relative;
-  z-index: 100;
-}
-
-/* Desktop nav menu - visible by default */
-.nav-menu {
-  display: flex;
-  align-items: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 5px;
-}
-
-.nav-item {
-  position: relative;
-  list-style: none;
-}
-
-.nav-link {
-  text-decoration: none;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  color: #2c3e50;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border-radius: 8px;
-}
-
-.nav-link:hover {
-  background-color: rgba(168, 230, 207, 0.1);
-  color: #16a085;
-}
-
-.nav-link.active {
-  background-color: rgba(168, 230, 207, 0.15);
-  color: #16a085;
-}
-
-/* Hide hamburger by default (desktop) */
-.hamburger {
-  display: none;
-}
-
-/* ========================================
-   DESKTOP DROPDOWN (Hover-based)
-   ======================================== */
-@media (min-width: 1025px) {
-  /* Dropdown container */
-  .dropdown {
-    position: relative;
-  }
-
-  /* Dropdown menu - hidden by default */
-  .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    min-width: 220px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    margin-top: 8px;
-    padding: 8px 0;
-    z-index: 1000;
-    list-style: none;
-    pointer-events: none;
-  }
-
-  /* Show dropdown on hover */
-  .dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  /* Keep dropdown visible when hovering over menu items */
-  .dropdown-menu:hover {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* Dropdown menu items */
-  .dropdown-menu li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .dropdown-menu a {
-    display: block;
-    padding: 12px 20px;
-    color: #2c3e50;
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-left: 3px solid transparent;
-    white-space: nowrap;
-  }
-
-  .dropdown-menu a:hover {
-    background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
-    border-left-color: #A8E6CF;
-    padding-left: 24px;
-    color: #16a085;
-  }
-
-  /* Profile icon styling */
-  .profile-icon {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    position: relative;
-  }
-
-  /* Arrow indicator */
-  .profile-icon::after {
-    content: '\f078';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    font-size: 0.7rem;
-    margin-left: 4px;
-    transition: transform 0.3s ease;
-  }
-
-  .dropdown:hover .profile-icon::after {
-    transform: rotate(180deg);
-  }
-}
-
-/* ========================================
-   MOBILE STYLES (Click-based)
-   ======================================== */
-@media (max-width: 1024px) {
-  /* Show hamburger on mobile */
-  .hamburger {
-    display: flex !important;
-    flex-direction: column;
-    justify-content: space-around;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 8px;
-    z-index: 1001;
-    width: 40px;
-    height: 40px;
-    position: relative;
-  }
-
-  .hamburger span {
-    width: 28px;
-    height: 3px;
-    background-color: #2c3e50;
-    transition: all 0.3s ease;
-    border-radius: 3px;
-    display: block;
-    position: relative;
-  }
-
-  .hamburger.active span:nth-child(1) {
-    transform: rotate(45deg);
-    position: absolute;
-    top: 50%;
-    margin-top: -1.5px;
-  }
-
-  .hamburger.active span:nth-child(2) {
-    opacity: 0;
-    transform: scale(0);
-  }
-
-  .hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg);
-    position: absolute;
-    top: 50%;
-    margin-top: -1.5px;
-  }
-
-  .nav-menu {
-    position: fixed;
-    right: -100%;
-    top: 0;
-    flex-direction: column;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    width: 320px;
-    text-align: left;
-    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
-    padding: 100px 0 30px 0;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 999;
-    align-items: stretch;
-    gap: 0;
-  }
-
-  .nav-menu.active {
-    right: 0;
-  }
-
-  .nav-item {
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid #e9ecef;
-    position: relative;
-  }
-
-  .nav-link {
-    font-size: 1.1rem;
-    padding: 18px 30px;
-    display: block;
-    color: #2c3e50;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    width: 100%;
-  }
-
-  .nav-link:hover {
-    background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
-    padding-left: 40px;
-    color: #16a085;
-  }
-
-  .nav-link i {
-    margin-right: 12px;
-    font-size: 1.2rem;
-    color: #A8E6CF;
-  }
-
-  .profile-icon {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-  }
-
-  .profile-icon::after {
-    content: 'Profile Menu';
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 1rem;
-  }
-
-  /* Mobile dropdown */
-  .dropdown-menu {
-    position: relative;
-    display: none;
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    box-shadow: none;
-    background-color: #f1f3f5;
-    margin: 0;
-    border-radius: 0;
-    padding: 8px 0;
-    list-style: none;
-  }
-
-  .dropdown.active .dropdown-menu {
-    display: block;
-  }
-
-  .dropdown-menu li {
-    margin: 0;
-    border-bottom: none;
-    list-style: none;
-  }
-
-  .dropdown-menu a {
-    padding: 14px 30px 14px 50px;
-    font-size: 0.95rem;
-    color: #495057;
-    display: block;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .dropdown-menu a::before {
-    content: 'â€¢';
-    position: absolute;
-    left: 35px;
-    color: #A8E6CF;
-    font-size: 1.2rem;
-  }
-
-  .dropdown-menu a:hover {
-    padding-left: 55px;
-    color: #16a085;
-  }
-
-  .nav-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 998;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .nav-overlay.active {
-    display: block;
-    opacity: 1;
-  }
-}
-
-/* Hide hamburger on desktop */
-@media (min-width: 1025px) {
-  .hamburger {
-    display: none !important;
-  }
-  
-  .nav-overlay {
-    display: none !important;
-  }
-  
-  /* Ensure nav menu is visible on desktop */
-  .nav-menu {
-    display: flex !important;
-    position: static !important;
-    flex-direction: row !important;
-    width: auto !important;
-    height: auto !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-  
-  .nav-item {
-    border-bottom: none !important;
-  }
-}
-}
-select option:disabled {
-  color: #999;
-  background-color: #f5f5f5;
-  font-style: italic;
-}
-
-select option:disabled:hover {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-}
-</style>
 
+    .pet-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .pet-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .pet-card-image {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(168, 230, 207, 0.3);
+    }
+
+    .pet-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .pet-card-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 4px;
+    }
+
+    .pet-card-breed {
+      font-size: 1rem;
+      color: #7f8c8d;
+      margin-bottom: 16px;
+    }
+
+    .pet-card .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: #252525;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .pet-card .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
+    }
+
+    .legend-container {
+      background-color: #fff;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-top: 16px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .legend-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 12px;
+    }
+
+    .legend-items {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: #34495e;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid #ccc;
+    }
+
+    .legend-color.available {
+      background-color: #d4edda;
+      border-color: #155724;
+    }
+
+    .legend-color.busy {
+      background-color: #fff3cd;
+      border-color: #856404;
+    }
+
+    .legend-color.full {
+      background-color: #f8d7da;
+      border-color: #721c24;
+    }
+
+    select option:disabled {
+      color: #999;
+      background-color: #f5f5f5;
+      font-style: italic;
+    }
+
+    select option:disabled:hover {
+      background-color: #f5f5f5;
+      cursor: not-allowed;
+    }
+
+    /* Hidden input for appointment date */
+    #appointment_date_hidden {
+      display: none;
+    }
+
+    /* Hamburger Menu Styles */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-around;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px;
+      z-index: 1001;
+      width: 40px;
+      height: 40px;
+      position: relative;
+    }
+
+    .hamburger span {
+      width: 28px;
+      height: 3px;
+      background-color: #2c3e50;
+      transition: all 0.3s ease;
+      border-radius: 3px;
+      display: block;
+      position: relative;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg);
+      position: absolute;
+      top: 50%;
+      margin-top: -1.5px;
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+      transform: scale(0);
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg);
+      position: absolute;
+      top: 50%;
+      margin-top: -1.5px;
+    }
+
+    /* Base navbar styles */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 5px;
+    }
+
+    .nav-item {
+      position: relative;
+      list-style: none;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      color: #2c3e50;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(168, 230, 207, 0.1);
+      color: #16a085;
+    }
+
+    .nav-link.active {
+      background-color: rgba(168, 230, 207, 0.15);
+      color: #16a085;
+    }
+
+    /* Desktop Dropdown (Hover-based) */
+    @media (min-width: 1025px) {
+      .dropdown {
+        position: relative;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        min-width: 220px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+        margin-top: 8px;
+        padding: 8px 0;
+        z-index: 1000;
+        list-style: none;
+        pointer-events: none;
+      }
+
+      .dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .dropdown-menu:hover {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .dropdown-menu li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .dropdown-menu a {
+        display: block;
+        padding: 12px 20px;
+        color: #2c3e50;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+        white-space: nowrap;
+      }
+
+      .dropdown-menu a:hover {
+        background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
+        border-left-color: #A8E6CF;
+        padding-left: 24px;
+        color: #16a085;
+      }
+
+      .profile-icon {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .profile-icon::after {
+        content: '\f078';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 0.7rem;
+        margin-left: 4px;
+        transition: transform 0.3s ease;
+      }
+
+      .dropdown:hover .profile-icon::after {
+        transform: rotate(180deg);
+      }
+    }
+
+    /* Mobile Menu Styles */
+    @media (max-width: 1024px) {
+      .hamburger {
+        display: flex !important;
+      }
+
+      .nav-menu {
+        position: fixed;
+        right: -100%;
+        top: 0;
+        flex-direction: column;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        width: 320px;
+        text-align: left;
+        transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+        padding: 100px 0 30px 0;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 999;
+        align-items: stretch;
+        gap: 0;
+      }
+
+      .nav-menu.active {
+        right: 0;
+      }
+
+      .nav-item {
+        margin: 0;
+        padding: 0;
+        border-bottom: 1px solid #e9ecef;
+        position: relative;
+      }
+
+      .nav-link {
+        font-size: 1.1rem;
+        padding: 18px 30px;
+        display: block;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        width: 100%;
+      }
+
+      .nav-link:hover {
+        background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
+        padding-left: 40px;
+        color: #16a085;
+      }
+
+      .nav-link i {
+        margin-right: 12px;
+        font-size: 1.2rem;
+        color: #A8E6CF;
+      }
+
+      .profile-icon {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+      }
+
+      .profile-icon::after {
+        content: 'Profile Menu';
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 1rem;
+      }
+
+      .dropdown-menu {
+        position: relative;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        box-shadow: none;
+        background-color: #f1f3f5;
+        margin: 0;
+        border-radius: 0;
+        padding: 8px 0;
+        list-style: none;
+      }
+
+      .dropdown.active .dropdown-menu {
+        display: block;
+      }
+
+      .dropdown-menu li {
+        margin: 0;
+        border-bottom: none;
+        list-style: none;
+      }
+
+      .dropdown-menu a {
+        padding: 14px 30px 14px 50px;
+        font-size: 0.95rem;
+        color: #495057;
+        display: block;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .dropdown-menu a::before {
+        content: '•';
+        position: absolute;
+        left: 35px;
+        color: #A8E6CF;
+        font-size: 1.2rem;
+      }
+
+      .dropdown-menu a:hover {
+        padding-left: 55px;
+        color: #16a085;
+        background-color: #e9ecef;
+      }
+
+      .nav-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .nav-overlay.active {
+        display: block;
+        opacity: 1;
+      }
+    }
+
+    /* Hide hamburger on desktop */
+    @media (min-width: 1025px) {
+      .hamburger {
+        display: none !important;
+      }
+      
+      .nav-overlay {
+        display: none !important;
+      }
+      
+      .nav-menu {
+        display: flex !important;
+        position: static !important;
+        flex-direction: row !important;
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+      
+      .nav-item {
+        border-bottom: none !important;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pet-profile-card {
+        position: relative;
+        top: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-top: 70px;
+      }
+
+      .form-wrapper {
+        padding: 12px;
+        margin-top: 20px;
+      }
+
+      .booking-section {
+        padding: 24px;
+      }
+
+      .pet-profile-card {
+        padding: 24px;
+      }
+
+      .pets-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calendar-grid {
+        gap: 4px;
+      }
+
+      .calendar-day {
+        padding: 4px;
+        min-height: 70px;
+      }
+
+      .day-number {
+        font-size: 0.9rem;
+      }
+
+      .day-indicator {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+      }
+
+      .time-slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+      }
+
+      .calendar-header h3 {
+        font-size: 1.1rem;
+      }
+
+      .calendar-nav button {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
-  <nav class="navbar section-content">
-    <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
-    </a>
-    
-    <!-- Hamburger Menu Button -->
-    <button class="hamburger" id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+    <nav class="navbar section-content">
+      <a href="#" class="navbar-logo">
+        <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
+      </a>
+      
+      <!-- Hamburger Menu Button -->
+      <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
-    <!-- Overlay for mobile -->
-    <div class="nav-overlay" id="nav-overlay"></div>
+      <!-- Overlay for mobile -->
+      <div class="nav-overlay" id="nav-overlay"></div>
 
-    <ul class="nav-menu" id="nav-menu">
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
-      <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
-      <li class="nav-item dropdown" id="profile-dropdown">
-        <a href="#" class="nav-link profile-icon active">
-          <i class="fas fa-user"></i>
-        </a>
-        <ul class="dropdown-menu">
-          <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
-          <li><a href="../pets/add-pet.php">Add Pet</a></li>
-          <li><a href="../appointment/book-appointment.php">Book</a></li>
-          <li><a href="../homepage/appointments.php">Appointments</a></li>
-          <li><a href="../ai/templates/index.html">Help Center</a></li>
-          <li><a href="../homepage/logout/logout.php">Logout</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
-
+      <ul class="nav-menu" id="nav-menu">
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-info-circle"></i> About</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-concierge-bell"></i> Services</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-images"></i> Gallery</a></li>
+        <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
+        <li class="nav-item dropdown" id="profile-dropdown">
+          <a href="#" class="nav-link profile-icon active">
+            <i class="fas fa-user"></i>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
+            <li><a href="../pets/add-pet.php">Add Pet</a></li>
+            <li><a href="../appointment/book-appointment.php">Book</a></li>
+            <li><a href="../homepage/appointments.php">Appointments</a></li>
+            <li><a href="../ai/templates/index.html">Help Center</a></li>
+            <li><a href="../homepage/logout/logout.php">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
   <div class="form-wrapper">
     <div class="page-content">
@@ -1571,19 +1522,20 @@ select option:disabled:hover {
             
             <h2>Book Grooming Appointment</h2>
 
-            <form method="POST" action="appointment-handler.php" class="booking-form">
+            <form method="POST" action="appointment-handler.php" class="booking-form" id="bookingForm">
               <input type="hidden" name="pet_id" value="<?= htmlspecialchars($selected_pet_id) ?>">
+              <input type="hidden" name="appointment_date" id="appointment_date_hidden">
 
               <?php if ($recommended_package): ?>
                 <input type="hidden" name="recommended_package" value="<?= htmlspecialchars($recommended_package) ?>">
                 <div class="recommendation-box">
-                  <i class="fas fa-star"></i> Recommended Package for <strong><?= htmlspecialchars($valid_pet['name']) ?></strong>:
-                  <span class="recommend"><?= htmlspecialchars($recommended_package) ?></span>
+                  <i class="fas fa-star"></i> 
+                  <span>Recommended Package for <strong><?= htmlspecialchars($valid_pet['name']) ?></strong>:
+                  <span class="recommend"><?= htmlspecialchars($recommended_package) ?></span></span>
                 </div>
               <?php endif; ?>
               
-
-              <!-- âœ… SERVICE/PACKAGE SELECTION -->
+              <!-- Service/Package Selection -->
               <div class="form-group">
                 <label for="package_id">
                   <i class="fas fa-box"></i> Select Service Package
@@ -1602,67 +1554,103 @@ select option:disabled:hover {
                     </option>
                   <?php endwhile; ?>
                 </select>
-          
+              </div>
+
+              <!-- Groomer Selection -->
               <div class="form-group">
                 <label for="groomer_id">
                    <i class="fas fa-user-md"></i> Select Groomer
                 </label>
                 <select name="groomer_id" id="groomer_id" required>
-                    <option value="">-- Select Groomer --</option>
-                    <?php foreach ($groomers_array as $groomer): ?>
-                      <?php 
-                      // Proper boolean check for PostgreSQL
-                      $is_active = ($groomer['is_active'] === 't' || $groomer['is_active'] === true || $groomer['is_active'] == 1);
-                      ?>
-                      <option 
-                        value="<?= $groomer['groomer_id'] ?>"
-                        <?= !$is_active ? 'disabled' : '' ?>
-                      >
-                        <?= htmlspecialchars($groomer['groomer_name']) ?>
-                        <?= !$is_active ? ' (Offline)' : '' ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
+                  <option value="">-- Select Groomer --</option>
+                  <?php foreach ($groomers_array as $groomer): ?>
+                    <?php 
+                    $is_active = ($groomer['is_active'] === 't' || $groomer['is_active'] === true || $groomer['is_active'] == 1);
+                    ?>
+                    <option 
+                      value="<?= $groomer['groomer_id'] ?>"
+                      <?= !$is_active ? 'disabled' : '' ?>
+                    >
+                      <?= htmlspecialchars($groomer['groomer_name']) ?>
+                      <?= !$is_active ? ' (Offline)' : '' ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
                 
-                <?php if (count($groomers_array) > 0): ?>
-                  <?php 
-                  // Check if there are any active groomers
-                  $has_active_groomer = false;
-                  foreach ($groomers_array as $groomer) {
-                    // PostgreSQL returns 't' for true, 'f' for false
-                     if ($groomer['is_active'] === 't') {
-                      $has_active_groomer = true;
-                      break;
-                    }
+                <?php 
+                $has_active_groomer = false;
+                foreach ($groomers_array as $groomer) {
+                  if ($groomer['is_active'] === 't') {
+                    $has_active_groomer = true;
+                    break;
                   }
-                  ?>
-                  
-                  
-                  <?php if (!$has_active_groomer): ?>
-                    <div style="margin-top: 10px; padding: 12px; background: #fff3cd; border-left: 4px solid #ff9800; border-radius: 8px; color: #856404;">
-                      <i class="fas fa-exclamation-triangle"></i>
-                      All groomers are currently offline. Please try again later or contact support.
-                    </div>
-                  <?php endif; ?>
-                  
-                <?php else: ?>
+                }
+                ?>
+                
+                <?php if (!$has_active_groomer && count($groomers_array) > 0): ?>
+                  <div style="margin-top: 10px; padding: 12px; background: #fff3cd; border-left: 4px solid #ff9800; border-radius: 8px; color: #856404;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    All groomers are currently offline. Please try again later or contact support.
+                  </div>
+                <?php elseif (count($groomers_array) === 0): ?>
                   <div style="margin-top: 10px; padding: 12px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px; color: #721c24;">
                     <i class="fas fa-exclamation-triangle"></i>
                     No groomers are currently available. Please try again later or contact support.
                   </div>
-                  <select name="groomer_id" disabled>
-                    <option>No groomers available</option>
-                  </select>
                 <?php endif; ?>
               </div>
 
+              <!-- Calendar for Date Selection -->
               <div class="form-group">
-                <label for="appointment_date">
-                  <i class="fas fa-calendar-alt"></i> Appointment Date and Time
+                <label>
+                  <i class="fas fa-calendar-alt"></i> Select Appointment Date & Time
                 </label>
-                <input type="text" name="appointment_date" id="appointment_date" class="flatpickr" placeholder="Select date and time" required>
+                
+                <div class="calendar-container">
+                  <div class="calendar-header">
+                    <h3 id="currentMonth"></h3>
+                    <div class="calendar-nav">
+                      <button type="button" id="prevMonth"><i class="fas fa-chevron-left"></i> Prev</button>
+                      <button type="button" id="nextMonth">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                  </div>
+                  
+                  <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated by JavaScript -->
+                  </div>
+
+                  <div class="legend-container">
+                    <div class="legend-title">Availability Legend:</div>
+                    <div class="legend-items">
+                      <div class="legend-item">
+                        <div class="legend-color available"></div>
+                        <span>Available (0-5 bookings)</span>
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-color busy"></div>
+                        <span>Busy (6-10 bookings)</span>
+                      </div>
+                      <div class="legend-item">
+                        <div class="legend-color full"></div>
+                        <span>Very Busy (11+ bookings)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Time Slots Selection -->
+                <div class="time-slots-container" id="timeSlotsContainer">
+                  <div class="time-slots-header">
+                    <i class="fas fa-clock"></i>
+                    <span>Select Time Slot for <span id="selectedDateDisplay"></span></span>
+                  </div>
+                  <div class="time-slots-grid" id="timeSlotsGrid">
+                    <!-- Time slots will be generated by JavaScript -->
+                  </div>
+                </div>
               </div>
-              
+
+              <!-- Special Instructions -->
               <div class="form-group">
                 <label for="notes">
                   <i class="fas fa-sticky-note"></i> Special Instructions (optional)
@@ -1671,20 +1659,19 @@ select option:disabled:hover {
               </div>
 
               <?php
-                  // Check if there's at least one active groomer
-                  $has_active_groomer_for_submit = false;
-                  if (count($groomers_array) > 0) {
-                    foreach ($groomers_array as $g) {
-                      if ($g['is_active'] === 't' || $g['is_active'] === true || $g['is_active'] == 1) {
-                        $has_active_groomer_for_submit = true;
-                        break;
-                      }
-                    }
+              $has_active_groomer_for_submit = false;
+              if (count($groomers_array) > 0) {
+                foreach ($groomers_array as $g) {
+                  if ($g['is_active'] === 't' || $g['is_active'] === true || $g['is_active'] == 1) {
+                    $has_active_groomer_for_submit = true;
+                    break;
                   }
-                  ?>
-                  <button type="submit" class="submit-btn" <?= !$has_active_groomer_for_submit ? 'disabled' : '' ?>>
-                    <i class="fas fa-check-circle"></i> Confirm Appointment
-                  </button>
+                }
+              }
+              ?>
+              <button type="submit" class="submit-btn" id="submitBtn" <?= !$has_active_groomer_for_submit ? 'disabled' : '' ?>>
+                <i class="fas fa-calendar-times"></i> Please Select Date & Time
+              </button>
             </form>
           </div>
         </div>
@@ -1692,240 +1679,388 @@ select option:disabled:hover {
     </div>
   </div>
 
-
   <script>
-   const appointmentCounts = <?= json_encode($appointment_counts) ?>;
-  const MAX_APPOINTMENTS = 5;
+    // Appointment data from PHP
+    const appointmentStats = <?= json_encode($appointment_stats) ?>;
+    const appointmentCounts = <?= json_encode($appointment_counts) ?>;
+    const MAX_APPOINTMENTS_PER_SLOT = 5;
 
-  function getAppointmentCount(date, hour) {
-    const dateStr = date.toISOString().split('T')[0];
-    if (appointmentCounts[dateStr] && appointmentCounts[dateStr][hour] !== undefined) {
-      return appointmentCounts[dateStr][hour];
-    }
-    return 0;
-  }
+    // Calendar variables
+    let currentDate = new Date();
+    let selectedDate = null;
+    let selectedTime = null;
 
-  function isSlotAvailable(date, hour) {
-    const count = getAppointmentCount(date, hour);
-    return count < MAX_APPOINTMENTS;
-  }
-
-      // Update price display when package is selected
-    function updatePriceDisplay() {
-      const packageSelect = document.getElementById('package_id');
-      const priceDisplay = document.getElementById('package-price-display');
-      const selectedPrice = document.getElementById('selected-price');
-      
-      const selectedOption = packageSelect.options[packageSelect.selectedIndex];
-      
-      if (selectedOption.value && selectedOption.dataset.price) {
-        const price = parseFloat(selectedOption.dataset.price);
-        selectedPrice.textContent = 'â‚±' + price.toFixed(2);
-        priceDisplay.style.display = 'block';
-      } else {
-        priceDisplay.style.display = 'none';
-      }
-    }
-  
-  function updateAvailabilityIndicator() {
-    const dateInput = document.getElementById('appointment_date');
-    const submitBtn = document.querySelector('.submit-btn');
-
-    if (!dateInput.value) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
-      return;
-    }
-
-    const selectedDate = new Date(dateInput.value);
-    const hour = selectedDate.getHours();
-    
-    if (hour < 9 || hour > 18) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Outside Business Hours (9 AM - 6 PM Only)';
-      return;
-    }
-    
-    const appointmentCount = getAppointmentCount(selectedDate, hour);
-    const available = isSlotAvailable(selectedDate, hour);
-
-    if (available) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
-    } else {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
-    }
-  }
- document.addEventListener('DOMContentLoaded', function () {
-    const dateInput = document.getElementById('appointment_date');
-    const packageSelect = document.getElementById('package_id'); // ← Moved inside
-    
-    if (dateInput) {
-      dateInput.addEventListener('change', updateAvailabilityIndicator);
-      dateInput.addEventListener('input', updateAvailabilityIndicator);
-
-      const now = new Date();
-      const today = now.toISOString().split('T')[0];
-      dateInput.setAttribute('min', today + 'T09:00');
-      dateInput.setAttribute('max', '2025-12-31T18:00');
-    }
-
-    // Setup package select listener
-    if (packageSelect) {
-      packageSelect.addEventListener('change', updatePriceDisplay);
-      // Trigger on page load if option is pre-selected
-      updatePriceDisplay();
-    }
-
-    // Flatpickr initialization
-    flatpickr("#appointment_date", {
-      enableTime: true,
-      dateFormat: "Y-m-d H:i",
-      minDate: "today",
-      defaultHour: 10,
-      minTime: "09:00",
-      maxTime: "18:00",
-      time_24hr: true,
-      minuteIncrement: 30,
-      allowInput: true,
-      clickOpens: true,
-      onChange: function(selectedDates, dateStr, instance) {
-        updateAvailabilityIndicator();
-      },
-      disable: [
-        function(date) {
-          const hour = date.getHours();
-          const minute = date.getMinutes();
-          
-          if (hour === 0 && minute === 0) {
-            return false;
-          }
-          
-          if (hour < 9 || hour > 18) {
-            return true;
-          }
-          
-          return !isSlotAvailable(date, hour);
-        }
-      ],
-      onDayCreate: function(dObj, dStr, fp, dayElem) {
-        const date = dayElem.dateObj;
-        if (date) {
-          let totalAppointments = 0;
-          let hoursChecked = 0;
-          
-          for (let h = 9; h <= 18; h++) {
-            const testDate = new Date(date);
-            testDate.setHours(h);
-            totalAppointments += getAppointmentCount(testDate, h);
-            hoursChecked++;
-          }
-          
-          const avgAppointments = totalAppointments / hoursChecked;
-          
-          if (avgAppointments >= 4) {
-            dayElem.style.backgroundColor = '#ffebee';
-            dayElem.title = `Busy day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
-          } else if (avgAppointments >= 2) {
-            dayElem.style.backgroundColor = '#fff3e0';
-            dayElem.title = `Moderate day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
-          } else {
-            dayElem.style.backgroundColor = '#e8f5e8';
-            dayElem.title = `Available day - avg ${avgAppointments.toFixed(1)} bookings per hour`;
-          }
-        }
-      }
+    // Initialize calendar on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      generateCalendar();
+      setupEventListeners();
+      setupMobileMenu();
     });
 
-    // Hamburger Menu Toggle
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
-    const navOverlay = document.getElementById('nav-overlay');
-    const profileDropdown = document.getElementById('profile-dropdown');
-
-    hamburger.addEventListener('click', function() {
-      hamburger.classList.toggle('active');
-      navMenu.classList.toggle('active');
-      navOverlay.classList.toggle('active');
-      document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-    });
-
-    navOverlay.addEventListener('click', function() {
-      hamburger.classList.remove('active');
-      navMenu.classList.remove('active');
-      navOverlay.classList.remove('active');
-      profileDropdown.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-
-    document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
-      link.addEventListener('click', function() {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        navOverlay.classList.remove('active');
-        document.body.style.overflow = '';
+    function setupEventListeners() {
+      document.getElementById('prevMonth').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        generateCalendar();
       });
-    });
 
-    profileDropdown.addEventListener('click', function(e) {
-      if (window.innerWidth <= 1024) {
-        if (e.target.closest('.profile-icon')) {
-          e.preventDefault();
-          this.classList.toggle('active');
-        }
-      }
-    });
-
-    document.querySelectorAll('.dropdown-menu a').forEach(link => {
-      link.addEventListener('click', function() {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        navOverlay.classList.remove('active');
-        profileDropdown.classList.remove('active');
-        document.body.style.overflow = '';
+      document.getElementById('nextMonth').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        generateCalendar();
       });
-    });
 
-    window.addEventListener('resize', function() {
-      if (window.innerWidth > 1024) {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        navOverlay.classList.remove('active');
-        profileDropdown.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    });
-  });
-
-// Validate groomer selection on form submit - wrap in DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-  const bookingForm = document.querySelector('.booking-form');
-  
-  if (bookingForm) {
-    bookingForm.addEventListener('submit', function(e) {
-      const groomerSelect = document.getElementById('groomer_id');
-      const packageSelect = document.getElementById('package_id'); // ← FIXED: Changed from 'price_id'
-      
-      // Validate package selection first
-      if (!packageSelect || !packageSelect.value) {
-        e.preventDefault();
-        alert('Please select a service package.');
-        return false;
-      }
-      
-      // Validate groomer selection
-      if (groomerSelect) {
-        const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
-        if (selectedOption && selectedOption.disabled) {
+      // Form submission validation
+      document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        const groomerSelect = document.getElementById('groomer_id');
+        const packageSelect = document.getElementById('package_id');
+        const appointmentDate = document.getElementById('appointment_date_hidden');
+        
+        if (!packageSelect.value) {
           e.preventDefault();
-          alert('Please select an available groomer. The selected groomer is currently offline.');
+          alert('Please select a service package.');
           return false;
         }
+        
+        if (!appointmentDate.value) {
+          e.preventDefault();
+          alert('Please select a date and time for your appointment.');
+          return false;
+        }
+        
+        if (groomerSelect) {
+          const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
+          if (selectedOption && selectedOption.disabled) {
+            e.preventDefault();
+            alert('Please select an available groomer.');
+            return false;
+          }
+        }
+      });
+
+      // Update submit button when package or groomer changes
+      document.getElementById('package_id')?.addEventListener('change', updateSubmitButton);
+      document.getElementById('groomer_id')?.addEventListener('change', updateSubmitButton);
+    }
+
+    function setupMobileMenu() {
+      const hamburger = document.getElementById('hamburger');
+      const navMenu = document.getElementById('nav-menu');
+      const navOverlay = document.getElementById('nav-overlay');
+      const profileDropdown = document.getElementById('profile-dropdown');
+
+      if (hamburger) {
+        hamburger.addEventListener('click', function() {
+          hamburger.classList.toggle('active');
+          navMenu.classList.toggle('active');
+          navOverlay.classList.toggle('active');
+          document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        });
       }
-    });
-  }
-});
-</script>
+
+      if (navOverlay) {
+        navOverlay.addEventListener('click', function() {
+          hamburger.classList.remove('active');
+          navMenu.classList.remove('active');
+          navOverlay.classList.remove('active');
+          profileDropdown.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      }
+
+      document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+        link.addEventListener('click', function() {
+          if (window.innerWidth <= 1024) {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+        });
+      });
+
+      if (profileDropdown) {
+        profileDropdown.addEventListener('click', function(e) {
+          if (window.innerWidth <= 1024) {
+            if (e.target.closest('.profile-icon')) {
+              e.preventDefault();
+              this.classList.toggle('active');
+            }
+          }
+        });
+      }
+
+      document.querySelectorAll('.dropdown-menu a').forEach(link => {
+        link.addEventListener('click', function() {
+          if (window.innerWidth <= 1024) {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            navOverlay.classList.remove('active');
+            profileDropdown.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+        });
+      });
+
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 1024) {
+          hamburger.classList.remove('active');
+          navMenu.classList.remove('active');
+          navOverlay.classList.remove('active');
+          profileDropdown.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    }
+
+    function generateCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      // Update month display
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+      document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+      
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+      
+      // Add day headers
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      days.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+      });
+      
+      // Get first day of month and number of days
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Get previous month's last days for filling
+      const prevMonth = month === 0 ? 11 : month - 1;
+      const prevYear = month === 0 ? year - 1 : year;
+      const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
+      
+      // Add previous month's days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day other-month';
+        const dayNum = document.createElement('div');
+        dayNum.className = 'day-number';
+        dayNum.textContent = daysInPrevMonth - i;
+        emptyDay.appendChild(dayNum);
+        grid.appendChild(emptyDay);
+      }
+      
+      // Add days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDate = new Date(year, month, day);
+        dayDate.setHours(0, 0, 0, 0);
+        
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        
+        // Check if date is in the past
+        if (dayDate < today) {
+          dayElement.classList.add('disabled');
+        }
+        
+        // Check if it's today
+        if (dayDate.getTime() === today.getTime()) {
+          dayElement.classList.add('today');
+        }
+        
+        // Check if this date is selected
+        if (selectedDate && dayDate.getTime() === selectedDate.getTime()) {
+          dayElement.classList.add('selected');
+        }
+        
+        // Day number
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = day;
+        dayElement.appendChild(dayNumber);
+        
+        // Get appointment count for this date
+        const dateStr = dayDate.toISOString().split('T')[0];
+        const stats = appointmentStats[dateStr];
+        
+        if (stats && dayDate >= today) {
+          const indicator = document.createElement('div');
+          indicator.className = 'day-indicator';
+          
+          if (stats.total <= 5) {
+            indicator.classList.add('available');
+            indicator.textContent = `${stats.total} apt${stats.total !== 1 ? 's' : ''}`;
+          } else if (stats.total <= 10) {
+            indicator.classList.add('busy');
+            indicator.textContent = `${stats.total} apts`;
+          } else {
+            indicator.classList.add('full');
+            indicator.textContent = `${stats.total} apts`;
+          }
+          
+          dayElement.appendChild(indicator);
+        } else if (dayDate >= today) {
+          const indicator = document.createElement('div');
+          indicator.className = 'day-indicator available';
+          indicator.textContent = 'Open';
+          dayElement.appendChild(indicator);
+        }
+        
+        // Add click handler if not disabled
+        if (!dayElement.classList.contains('disabled')) {
+          dayElement.addEventListener('click', () => selectDate(dayDate, dayElement));
+        }
+        
+        grid.appendChild(dayElement);
+      }
+      
+      // Add next month's days to fill the grid
+      const totalCells = grid.children.length - 7; // Subtract day headers
+      const remainingCells = 42 - totalCells; // 6 rows * 7 days
+      for (let day = 1; day <= remainingCells; day++) {
+        const nextDay = document.createElement('div');
+        nextDay.className = 'calendar-day other-month';
+        const dayNum = document.createElement('div');
+        dayNum.className = 'day-number';
+        dayNum.textContent = day;
+        nextDay.appendChild(dayNum);
+        grid.appendChild(nextDay);
+      }
+    }
+
+    function selectDate(date, element) {
+      selectedDate = date;
+      selectedTime = null;
+      
+      // Remove previous selection
+      document.querySelectorAll('.calendar-day.selected').forEach(el => {
+        el.classList.remove('selected');
+      });
+      
+      // Add selection to clicked element
+      element.classList.add('selected');
+      
+      // Show time slots
+      showTimeSlots(date);
+      
+      // Update submit button
+      updateSubmitButton();
+    }
+
+    function showTimeSlots(date) {
+      const container = document.getElementById('timeSlotsContainer');
+      const grid = document.getElementById('timeSlotsGrid');
+      const dateDisplay = document.getElementById('selectedDateDisplay');
+      
+      container.classList.add('show');
+      
+      // Format date for display
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateDisplay.textContent = date.toLocaleDateString('en-US', options);
+      
+      // Clear previous time slots
+      grid.innerHTML = '';
+      
+      const dateStr = date.toISOString().split('T')[0];
+      const hourCounts = appointmentCounts[dateStr] || {};
+      
+      // Generate time slots from 9 AM to 6 PM (30-minute intervals)
+      for (let hour = 9; hour <= 18; hour++) {
+        for (let minute = 0; minute < 60; minute += 30) {
+          // Skip 6:30 PM and later
+          if (hour === 18 && minute > 0) continue;
+          
+          const timeSlot = document.createElement('div');
+          timeSlot.className = 'time-slot';
+          
+          const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+          const displayTime = formatTime(hour, minute);
+          
+          const timeDiv = document.createElement('div');
+          timeDiv.textContent = displayTime;
+          timeSlot.appendChild(timeDiv);
+          
+          // Check appointment count for this hour
+          const count = hourCounts[hour] || 0;
+          
+          if (count >= MAX_APPOINTMENTS_PER_SLOT) {
+            timeSlot.classList.add('disabled');
+            const badge = document.createElement('div');
+            badge.className = 'time-slot-badge full';
+            badge.textContent = 'Full';
+            timeSlot.appendChild(badge);
+          } else {
+            const badge = document.createElement('div');
+            badge.className = 'time-slot-badge available';
+            badge.textContent = `${MAX_APPOINTMENTS_PER_SLOT - count} left`;
+            timeSlot.appendChild(badge);
+            
+            // Add click handler
+            timeSlot.addEventListener('click', () => selectTimeSlot(date, timeString, timeSlot));
+          }
+          
+          grid.appendChild(timeSlot);
+        }
+      }
+      
+      // Scroll to time slots smoothly
+      setTimeout(() => {
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    function selectTimeSlot(date, time, element) {
+      selectedTime = time;
+      
+      // Remove previous selection
+      document.querySelectorAll('.time-slot.selected').forEach(el => {
+        el.classList.remove('selected');
+      });
+      
+      // Add selection to clicked element
+      element.classList.add('selected');
+      
+      // Create full datetime string
+      const dateStr = date.toISOString().split('T')[0];
+      const fullDateTime = `${dateStr} ${time}:00`;
+      
+      // Update hidden input
+      document.getElementById('appointment_date_hidden').value = fullDateTime;
+      
+      // Enable submit button
+      updateSubmitButton();
+    }
+
+    function formatTime(hour, minute) {
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+      return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+    }
+
+    function updateSubmitButton() {
+      const submitBtn = document.getElementById('submitBtn');
+      const appointmentDate = document.getElementById('appointment_date_hidden').value;
+      const packageSelect = document.getElementById('package_id').value;
+      const groomerSelect = document.getElementById('groomer_id').value;
+      
+      if (appointmentDate && packageSelect && groomerSelect) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Appointment';
+      } else {
+        submitBtn.disabled = true;
+        if (!packageSelect) {
+          submitBtn.innerHTML = '<i class="fas fa-box-open"></i> Please Select Package';
+        } else if (!groomerSelect) {
+          submitBtn.innerHTML = '<i class="fas fa-user-times"></i> Please Select Groomer';
+        } else if (!appointmentDate) {
+          submitBtn.innerHTML = '<i class="fas fa-calendar-times"></i> Please Select Date & Time';
+        }
+      }
+    }
+  </script>
 </body>
 </html>
