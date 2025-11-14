@@ -104,24 +104,24 @@ if ($selected_pet_id) {
     
     // Debug query result
     if ($valid_pet) {
-        error_log("✓ Pet found: " . $valid_pet['name']);
+        error_log("Pet found: " . $valid_pet['name']);
         
         // CRITICAL: Verify pet has required size information
         if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
             $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
-            error_log("✗ Pet missing required info:");
+            error_log("Pet missing required info:");
             error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
             error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
             error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
             
-            $_SESSION['error'] = "⚠️ {$pet_name} is missing size information. Please update the pet profile first.";
+            $_SESSION['error'] = "{$pet_name} is missing size information. Please update the pet profile first.";
             header("Location: ../pets/pet-profile.php");
             exit;
         }
         
-        error_log("✓ Pet validation PASSED");
+        error_log("Pet validation PASSED");
     } else {
-        error_log("✗ No pet found with query");
+        error_log("No pet found with query");
         
         // Check if pet exists at all
         $pet_exists_check = pg_query_params(
