@@ -27,7 +27,7 @@ if ($is_active === 't' || $is_active === 'true' || $is_active === true) {
     $is_active = false;
 }
 
-// Fetch ONLY confirmed appointments for THIS groomer - FIXED: Added explicit type casting
+// Fetch ONLY confirmed appointments for THIS groomer - FIXED: Added explicit type casting for all joins
 $query = "
     SELECT 
         a.appointment_id,
@@ -42,7 +42,7 @@ $query = "
     FROM appointments a
     JOIN packages p ON a.package_id::text = p.package_id
     JOIN pets pet ON a.pet_id = pet.pet_id
-    JOIN users u ON pet.user_id = u.user_id
+    JOIN users u ON pet.user_id::text = u.user_id
     WHERE a.status = 'confirmed'
       AND a.groomer_id = $1
     ORDER BY a.appointment_date ASC
