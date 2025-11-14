@@ -3,7 +3,7 @@ session_start();
 require '../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pet_id = intval($_POST['pet_id']);
+    $pet_id = ($_POST['pet_id']);
     $name = trim($_POST['name'] ?? '');
     $breed = trim($_POST['breed'] ?? '');
     $age = !empty($_POST['age']) ? floatval($_POST['age']) : null;

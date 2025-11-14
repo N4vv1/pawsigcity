@@ -8,14 +8,13 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$selected_pet_id = isset($_GET['pet_id']) ? intval($_GET['pet_id']) : null;
-$package_id = isset($_GET['package_id']) ? intval($_GET['package_id']) : null;
+$package_id = isset($_GET['package_id']) ? ($_GET['package_id']) : null;
 
 // âœ… Fetch user's pets securely
 $pets_result = pg_query_params(
     $conn,
     "SELECT * FROM pets WHERE user_id = $1",
-    [$user_id]
+    [(string)$user_id]
 );
 
 $recommended_package = null;
@@ -59,6 +58,14 @@ $groomers_query = "
     ORDER BY is_active DESC, groomer_name ASC
 ";
 
+if (!$valid_pet) {
+    error_log("Pet ID: " . $selected_pet_id . " | User ID: " . $user_id);
+    error_log("Query result: " . print_r($valid_pet, true));
+    $_SESSION['error'] = "Invalid pet selection or unauthorized access.";
+    header("Location: book-appointment.php");
+    exit;
+}
+
 $groomers_result = pg_query($conn, $groomers_query);
 
 if (!$groomers_result) {
@@ -72,17 +79,26 @@ while ($groomer = pg_fetch_assoc($groomers_result)) {
 }
 
 
-// âœ… Check pet ownership if selected
+// ✅ Check pet ownership if selected
 if ($selected_pet_id) {
+    // Cast to string to ensure text comparison
+    $selected_pet_id = (string)$selected_pet_id;
+    
     $pet_check = pg_query_params(
         $conn,
         "SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2",
-        [$selected_pet_id, $user_id]
+        [$selected_pet_id, (string)$user_id]
     );
+    
+    if (!$pet_check) {
+        die("Database error: " . pg_last_error($conn));
+    }
+    
     $valid_pet = pg_fetch_assoc($pet_check);
 
     if (!$valid_pet) {
-        echo "<p style='text-align:center;color:red;'>Invalid pet selection.</p>";
+        $_SESSION['error'] = "Invalid pet selection or unauthorized access.";
+        header("Location: book-appointment.php");
         exit;
     }
 
@@ -145,10 +161,10 @@ if ($selected_pet_id) {
         SELECT pp.price_id, pp.package_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
         FROM package_prices pp
         JOIN packages p ON pp.package_id = p.package_id
-        WHERE pp.species = $1 
-        AND pp.size = $2
-        AND pp.min_weight <= $3 
-        AND pp.max_weight >= $3
+        WHERE pp.species = $1::text 
+        AND pp.size = $2::text
+        AND pp.min_weight <= $3::numeric 
+        AND pp.max_weight >= $3::numeric
         ORDER BY p.name, pp.price
     ", [$valid_pet['species'], $valid_pet['size'], $valid_pet['weight']]);
 
@@ -1654,7 +1670,7 @@ select option:disabled:hover {
 
       // Update price display when package is selected
     function updatePriceDisplay() {
-      const packageSelect = document.getElementById('price_id');
+      const packageSelect = document.getElementById('package_id');
       const priceDisplay = document.getElementById('package-price-display');
       const selectedPrice = document.getElementById('selected-price');
       
@@ -1699,9 +1715,10 @@ select option:disabled:hover {
       submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
     }
   }
-  const packageSelect = document.getElementById('price_id');
-  document.addEventListener('DOMContentLoaded', function () {
+ document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('appointment_date');
+    const packageSelect = document.getElementById('package_id'); // ← Moved inside
+    
     if (dateInput) {
       dateInput.addEventListener('change', updateAvailabilityIndicator);
       dateInput.addEventListener('input', updateAvailabilityIndicator);
@@ -1710,13 +1727,13 @@ select option:disabled:hover {
       const today = now.toISOString().split('T')[0];
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
+    }
 
-
-       if (packageSelect) {
-    packageSelect.addEventListener('change', updatePriceDisplay);
-    // Trigger on page load if option is pre-selected
-    updatePriceDisplay();
-  }
+    // Setup package select listener
+    if (packageSelect) {
+      packageSelect.addEventListener('change', updatePriceDisplay);
+      // Trigger on page load if option is pre-selected
+      updatePriceDisplay();
     }
 
     // Flatpickr initialization
@@ -1838,23 +1855,33 @@ select option:disabled:hover {
       }
     });
   });
-// Validate groomer selection on form submit
-document.querySelector('.booking-form').addEventListener('submit', function(e) {
-  const groomerSelect = document.getElementById('groomer_id');
-  const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
-  
-  if (selectedOption.disabled) {
-    e.preventDefault();
-    alert('Please select an available groomer. The selected groomer is currently offline.');
-    return false;
-  }
 
-  // Validate package selection
-  const packageSelect = document.getElementById('price_id');
-  if (!packageSelect.value) {
-    e.preventDefault();
-    alert('Please select a service package.');
-    return false;
+// Validate groomer selection on form submit - wrap in DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  const bookingForm = document.querySelector('.booking-form');
+  
+  if (bookingForm) {
+    bookingForm.addEventListener('submit', function(e) {
+      const groomerSelect = document.getElementById('groomer_id');
+      const packageSelect = document.getElementById('package_id'); // ← FIXED: Changed from 'price_id'
+      
+      // Validate package selection first
+      if (!packageSelect || !packageSelect.value) {
+        e.preventDefault();
+        alert('Please select a service package.');
+        return false;
+      }
+      
+      // Validate groomer selection
+      if (groomerSelect) {
+        const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
+        if (selectedOption && selectedOption.disabled) {
+          e.preventDefault();
+          alert('Please select an available groomer. The selected groomer is currently offline.');
+          return false;
+        }
+      }
+    });
   }
 });
 </script>
