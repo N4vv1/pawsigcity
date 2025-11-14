@@ -128,7 +128,7 @@ html {
 }
 
 section[id] {
-  scroll-margin-top: 100px;
+  scroll-margin-top: 30px;
 }
 
 /* Don't add extra padding to hero section */
@@ -2061,7 +2061,9 @@ section[id] {
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
           <p class="text">
-            PAWsig City is a pet grooming shop committed to providing quality, gentle, and professional grooming services for pets of all shapes and sizes. We believe that every pet deserves to feel clean, happy, and loved — and every pet owner deserves a hassle-free booking experience.
+            PAWsig City is a dedicated pet grooming shop that focuses on giving pets a comfortable, gentle, and high-quality grooming experience. Our team understands that every pet is unique, so we make sure to handle each one with care, patience, and professionalism. Whether it’s a simple bath, a full grooming session, or a special treatment, we aim to help pets look good, feel good, and stay healthy.
+
+We also want to make things easier for pet owners. That’s why we offer a smooth and hassle-free appointment system, so you can book your pet’s grooming session anytime without stress. At PAWsig City, our goal is not just to groom pets but to build trust with owners and create a friendly, safe environment where pets are always treated with love
           </p>
           <div class="social-link-list">
             <a href="https://www.facebook.com/pawsigcity" class="social-link"><i class="fa-brands fa-facebook"></i></a>
