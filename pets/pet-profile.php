@@ -1807,7 +1807,7 @@ if (!$pets) {
 
             <!-- User Edit Form -->
             <div id="user-edit-form" class="edit-form">
-              <form action="user-edit-handler.php" method="POST">
+              <form action="user-edit-handler.php" method="POST" onsubmit="return handleUserEdit(event);">
                 <input type="hidden" name="user_id" value="<?= $user['user_id'] ?>">
                 <div class="form-grid">
                   <div class="form-group">
