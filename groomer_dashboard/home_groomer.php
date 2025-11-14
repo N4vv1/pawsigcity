@@ -10,9 +10,9 @@ if (!isset($_SESSION['groomer_id'])) {
 
 $groomer_id = $_SESSION['groomer_id'];
 
-// Get groomer's current status - FIXED: Changed 'groomer' to 'groomers' table
+// Get groomer's current status
 $status_query = pg_query_params($conn, "
-    SELECT is_active, last_active s
+    SELECT is_active, last_active
     FROM groomer
     WHERE groomer_id = $1
 ", [$groomer_id]);
@@ -27,7 +27,7 @@ if ($is_active === 't' || $is_active === 'true' || $is_active === true) {
     $is_active = false;
 }
 
-// Fetch ONLY confirmed appointments for THIS groomer - FIXED: Added proper groomer_id filter
+// Fetch ONLY confirmed appointments for THIS groomer - FIXED: Added explicit type casting
 $query = "
     SELECT 
         a.appointment_id,
@@ -40,7 +40,7 @@ $query = "
         u.first_name,
         u.last_name
     FROM appointments a
-    JOIN packages p ON a.package_id = p.package_id
+    JOIN packages p ON a.package_id::text = p.package_id
     JOIN pets pet ON a.pet_id = pet.pet_id
     JOIN users u ON pet.user_id = u.user_id
     WHERE a.status = 'confirmed'
@@ -71,6 +71,8 @@ if (!$result) {
       --secondary-color: #FFE29D;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
+      --edit-color: #4CAF50;
+      --delete-color: #F44336;
       --font-size-s: 0.9rem;
       --font-size-n: 1rem;
       --font-size-l: 1.5rem;
@@ -94,6 +96,88 @@ if (!$result) {
     body {
       background: var(--light-pink-color);
       display: flex;
+      min-height: 100vh;
+    }
+
+    /* TOAST NOTIFICATION */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      padding: 16px 24px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 400px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      animation: slideInToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      opacity: 0;
+    }
+
+    @keyframes slideInToast {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOutToast {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .toast.hide {
+      animation: slideOutToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
+    .toast-success {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+    }
+
+    .toast-error {
+      background: linear-gradient(135deg, #F44336 0%, #e53935 100%);
+      color: white;
+    }
+
+    .toast i {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .toast-message {
+      flex: 1;
+    }
+
+    .toast-close {
+      cursor: pointer;
+      font-size: 20px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toast-close:hover {
+      opacity: 1;
     }
 
     .mobile-menu-btn {
@@ -171,7 +255,7 @@ if (!$result) {
       background: rgba(255, 255, 255, 0.9);
       padding: 20px;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
@@ -180,6 +264,7 @@ if (!$result) {
       font-size: 0.95rem;
       color: var(--dark-color);
       text-align: center;
+      font-weight: 600;
     }
 
     .toggle-container {
@@ -258,7 +343,7 @@ if (!$result) {
       padding: 10px 12px;
       text-decoration: none;
       color: var(--dark-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 14px;
       transition: background 0.3s, color 0.3s;
       font-weight: var(--font-weight-semi-bold);
     }
@@ -288,87 +373,93 @@ if (!$result) {
       transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
-    h2 {
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
       font-size: var(--font-size-xl);
       color: var(--dark-color);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    /* TABLE SECTION */
+    .table-section {
+      background: var(--white-color);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      overflow-x: auto;
+    }
+
+    .table-section h2 {
+      font-size: 1.3rem;
       margin-bottom: 25px;
-    }
-
-    .alert {
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 500;
-    }
-
-    .alert-success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .alert-error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      color: var(--dark-color);
+      font-weight: 600;
     }
 
     table {
       width: 100%;
+      min-width: 900px;
       border-collapse: collapse;
-      background-color: var(--white-color);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     th, td {
-      padding: 14px 10px;
-      border: 1px solid var(--medium-gray-color);
-      text-align: center;
+      padding: 15px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
     }
 
     th {
-      background: var(--primary-color);
-      font-weight: var(--font-weight-bold);
+      background-color: #fafafa;
       color: var(--dark-color);
+      font-weight: 600;
+      font-size: 0.9rem;
+      position: sticky;
+      top: 0;
     }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    tr:hover {
-      background-color: #ffe29d33;
+    tbody tr:hover {
+      background-color: #fafafa;
     }
 
     .action-btn {
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 6px 14px;
+      font-size: 0.85rem;
       font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--edit-color);
     }
 
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    .action-btn:hover:not(:disabled) {
+      background: var(--edit-color);
+      color: var(--white-color);
     }
 
     .action-btn:disabled {
-      background: #ccc;
+      background: #e0e0e0;
+      color: #999;
       cursor: not-allowed;
-      transform: none;
+      opacity: 0.6;
     }
 
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
+      padding: 80px 20px;
       color: #666;
     }
 
@@ -376,6 +467,18 @@ if (!$result) {
       font-size: 80px;
       color: #ddd;
       margin-bottom: 20px;
+      display: block;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      color: var(--dark-color);
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      color: #999;
     }
 
     /* Password Modal */
@@ -389,6 +492,8 @@ if (!$result) {
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       animation: fadeIn 0.3s;
+      align-items: center;
+      justify-content: center;
     }
 
     @keyframes fadeIn {
@@ -398,13 +503,13 @@ if (!$result) {
 
     .modal-content {
       background-color: white;
-      margin: 15% auto;
       padding: 30px;
       border-radius: 12px;
       width: 90%;
       max-width: 400px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
       animation: slideDown 0.3s;
+      position: relative;
     }
 
     @keyframes slideDown {
@@ -434,6 +539,7 @@ if (!$result) {
     .modal-header h3 {
       margin: 0;
       font-size: 1.3rem;
+      font-weight: 600;
     }
 
     .modal-body {
@@ -529,6 +635,17 @@ if (!$result) {
       display: block;
     }
 
+    @media screen and (max-width: 1024px) {
+      table {
+        font-size: 0.85rem;
+        min-width: 800px;
+      }
+
+      th, td {
+        padding: 12px 10px;
+      }
+    }
+
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -548,12 +665,78 @@ if (!$result) {
         padding: 80px 20px 40px;
       }
 
+      .header h1 {
+        font-size: 1.6rem;
+      }
+
+      .table-section {
+        padding: 20px;
+      }
+
       table {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+        min-width: 700px;
       }
 
       th, td {
         padding: 10px 8px;
+      }
+
+      .toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        min-width: auto;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 25px;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .content {
+        padding: 70px 10px 30px;
+      }
+
+      .sidebar .logo img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .menu a {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+
+      .header h1 {
+        font-size: 1.4rem;
+      }
+
+      table {
+        font-size: 0.75rem;
+        min-width: 650px;
+      }
+
+      th, td {
+        padding: 8px 5px;
+      }
+
+      .modal-content {
+        padding: 20px 15px;
+      }
+
+      .modal-header h3 {
+        font-size: 1.1rem;
+      }
+
+      .modal-footer {
+        flex-direction: column;
+      }
+
+      .modal-footer button {
+        width: 100%;
       }
     }
   </style>
@@ -571,7 +754,7 @@ if (!$result) {
     <img src="../homepage/images/pawsig.png" alt="Logo" />
   </div>
 
-  <!-- Status Toggle - FIXED: Proper checked state from database -->
+  <!-- Status Toggle -->
   <div class="status-toggle">
     <h4>Availability Status</h4>
     <div class="toggle-container">
@@ -597,47 +780,53 @@ if (!$result) {
 </aside>
 
 <main class="content">
-  <h2>My Confirmed Appointments</h2>
-
-  <div id="alertContainer"></div>
+  <div class="header">
+    <h1>My Confirmed Appointments</h1>
+    <p>View and manage your upcoming grooming sessions</p>
+  </div>
 
   <?php if (pg_num_rows($result) == 0): ?>
-    <div class="empty-state">
-      <i class='bx bx-calendar-x'></i>
-      <h3>No Confirmed Appointments</h3>
-      <p>You don't have any confirmed appointments yet</p>
+    <div class="table-section">
+      <div class="empty-state">
+        <i class='bx bx-calendar-x'></i>
+        <h3>No Confirmed Appointments</h3>
+        <p>You don't have any confirmed appointments yet</p>
+      </div>
     </div>
   <?php else: ?>
-    <table>
-      <thead>
-        <tr>
-          <th>Appointment ID</th>
-          <th>Date</th>
-          <th>Package</th>
-          <th>Pet Name</th>
-          <th>Breed</th>
-          <th>Customer</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php while ($row = pg_fetch_assoc($result)): ?>
-          <tr id="row-<?= $row['appointment_id'] ?>">
-            <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-            <td><?= htmlspecialchars(date('M d, Y h:i A', strtotime($row['appointment_date']))) ?></td>
-            <td><?= htmlspecialchars($row['package_name']) ?></td>
-            <td><?= htmlspecialchars($row['pet_name']) ?></td>
-            <td><?= htmlspecialchars($row['pet_breed']) ?></td>
-            <td><?= htmlspecialchars($row['username']) ?></td>
-            <td>
-              <button class="action-btn" onclick="completeAppointment(<?= $row['appointment_id'] ?>)">
-                <i class='bx bx-check'></i> Complete
-              </button>
-            </td>
+    <div class="table-section">
+      <h2>Appointment List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Appointment ID</th>
+            <th>Date</th>
+            <th>Package</th>
+            <th>Pet Name</th>
+            <th>Breed</th>
+            <th>Customer</th>
+            <th>Action</th>
           </tr>
-        <?php endwhile; ?>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <?php while ($row = pg_fetch_assoc($result)): ?>
+            <tr id="row-<?= $row['appointment_id'] ?>">
+              <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+              <td><?= htmlspecialchars(date('M d, Y h:i A', strtotime($row['appointment_date']))) ?></td>
+              <td><?= htmlspecialchars($row['package_name']) ?></td>
+              <td><?= htmlspecialchars($row['pet_name']) ?></td>
+              <td><?= htmlspecialchars($row['pet_breed']) ?></td>
+              <td><?= htmlspecialchars($row['username']) ?></td>
+              <td>
+                <button class="action-btn" onclick="completeAppointment(<?= $row['appointment_id'] ?>)">
+                  <i class='bx bx-check'></i> Complete
+                </button>
+              </td>
+            </tr>
+          <?php endwhile; ?>
+        </tbody>
+      </table>
+    </div>
   <?php endif; ?>
 </main>
 
@@ -666,6 +855,44 @@ if (!$result) {
 </div>
 
 <script>
+function showToast(message, type = 'success') {
+  const existingToasts = document.querySelectorAll('.toast');
+  existingToasts.forEach(toast => toast.remove());
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  const icon = type === 'success' ? 'bx-check-circle' : 'bx-error-circle';
+  
+  toast.innerHTML = `
+    <i class='bx ${icon}'></i>
+    <span class="toast-message">${message}</span>
+    <i class='bx bx-x toast-close' onclick="closeToast(this)"></i>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  
+  setTimeout(() => {
+    hideToast(toast);
+  }, 4000);
+}
+
+function hideToast(toast) {
+  toast.classList.add('hide');
+  setTimeout(() => {
+    toast.remove();
+  }, 400);
+}
+
+function closeToast(closeBtn) {
+  const toast = closeBtn.closest('.toast');
+  hideToast(toast);
+}
+
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
@@ -690,7 +917,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Status Toggle Handler - FIXED: Proper state management with password verification
+// Status Toggle Handler
 const statusToggle = document.getElementById('statusToggle');
 const statusLabel = document.getElementById('statusLabel');
 const passwordModal = document.getElementById('passwordModal');
@@ -702,8 +929,7 @@ statusToggle.addEventListener('change', function() {
   
   // If going offline, require password
   if (!isActive) {
-    // Show password modal
-    passwordModal.style.display = 'block';
+    passwordModal.style.display = 'flex';
     adminPasswordInput.value = '';
     passwordError.classList.remove('show');
     adminPasswordInput.focus();
@@ -751,11 +977,9 @@ function verifyPassword() {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      // Password correct - proceed to go offline
       passwordModal.style.display = 'none';
       updateStatus(false);
     } else {
-      // Password incorrect
       passwordError.textContent = data.message || 'Incorrect password. Please try again.';
       passwordError.classList.add('show');
       adminPasswordInput.value = '';
@@ -796,16 +1020,16 @@ function updateStatus(isActive) {
     if (data.success) {
       statusLabel.textContent = isActive ? 'Online' : 'Offline';
       statusLabel.className = 'status-label ' + (isActive ? 'active' : 'inactive');
-      showAlert('Status updated successfully!', 'success');
+      showToast('Status updated successfully!', 'success');
     } else {
-      showAlert('Failed to update status', 'error');
+      showToast('Failed to update status', 'error');
       // Revert toggle if failed
       statusToggle.checked = !isActive;
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    showAlert('Error updating status', 'error');
+    showToast('Error updating status', 'error');
     // Revert toggle if error
     statusToggle.checked = !isActive;
   });
@@ -831,7 +1055,7 @@ function completeAppointment(appointmentId) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      showAlert('Appointment completed successfully!', 'success');
+      showToast('Appointment completed successfully!', 'success');
       document.getElementById('row-' + appointmentId).remove();
       
       // Check if table is empty
@@ -840,33 +1064,17 @@ function completeAppointment(appointmentId) {
         location.reload();
       }
     } else {
-      showAlert(data.message || 'Failed to complete appointment', 'error');
+      showToast(data.message || 'Failed to complete appointment', 'error');
       button.disabled = false;
       button.innerHTML = '<i class="bx bx-check"></i> Complete';
     }
   })
   .catch(error => {
     console.error('Error:', error);
-    showAlert('Error completing appointment', 'error');
+    showToast('Error completing appointment', 'error');
     button.disabled = false;
     button.innerHTML = '<i class="bx bx-check"></i> Complete';
   });
-}
-
-function showAlert(message, type) {
-  const alertContainer = document.getElementById('alertContainer');
-  const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
-  const icon = type === 'success' ? 'bx-check-circle' : 'bx-error-circle';
-  
-  const alertDiv = document.createElement('div');
-  alertDiv.className = `alert ${alertClass}`;
-  alertDiv.innerHTML = `<i class='bx ${icon}'></i>${message}`;
-  
-  alertContainer.appendChild(alertDiv);
-  
-  setTimeout(() => {
-    alertDiv.remove();
-  }, 3000);
 }
 </script>
 
