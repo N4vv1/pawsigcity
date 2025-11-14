@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+$selected_pet_id = isset($_GET['pet_id']) ? $_GET['pet_id'] : null;
 $package_id = isset($_GET['package_id']) ? ($_GET['package_id']) : null;
 
 // âœ… Fetch user's pets securely
