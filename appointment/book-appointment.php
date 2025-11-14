@@ -174,11 +174,8 @@ if ($selected_pet_id) {
     
     error_log("✓ Pet validation PASSED");
     error_log("=== PET VALIDATION END ===");
-    
-    // ... rest of your API call code ...
-}
 
-    // API call for package recommendation
+    // ✅ API call for package recommendation - INSIDE THE IF BLOCK
     $api_url = "https://pawsigcity-1.onrender.com/recommend";
     $payload = json_encode([
         "breed" => $valid_pet['breed'],
@@ -188,7 +185,7 @@ if ($selected_pet_id) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Add timeout
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
     $response = curl_exec($ch);
     $curl_error = curl_error($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -244,6 +241,8 @@ if ($selected_pet_id) {
     }
     
     error_log("Found " . pg_num_rows($packages_result) . " matching packages");
+
+} // ✅ THIS IS WHERE THE IF BLOCK SHOULD END
 ?>
 
 <!DOCTYPE html>
