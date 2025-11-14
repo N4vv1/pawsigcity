@@ -1850,7 +1850,7 @@ select option:disabled:hover {
 // Validate groomer selection on form submit
 document.querySelector('.booking-form').addEventListener('submit', function(e) {
   const groomerSelect = document.getElementById('groomer_id');
-  const packageSelect = document.getElementById('package_id'); // ← FIXED: Changed to 'package_id'
+  const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
   
   if (selectedOption.disabled) {
     e.preventDefault();
