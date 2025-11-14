@@ -1164,8 +1164,7 @@ if (!empty($search)) {
 
 <div class="container">
 
-    <!-- Add this right after opening <div class="container"> -->
-  <!-- Add this right after opening <div class="container"> -->
+<!-- Add this right after opening <div class="container"> -->
 <?php if (isset($_SESSION['success'])): ?>
   <div class="alert-message success" id="successMessage">
     <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
@@ -1179,6 +1178,79 @@ if (!empty($search)) {
     <span><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></span>
   </div>
 <?php endif; ?>
+
+<!-- ✅ ADD THIS SEARCH & FILTER SECTION HERE -->
+  <div class="search-filter-container" style="background: #fff; padding: 24px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 30px;">
+    <form method="GET" action="" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+      
+      <!-- Search Input -->
+      <div style="flex: 1; min-width: 250px;">
+        <label style="display: block; font-size: 13px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600;">
+          <i class="fas fa-search" style="color: #A8E6CF; margin-right: 6px;"></i>Search
+        </label>
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Search by pet or service name..." 
+          value="<?= htmlspecialchars($search) ?>"
+          style="width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: all 0.3s ease;"
+          onfocus="this.style.borderColor='#A8E6CF'; this.style.boxShadow='0 0 0 3px rgba(168, 230, 207, 0.1)';"
+          onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
+      </div>
+
+      <!-- Status Filter -->
+      <div style="flex: 0 0 200px; min-width: 180px;">
+        <label style="display: block; font-size: 13px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600;">
+          <i class="fas fa-filter" style="color: #A8E6CF; margin-right: 6px;"></i>Status
+        </label>
+        <select 
+          name="status" 
+          style="width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; cursor: pointer; transition: all 0.3s ease; background: white;"
+          onfocus="this.style.borderColor='#A8E6CF'; this.style.boxShadow='0 0 0 3px rgba(168, 230, 207, 0.1)';"
+          onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
+          <option value="">All Status</option>
+          <option value="pending" <?= $status_filter === 'pending' ? 'selected' : '' ?>>Pending</option>
+          <option value="approved" <?= $status_filter === 'approved' ? 'selected' : '' ?>>Approved</option>
+          <option value="completed" <?= $status_filter === 'completed' ? 'selected' : '' ?>>Completed</option>
+          <option value="cancelled" <?= $status_filter === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 10px;">
+        <button 
+          type="submit" 
+          class="button" 
+          style="padding: 12px 24px; white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-search"></i> Filter
+        </button>
+        
+        <?php if (!empty($search) || !empty($status_filter)): ?>
+          <a 
+            href="appointments.php" 
+            class="button" 
+            style="padding: 12px 24px; background: #e0e0e0; color: #2c3e50; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-decoration: none;">
+            <i class="fas fa-times"></i> Reset
+          </a>
+        <?php endif; ?>
+      </div>
+    </form>
+
+    <!-- Results Info -->
+    <?php if (!empty($search) || !empty($status_filter)): ?>
+      <div style="margin-top: 16px; padding: 12px 16px; background: #e8f5e9; border-left: 4px solid #A8E6CF; border-radius: 8px; color: #2c3e50;">
+        <i class="fas fa-info-circle" style="color: #A8E6CF;"></i>
+        Showing <strong><?= $total_records ?></strong> result<?= $total_records != 1 ? 's' : '' ?>
+        <?php if (!empty($search)): ?>
+          for "<strong><?= htmlspecialchars($search) ?></strong>"
+        <?php endif; ?>
+        <?php if (!empty($status_filter)): ?>
+          with status: <strong><?= ucfirst($status_filter) ?></strong>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+  <!-- ✅ END OF SEARCH & FILTER SECTION -->
 
   <?php if ($row_count > 0): ?>
     <!-- Stats Overview -->
@@ -1301,6 +1373,58 @@ if (!empty($search)) {
           <?php endwhile; ?>
         </tbody>
       </table>
+
+      <!-- ✅ ADD PAGINATION HERE -->
+      <?php if ($total_pages > 1): ?>
+        <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+          
+          <!-- Page Info -->
+          <div style="color: #7f8c8d; font-size: 14px;">
+            Showing <strong><?= min($offset + 1, $total_records) ?></strong> to 
+            <strong><?= min($offset + $items_per_page, $total_records) ?></strong> of 
+            <strong><?= $total_records ?></strong> appointments
+          </div>
+
+          <!-- Pagination Buttons -->
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <?php if ($current_page > 1): ?>
+              <a href="?page=<?= $current_page - 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($status_filter) ? '&status=' . $status_filter : '' ?>" 
+                 class="button" 
+                 style="padding: 10px 16px; text-decoration: none;">
+                <i class="fas fa-chevron-left"></i> Previous
+              </a>
+            <?php endif; ?>
+
+            <?php
+            // Show page numbers
+            $range = 2; // Show 2 pages on each side of current page
+            for ($i = 1; $i <= $total_pages; $i++):
+              if ($i == 1 || $i == $total_pages || ($i >= $current_page - $range && $i <= $current_page + $range)):
+            ?>
+              <a href="?page=<?= $i ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($status_filter) ? '&status=' . $status_filter : '' ?>" 
+                 class="button" 
+                 style="padding: 10px 16px; text-decoration: none; <?= $i == $current_page ? 'background: #87d7b7; font-weight: 700;' : '' ?>">
+                <?= $i ?>
+              </a>
+            <?php
+              elseif ($i == $current_page - $range - 1 || $i == $current_page + $range + 1):
+                echo '<span style="padding: 10px 8px; color: #7f8c8d;">...</span>';
+              endif;
+            endfor;
+            ?>
+
+            <?php if ($current_page < $total_pages): ?>
+              <a href="?page=<?= $current_page + 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($status_filter) ? '&status=' . $status_filter : '' ?>" 
+                 class="button" 
+                 style="padding: 10px 16px; text-decoration: none;">
+                Next <i class="fas fa-chevron-right"></i>
+              </a>
+            <?php endif; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+      <!-- ✅ END OF PAGINATION -->
+
     <?php else: ?>
       <div class="empty-state">
         <i class="fas fa-calendar-times"></i>
