@@ -1012,11 +1012,6 @@ if ($row_count > 0) {
     </div>
   <?php endif; ?>
 
-  <div class="header">
-    <h1>My Appointments</h1>
-    <p>Manage and track your pet grooming appointments</p>
-  </div>
-
   <?php if ($row_count > 0): ?>
   <div class="stats-grid">
     <div class="stat-card">
