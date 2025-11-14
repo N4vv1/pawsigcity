@@ -369,7 +369,8 @@ if (!$pets) {
     }
 
     .pet-card .form-group input,
-    .pet-card .form-group select {
+    .pet-card .form-group select,
+    .pet-card .form-group textarea {
       padding: 10px 12px;
       border: 2px solid #e0e0e0;
       border-radius: 8px;
@@ -379,7 +380,8 @@ if (!$pets) {
     }
 
     .pet-card .form-group input:focus,
-    .pet-card .form-group select:focus {
+    .pet-card .form-group select:focus,
+    .pet-card .form-group textarea:focus {
       outline: none;
       border-color: #A8E6CF;
     }
@@ -557,6 +559,135 @@ if (!$pets) {
       transform: translateY(-2px);
     }
 
+    /* Notification Styles */
+    .notification {
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      background: white;
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 400px;
+      z-index: 10000;
+      transform: translateX(500px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .notification.success {
+      border-left: 4px solid #A8E6CF;
+    }
+
+    .notification.error {
+      border-left: 4px solid #ff6b6b;
+    }
+
+    .notification.info {
+      border-left: 4px solid #4dabf7;
+    }
+
+    .notification.warning {
+      border-left: 4px solid #ffd166;
+    }
+
+    .notification-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .notification.success .notification-icon {
+      color: #A8E6CF;
+    }
+
+    .notification.error .notification-icon {
+      color: #ff6b6b;
+    }
+
+    .notification.info .notification-icon {
+      color: #4dabf7;
+    }
+
+    .notification.warning .notification-icon {
+      color: #ffd166;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: #2a2a2a;
+    }
+
+    .notification-message {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .notification-close {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .notification-close:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    /* Progress bar for notification */
+    .notification-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #A8E6CF 0%, #91dbc3 100%);
+      border-radius: 0 0 12px 12px;
+      animation: progress 3s linear;
+    }
+
+    .notification.error .notification-progress {
+      background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 100%);
+    }
+
+    .notification.info .notification-progress {
+      background: linear-gradient(90deg, #4dabf7 0%, #339af0 100%);
+    }
+
+    .notification.warning .notification-progress {
+      background: linear-gradient(90deg, #ffd166 0%, #ffbe3d 100%);
+    }
+
+    @keyframes progress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
       .main-grid {
@@ -569,6 +700,13 @@ if (!$pets) {
 
       .user-card {
         margin-bottom: 20px;
+      }
+
+      .notification {
+        left: 20px;
+        right: 20px;
+        min-width: auto;
+        max-width: none;
       }
     }
 
@@ -608,6 +746,12 @@ if (!$pets) {
 
       .form-grid {
         grid-template-columns: 1fr;
+      }
+
+      .notification {
+        top: 80px;
+        left: 10px;
+        right: 10px;
       }
     }
     
@@ -1579,7 +1723,8 @@ if (!$pets) {
   .nav-overlay,
   .pet-actions,
   .edit-btn,
-  .edit-form {
+  .edit-form,
+  .notification {
     display: none !important;
   }
 
@@ -1640,12 +1785,15 @@ if (!$pets) {
   </nav>
 </header>
 
+  <!-- Notification Container -->
+  <div id="notification-container"></div>
+
   <div class="container">
     <div class="main-grid">
       <!-- Sidebar - User Account -->
       <aside class="sidebar">
         <div class="user-card">
-          <h2></i> My Account</h2>
+          <h2>My Account</h2>
           <?php if (!empty($user)): ?>
             <div class="user-info">
               <h3><?= htmlspecialchars($user['first_name'] ?? '') ?> <?= htmlspecialchars($user['last_name'] ?? '') ?></h3>
@@ -1741,7 +1889,7 @@ if (!$pets) {
       <button class="btn-edit" onclick="togglePetEdit('<?= $pet_id ?>')">
         <i class="fas fa-edit"></i> Edit
       </button>
-      <form action="delete-pet.php" method="POST" onsubmit="return confirm('Delete this pet?');">
+      <form action="delete-pet.php" method="POST" onsubmit="return confirmDelete(event, '<?= htmlspecialchars($pet['name']) ?>', '<?= $pet_id ?>');">
         <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
         <button type="submit" class="btn-delete">
           <i class="fas fa-trash"></i> Delete
@@ -1751,8 +1899,8 @@ if (!$pets) {
   </div>
 
   <!-- Pet Edit Form -->
-  <div id="pet-edit-'<?= $pet_id ?>'" class="edit-form">
-    <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
+  <div id="pet-edit-<?= $pet_id ?>" class="edit-form">
+    <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data" onsubmit="return handlePetEdit(event, '<?= $pet_id ?>');">
       <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
       
       <!-- Basic Information Section -->
@@ -1805,7 +1953,7 @@ if (!$pets) {
         </div>
         <div class="form-group full-width">
           <label>Photo</label>
-          <input type="file" name="photo_url">
+          <input type="file" name="photo_url" accept="image/*">
         </div>
       </div>
 
@@ -1851,7 +1999,6 @@ if (!$pets) {
         </div>
       </div>
 
-      <!-- ONLY ONE form-actions section -->
       <div class="form-actions">
         <button type="submit" class="btn-save">Save Changes</button>
         <button type="button" class="btn-cancel" onclick="togglePetEdit('<?= $pet_id ?>')">Cancel</button>
@@ -1913,8 +2060,96 @@ if (!$pets) {
   </div>
 
 <script>
+// ==========================================
+// NOTIFICATION SYSTEM
+// ==========================================
+function showNotification(type, title, message, duration = 3000) {
+  const container = document.getElementById('notification-container');
+  
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  
+  const icons = {
+    success: 'fa-check-circle',
+    error: 'fa-exclamation-circle',
+    warning: 'fa-exclamation-triangle',
+    info: 'fa-info-circle'
+  };
+  
+  notification.innerHTML = `
+    <div class="notification-icon">
+      <i class="fas ${icons[type]}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${message}</div>
+    </div>
+    <button class="notification-close" onclick="closeNotification(this)">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="notification-progress"></div>
+  `;
+  
+  container.appendChild(notification);
+  
+  // Trigger animation
+  setTimeout(() => notification.classList.add('show'), 10);
+  
+  // Auto remove
+  const timer = setTimeout(() => {
+    removeNotification(notification);
+  }, duration);
+  
+  // Store timer for manual close
+  notification.dataset.timer = timer;
+}
+
+function closeNotification(button) {
+  const notification = button.closest('.notification');
+  clearTimeout(notification.dataset.timer);
+  removeNotification(notification);
+}
+
+function removeNotification(notification) {
+  notification.classList.remove('show');
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.parentNode.removeChild(notification);
+    }
+  }, 400);
+}
+
+// Check for URL parameters for notifications
+window.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  if (urlParams.has('pet_updated')) {
+    showNotification('success', 'Success!', 'Pet profile updated successfully', 3000);
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  if (urlParams.has('pet_deleted')) {
+    showNotification('success', 'Deleted!', 'Pet profile deleted successfully', 3000);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  if (urlParams.has('user_updated')) {
+    showNotification('success', 'Success!', 'Account updated successfully', 3000);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  if (urlParams.has('error')) {
+    const errorMsg = urlParams.get('error') || 'An error occurred';
+    showNotification('error', 'Error!', errorMsg, 4000);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+});
+
+// ==========================================
+// TAB SWITCHING
+// ==========================================
 function switchTab(petId, tabName) {
-  // petId is now a string like "00006P"
   const healthTab = document.getElementById(`health-${petId}`);
   if (!healthTab) {
     console.error(`Could not find pet card for pet ID: ${petId}`);
@@ -1941,8 +2176,10 @@ function switchTab(petId, tabName) {
   }
 }
 
+// ==========================================
+// EDIT FORM TOGGLES
+// ==========================================
 function togglePetEdit(petId) {
-  // petId is now a string like "00006P"
   const form = document.getElementById(`pet-edit-${petId}`);
   if (form) {
     form.classList.toggle('show');
@@ -1960,7 +2197,27 @@ function toggleUserEdit() {
   }
 }
 
-// Hamburger Menu Toggle
+// ==========================================
+// FORM SUBMISSION HANDLERS
+// ==========================================
+function handlePetEdit(event, petId) {
+  // Let the form submit normally, but we'll show notification on redirect
+  return true;
+}
+
+function confirmDelete(event, petName, petId) {
+  event.preventDefault();
+  
+  if (confirm(`Are you sure you want to delete ${petName}? This action cannot be undone.`)) {
+    event.target.submit();
+    return true;
+  }
+  return false;
+}
+
+// ==========================================
+// HAMBURGER MENU
+// ==========================================
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
 const navOverlay = document.getElementById('nav-overlay');

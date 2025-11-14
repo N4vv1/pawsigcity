@@ -2,173 +2,156 @@
 session_start();
 require '../db.php';
 
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../homepage/login/loginform.php');
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pet_id = intval($_POST['pet_id']);
-    $name = trim($_POST['name'] ?? '');
-    $breed = trim($_POST['breed'] ?? '');
-    $age = !empty($_POST['age']) ? floatval($_POST['age']) : null;
-    $birthday = !empty($_POST['birthday']) ? $_POST['birthday'] : null;
-    $color = trim($_POST['color'] ?? '');
-    $gender = trim($_POST['gender'] ?? '');
-    $size = trim($_POST['size'] ?? '');
-    $weight = !empty($_POST['weight']) ? floatval($_POST['weight']) : null;
+    $pet_id = $_POST['pet_id'] ?? null;
     
-    // Health Info
-    $allergies = trim($_POST['allergies'] ?? '');
-    $medications = trim($_POST['medications'] ?? '');
-    $medical_conditions = trim($_POST['medical_conditions'] ?? '');
-    
-    // Behavior & Preferences
-    $behavior_notes = trim($_POST['behavior_notes'] ?? '');
-    $nail_trimming = trim($_POST['nail_trimming'] ?? '');
-    $haircut_style = trim($_POST['haircut_style'] ?? '');
-
-    // ✅ Handle photo upload to Supabase Storage (if provided)
-    $photo_url = null;
-    
-    if (isset($_FILES['photo_url']) && $_FILES['photo_url']['error'] === UPLOAD_ERR_OK) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        $file_type = $_FILES['photo_url']['type'];
-
-        if (in_array($file_type, $allowed_types)) {
-            $supabase_url = getenv('SUPABASE_URL');
-            $supabase_key = getenv('SUPABASE_KEY');
-
-            if (!$supabase_url || !$supabase_key) {
-                $_SESSION['error'] = "❌ Supabase configuration missing.";
-                header('Location: pet-profile.php');
-                exit;
-            }
-
-            $user_query = "SELECT user_id FROM pets WHERE pet_id = $1";
-            $user_result = pg_query_params($conn, $user_query, [$pet_id]);
-            $user_row = pg_fetch_assoc($user_result);
-            $user_id = $user_row['user_id'] ?? 0;
-
-            $file_extension = pathinfo($_FILES['photo_url']['name'], PATHINFO_EXTENSION);
-            $unique_filename = uniqid('pet_' . $user_id . '_', true) . '.' . $file_extension;
-            $file_content = file_get_contents($_FILES['photo_url']['tmp_name']);
-
-            $upload_url = $supabase_url . '/storage/v1/object/pet-images/' . $unique_filename;
-
-            $ch = curl_init($upload_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $file_content);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Authorization: Bearer ' . $supabase_key,
-                'Content-Type: ' . $file_type,
-                'apikey: ' . $supabase_key
-            ]);
-
-            $response = curl_exec($ch);
-            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            if ($http_code === 200 || $http_code === 201) {
-                $photo_url = $supabase_url . '/storage/v1/object/public/pet-images/' . $unique_filename;
-                
-                $old_photo_query = "SELECT photo_url FROM pets WHERE pet_id = $1";
-                $old_photo_result = pg_query_params($conn, $old_photo_query, [$pet_id]);
-                $old_photo_row = pg_fetch_assoc($old_photo_result);
-                
-                if (!empty($old_photo_row['photo_url'])) {
-                    $old_url = $old_photo_row['photo_url'];
-                    $old_filename = basename(parse_url($old_url, PHP_URL_PATH));
-                    
-                    $delete_url = $supabase_url . '/storage/v1/object/pet-images/' . $old_filename;
-                    $ch_delete = curl_init($delete_url);
-                    curl_setopt($ch_delete, CURLOPT_CUSTOMREQUEST, 'DELETE');
-                    curl_setopt($ch_delete, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch_delete, CURLOPT_HTTPHEADER, [
-                        'Authorization: Bearer ' . $supabase_key,
-                        'apikey: ' . $supabase_key
-                    ]);
-                    curl_exec($ch_delete);
-                    curl_close($ch_delete);
-                }
-            } else {
-                error_log("Supabase upload failed. HTTP Code: $http_code, Response: $response");
-                $_SESSION['error'] = "❌ Failed to upload photo. Please try again.";
-                header('Location: pet-profile.php');
-                exit;
-            }
-        } else {
-            $_SESSION['error'] = "⚠️ Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.";
-            header('Location: pet-profile.php');
-            exit;
-        }
-    }
-
-    // ✅ Update pet info
-    if ($photo_url !== null) {
-        $query = "
-            UPDATE pets 
-            SET name = $1, breed = $2, age = $3, birthday = $4, color = $5, gender = $6, photo_url = $7, size = $8, weight = $9
-            WHERE pet_id = $10
-        ";
-        $result = pg_query_params($conn, $query, [
-            $name, $breed, $age, $birthday, $color, $gender, $photo_url, $size, $weight, $pet_id
-        ]);
-    } else {
-        $query = "
-            UPDATE pets 
-            SET name = $1, breed = $2, age = $3, birthday = $4, color = $5, gender = $6, size = $7, weight = $8
-            WHERE pet_id = $9
-        ";
-        $result = pg_query_params($conn, $query, [
-            $name, $breed, $age, $birthday, $color, $gender, $size, $weight, $pet_id
-        ]);
-    }
-
-    if (!$result) {
-        $_SESSION['error'] = "❌ Failed to update pet profile: " . pg_last_error($conn);
-        header("Location: pet-profile.php");
+    if (!$pet_id) {
+        header('Location: pet-profile.php?error=' . urlencode('Pet ID is required'));
         exit;
     }
-
-    // ✅ Update or Insert Health Info
-    $health_check = pg_query_params($conn, "SELECT health_id FROM health_info WHERE pet_id = $1", [$pet_id]);
     
-    if (pg_num_rows($health_check) > 0) {
-        // Update existing
-        $health_query = "
-            UPDATE health_info 
-            SET allergies = $1, medications = $2, medical_conditions = $3
-            WHERE pet_id = $4
-        ";
-        pg_query_params($conn, $health_query, [$allergies, $medications, $medical_conditions, $pet_id]);
-    } else {
-        // Insert new
-        $health_query = "
-            INSERT INTO health_info (pet_id, allergies, medications, medical_conditions)
-            VALUES ($1, $2, $3, $4)
-        ";
-        pg_query_params($conn, $health_query, [$pet_id, $allergies, $medications, $medical_conditions]);
+    // Verify pet belongs to user
+    $check = pg_query_params($conn, "SELECT user_id FROM pets WHERE pet_id = $1", [$pet_id]);
+    if (!$check || pg_num_rows($check) === 0) {
+        header('Location: pet-profile.php?error=' . urlencode('Pet not found'));
+        exit;
     }
-
-    // ✅ Update or Insert Behavior Preferences
-    $behavior_check = pg_query_params($conn, "SELECT preference_id FROM behavior_preferences WHERE pet_id = $1", [$pet_id]);
     
-    if (pg_num_rows($behavior_check) > 0) {
-        // Update existing
-        $behavior_query = "
-            UPDATE behavior_preferences 
-            SET behavior_notes = $1, nail_trimming = $2, haircut_style = $3
-            WHERE pet_id = $4
-        ";
-        pg_query_params($conn, $behavior_query, [$behavior_notes, $nail_trimming, $haircut_style, $pet_id]);
-    } else {
-        // Insert new
-        $behavior_query = "
-            INSERT INTO behavior_preferences (pet_id, behavior_notes, nail_trimming, haircut_style)
-            VALUES ($1, $2, $3, $4)
-        ";
-        pg_query_params($conn, $behavior_query, [$pet_id, $behavior_notes, $nail_trimming, $haircut_style]);
+    $pet_owner = pg_fetch_assoc($check);
+    if ($pet_owner['user_id'] != $user_id) {
+        header('Location: pet-profile.php?error=' . urlencode('Unauthorized access'));
+        exit;
     }
-
-    $_SESSION['success'] = "✅ Pet profile updated successfully!";
-    header("Location: pet-profile.php");
+    
+    // Get form data
+    $name = $_POST['name'] ?? '';
+    $breed = $_POST['breed'] ?? '';
+    $age = $_POST['age'] ?? '';
+    $gender = $_POST['gender'] ?? '';
+    $color = $_POST['color'] ?? '';
+    $birthday = $_POST['birthday'] ?? '';
+    $size = $_POST['size'] ?? '';
+    $weight = $_POST['weight'] ?? '';
+    
+    // Health info
+    $allergies = $_POST['allergies'] ?? '';
+    $medications = $_POST['medications'] ?? '';
+    $medical_conditions = $_POST['medical_conditions'] ?? '';
+    
+    // Behavior info
+    $behavior_notes = $_POST['behavior_notes'] ?? '';
+    $nail_trimming = $_POST['nail_trimming'] ?? '';
+    $haircut_style = $_POST['haircut_style'] ?? '';
+    
+    // Handle photo upload
+    $photo_url = null;
+    if (isset($_FILES['photo_url']) && $_FILES['photo_url']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = '../uploads/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+        
+        $file_extension = strtolower(pathinfo($_FILES['photo_url']['name'], PATHINFO_EXTENSION));
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+        
+        if (in_array($file_extension, $allowed_extensions)) {
+            $new_filename = uniqid('pet_') . '.' . $file_extension;
+            $upload_path = $upload_dir . $new_filename;
+            
+            if (move_uploaded_file($_FILES['photo_url']['tmp_name'], $upload_path)) {
+                $photo_url = $upload_path;
+            }
+        }
+    }
+    
+    // Start transaction
+    pg_query($conn, "BEGIN");
+    
+    try {
+        // Update pets table
+        if ($photo_url) {
+            $update_pet = pg_query_params($conn, 
+                "UPDATE pets SET name = $1, breed = $2, age = $3, gender = $4, color = $5, 
+                 birthday = $6, size = $7, weight = $8, photo_url = $9 
+                 WHERE pet_id = $10",
+                [$name, $breed, $age, $gender, $color, $birthday, $size, $weight, $photo_url, $pet_id]
+            );
+        } else {
+            $update_pet = pg_query_params($conn, 
+                "UPDATE pets SET name = $1, breed = $2, age = $3, gender = $4, color = $5, 
+                 birthday = $6, size = $7, weight = $8 
+                 WHERE pet_id = $9",
+                [$name, $breed, $age, $gender, $color, $birthday, $size, $weight, $pet_id]
+            );
+        }
+        
+        if (!$update_pet) {
+            throw new Exception("Failed to update pet information");
+        }
+        
+        // Update or insert health info
+        $health_check = pg_query_params($conn, "SELECT * FROM health_info WHERE pet_id = $1", [$pet_id]);
+        
+        if ($health_check && pg_num_rows($health_check) > 0) {
+            $update_health = pg_query_params($conn,
+                "UPDATE health_info SET allergies = $1, medications = $2, medical_conditions = $3 
+                 WHERE pet_id = $4",
+                [$allergies, $medications, $medical_conditions, $pet_id]
+            );
+        } else {
+            $update_health = pg_query_params($conn,
+                "INSERT INTO health_info (pet_id, allergies, medications, medical_conditions) 
+                 VALUES ($1, $2, $3, $4)",
+                [$pet_id, $allergies, $medications, $medical_conditions]
+            );
+        }
+        
+        if (!$update_health) {
+            throw new Exception("Failed to update health information");
+        }
+        
+        // Update or insert behavior preferences
+        $behavior_check = pg_query_params($conn, "SELECT * FROM behavior_preferences WHERE pet_id = $1", [$pet_id]);
+        
+        if ($behavior_check && pg_num_rows($behavior_check) > 0) {
+            $update_behavior = pg_query_params($conn,
+                "UPDATE behavior_preferences SET behavior_notes = $1, nail_trimming = $2, haircut_style = $3 
+                 WHERE pet_id = $4",
+                [$behavior_notes, $nail_trimming, $haircut_style, $pet_id]
+            );
+        } else {
+            $update_behavior = pg_query_params($conn,
+                "INSERT INTO behavior_preferences (pet_id, behavior_notes, nail_trimming, haircut_style) 
+                 VALUES ($1, $2, $3, $4)",
+                [$pet_id, $behavior_notes, $nail_trimming, $haircut_style]
+            );
+        }
+        
+        if (!$update_behavior) {
+            throw new Exception("Failed to update behavior preferences");
+        }
+        
+        // Commit transaction
+        pg_query($conn, "COMMIT");
+        
+        header('Location: pet-profile.php?pet_updated=1');
+        exit;
+        
+    } catch (Exception $e) {
+        pg_query($conn, "ROLLBACK");
+        header('Location: pet-profile.php?error=' . urlencode($e->getMessage()));
+        exit;
+    }
+} else {
+    header('Location: pet-profile.php');
     exit;
 }
 ?>
