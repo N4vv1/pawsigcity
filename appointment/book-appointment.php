@@ -80,8 +80,8 @@ while ($groomer = pg_fetch_assoc($groomers_result)) {
 
 if ($selected_pet_id) {
     // Clean and prepare IDs
-    $selected_pet_id = trim((string)$selected_pet_id);
-    $user_id_trimmed = trim((string)$user_id);
+    $selected_pet_id = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', trim((string)$selected_pet_id));
+    $user_id_trimmed = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', trim((string)$user_id));
     
     // Enhanced debugging
     error_log("=== PET VALIDATION START ===");
@@ -108,7 +108,7 @@ if ($selected_pet_id) {
     // Now try the actual validation query
     $pet_check = pg_query_params(
         $conn,
-        "SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2",
+        "SELECT * FROM pets WHERE LOWER(pet_id) = LOWER($1) AND LOWER(user_id) = LOWER($2)",
         [$selected_pet_id, $user_id_trimmed]
     );
     
