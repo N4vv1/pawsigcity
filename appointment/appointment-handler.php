@@ -2,24 +2,36 @@
 session_start();
 require '../db.php';
 
+// ✅ DEBUG: Log all incoming data
+error_log("=== APPOINTMENT HANDLER STARTED ===");
+error_log("POST data: " . print_r($_POST, true));
+error_log("Session user_id: " . ($_SESSION['user_id'] ?? 'NOT SET'));
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_SESSION['user_id'])) {
         header("Location: ../login/loginform.php");
         exit;
     }
 
-    // Collect and sanitize inputs
+    // ✅ Collect and sanitize inputs - DON'T use intval() on UUIDs!
     $user_id = $_SESSION['user_id'];
-    $pet_id = isset($_POST['pet_id']) ? intval($_POST['pet_id']) : null;
-    $package_id = isset($_POST['package_id']) ? intval($_POST['package_id']) : null;
-    $groomer_id = isset($_POST['groomer_id']) ? intval($_POST['groomer_id']) : null;
+    $pet_id = trim($_POST['pet_id'] ?? '');
+    $package_id = trim($_POST['package_id'] ?? '');
+    $groomer_id = trim($_POST['groomer_id'] ?? '');
     $recommended_package = trim($_POST['recommended_package'] ?? '');
     $appointment_date = trim($_POST['appointment_date'] ?? '');
     $notes = trim($_POST['notes'] ?? '');
 
+    error_log("Sanitized data:");
+    error_log("  pet_id: '$pet_id'");
+    error_log("  package_id: '$package_id'");
+    error_log("  groomer_id: '$groomer_id'");
+    error_log("  appointment_date: '$appointment_date'");
+
     // Validate required fields
     if (!$pet_id || !$package_id || !$appointment_date || !$groomer_id) {
-        $_SESSION['error'] = "⚠️ Please complete all required fields including groomer selection.";
+        error_log("ERROR: Missing required fields");
+        $_SESSION['error'] = "Please complete all required fields including groomer selection.";
         header("Location: book-appointment.php?pet_id=" . urlencode($pet_id));
         exit;
     }
@@ -32,10 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if (!$check_pet || pg_num_rows($check_pet) === 0) {
-        $_SESSION['error'] = "⚠️ Invalid pet or unauthorized access.";
+        error_log("ERROR: Pet validation failed");
+        $_SESSION['error'] = "Invalid pet or unauthorized access.";
         header("Location: book-appointment.php");
         exit;
     }
+
+    error_log("✓ Pet validation passed");
 
     // ✅ Fetch groomer name from groomer table
     $groomer_query = pg_query_params(
@@ -45,13 +60,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if (!$groomer_query || pg_num_rows($groomer_query) === 0) {
-        $_SESSION['error'] = "⚠️ Invalid groomer selection.";
+        error_log("ERROR: Groomer not found");
+        $_SESSION['error'] = "Invalid groomer selection.";
         header("Location: book-appointment.php?pet_id=" . urlencode($pet_id));
         exit;
     }
 
     $groomer_row = pg_fetch_assoc($groomer_query);
     $groomer_name = $groomer_row['groomer_name'];
+    
+    error_log("Groomer found: $groomer_name");
 
     // ✅ Insert appointment into database
     $insert_query = "
@@ -61,6 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         RETURNING appointment_id
     ";
 
+    error_log("Executing INSERT query...");
+    
     $result = pg_query_params($conn, $insert_query, [
         $user_id, 
         $pet_id, 
@@ -75,6 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result) {
         $row = pg_fetch_assoc($result);
         $appointment_id = $row['appointment_id'];
+        
+        error_log("Appointment created successfully! ID: $appointment_id");
 
         // Run Python script for recommendation (optional)
         $pythonPath = "C:\\Users\\Ivan\\AppData\\Local\\Programs\\Python\\Python313\\python.exe";
@@ -83,16 +105,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $output = shell_exec($command);
 
         // Redirect to appointment confirmation page
-        $_SESSION['success'] = "✅ Appointment booked successfully!";
+        $_SESSION['success'] = "Appointment booked successfully!";
         header("Location: ../homepage/appointments.php?appointment_id=$appointment_id");
         exit;
     } else {
-        $_SESSION['error'] = "❌ Database error: " . pg_last_error($conn);
+        $error = pg_last_error($conn);
+        error_log("ERROR: Database insert failed - $error");
+        $_SESSION['error'] = "Database error: " . $error;
         header("Location: book-appointment.php?pet_id=" . urlencode($pet_id));
         exit;
     }
 
 } else {
+    error_log("ERROR: Not a POST request");
     echo "Invalid request.";
 }
 ?>
