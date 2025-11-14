@@ -314,13 +314,12 @@ section[id] {
 /* ========================================
    DESKTOP DROPDOWN (Hover-based)
    ======================================== */
+/* Desktop Dropdown (min-width: 1025px) */
 @media (min-width: 1025px) {
-  /* Dropdown container */
   .dropdown {
     position: relative;
   }
 
-  /* Dropdown menu - hidden by default */
   .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -332,7 +331,9 @@ section[id] {
     opacity: 0;
     visibility: hidden;
     transform: translateY(10px);
-    transition: all 0.3s ease;
+    /* INCREASED TRANSITION TIME - Makes it stay longer */
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    transition-delay: 0s; /* Show immediately on hover */
     margin-top: 8px;
     padding: 8px 0;
     z-index: 1000;
@@ -346,12 +347,39 @@ section[id] {
     visibility: visible;
     transform: translateY(0);
     pointer-events: auto;
+    transition-delay: 0s; /* Show immediately */
   }
 
-  /* Keep dropdown visible when hovering over menu items */
+  /* IMPORTANT: Keep dropdown visible when hovering over menu items */
   .dropdown-menu:hover {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* ADD DELAY BEFORE HIDING - This prevents quick close */
+  .dropdown-menu {
+    transition: opacity 0.3s ease 0.3s, /* 0.3s delay before hiding */
+                visibility 0.3s ease 0.3s,
+                transform 0.3s ease 0.3s;
+  }
+
+  /* Remove delay when showing */
+  .dropdown:hover .dropdown-menu,
+  .dropdown-menu:hover {
+    transition-delay: 0s;
+  }
+
+  /* ALTERNATIVE: Create invisible bridge between nav and dropdown */
+  .dropdown::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 15px; /* Invisible bridge area */
+    background: transparent;
+    z-index: 999;
   }
 
   /* Dropdown menu items */
@@ -372,16 +400,16 @@ section[id] {
     border-left: 3px solid transparent;
     white-space: nowrap;
     text-align: left;
+    box-sizing: border-box;
   }
 
   .dropdown-menu a:hover {
-    background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(168, 230, 207, 0.15) 0%, transparent 100%);
     border-left-color: #A8E6CF;
     padding-left: 24px;
     color: #16a085;
   }
 
-  /* Profile icon styling */
   .profile-icon {
     display: flex;
     align-items: center;
@@ -390,7 +418,6 @@ section[id] {
     position: relative;
   }
 
-  /* Arrow indicator */
   .profile-icon::after {
     content: '\f078';
     font-family: 'Font Awesome 6 Free';
@@ -404,6 +431,7 @@ section[id] {
     transform: rotate(180deg);
   }
 }
+
 
 /* ========================================
    MOBILE STYLES (Click-based)
