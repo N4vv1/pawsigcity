@@ -1663,7 +1663,7 @@ select option:disabled:hover {
 
       // Update price display when package is selected
     function updatePriceDisplay() {
-      const packageSelect = document.getElementById('price_id');
+      const packageSelect = document.getElementById('package_id');
       const priceDisplay = document.getElementById('package-price-display');
       const selectedPrice = document.getElementById('selected-price');
       
@@ -1708,10 +1708,9 @@ select option:disabled:hover {
       submitBtn.innerHTML = '<i class="fas fa-times-circle"></i> Time Slot Full - Choose Another';
     }
   }
-document.addEventListener('DOMContentLoaded', function () {
+  const packageSelect = document.getElementById('package_id');
+  document.addEventListener('DOMContentLoaded', function () {
     const dateInput = document.getElementById('appointment_date');
-    const packageSelect = document.getElementById('package_id'); // ← Changed from 'price_id' to 'package_id'
-    
     if (dateInput) {
       dateInput.addEventListener('change', updateAvailabilityIndicator);
       dateInput.addEventListener('input', updateAvailabilityIndicator);
@@ -1720,13 +1719,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const today = now.toISOString().split('T')[0];
       dateInput.setAttribute('min', today + 'T09:00');
       dateInput.setAttribute('max', '2025-12-31T18:00');
-    }
 
-    // Add null check for package select
-    if (packageSelect) {
-      packageSelect.addEventListener('change', updatePriceDisplay);
-      // Trigger on page load if option is pre-selected
-      updatePriceDisplay();
+
+       if (packageSelect) {
+    packageSelect.addEventListener('change', updatePriceDisplay);
+    // Trigger on page load if option is pre-selected
+    updatePriceDisplay();
+  }
     }
 
     // Flatpickr initialization
