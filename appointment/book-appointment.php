@@ -14,8 +14,8 @@ $package_id = isset($_GET['package_id']) ? ($_GET['package_id']) : null;
 // âœ… Fetch user's pets securely
 $pets_result = pg_query_params(
     $conn,
-    "SELECT * FROM pets WHERE user_id = $1",
-    [$user_id]
+    "SELECT * FROM pets WHERE user_id = $1::text",
+    [(string)$user_id]
 );
 
 $recommended_package = null;
@@ -72,17 +72,26 @@ while ($groomer = pg_fetch_assoc($groomers_result)) {
 }
 
 
-// âœ… Check pet ownership if selected
+// ✅ Check pet ownership if selected
 if ($selected_pet_id) {
+    // Cast to string to ensure text comparison
+    $selected_pet_id = (string)$selected_pet_id;
+    
     $pet_check = pg_query_params(
         $conn,
-        "SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2",
-        [$selected_pet_id, $user_id]
+        "SELECT * FROM pets WHERE pet_id = $1::text AND user_id = $2::text",
+        [$selected_pet_id, (string)$user_id]
     );
+    
+    if (!$pet_check) {
+        die("Database error: " . pg_last_error($conn));
+    }
+    
     $valid_pet = pg_fetch_assoc($pet_check);
 
     if (!$valid_pet) {
-        echo "<p style='text-align:center;color:red;'>Invalid pet selection.</p>";
+        $_SESSION['error'] = "Invalid pet selection or unauthorized access.";
+        header("Location: book-appointment.php");
         exit;
     }
 
