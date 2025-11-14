@@ -8,13 +8,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$selected_pet_id = isset($_GET['pet_id']) ? ($_GET['pet_id']) : null;
 $package_id = isset($_GET['package_id']) ? ($_GET['package_id']) : null;
 
 // âœ… Fetch user's pets securely
 $pets_result = pg_query_params(
     $conn,
-    "SELECT * FROM pets WHERE user_id = $1::text",
+    "SELECT * FROM pets WHERE user_id = $1",
     [(string)$user_id]
 );
 
@@ -59,6 +58,14 @@ $groomers_query = "
     ORDER BY is_active DESC, groomer_name ASC
 ";
 
+if (!$valid_pet) {
+    error_log("Pet ID: " . $selected_pet_id . " | User ID: " . $user_id);
+    error_log("Query result: " . print_r($valid_pet, true));
+    $_SESSION['error'] = "Invalid pet selection or unauthorized access.";
+    header("Location: book-appointment.php");
+    exit;
+}
+
 $groomers_result = pg_query($conn, $groomers_query);
 
 if (!$groomers_result) {
@@ -79,7 +86,7 @@ if ($selected_pet_id) {
     
     $pet_check = pg_query_params(
         $conn,
-        "SELECT * FROM pets WHERE pet_id = $1::text AND user_id = $2::text",
+        "SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2",
         [$selected_pet_id, (string)$user_id]
     );
     
