@@ -87,25 +87,8 @@ if ($selected_pet_id) {
     error_log("=== PET VALIDATION START ===");
     error_log("Selected Pet ID: '{$selected_pet_id}' (length: " . strlen($selected_pet_id) . ")");
     error_log("User ID: '{$user_id_trimmed}' (length: " . strlen($user_id_trimmed) . ")");
-    error_log("Pet ID raw from GET: '" . ($_GET['pet_id'] ?? 'NOT SET') . "'");
     
-    // First, let's see ALL pets for this user
-    $user_pets_check = pg_query_params(
-        $conn,
-        "SELECT pet_id, name, user_id FROM pets WHERE user_id = $1",
-        [$user_id_trimmed]
-    );
-    
-    error_log("Pets found for user {$user_id_trimmed}:");
-    $found_match = false;
-    while ($up = pg_fetch_assoc($user_pets_check)) {
-        error_log("  - {$up['name']}: pet_id='{$up['pet_id']}', user_id='{$up['user_id']}'");
-        if ($up['pet_id'] === $selected_pet_id) {
-            $found_match = true;
-        }
-    }
-    
-    // Now try the actual validation query
+    // Validate pet ownership
     $pet_check = pg_query_params(
         $conn,
         "SELECT * FROM pets WHERE LOWER(pet_id) = LOWER($1) AND LOWER(user_id) = LOWER($2)",
@@ -122,9 +105,23 @@ if ($selected_pet_id) {
     // Debug query result
     if ($valid_pet) {
         error_log("✓ Pet found: " . $valid_pet['name']);
+        
+        // CRITICAL: Verify pet has required size information
+        if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
+            $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
+            error_log("✗ Pet missing required info:");
+            error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
+            error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
+            error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
+            
+            $_SESSION['error'] = "⚠️ {$pet_name} is missing size information. Please update the pet profile first.";
+            header("Location: ../pets/pet-profile.php");
+            exit;
+        }
+        
+        error_log("✓ Pet validation PASSED");
     } else {
         error_log("✗ No pet found with query");
-        error_log("Match found in user pets list: " . ($found_match ? "YES" : "NO"));
         
         // Check if pet exists at all
         $pet_exists_check = pg_query_params(
@@ -140,13 +137,6 @@ if ($selected_pet_id) {
             error_log("  - Pet ID: '{$pet_data['pet_id']}'");
             error_log("  - Pet's User ID: '{$pet_data['user_id']}'");
             error_log("  - Session User ID: '{$user_id_trimmed}'");
-            error_log("  - IDs Match: " . ($pet_data['user_id'] === $user_id_trimmed ? "YES" : "NO"));
-            error_log("  - Pet ID Match: " . ($pet_data['pet_id'] === $selected_pet_id ? "YES" : "NO"));
-            
-            // Character-by-character comparison
-            error_log("Character comparison for user_id:");
-            error_log("  DB: " . bin2hex($pet_data['user_id']));
-            error_log("  Session: " . bin2hex($user_id_trimmed));
             
             $_SESSION['error'] = "This pet doesn't belong to your account. Please select your own pet.";
         } else {
@@ -159,20 +149,6 @@ if ($selected_pet_id) {
         exit;
     }
     
-    // CRITICAL: Verify pet has required size information
-    if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
-        $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
-        error_log("✗ Pet missing required info:");
-        error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
-        error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
-        error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
-        
-        $_SESSION['error'] = "⚠️ {$pet_name} is missing size information. Please update the pet profile first.";
-        header("Location: ../pets/pet-profile.php");
-        exit;
-    }
-    
-    error_log("✓ Pet validation PASSED");
     error_log("=== PET VALIDATION END ===");
 
     // ✅ API call for package recommendation - INSIDE THE IF BLOCK
@@ -242,7 +218,7 @@ if ($selected_pet_id) {
     
     error_log("Found " . pg_num_rows($packages_result) . " matching packages");
 
-} // ✅ THIS IS WHERE THE IF BLOCK SHOULD END
+}
 ?>
 
 <!DOCTYPE html>
