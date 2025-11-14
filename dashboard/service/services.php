@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_service'])) {
 
 // Handle service update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_service'])) {
-    $id = intval($_POST['package_id']);
+    $id = trim($_POST['package_id']);
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $is_active = isset($_POST['is_active']) ? 'true' : 'false';
@@ -42,22 +42,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_service'])) {
     exit;
 }
 
-// Handle service deletion
+// Handle service deletion (archive)
 if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
+    $delete_id = trim($_GET['delete_id']);
     
-    $result = pg_query_params($conn, "DELETE FROM packages WHERE package_id = $1", [$delete_id]);
+    // Archive the service by setting deleted_at timestamp
+    $result = pg_query_params($conn, "UPDATE packages SET deleted_at = NOW() WHERE package_id = $1", [$delete_id]);
     
     if ($result) {
-        $_SESSION['success'] = "Service deleted successfully!";
+        $_SESSION['success'] = "Service archived successfully!";
     } else {
-        $_SESSION['error'] = "Failed to delete service.";
+        $_SESSION['error'] = "Failed to archive service.";
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-// Fetch all services with pricing info
+// Fetch all active services with pricing info (excluding archived)
 $services_query = "
     SELECT 
         p.package_id,
@@ -68,7 +69,8 @@ $services_query = "
         MAX(pp.price) as max_price,
         COUNT(pp.price_id) as price_count
     FROM packages p
-    LEFT JOIN package_prices pp ON p.package_id = pp.package_id
+    LEFT JOIN package_prices pp ON p.package_id = pp.package_id AND (pp.deleted_at IS NULL OR pp.deleted_at = '')
+    WHERE p.deleted_at IS NULL OR p.deleted_at = ''
     GROUP BY p.package_id, p.name, p.description, p.is_active
     ORDER BY p.package_id ASC
 ";
@@ -77,7 +79,7 @@ $services = pg_query($conn, $services_query);
 // If editing specific service
 $edit_service = null;
 if (isset($_GET['id'])) {
-    $edit_id = intval($_GET['id']);
+    $edit_id = trim($_GET['id']);
     $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1", [$edit_id]);
     $edit_service = pg_fetch_assoc($result);
 }
@@ -849,7 +851,6 @@ if (isset($_GET['id'])) {
   <!-- Header -->
   <div class="header">
     <h1>Service Management</h1>
-    <p>Manage all services and packages</p>
   </div>
 
   <button class="add-btn" onclick="openModal()">
@@ -874,7 +875,7 @@ if (isset($_GET['id'])) {
         <tbody>
           <?php while ($service = pg_fetch_assoc($services)): ?>
           <tr>
-            <td><?= $service['package_id'] ?></td>
+            <td><?= htmlspecialchars($service['package_id']) ?></td>
             <td><strong><?= htmlspecialchars($service['name']) ?></strong></td>
             <td style="max-width: 300px;">
               <?= htmlspecialchars(substr($service['description'], 0, 80)) ?>...
@@ -899,13 +900,13 @@ if (isset($_GET['id'])) {
             </td>
             <td>
               <div class="actions">
-                <a href="manage_prices.php?id=<?= $service['package_id'] ?>" class="view-btn">
+                <a href="manage_prices.php?id=<?= urlencode($service['package_id']) ?>" class="view-btn">
                   <i class='bx bx-dollar'></i> Pricing
                 </a>
-                <a href="?id=<?= $service['package_id'] ?>" class="edit-btn">
+                <a href="?id=<?= urlencode($service['package_id']) ?>" class="edit-btn">
                   <i class='bx bx-edit'></i> Edit
                 </a>
-                <button onclick="confirmDelete(<?= $service['package_id'] ?>)" class="delete-btn">
+                <button onclick="confirmDelete('<?= htmlspecialchars($service['package_id'], ENT_QUOTES) ?>')" class="delete-btn">
                   <i class='bx bx-trash'></i> Delete
                 </button>
               </div>
@@ -954,7 +955,7 @@ if (isset($_GET['id'])) {
     <span class="close" onclick="closeEditModal()">&times;</span>
     <h2>Edit Service</h2>
     <form method="POST">
-      <input type="hidden" name="package_id" value="<?= $edit_service['package_id'] ?>">
+      <input type="hidden" name="package_id" value="<?= htmlspecialchars($edit_service['package_id']) ?>">
       
       <div class="input_box">
         <label>Service Name</label>
@@ -1063,10 +1064,10 @@ function closeEditModal() {
   window.history.replaceState(null, null, window.location.pathname);
 }
 
-// Delete confirmation
+// Delete confirmation - Updated to handle text IDs
 function confirmDelete(serviceId) {
   if (confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
-    window.location.href = '?delete_id=' + serviceId;
+    window.location.href = '?delete_id=' + encodeURIComponent(serviceId);
   }
 }
 

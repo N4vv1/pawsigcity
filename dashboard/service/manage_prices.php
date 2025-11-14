@@ -10,10 +10,10 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$package_id = intval($_GET['id']);
+$package_id = trim($_GET['id']);
 
-// Get service details
-$service_query = "SELECT * FROM packages WHERE package_id = $1";
+// Get service details (only active services)
+$service_query = "SELECT * FROM packages WHERE package_id = $1 AND (deleted_at IS NULL OR deleted_at = '')";
 $service_result = pg_query_params($conn, $service_query, [$package_id]);
 
 if (pg_num_rows($service_result) == 0) {
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_price'])) {
     } else {
         $_SESSION['error'] = "✗ Failed to add price tier. Please try again.";
     }
-    header("Location: ?id=" . $package_id);
+    header("Location: ?id=" . urlencode($package_id));
     exit;
 }
 
@@ -71,34 +71,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_price'])) {
     } else {
         $_SESSION['error'] = "✗ Failed to update price tier. Please try again.";
     }
-    header("Location: ?id=" . $package_id);
+    header("Location: ?id=" . urlencode($package_id));
     exit;
 }
 
-// Handle delete price
+// Handle delete price (archive it)
 if (isset($_GET['delete_price'])) {
     $price_id = intval($_GET['delete_price']);
-    $delete_query = "DELETE FROM package_prices WHERE price_id = $1";
+    
+    // Archive the price tier by setting deleted_at timestamp
+    $delete_query = "UPDATE package_prices SET deleted_at = NOW() WHERE price_id = $1";
     $result = pg_query_params($conn, $delete_query, [$price_id]);
 
     if ($result) {
-        $_SESSION['success'] = "✓ Price tier deleted successfully!";
+        $_SESSION['success'] = "✓ Price tier archived successfully!";
     } else {
-        $_SESSION['error'] = "✗ Failed to delete price tier. Please try again.";
+        $_SESSION['error'] = "✗ Failed to archive price tier. Please try again.";
     }
-    header("Location: ?id=" . $package_id);
+    header("Location: ?id=" . urlencode($package_id));
     exit;
 }
 
-// Get all prices for this service
-$prices_query = "SELECT * FROM package_prices WHERE package_id = $1 ORDER BY species, size, price";
+// Get all active prices for this service
+$prices_query = "SELECT * FROM package_prices 
+                 WHERE package_id = $1 
+                 AND (deleted_at IS NULL OR deleted_at = '')
+                 ORDER BY species, size, price";
 $prices = pg_query_params($conn, $prices_query, [$package_id]);
 
 // If editing specific price
 $edit_price = null;
 if (isset($_GET['edit'])) {
    $edit_id = intval($_GET['edit']);
-  $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1";
+  $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1 AND (deleted_at IS NULL OR deleted_at = '')";
   $result = pg_query_params($conn, $get_price_query, [$edit_id]);
   $edit_price = pg_fetch_assoc($result);
 }
@@ -838,11 +843,11 @@ if (isset($_GET['edit'])) {
             <td><strong style="color: #4CAF50;">₱<?= number_format($price['price'], 2) ?></strong></td>
             <td>
               <div class="actions">
-                <a href="?id=<?= $package_id ?>&edit=<?= $price['price_id'] ?>" class="edit-btn">
+                <a href="?id=<?= urlencode($package_id) ?>&edit=<?= $price['price_id'] ?>" class="edit-btn">
                   <i class='bx bx-edit'></i> Edit
                 </a>
-                <a href="?id=<?= $package_id ?>&delete_price=<?= $price['price_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this price tier?')">
-                  <i class='bx bx-trash'></i> Delete
+                <a href="?id=<?= urlencode($package_id) ?>&delete_price=<?= $price['price_id'] ?>" class="delete-btn" onclick="return confirm('Are you sure you want to archive this price tier?')">
+                  <i class='bx bx-archive'></i> Archive
                 </a>
               </div>
             </td>
@@ -1003,7 +1008,7 @@ function closeAddModal() {
 
 function closeEditModal() {
   document.getElementById('editModal').style.display = 'none';
-  window.history.replaceState(null, null, '?id=<?= $package_id ?>');
+  window.history.replaceState(null, null, '?id=<?= urlencode($package_id) ?>');
 }
 
 // Close modals when clicking outside

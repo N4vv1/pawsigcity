@@ -10,29 +10,29 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
-$service_id = intval($_GET['id']);
+$service_id = trim($_GET['id']);
 
-// Check if service exists
-$check = pg_query_params($conn, "SELECT name FROM packages WHERE package_id = $1", [$service_id]);
+// Check if service exists and is not already archived
+$check = pg_query_params($conn, "SELECT name FROM packages WHERE package_id = $1 AND (deleted_at IS NULL OR deleted_at = '')", [$service_id]);
 
 if (pg_num_rows($check) == 0) {
-    $_SESSION['error'] = "Service not found.";
+    $_SESSION['error'] = "Service not found or already archived.";
     header("Location: https://pawsigcity.onrender.com/dashboard/service/services.php");
     exit;
 }
 
 $service = pg_fetch_assoc($check);
 
-// Delete associated prices first (foreign key constraint)
-pg_query_params($conn, "DELETE FROM package_prices WHERE package_id = $1", [$service_id]);
+// Archive the service by setting deleted_at timestamp
+$result = pg_query_params($conn, "UPDATE packages SET deleted_at = NOW() WHERE package_id = $1", [$service_id]);
 
-// Delete the service
-$result = pg_query_params($conn, "DELETE FROM packages WHERE package_id = $1", [$service_id]);
+// Also archive associated prices
+pg_query_params($conn, "UPDATE package_prices SET deleted_at = NOW() WHERE package_id = $1 AND (deleted_at IS NULL OR deleted_at = '')", [$service_id]);
 
 if ($result) {
-    $_SESSION['success'] = "Service '" . htmlspecialchars($service['name']) . "' deleted successfully.";
+    $_SESSION['success'] = "Service '" . htmlspecialchars($service['name']) . "' archived successfully.";
 } else {
-    $_SESSION['error'] = "Failed to delete service. Please try again.";
+    $_SESSION['error'] = "Failed to archive service. Please try again.";
 }
 
 header("Location: https://pawsigcity.onrender.com/dashboard/service/services.php");

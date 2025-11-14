@@ -759,7 +759,6 @@ if (isset($_GET['id'])) {
   <!-- Header -->
   <div class="header">
     <h1>User Management</h1>
-    <p>Manage all user accounts and roles</p>
   </div>
 
   <button class="add-btn" onclick="openModal()">
