@@ -112,7 +112,7 @@ if ($row_count > 0) {
       --white-color: #fff;
       --dark-color: #252525;
       --primary-color: #A8E6CF;
-      --secondary-color: #FFE29D;
+      --secondary-color: #016B61;
       --light-pink-color: #faf4f5;
       --approved-color: #4CAF50;
       --pending-color: #FF9800;
