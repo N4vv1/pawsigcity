@@ -91,7 +91,7 @@ if (isset($_GET['delete_price'])) {
     // Check if deleted_at column exists in package_prices
     $price_column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='package_prices' AND column_name='deleted_at'");
     
-    if (pg_num_rows($price_column_check) > 0) {
+    if ($price_column_check && pg_num_rows($price_column_check) > 0) {
         // Archive the price tier by setting deleted_at timestamp
         $delete_query = "UPDATE package_prices SET deleted_at = NOW() WHERE price_id = $1";
         $message = "✓ Price tier archived successfully!";
@@ -114,12 +114,12 @@ if (isset($_GET['delete_price'])) {
 
 // Get all active prices for this service
 $price_column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='package_prices' AND column_name='deleted_at'");
-$has_price_deleted_at = pg_num_rows($price_column_check) > 0;
+$has_price_deleted_at = $price_column_check && pg_num_rows($price_column_check) > 0;
 
 if ($has_price_deleted_at) {
     $prices_query = "SELECT * FROM package_prices 
                      WHERE package_id = $1 
-                     AND (deleted_at IS NULL OR deleted_at = '')
+                     AND deleted_at IS NULL
                      ORDER BY species, size, price";
 } else {
     $prices_query = "SELECT * FROM package_prices 
@@ -129,13 +129,22 @@ if ($has_price_deleted_at) {
 
 $prices = pg_query_params($conn, $prices_query, [$package_id]);
 
+if (!$prices) {
+    echo "<div style='background: #f44336; color: white; padding: 20px; margin: 20px;'>";
+    echo "<strong>Database Error on Prices Query:</strong> " . htmlspecialchars(pg_last_error($conn));
+    echo "<br><strong>Query:</strong> " . htmlspecialchars($prices_query);
+    echo "<br><strong>Package ID:</strong> " . htmlspecialchars($package_id);
+    echo "</div>";
+    die();
+}
+
 // If editing specific price
 $edit_price = null;
 if (isset($_GET['edit'])) {
    $edit_id = intval($_GET['edit']);
    
    if ($has_price_deleted_at) {
-       $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1 AND (deleted_at IS NULL OR deleted_at = '')";
+       $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1 AND deleted_at IS NULL";
    } else {
        $get_price_query = "SELECT * FROM package_prices WHERE price_id = $1";
    }
@@ -847,7 +856,7 @@ if (isset($_GET['edit'])) {
   </div>
   
   <!-- Pricing Table -->
-  <?php if (pg_num_rows($prices) > 0): ?>
+  <?php if ($prices && pg_num_rows($prices) > 0): ?>
   <div class="table-section">
     <h2>Price Tiers</h2>
     <div style="overflow-x: auto;">
