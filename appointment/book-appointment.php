@@ -2,8 +2,11 @@
 session_start();
 require '../db.php';
 
-// ✅ Debug session
-error_log("DEBUG - Session started. User ID from session: " . (isset($_SESSION['user_id']) ? "'{$_SESSION['user_id']}'" : "NOT SET"));
+// ✅ Clear any previous errors when loading the pet selection page
+if (!isset($_GET['pet_id'])) {
+    unset($_SESSION['error']);
+    unset($_SESSION['success']);
+}
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../homepage/login/loginform.php");
@@ -84,9 +87,10 @@ if ($selected_pet_id) {
     $user_id_trimmed = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', trim((string)$user_id));
     
     // Enhanced debugging
-    error_log("=== PET VALIDATION START ===");
-    error_log("Selected Pet ID: '{$selected_pet_id}' (length: " . strlen($selected_pet_id) . ")");
-    error_log("User ID: '{$user_id_trimmed}' (length: " . strlen($user_id_trimmed) . ")");
+    error_log("=== CLICKED BUTTON - Starting validation ===");
+    error_log("GET pet_id: " . var_export($_GET['pet_id'], true));
+    error_log("Selected pet_id: " . var_export($selected_pet_id, true));
+    error_log("Session user_id: " . var_export($user_id, true));
     
     // Validate pet ownership
     $pet_check = pg_query_params(
