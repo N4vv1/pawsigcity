@@ -17,6 +17,52 @@ if (!$conn) {
 // ✅ Debug: Check user_id
 error_log("User ID: " . $user_id);
 
+// ✅ Pagination and Filtering
+$items_per_page = 5;
+$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($current_page - 1) * $items_per_page;
+
+// Get filter parameters
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$status_filter = isset($_GET['status']) ? $_GET['status'] : '';
+
+// Build WHERE clause
+$where_conditions = ["a.user_id = $1"];
+$params = [$user_id];
+$param_count = 1;
+
+if (!empty($search)) {
+    $param_count++;
+    $where_conditions[] = "(p.name ILIKE $" . $param_count . " OR pk.name ILIKE $" . $param_count . ")";
+    $params[] = "%$search%";
+}
+
+if (!empty($status_filter)) {
+    if ($status_filter === 'approved') {
+        $where_conditions[] = "a.is_approved = true AND a.status != 'completed' AND a.status != 'cancelled'";
+    } elseif ($status_filter === 'pending') {
+        $where_conditions[] = "a.is_approved = false AND a.status != 'cancelled'";
+    } else {
+        $param_count++;
+        $where_conditions[] = "a.status = $" . $param_count;
+        $params[] = $status_filter;
+    }
+}
+
+$where_clause = implode(' AND ', $where_conditions);
+
+// Count total records
+$count_query = "
+    SELECT COUNT(*) as total
+    FROM appointments a
+    JOIN pets p ON a.pet_id = p.pet_id
+    JOIN packages pk ON a.package_id = pk.package_id
+    WHERE $where_clause
+";
+$count_result = pg_query_params($conn, $count_query, $params);
+$total_records = pg_fetch_assoc($count_result)['total'];
+$total_pages = ceil($total_records / $items_per_page);
+
 // ✅ PostgreSQL query using pg_query_params
 $query = "
     SELECT a.*, 
@@ -25,11 +71,12 @@ $query = "
     FROM appointments a
     JOIN pets p ON a.pet_id = p.pet_id
     JOIN packages pk ON a.package_id = pk.package_id
-    WHERE a.user_id = $1
-    ORDER BY a.appointment_date DESC
+    WHERE $where_clause
+    ORDER BY a.appointment_date ASC
+    LIMIT $items_per_page OFFSET $offset
 ";
 
-$appointments = pg_query_params($conn, $query, [$user_id]);
+$appointments = pg_query_params($conn, $query, $params);
 
 // ✅ Debug: Check query execution
 if (!$appointments) {
@@ -98,13 +145,13 @@ error_log("Number of appointments found: " . $row_count);
 
   .stat-card {
     background: #fff;
-    padding: 30px 25px;
+    padding: 10px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     text-align: center;
     transition: all 0.3s ease;
     border-left: 4px solid #A8E6CF;
-    margin-top: 50px;
+    margin-top: 40px;
   }
 
   .stat-card:hover {
@@ -310,6 +357,8 @@ error_log("Number of appointments found: " . $row_count);
     font-family: monospace;
   }
 
+  
+
   @keyframes fadeInDown {
     from {
       opacity: 0;
@@ -429,6 +478,26 @@ error_log("Number of appointments found: " . $row_count);
       font-size: 1rem;
     }
   }
+
+  // ✅ Pagination and Filtering
+$items_per_page = 5;
+$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($current_page - 1) * $items_per_page;
+
+// Get filter parameters
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$status_filter = isset($_GET['status']) ? $_GET['status'] : '';
+
+// Build WHERE clause
+$where_conditions = ["a.user_id = $1"];
+$params = [$user_id];
+$param_count = 1;
+
+if (!empty($search)) {
+    $param_count++;
+    $where_conditions[] = "(p.name ILIKE $$param_count OR pk.name ILIKE $$param_count)";
+    $params[] = "%$search%";
+}
 
   @media (max-width: 480px) {
     .stats-container {

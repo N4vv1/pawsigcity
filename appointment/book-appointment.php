@@ -1602,12 +1602,6 @@ select option:disabled:hover {
                     </option>
                   <?php endwhile; ?>
                 </select>
-                
-                <div id="package-price-display" style="margin-top: 12px; padding: 14px; background: #f0f8ff; border-radius: 10px; display: none;">
-                  <strong style="color: #2c3e50;">Selected Price:</strong> 
-                  <span class="package-price" id="selected-price">₱ 0.00</span>
-                </div>
-              </div>
           
               <div class="form-group">
                 <label for="groomer_id">
