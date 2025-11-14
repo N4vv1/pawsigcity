@@ -18,11 +18,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$user_id = intval($_SESSION['user_id']); // sanitize user_id
+$user_id = ($_SESSION['user_id']); // sanitize user_id
 
 // Query to get user's pets
-$query = "SELECT * FROM pets WHERE user_id = $user_id";
-$pets = pg_query($conn, $query);
+$query = "SELECT * FROM pets WHERE user_id = $1";
+$pets = pg_query_params($conn, $query, [$user_id]);
 
 if (!$pets) {
     echo "Query Error: " . pg_last_error($conn);

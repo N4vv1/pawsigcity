@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $user_id = intval($_SESSION['user_id']);
+    $user_id = ($_SESSION['user_id']);
 
     // ✅ Collect basic pet info (with new required fields)
     $name = trim($_POST['name'] ?? '');
