@@ -52,6 +52,8 @@ $packages_result = pg_query($conn, $packages_query);
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
       --disabled-color: #e0e0e0;
+      --edit-color: #4CAF50;
+      --delete-color: #F44336;
       --font-size-s: 0.9rem;
       --font-size-n: 1rem;
       --font-size-l: 1.5rem;
@@ -77,24 +79,29 @@ $packages_result = pg_query($conn, $packages_query);
       display: flex;
     }
 
-    .notification {
+    /* TOAST NOTIFICATION */
+    .toast {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 16px 20px;
-      border-radius: var(--border-radius-s);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      bottom: 30px;
+      right: 30px;
+      padding: 16px 24px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       z-index: 10000;
-      max-width: 400px;
       display: flex;
       align-items: center;
       gap: 12px;
-      animation: slideIn 0.3s ease-out;
+      min-width: 300px;
+      max-width: 400px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      animation: slideInToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      opacity: 0;
     }
 
-    @keyframes slideIn {
+    @keyframes slideInToast {
       from {
-        transform: translateX(100%);
+        transform: translateX(400px);
         opacity: 0;
       }
       to {
@@ -103,40 +110,53 @@ $packages_result = pg_query($conn, $packages_query);
       }
     }
 
-    @keyframes slideOut {
+    @keyframes slideOutToast {
       from {
         transform: translateX(0);
         opacity: 1;
       }
       to {
-        transform: translateX(100%);
+        transform: translateX(400px);
         opacity: 0;
       }
     }
 
-    .notification.success {
-      background-color: #4CAF50;
+    .toast.show {
+      opacity: 1;
+    }
+
+    .toast.hide {
+      animation: slideOutToast 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    }
+
+    .toast-success {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
       color: white;
     }
 
-    .notification.error {
-      background-color: #FF6B6B;
+    .toast-error {
+      background: linear-gradient(135deg, #F44336 0%, #e53935 100%);
       color: white;
     }
 
-    .notification i {
+    .toast i {
       font-size: 24px;
+      flex-shrink: 0;
     }
 
-    .notification .close-notification {
-      margin-left: auto;
+    .toast-message {
+      flex: 1;
+    }
+
+    .toast-close {
       cursor: pointer;
       font-size: 20px;
       opacity: 0.8;
       transition: opacity 0.2s;
+      flex-shrink: 0;
     }
 
-    .notification .close-notification:hover {
+    .toast-close:hover {
       opacity: 1;
     }
 
@@ -222,7 +242,7 @@ $packages_result = pg_query($conn, $packages_query);
       padding: 10px 12px;
       text-decoration: none;
       color: var(--dark-color);
-      border-radius: var(--border-radius-s);
+      border-radius: 14px;
       transition: background 0.3s, color 0.3s;
       font-weight: var(--font-weight-semi-bold);
     }
@@ -250,66 +270,114 @@ $packages_result = pg_query($conn, $packages_query);
       flex-grow: 1;
       width: calc(100% - 260px);
       transition: margin-left var(--transition-speed), width var(--transition-speed);
-      overflow-x: auto;
     }
 
-    h2 {
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
       font-size: var(--font-size-xl);
       color: var(--dark-color);
-      margin-bottom: 25px;
+      margin-bottom: 10px;
+      font-weight: 600;
     }
 
-    .table-container {
+    .header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    /* TABLE SECTION */
+    .table-section {
+      background: var(--white-color);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-section h2 {
+      font-size: 1.3rem;
+      margin-bottom: 25px;
+      color: var(--dark-color);
+      font-weight: 600;
     }
 
     table {
       width: 100%;
-      min-width: 900px;
+      min-width: 1000px;
       border-collapse: collapse;
-      background-color: var(--white-color);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     th, td {
-      padding: 14px 10px;
-      border: 1px solid var(--medium-gray-color);
-      text-align: center;
+      padding: 15px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
     }
 
     th {
-      background: var(--primary-color);
-      font-weight: var(--font-weight-bold);
+      background-color: #fafafa;
       color: var(--dark-color);
+      font-weight: 600;
+      font-size: 0.9rem;
+      position: sticky;
+      top: 0;
     }
 
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+    tbody tr:hover {
+      background-color: #fafafa;
     }
 
-    tr:hover {
-      background-color: #ffe29d33;
+    .status-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.confirmed {
+      background: rgba(76, 175, 80, 0.1);
+      color: #4CAF50;
+    }
+
+    .status-badge.completed {
+      background: rgba(33, 150, 243, 0.1);
+      color: #2196F3;
+    }
+
+    .status-badge.cancelled {
+      background: rgba(244, 67, 54, 0.1);
+      color: #F44336;
+    }
+
+    .status-badge.no_show {
+      background: rgba(255, 193, 7, 0.1);
+      color: #FFC107;
     }
 
     .action-buttons {
       display: flex;
       gap: 8px;
-      justify-content: center;
       flex-wrap: wrap;
     }
 
     .action-buttons button {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
+      padding: 6px 14px;
       font-size: 0.85rem;
-      transition: all 0.3s;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    /* UPDATED: Disabled button styles */
     .action-buttons button:disabled {
       background-color: var(--disabled-color) !important;
       color: #999 !important;
@@ -318,93 +386,115 @@ $packages_result = pg_query($conn, $packages_query);
     }
 
     .edit-btn {
-      background-color: var(--primary-color);
-      color: var(--dark-color);
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--edit-color);
     }
 
     .edit-btn:hover:not(:disabled) {
-      background-color: var(--secondary-color);
+      background: var(--edit-color);
+      color: var(--white-color);
     }
 
     .cancel-btn-table {
-      background-color: #FF6B6B;
-      color: #fff;
+      background: rgba(244, 67, 54, 0.1);
+      color: var(--delete-color);
     }
 
     .cancel-btn-table:hover:not(:disabled) {
-      background-color: #FF4949;
+      background: var(--delete-color);
+      color: var(--white-color);
     }
 
     .modal {
       display: none;
       position: fixed;
-      z-index: 1000;
+      z-index: 9999;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
-      overflow: auto;
       background-color: rgba(0,0,0,0.5);
-      backdrop-filter: blur(3px);
+      justify-content: center;
+      align-items: center;
     }
 
     .modal-content {
       background-color: var(--white-color);
-      margin: 5% auto;
-      padding: 30px 25px;
-      width: 90%;
-      max-width: 450px;
-      border-radius: var(--border-radius-s);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-      position: relative;
-      transition: all 0.3s ease;
+      padding: 35px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .modal-content h2 {
-      font-size: var(--font-size-l);
+      margin-bottom: 25px;
       color: var(--dark-color);
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 2px solid var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: 600;
     }
 
-    .modal-content hr {
-      border: none;
-      border-top: 1px solid var(--medium-gray-color);
-      margin: 10px 0 20px 0;
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 1.8rem;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .close:hover {
+      color: var(--dark-color);
     }
 
     .modal-content form {
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      background-color: #fafafa;
-      padding: 15px;
-      border-radius: var(--border-radius-s);
+      gap: 20px;
     }
 
     .modal-content label {
-      font-weight: var(--font-weight-semi-bold);
+      display: block;
+      margin-bottom: 8px;
       color: var(--dark-color);
-      margin-bottom: 5px;
-      font-size: 0.95rem;
+      font-weight: 500;
+      font-size: 0.9rem;
     }
 
     .modal-content input,
     .modal-content select {
       width: 100%;
-      padding: 10px;
-      border: 1px solid var(--medium-gray-color);
-      border-radius: var(--border-radius-s);
-      font-size: var(--font-size-n);
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: var(--light-pink-color);
+      font-size: 1rem;
+      color: var(--dark-color);
+      transition: all 0.2s;
     }
 
     .modal-content input:focus,
     .modal-content select:focus {
-      border-color: var(--primary-color);
       outline: none;
+      border-color: var(--primary-color);
+      background-color: var(--white-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
     }
 
     .modal-buttons {
@@ -416,22 +506,23 @@ $packages_result = pg_query($conn, $packages_query);
     }
 
     .modal-content button {
-      padding: 10px 18px;
+      padding: 14px 20px;
       border: none;
       border-radius: var(--border-radius-s);
       font-weight: var(--font-weight-semi-bold);
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.2s;
       font-size: 0.9rem;
     }
 
     .modal-content button[type="submit"] {
-      background-color: var(--primary-color);
-      color: var(--dark-color);
+      background-color: var(--dark-color);
+      color: var(--white-color);
     }
 
     .modal-content button[type="submit"]:hover {
-      background-color: var(--secondary-color);
+      background-color: #1a1a1a;
+      transform: translateY(-1px);
     }
 
     .modal-content .cancel-btn {
@@ -443,33 +534,14 @@ $packages_result = pg_query($conn, $packages_query);
       background-color: #FF4B4B;
     }
 
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      line-height: 1;
-    }
-
-    .close:hover,
-    .close:focus {
-      color: black;
-    }
-
     @media screen and (max-width: 1024px) {
       table {
-        font-size: 0.9rem;
-        min-width: 800px;
+        font-size: 0.85rem;
+        min-width: 900px;
       }
 
       th, td {
-        padding: 12px 8px;
-      }
-
-      .action-buttons button {
-        font-size: 0.8rem;
-        padding: 5px 10px;
+        padding: 12px 10px;
       }
     }
 
@@ -492,17 +564,21 @@ $packages_result = pg_query($conn, $packages_query);
         padding: 80px 20px 40px;
       }
 
-      h2 {
+      .header h1 {
         font-size: 1.6rem;
       }
 
+      .table-section {
+        padding: 20px;
+      }
+
       table {
-        font-size: 0.85rem;
-        min-width: 750px;
+        font-size: 0.8rem;
+        min-width: 800px;
       }
 
       th, td {
-        padding: 10px 6px;
+        padding: 10px 8px;
       }
 
       .action-buttons {
@@ -512,22 +588,18 @@ $packages_result = pg_query($conn, $packages_query);
 
       .action-buttons button {
         width: 100%;
-        font-size: 0.8rem;
       }
 
       .modal-content {
-        margin: 10% auto;
-        padding: 25px 20px;
+        width: 95%;
+        padding: 25px;
       }
 
-      .modal-content h2 {
-        font-size: 1.3rem;
-      }
-
-      .notification {
-        right: 10px;
-        left: 10px;
-        max-width: calc(100% - 20px);
+      .toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        min-width: auto;
       }
     }
 
@@ -546,51 +618,25 @@ $packages_result = pg_query($conn, $packages_query);
         font-size: 0.9rem;
       }
 
-      .menu a i {
-        font-size: 18px;
-      }
-
-      h2 {
+      .header h1 {
         font-size: 1.4rem;
-        margin-bottom: 20px;
       }
 
       table {
         font-size: 0.75rem;
-        min-width: 650px;
+        min-width: 700px;
       }
 
       th, td {
-        padding: 8px 4px;
-      }
-
-      .action-buttons button {
-        font-size: 0.75rem;
-        padding: 5px 8px;
+        padding: 8px 5px;
       }
 
       .modal-content {
-        width: 95%;
         padding: 20px 15px;
       }
 
       .modal-content h2 {
         font-size: 1.2rem;
-      }
-
-      .modal-content label {
-        font-size: 0.85rem;
-      }
-
-      .modal-content input,
-      .modal-content select {
-        padding: 8px;
-        font-size: 0.9rem;
-      }
-
-      .modal-content button {
-        padding: 8px 14px;
-        font-size: 0.85rem;
       }
 
       .modal-buttons {
@@ -604,24 +650,6 @@ $packages_result = pg_query($conn, $packages_query);
   </style>
 </head>
 <body>
-
-<?php if (isset($_SESSION['success_message'])): ?>
-<div class="notification success" id="notification">
-  <i class='bx bx-check-circle'></i>
-  <span><?= htmlspecialchars($_SESSION['success_message']) ?></span>
-  <span class="close-notification" onclick="closeNotification()">&times;</span>
-</div>
-<?php unset($_SESSION['success_message']); ?>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['error_message'])): ?>
-<div class="notification error" id="notification">
-  <i class='bx bx-error-circle'></i>
-  <span><?= htmlspecialchars($_SESSION['error_message']) ?></span>
-  <span class="close-notification" onclick="closeNotification()">&times;</span>
-</div>
-<?php unset($_SESSION['error_message']); ?>
-<?php endif; ?>
 
 <button class="mobile-menu-btn" onclick="toggleSidebar()">
   <i class='bx bx-menu'></i>
@@ -639,8 +667,13 @@ $packages_result = pg_query($conn, $packages_query);
 </aside>
 
 <main class="content">
-  <h2>All Appointments</h2>
-  <div class="table-container">
+  <div class="header">
+    <h1>All Appointments</h1>
+    <p>Manage and track all grooming appointments</p>
+  </div>
+
+  <div class="table-section">
+    <h2>Appointment List</h2>
     <table>
       <thead>
         <tr>
@@ -661,7 +694,6 @@ $packages_result = pg_query($conn, $packages_query);
         <?php while ($row = pg_fetch_assoc($result)): ?>
           <?php
             $status = strtolower($row['status']);
-            // Check if status is completed or cancelled
             $is_disabled = ($status === 'completed' || $status === 'cancelled');
           ?>
           <tr>
@@ -673,16 +705,9 @@ $packages_result = pg_query($conn, $packages_query);
             <td><?= htmlspecialchars($row['pet_name'] ?? 'N/A') ?></td>
             <td><?= htmlspecialchars($row['pet_breed'] ?? 'N/A') ?></td>
             <td>
-              <?php
-                $status_color = match($status) {
-                  'confirmed' => '#4CAF50',
-                  'completed' => '#2196F3',
-                  'cancelled' => '#FF6B6B',
-                  'no_show'  => '#FFC107',
-                  default => '#ccc',
-                };
-              ?>
-              <span style="color:<?= $status_color ?>; font-weight:600;"><?= ucfirst($status) ?></span>
+              <span class="status-badge <?= $status ?>">
+                <?= ucfirst(str_replace('_', ' ', $status)) ?>
+              </span>
             </td>
             <td><?= htmlspecialchars($row['groomer_name']) ?></td>
             <td>
@@ -694,12 +719,12 @@ $packages_result = pg_query($conn, $packages_query);
                         data-status="<?= $row['status'] ?>"
                         data-groomer="<?= htmlspecialchars($row['groomer_name']) ?>"
                         <?= $is_disabled ? 'disabled title="Cannot edit completed/cancelled appointments"' : '' ?>>
-                  Edit
+                  <i class='bx bx-edit'></i> Edit
                 </button>
                 <button class="cancel-btn-table"
                         onclick="if(confirm('Cancel this appointment? The customer will be notified via email.')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }"
                         <?= $is_disabled ? 'disabled title="Already completed/cancelled"' : '' ?>>
-                  Cancel
+                  <i class='bx bx-trash'></i> Cancel
                 </button>
               </div>
             </td>
@@ -714,40 +739,47 @@ $packages_result = pg_query($conn, $packages_query);
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Edit Appointment</h2>
-    <hr>
     <form id="editForm" method="POST" action="edit_appointment.php">
       <input type="hidden" name="appointment_id" id="modalAppointmentId">
 
-      <label>Date:</label>
-      <input type="datetime-local" name="appointment_date" id="modalDate" required>
+      <div>
+        <label>Date:</label>
+        <input type="datetime-local" name="appointment_date" id="modalDate" required>
+      </div>
 
-      <label>Package:</label>
-      <select name="package_id" id="modalPackage" required>
-        <?php
-        pg_result_seek($packages_result, 0);
-        while ($pkg = pg_fetch_assoc($packages_result)):
-        ?>
-        <option value="<?= $pkg['package_id'] ?>"><?= htmlspecialchars($pkg['name']) ?></option>
-        <?php endwhile; ?>
-      </select>
+      <div>
+        <label>Package:</label>
+        <select name="package_id" id="modalPackage" required>
+          <?php
+          pg_result_seek($packages_result, 0);
+          while ($pkg = pg_fetch_assoc($packages_result)):
+          ?>
+          <option value="<?= $pkg['package_id'] ?>"><?= htmlspecialchars($pkg['name']) ?></option>
+          <?php endwhile; ?>
+        </select>
+      </div>
 
-      <label>Groomer:</label>
-      <select name="groomer_name" id="modalGroomer" required>
-        <?php
-        pg_result_seek($groomers_result, 0);
-        while ($g = pg_fetch_assoc($groomers_result)):
-        ?>
-        <option value="<?= htmlspecialchars($g['groomer_name']) ?>"><?= htmlspecialchars($g['groomer_name']) ?></option>
-        <?php endwhile; ?>
-      </select>
+      <div>
+        <label>Groomer:</label>
+        <select name="groomer_name" id="modalGroomer" required>
+          <?php
+          pg_result_seek($groomers_result, 0);
+          while ($g = pg_fetch_assoc($groomers_result)):
+          ?>
+          <option value="<?= htmlspecialchars($g['groomer_name']) ?>"><?= htmlspecialchars($g['groomer_name']) ?></option>
+          <?php endwhile; ?>
+        </select>
+      </div>
 
-      <label>Status:</label>
-      <select name="status" id="modalStatus" required>
-        <option value="confirmed">Confirmed</option>
-        <option value="completed">Completed</option>
-        <option value="cancelled">Cancelled</option>
-        <option value="no_show">No Show</option>
-      </select>
+      <div>
+        <label>Status:</label>
+        <select name="status" id="modalStatus" required>
+          <option value="confirmed">Confirmed</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="no_show">No Show</option>
+        </select>
+      </div>
 
       <div class="modal-buttons">
         <button type="submit">Update Appointment</button>
@@ -758,6 +790,44 @@ $packages_result = pg_query($conn, $packages_query);
 </div>
 
 <script>
+function showToast(message, type = 'success') {
+  const existingToasts = document.querySelectorAll('.toast');
+  existingToasts.forEach(toast => toast.remove());
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  
+  const icon = type === 'success' ? 'bx-check-circle' : 'bx-error-circle';
+  
+  toast.innerHTML = `
+    <i class='bx ${icon}'></i>
+    <span class="toast-message">${message}</span>
+    <i class='bx bx-x toast-close' onclick="closeToast(this)"></i>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  
+  setTimeout(() => {
+    hideToast(toast);
+  }, 4000);
+}
+
+function hideToast(toast) {
+  toast.classList.add('hide');
+  setTimeout(() => {
+    toast.remove();
+  }, 400);
+}
+
+function closeToast(closeBtn) {
+  const toast = closeBtn.closest('.toast');
+  hideToast(toast);
+}
+
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
@@ -767,23 +837,6 @@ function toggleSidebar() {
     overlay.classList.toggle('active');
   }
 }
-
-function closeNotification() {
-  const notification = document.getElementById('notification');
-  if (notification) {
-    notification.style.animation = 'slideOut 0.3s ease-out';
-    setTimeout(() => {
-      notification.remove();
-    }, 300);
-  }
-}
-
-setTimeout(() => {
-  const notification = document.getElementById('notification');
-  if (notification) {
-    closeNotification();
-  }
-}, 5000);
 
 document.addEventListener('DOMContentLoaded', function() {
   const menuLinks = document.querySelectorAll('.menu a');
@@ -804,7 +857,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   editButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-      // Don't open modal if button is disabled
       if (btn.disabled) return;
       
       document.getElementById("modalAppointmentId").value = btn.dataset.id;
@@ -819,7 +871,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById("modalStatus").value = btn.dataset.status;
       document.getElementById("modalGroomer").value = btn.dataset.groomer;
 
-      modal.style.display = "block";
+      modal.style.display = "flex";
     });
   });
 
@@ -834,6 +886,20 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
+<?php if (isset($_SESSION['success_message'])): ?>
+  <script>
+    showToast('<?= addslashes($_SESSION['success_message']); ?>', 'success');
+  </script>
+  <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error_message'])): ?>
+  <script>
+    showToast('<?= addslashes($_SESSION['error_message']); ?>', 'error');
+  </script>
+  <?php unset($_SESSION['error_message']); ?>
+<?php endif; ?>
 
 </body>
 </html>
