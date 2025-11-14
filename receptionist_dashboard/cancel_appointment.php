@@ -2,52 +2,18 @@
 session_start();
 include '../db.php';
 
-// Function to find and load PHPMailer
-function loadPHPMailer() {
-    // Try to find composer autoload
-    $possible_paths = [
-        __DIR__ . '/vendor/autoload.php',
-        __DIR__ . '/../vendor/autoload.php',
-        __DIR__ . '/../../vendor/autoload.php',
-        __DIR__ . '/../../../vendor/autoload.php',
-        dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php',
-        $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php',
-    ];
-    
-    foreach ($possible_paths as $path) {
-        if (file_exists($path)) {
-            require_once $path;
-            if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-                error_log("✓ PHPMailer loaded from: " . realpath($path));
-                return true;
-            }
-        }
-    }
-    
-    // Try direct include as fallback
-    $direct_paths = [
-        __DIR__ . '/vendor/phpmailer/phpmailer/src/PHPMailer.php',
-        __DIR__ . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php',
-        __DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php',
-    ];
-    
-    foreach ($direct_paths as $path) {
-        if (file_exists($path)) {
-            $base_path = dirname($path);
-            require_once $path;
-            require_once $base_path . '/Exception.php';
-            require_once $base_path . '/SMTP.php';
-            error_log("✓ PHPMailer loaded directly from: " . realpath($path));
-            return true;
-        }
-    }
-    
-    error_log("✗ PHPMailer not found. Current dir: " . __DIR__);
-    return false;
-}
-
 // Load PHPMailer
-$phpmailer_loaded = loadPHPMailer();
+$phpmailer_loaded = false;
+
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+    if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+        $phpmailer_loaded = true;
+        error_log("✓ PHPMailer loaded successfully");
+    }
+} else {
+    error_log("✗ Autoload not found at: " . __DIR__ . '/vendor/autoload.php');
+}
 
 // Validate appointment ID
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -68,7 +34,9 @@ if ($appointment_id <= 0) {
 pg_query($conn, "BEGIN");
 
 try {
-    // Get appointment details
+    // FIXED: Proper join using LPAD to match user_id formats
+    // Appointments has user_id as integer (3, 5)
+    // Users has user_id as string ('00003', '00005')
     $query = "
         SELECT 
             a.appointment_id,
@@ -83,7 +51,7 @@ try {
         FROM appointments a
         LEFT JOIN packages p ON a.package_id::text = p.package_id
         LEFT JOIN pets pet ON a.pet_id = pet.pet_id
-        LEFT JOIN users u ON a.user_id::text = u.user_id
+        LEFT JOIN users u ON LPAD(a.user_id::text, 5, '0') = u.user_id
         WHERE a.appointment_id = $1
     ";
     
@@ -98,6 +66,9 @@ try {
     }
     
     $appointment = pg_fetch_assoc($result);
+    
+    // Debug logging
+    error_log("Appointment data: user_id={$appointment['user_id']}, email={$appointment['user_email']}, name={$appointment['user_name']}");
     
     if ($appointment['status'] === 'cancelled') {
         throw new Exception("This appointment is already cancelled.");
@@ -120,28 +91,23 @@ try {
     
     if ($phpmailer_loaded && !empty($appointment['user_email'])) {
         try {
-            // Use fully qualified class name to avoid namespace issues
             $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
             
-            // Enable verbose debug output for troubleshooting
-            $mail->SMTPDebug  = 0; // Set to 2 for debugging
+            // Server settings
+            $mail->SMTPDebug  = 0;
             $mail->Debugoutput = function($str, $level) {
                 error_log("SMTP Debug level $level: $str");
             };
             
-            // Server settings
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = 'johnbernardmitra25@gmail.com';
-            $mail->Password   = 'iigy qtnu ojku ktsx'; // App password
+            $mail->Password   = 'iigy qtnu ojku ktsx';
             $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
-            
-            // Timeout settings
             $mail->Timeout    = 30;
-            $mail->SMTPKeepAlive = false;
             
             // Recipients
             $mail->setFrom('johnbernardmitra25@gmail.com', 'PAWsig City');
@@ -200,20 +166,20 @@ try {
             
             $mail->AltBody = "Dear {$appointment['user_name']},\n\nYour appointment has been cancelled.\n\nAppointment ID: #{$appointment_id}\nPet: {$appointment['pet_name']} ({$appointment['pet_breed']})\nPackage: {$appointment['package_name']}\nDate: {$appointment_date}\n\nIf you have questions, please contact us.\n\nBest regards,\nPAWsig City Team";
             
-            if ($mail->send()) {
-                $email_sent = true;
-                error_log("✓ Email sent successfully to {$appointment['user_email']}");
-            } else {
-                $email_error = $mail->ErrorInfo;
-                error_log("✗ Email send failed: " . $mail->ErrorInfo);
-            }
+            // Send the email
+            $mail->send();
+            $email_sent = true;
+            error_log("✓ Cancellation email sent successfully to {$appointment['user_email']}");
             
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            $email_error = $e->getMessage();
+            error_log("✗ PHPMailer Exception: " . $e->getMessage());
+            if (isset($mail)) {
+                error_log("✗ PHPMailer ErrorInfo: " . $mail->ErrorInfo);
+            }
         } catch (Exception $e) {
             $email_error = $e->getMessage();
-            error_log("✗ Email exception: " . $e->getMessage());
-            if (isset($mail)) {
-                error_log("✗ PHPMailer Error: " . $mail->ErrorInfo);
-            }
+            error_log("✗ General Exception: " . $e->getMessage());
         }
     } else {
         if (!$phpmailer_loaded) {
