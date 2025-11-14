@@ -46,42 +46,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_service'])) {
 if (isset($_GET['delete_id'])) {
     $delete_id = trim($_GET['delete_id']);
     
-    // Archive the service by setting deleted_at timestamp
-    $result = pg_query_params($conn, "UPDATE packages SET deleted_at = NOW() WHERE package_id = $1", [$delete_id]);
+    // Check if deleted_at column exists, if not use regular delete
+    $column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='packages' AND column_name='deleted_at'");
+    
+    if (pg_num_rows($column_check) > 0) {
+        // Archive the service by setting deleted_at timestamp
+        $result = pg_query_params($conn, "UPDATE packages SET deleted_at = NOW() WHERE package_id = $1", [$delete_id]);
+        $message = "Service archived successfully!";
+    } else {
+        // Fallback to regular delete if deleted_at column doesn't exist
+        $result = pg_query_params($conn, "DELETE FROM packages WHERE package_id = $1", [$delete_id]);
+        $message = "Service deleted successfully!";
+    }
     
     if ($result) {
-        $_SESSION['success'] = "Service archived successfully!";
+        $_SESSION['success'] = $message;
     } else {
-        $_SESSION['error'] = "Failed to archive service.";
+        $_SESSION['error'] = "Failed to process service.";
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-// Fetch all active services with pricing info (excluding archived)
-$services_query = "
-    SELECT 
-        p.package_id,
-        p.name,
-        p.description,
-        p.is_active,
-        MIN(pp.price) as min_price,
-        MAX(pp.price) as max_price,
-        COUNT(pp.price_id) as price_count
-    FROM packages p
-    LEFT JOIN package_prices pp ON p.package_id = pp.package_id AND (pp.deleted_at IS NULL OR pp.deleted_at = '')
-    WHERE p.deleted_at IS NULL OR p.deleted_at = ''
-    GROUP BY p.package_id, p.name, p.description, p.is_active
-    ORDER BY p.package_id ASC
-";
+// Check if deleted_at column exists
+$column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='packages' AND column_name='deleted_at'");
+$has_deleted_at = $column_check && pg_num_rows($column_check) > 0;
+
+// Fetch all services with pricing info
+if ($has_deleted_at) {
+    // Exclude archived services
+    $services_query = "
+        SELECT 
+            p.package_id,
+            p.name,
+            p.description,
+            p.is_active,
+            MIN(pp.price) as min_price,
+            MAX(pp.price) as max_price,
+            COUNT(CASE WHEN pp.deleted_at IS NULL THEN pp.price_id END) as price_count
+        FROM packages p
+        LEFT JOIN package_prices pp ON p.package_id = pp.package_id 
+        WHERE p.deleted_at IS NULL
+        GROUP BY p.package_id, p.name, p.description, p.is_active
+        ORDER BY p.package_id ASC
+    ";
+} else {
+    // Show all services if no deleted_at column
+    $services_query = "
+        SELECT 
+            p.package_id,
+            p.name,
+            p.description,
+            p.is_active,
+            MIN(pp.price) as min_price,
+            MAX(pp.price) as max_price,
+            COUNT(pp.price_id) as price_count
+        FROM packages p
+        LEFT JOIN package_prices pp ON p.package_id = pp.package_id
+        GROUP BY p.package_id, p.name, p.description, p.is_active
+        ORDER BY p.package_id ASC
+    ";
+}
+
 $services = pg_query($conn, $services_query);
+
+if (!$services) {
+    echo "<div style='background: #f44336; color: white; padding: 20px; margin: 20px;'>";
+    echo "<strong>Database Error:</strong> " . htmlspecialchars(pg_last_error($conn));
+    echo "</div>";
+    die();
+}
 
 // If editing specific service
 $edit_service = null;
 if (isset($_GET['id'])) {
     $edit_id = trim($_GET['id']);
-    $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1", [$edit_id]);
-    $edit_service = pg_fetch_assoc($result);
+    
+    if ($has_deleted_at) {
+        $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1 AND (deleted_at IS NULL OR deleted_at = '')", [$edit_id]);
+    } else {
+        $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1", [$edit_id]);
+    }
+    
+    if ($result && pg_num_rows($result) > 0) {
+        $edit_service = pg_fetch_assoc($result);
+    }
 }
 ?>
 
@@ -907,7 +956,7 @@ if (isset($_GET['id'])) {
                   <i class='bx bx-edit'></i> Edit
                 </a>
                 <button onclick="confirmDelete('<?= htmlspecialchars($service['package_id'], ENT_QUOTES) ?>')" class="delete-btn">
-                  <i class='bx bx-trash'></i> Delete
+                  <i class='bx bx-<?= $has_deleted_at ? 'archive' : 'trash' ?>'></i> <?= $has_deleted_at ? 'Archive' : 'Delete' ?>
                 </button>
               </div>
             </td>
@@ -1066,7 +1115,12 @@ function closeEditModal() {
 
 // Delete confirmation - Updated to handle text IDs
 function confirmDelete(serviceId) {
-  if (confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+  const hasDeletedAt = <?= $has_deleted_at ? 'true' : 'false' ?>;
+  const message = hasDeletedAt 
+    ? 'Are you sure you want to archive this service? It will be hidden from the list but can be restored later.'
+    : 'Are you sure you want to delete this service? This action cannot be undone.';
+    
+  if (confirm(message)) {
     window.location.href = '?delete_id=' + encodeURIComponent(serviceId);
   }
 }
