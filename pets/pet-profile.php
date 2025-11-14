@@ -1738,7 +1738,7 @@ if (!$pets) {
       </div>
     </div>
     <div class="pet-actions">
-      <button class="btn-edit" onclick="togglePetEdit(<?= $pet_id ?>)">
+      <button class="btn-edit" onclick="togglePetEdit('<?= $pet_id ?>')">
         <i class="fas fa-edit"></i> Edit
       </button>
       <form action="delete-pet.php" method="POST" onsubmit="return confirm('Delete this pet?');">
@@ -1751,7 +1751,7 @@ if (!$pets) {
   </div>
 
   <!-- Pet Edit Form -->
-  <div id="pet-edit-<?= $pet_id ?>" class="edit-form">
+  <div id="pet-edit-'<?= $pet_id ?>'" class="edit-form">
     <form action="pet-edit-handler.php" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
       
@@ -1854,15 +1854,15 @@ if (!$pets) {
       <!-- ONLY ONE form-actions section -->
       <div class="form-actions">
         <button type="submit" class="btn-save">Save Changes</button>
-        <button type="button" class="btn-cancel" onclick="togglePetEdit(<?= $pet_id ?>)">Cancel</button>
+        <button type="button" class="btn-cancel" onclick="togglePetEdit('<?= $pet_id ?>')">Cancel</button>
       </div>
     </form>
   </div>
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab(<?= $pet_id ?>, 'health')">Health Info</button>
-    <button class="tab" onclick="switchTab(<?= $pet_id ?>, 'behavior')">Behavior & Preferences</button>
+    <button class="tab active" onclick="switchTab('<?= $pet_id ?>', 'health')">Health Info</button>
+    <button class="tab" onclick="switchTab('<?= $pet_id ?>', 'behavior')">Behavior & Preferences</button>
   </div>
 
   <!-- Health Tab -->
@@ -1914,7 +1914,7 @@ if (!$pets) {
 
 <script>
 function switchTab(petId, tabName) {
-  // Find the specific pet card by looking for the tab content with the petId
+  // petId is now a string like "00006P"
   const healthTab = document.getElementById(`health-${petId}`);
   if (!healthTab) {
     console.error(`Could not find pet card for pet ID: ${petId}`);
@@ -1930,14 +1930,11 @@ function switchTab(petId, tabName) {
   const tabs = petCard.querySelectorAll('.tab');
   const contents = petCard.querySelectorAll('.tab-content');
   
-  // Remove active class from all tabs and contents
   tabs.forEach(tab => tab.classList.remove('active'));
   contents.forEach(content => content.classList.remove('active'));
   
-  // Add active class to clicked tab
   event.target.classList.add('active');
   
-  // Show the corresponding content
   const targetContent = document.getElementById(`${tabName}-${petId}`);
   if (targetContent) {
     targetContent.classList.add('active');
@@ -1945,6 +1942,7 @@ function switchTab(petId, tabName) {
 }
 
 function togglePetEdit(petId) {
+  // petId is now a string like "00006P"
   const form = document.getElementById(`pet-edit-${petId}`);
   if (form) {
     form.classList.toggle('show');
