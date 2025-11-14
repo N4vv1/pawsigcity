@@ -59,14 +59,6 @@ $groomers_query = "
     ORDER BY is_active DESC, groomer_name ASC
 ";
 
-if (!$valid_pet) {
-    error_log("Pet ID: " . $selected_pet_id . " | User ID: " . $user_id);
-    error_log("Query result: " . print_r($valid_pet, true));
-    $_SESSION['error'] = "Invalid pet selection or unauthorized access.";
-    header("Location: book-appointment.php");
-    exit;
-}
-
 $groomers_result = pg_query($conn, $groomers_query);
 
 if (!$groomers_result) {
