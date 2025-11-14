@@ -1160,6 +1160,7 @@ error_log("Number of appointments found: " . $row_count);
       <table>
         <thead>
           <tr>
+            <th>Appointment ID</th>
             <th>Pet</th>
             <th>Service</th>
             <th>Date & Time</th>
@@ -1173,6 +1174,7 @@ error_log("Number of appointments found: " . $row_count);
         <tbody>
           <?php while ($row = pg_fetch_assoc($appointments)): ?>
             <tr>
+              <td><?= htmlspecialchars($row['appointment_id']) ?></td>
               <td><?= htmlspecialchars($row['pet_name']) ?></td>
               <td><?= htmlspecialchars($row['package_name']) ?></td>
 

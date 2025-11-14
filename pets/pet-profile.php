@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$user_id = intval($_SESSION['user_id']); // sanitize
+$user_id = $_SESSION['user_id'];
 
 // Fetch the logged-in user's info
 $user_result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$user_id]);
