@@ -1,6 +1,10 @@
+
 <?php
 session_start();
 require '../db.php';
+
+// ✅ Debug session
+error_log("DEBUG - Session started. User ID from session: " . (isset($_SESSION['user_id']) ? "'{$_SESSION['user_id']}'" : "NOT SET"));
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../homepage/login/loginform.php");
@@ -9,18 +13,22 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 $selected_pet_id = isset($_GET['pet_id']) ? $_GET['pet_id'] : null;
-$package_id = isset($_GET['package_id']) ? ($_GET['package_id']) : null;
+$package_id = isset($_GET['package_id']) ? $_GET['package_id'] : null;
 
-// âœ… Fetch user's pets securely
+// ✅ Initialize ALL variables at the top
+$valid_pet = null;
+$packages_result = null;
+$recommended_package = null;
+$groomers_array = [];
+
+// ✅ Fetch user's pets securely
 $pets_result = pg_query_params(
     $conn,
     "SELECT * FROM pets WHERE user_id = $1",
-    [(string)$user_id]
+    [$user_id]
 );
 
-$recommended_package = null;
-
-// âœ… Function to get appointment counts by date and hour (SIMPLIFIED - NO ML)
+// ✅ Function to get appointment counts by date and hour
 function getAppointmentCounts($conn) {
     $query = "
         SELECT 
@@ -52,7 +60,7 @@ function getAppointmentCounts($conn) {
 
 $appointment_counts = getAppointmentCounts($conn);
 
-// âœ… Fetch groomers with their active status
+// ✅ Fetch groomers with their active status
 $groomers_query = "
     SELECT groomer_id, groomer_name, is_active 
     FROM groomer 
@@ -65,42 +73,93 @@ if (!$groomers_result) {
     die("Groomer query failed: " . pg_last_error($conn));
 }
 
-// âœ… Store groomers in an array to reuse and avoid pointer issues
+// ✅ Store groomers in an array to reuse and avoid pointer issues
 $groomers_array = [];
 while ($groomer = pg_fetch_assoc($groomers_result)) {
     $groomers_array[] = $groomer;
 }
 
-
-// ✅ Check pet ownership if selected
+// ✅ Check pet ownership if selected - WITH IMPROVED DEBUGGING
 if ($selected_pet_id) {
-    // Cast to string to ensure text comparison
-    $selected_pet_id = (string)$selected_pet_id;
+    // ✅ Clean and prepare IDs
+    $selected_pet_id = trim((string)$selected_pet_id);
+    $user_id_trimmed = trim((string)$user_id);
     
+    // ✅ Enhanced debugging
+    error_log("=== PET VALIDATION START ===");
+    error_log("Selected Pet ID: '{$selected_pet_id}' (length: " . strlen($selected_pet_id) . ")");
+    error_log("User ID: '{$user_id_trimmed}' (length: " . strlen($user_id_trimmed) . ")");
+    
+    // ✅ Query with TRIM to handle any whitespace issues
     $pet_check = pg_query_params(
         $conn,
-        "SELECT * FROM pets WHERE pet_id = $1 AND user_id = $2",
-        [$selected_pet_id, (string)$user_id]
+        "SELECT * FROM pets WHERE TRIM(pet_id) = TRIM($1) AND TRIM(user_id) = TRIM($2)",
+        [$selected_pet_id, $user_id_trimmed]
     );
     
     if (!$pet_check) {
+        error_log("Query failed: " . pg_last_error($conn));
         die("Database error: " . pg_last_error($conn));
     }
     
     $valid_pet = pg_fetch_assoc($pet_check);
-
-    if (!$valid_pet) {
-        $_SESSION['error'] = "Invalid pet selection or unauthorized access.";
+    
+    // ✅ Debug query result
+    if ($valid_pet) {
+        error_log("✓ Pet found: " . $valid_pet['name']);
+        error_log("Pet details: " . print_r($valid_pet, true));
+    } else {
+        error_log("✗ No pet found with given pet_id and user_id combination");
+        
+        // ✅ Additional check: Does the pet exist at all?
+        $pet_exists_check = pg_query_params(
+            $conn,
+            "SELECT pet_id, user_id, name FROM pets WHERE TRIM(pet_id) = TRIM($1)",
+            [$selected_pet_id]
+        );
+        
+        $pet_data = pg_fetch_assoc($pet_exists_check);
+        
+        if ($pet_data) {
+            error_log("Pet EXISTS in database:");
+            error_log("  - Pet ID: '{$pet_data['pet_id']}'");
+            error_log("  - Pet's User ID: '{$pet_data['user_id']}'");
+            error_log("  - Session User ID: '{$user_id_trimmed}'");
+            error_log("  - Match: " . ($pet_data['user_id'] === $user_id_trimmed ? "YES" : "NO"));
+            
+            $_SESSION['error'] = "This pet doesn't belong to your account. Please select your own pet.";
+        } else {
+            error_log("Pet does NOT exist in database with pet_id: '{$selected_pet_id}'");
+            
+            // Show all pets for this user for debugging
+            $user_pets = pg_query_params($conn, "SELECT pet_id, name FROM pets WHERE user_id = $1", [$user_id_trimmed]);
+            error_log("User's pets:");
+            while ($up = pg_fetch_assoc($user_pets)) {
+                error_log("  - {$up['name']} (ID: {$up['pet_id']})");
+            }
+            
+            $_SESSION['error'] = "Invalid pet selection. The pet ID doesn't exist.";
+        }
+        
         header("Location: book-appointment.php");
         exit;
     }
 
-    // âœ… CRITICAL: Verify pet has required size information
+    // ✅ CRITICAL: Verify pet has required size information
     if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
-        $_SESSION['error'] = "âš ï¸ Pet '{$valid_pet['name']}' is missing size information. Please update the pet profile first.";
+        $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
+        error_log("✗ Pet missing required info:");
+        error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
+        error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
+        error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
+        
+        $_SESSION['error'] = "⚠️ {$pet_name} is missing size information. Please update the pet profile first.";
         header("Location: ../pets/pet-profile.php");
         exit;
-    } 
+    }
+    
+    error_log("✓ Pet validation PASSED");
+    error_log("=== PET VALIDATION END ===");
 
     // API call for package recommendation
     $api_url = "https://pawsigcity-1.onrender.com/recommend";
@@ -112,6 +171,7 @@ if ($selected_pet_id) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Add timeout
     $response = curl_exec($ch);
     $curl_error = curl_error($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -119,11 +179,9 @@ if ($selected_pet_id) {
 
     if ($curl_error) {
         error_log("API Error: " . $curl_error);
-        $_SESSION['info'] = "â„¹ï¸ Recommendation service unavailable. Showing all packages for your pet.";
         $recommended_package = null;
     } elseif ($http_code !== 200) {
         error_log("API HTTP Error: " . $http_code . " Response: " . $response);
-        $_SESSION['info'] = "â„¹ï¸ Recommendation service unavailable. Showing all packages for your pet.";
         $recommended_package = null;
     } else {
         $response_data = json_decode($response, true);
@@ -140,33 +198,35 @@ if ($selected_pet_id) {
             
             if (!pg_fetch_assoc($package_verify)) {
                 error_log("Recommended package not found in DB: " . $recommended_package);
-                $_SESSION['info'] = "â„¹ï¸ Recommended package not available. Showing all packages for your pet.";
                 $recommended_package = null;
             }
         } elseif (isset($response_data['error'])) {
-            $_SESSION['info'] = "â„¹ï¸ " . htmlspecialchars($response_data['error']);
+            error_log("API returned error: " . $response_data['error']);
             $recommended_package = null;
         }
     }
 
-    // âœ… CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
+    // ✅ CRITICAL: Fetch ONLY packages matching pet's registered species, size, and weight
     $packages_result = pg_query_params($conn, "
         SELECT pp.price_id, pp.package_id, p.name, pp.species, pp.size, pp.min_weight, pp.max_weight, pp.price
         FROM package_prices pp
         JOIN packages p ON pp.package_id = p.package_id
-        WHERE pp.species = $1::text 
-        AND pp.size = $2::text
-        AND pp.min_weight <= $3::numeric 
-        AND pp.max_weight >= $3::numeric
+        WHERE pp.species = $1
+        AND pp.size = $2
+        AND pp.min_weight <= $3
+        AND pp.max_weight >= $3
         ORDER BY p.name, pp.price
     ", [$valid_pet['species'], $valid_pet['size'], $valid_pet['weight']]);
 
-    // âœ… Check if any packages are available
+    // ✅ Check if any packages are available
     if (pg_num_rows($packages_result) === 0) {
-        $_SESSION['error'] = "âš ï¸ No packages available for a {$valid_pet['size']} {$valid_pet['species']} weighing {$valid_pet['weight']} kg. Please contact support.";
+        error_log("No packages found for: {$valid_pet['species']}, {$valid_pet['size']}, {$valid_pet['weight']}kg");
+        $_SESSION['error'] = "⚠️ No packages available for a {$valid_pet['size']} {$valid_pet['species']} weighing {$valid_pet['weight']} kg. Please contact support.";
         header("Location: ../pets/pet-profile.php");
         exit;
     }
+    
+    error_log("Found " . pg_num_rows($packages_result) . " matching packages");
 }
 ?>
 
