@@ -3,9 +3,6 @@
 session_start();
 require '../db.php';
 
-// ✅ Debug session
-error_log("DEBUG - Session started. User ID from session: " . (isset($_SESSION['user_id']) ? "'{$_SESSION['user_id']}'" : "NOT SET"));
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../homepage/login/loginform.php");
     exit;
