@@ -9,24 +9,19 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// ✅ Debug: Check connection
 if (!$conn) {
     die("Database connection failed: " . pg_last_error());
 }
 
-// ✅ Debug: Check user_id
 error_log("User ID: " . $user_id);
 
-// ✅ Pagination and Filtering
 $items_per_page = 5;
 $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($current_page - 1) * $items_per_page;
 
-// Get filter parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
 
-// Build WHERE clause
 $where_conditions = ["a.user_id = $1"];
 $params = [$user_id];
 $param_count = 1;
@@ -51,7 +46,6 @@ if (!empty($status_filter)) {
 
 $where_clause = implode(' AND ', $where_conditions);
 
-// Count total records
 $count_query = "
     SELECT COUNT(*) as total
     FROM appointments a
@@ -63,7 +57,6 @@ $count_result = pg_query_params($conn, $count_query, $params);
 $total_records = pg_fetch_assoc($count_result)['total'];
 $total_pages = ceil($total_records / $items_per_page);
 
-// ✅ PostgreSQL query using pg_query_params
 $query = "
     SELECT a.*, 
            p.name AS pet_name, 
@@ -78,1066 +71,758 @@ $query = "
 
 $appointments = pg_query_params($conn, $query, $params);
 
-// ✅ Debug: Check query execution
 if (!$appointments) {
     die("Query failed: " . pg_last_error($conn));
 }
 
-// ✅ Debug: Check row count
 $row_count = pg_num_rows($appointments);
 error_log("Number of appointments found: " . $row_count);
+
+$total = $row_count;
+$approved = 0;
+$pending = 0;
+$completed = 0;
+$cancelled = 0;
+
+if ($row_count > 0) {
+    pg_result_seek($appointments, 0);
+    while ($row = pg_fetch_assoc($appointments)) {
+        if ($row['status'] === 'cancelled') $cancelled++;
+        elseif ($row['status'] === 'completed') $completed++;
+        elseif ($row['is_approved']) $approved++;
+        else $pending++;
+    }
+    pg_result_seek($appointments, 0);
+}
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>PAWsig City | Appointments</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAWsig City | My Appointments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="./images/pawsig2.png">
-
-  <style>
-  .section-content {
-    max-width: 1200px;
-    margin: auto;
-  }
-
-  h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 28px;
-  }
-
-  .container {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 140px 40px 60px;
-    box-sizing: border-box;
-    min-height: calc(100vh - 80px);
-  }
-
-  .page-header {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-
-  .page-header h1 {
-    font-size: 2.2rem;
-    color: #2c3e50;
-    margin-bottom: 8px;
-    font-weight: 600;
-  }
-
-  .page-header p {
-    font-size: 1rem;
-    color: #7f8c8d;
-    margin: 0;
-  }
-
-  .stats-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 25px;
-    margin-bottom: 50px;
-  }
-
-  .stat-card {
-    background: #fff;
-    padding: 10px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    text-align: center;
-    transition: all 0.3s ease;
-    border-left: 4px solid #A8E6CF;
-    margin-top: 40px;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.12);
-  }
-
-  .stat-card i {
-    font-size: 2.5rem;
-    color: #A8E6CF;
-    margin-bottom: 15px;
-  }
-
-  .stat-card h3 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin: 10px 0;
-    font-weight: 700;
-  }
-
-  .stat-card p {
-    color: #7f8c8d;
-    font-size: 0.95rem;
-    margin: 0;
-    font-weight: 500;
-  }
-
-  .table-container {
-    width: 100%;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    padding: 40px;
-    position: relative;
-  }
-
-  .table-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 6px;
-    width: 100%;
-    border-radius: 16px 16px 0 0;
-    background: linear-gradient(to right, #A8E6CF, #FFE29D, #FFB6B9);
-  }
-
-  .button {
-    padding: 10px 16px;
-    background-color: #A8E6CF;
-    color: #2c3e50;
-    text-decoration: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    margin: 5px 3px;
-    display: inline-block;
-    border: none;
-    cursor: pointer;
-  }
-
-  .button:hover {
-    background-color: #87d7b7;
-    transform: translateY(-1px);
-  }
-
-  .button:active {
-    transform: translateY(0);
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-top: 0;
-  }
-
-  th, td {
-    padding: 16px 20px;
-    text-align: left;
-    font-size: 15px;
-  }
-
-  th {
-    background-color: #A8E6CF;
-    color: #2c3e50;
-    font-weight: 600;
-    border-bottom: 2px solid #e0e0e0;
-  }
-
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-
-  tr:hover {
-    background-color: #f1f1f1;
-  }
-
-  .badge {
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-block;
-  }
-
-  .approved {
-    background-color: #d4edda;
-    color: #155724;
-  }
-
-  .pending {
-    background-color: #fff3cd;
-    color: #856404;
-  }
-
-  .cancelled {
-    background-color: #f8d7da;
-    color: #721c24;
-  }
-
-  .feedback {
-    background-color: #e3f2fd;
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: #0d47a1;
-  }
-
-  .feedback em {
-    color: #777;
-  }
-
-  p.success-message {
-    text-align: center;
-    color: green;
-    font-weight: 600;
-  }
-
-  .appointment-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-  }
-
-  .back-button {
-    position: fixed;
-    top: 90px;
-    left: 30px;
-    background: none;
-    border: none;
-    color: #2c3e50;
-    font-size: 18px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    z-index: 100;
-    font-weight: 600;
-  }
-
-  .back-button:hover {
-    color: #16a085;
-    transform: translateX(-3px);
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    color: #666;
-    animation: fadeIn 0.6s ease;
-  }
-
-  .empty-state i {
-    font-size: 80px;
-    color: #A8E6CF;
-    margin-bottom: 25px;
-    opacity: 0.7;
-  }
-
-  .empty-state h3 {
-    color: #2c3e50;
-    margin-bottom: 12px;
-    font-size: 1.8rem;
-    font-weight: 600;
-  }
-
-  .empty-state p {
-    color: #7f8c8d;
-    font-size: 1.1rem;
-    margin-bottom: 30px;
-  }
-
-  .debug-info {
-    background: #fff3cd;
-    border: 1px solid #ffc107;
-    padding: 15px;
-    margin: 20px 0;
-    border-radius: 8px;
-    font-family: monospace;
-  }
-
   
-
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @media (max-width: 768px) {
-    .back-button {
-      top: 80px;
-      left: 20px;
-      font-size: 16px;
+  <style>
+    :root {
+      --white-color: #fff;
+      --dark-color: #252525;
+      --primary-color: #A8E6CF;
+      --secondary-color: #FFE29D;
+      --light-pink-color: #faf4f5;
+      --approved-color: #4CAF50;
+      --pending-color: #FF9800;
+      --cancelled-color: #F44336;
+      --completed-color: #2196F3;
     }
 
-    .container {
-      padding: 120px 20px 40px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Montserrat", sans-serif;
     }
 
-    .page-header h1 {
-      font-size: 1.8rem;
+    body {
+      background: var(--light-pink-color);
+      min-height: 100vh;
     }
 
-    .page-header p {
+    header {
+      background: var(--white-color);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .navbar-logo img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: 5px;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      color: var(--dark-color);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-radius: 8px;
       font-size: 0.95rem;
     }
 
-    .stats-container {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
+    .nav-link:hover, .nav-link.active {
+      background-color: rgba(168, 230, 207, 0.15);
+      color: #16a085;
+    }
+
+    .nav-link i {
+      margin-right: 6px;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      min-width: 220px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      margin-top: 8px;
+      padding: 8px 0;
+      list-style: none;
+    }
+
+    .dropdown:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 12px 20px;
+      color: var(--dark-color);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .dropdown-menu a:hover {
+      background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
+      border-left-color: var(--primary-color);
+      padding-left: 24px;
+      color: #16a085;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px;
+    }
+
+    .hamburger span {
+      width: 28px;
+      height: 3px;
+      background-color: var(--dark-color);
+      transition: all 0.3s ease;
+      border-radius: 3px;
+      margin: 3px 0;
+    }
+
+    main {
+      padding: 120px 40px 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      color: var(--dark-color);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
     }
 
     .stat-card {
-      padding: 20px 15px;
+      background: var(--white-color);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s;
     }
 
-    .stat-card i {
-      font-size: 1.5rem;
+    .stat-card:hover {
+      transform: translateY(-3px);
     }
 
     .stat-card h3 {
-      font-size: 1.5rem;
-    }
-
-    .stat-card p {
       font-size: 0.85rem;
+      color: #999;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
     }
 
-    .table-container {
-      padding: 25px 15px;
-      border-radius: 16px;
-      overflow-x: auto;
+    .stat-card .count {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .stat-card.approved .count { color: var(--approved-color); }
+    .stat-card.pending .count { color: var(--pending-color); }
+    .stat-card.completed .count { color: var(--completed-color); }
+    .stat-card.cancelled .count { color: var(--cancelled-color); }
+
+    .search-filter-container {
+      background: var(--white-color);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 30px;
+    }
+
+    .search-filter-container form {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .form-group label i {
+      color: var(--primary-color);
+      margin-right: 6px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--dark-color);
+      color: var(--white-color);
+    }
+
+    .btn-primary:hover {
+      background: #1a1a1a;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: var(--dark-color);
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .results-info {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(168, 230, 207, 0.1);
+      border-left: 4px solid var(--primary-color);
+      border-radius: 8px;
+      color: var(--dark-color);
+      font-size: 0.9rem;
+    }
+
+    .table-section {
+      background: var(--white-color);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .table-section h2 {
+      font-size: 1.3rem;
+      margin-bottom: 25px;
+      color: var(--dark-color);
+      font-weight: 600;
     }
 
     table {
-      min-width: 800px;
-      font-size: 0.85rem;
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    th, td {
-      padding: 14px 12px;
-      font-size: 0.85rem;
+    table th,
+    table td {
+      padding: 15px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.9rem;
     }
 
-    th {
-      font-size: 0.75rem;
+    table th {
+      background-color: #fafafa;
+      color: var(--dark-color);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
     }
 
-    .button {
-      padding: 8px 14px;
-      font-size: 0.85rem;
-      margin: 3px 2px;
+    table tbody tr:hover {
+      background-color: #fafafa;
     }
 
     .badge {
-      padding: 5px 8px;
-      font-size: 0.75rem;
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .feedback {
-      padding: 8px 10px;
+    .badge.approved {
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--approved-color);
+    }
+
+    .badge.pending {
+      background: rgba(255, 152, 0, 0.1);
+      color: var(--pending-color);
+    }
+
+    .badge.cancelled {
+      background: rgba(244, 67, 54, 0.1);
+      color: var(--cancelled-color);
+    }
+
+    .badge.completed {
+      background: rgba(33, 150, 243, 0.1);
+      color: var(--completed-color);
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
       font-size: 0.85rem;
+      margin: 3px;
     }
 
     .empty-state {
-      padding: 60px 20px;
+      text-align: center;
+      padding: 80px 20px;
     }
 
     .empty-state i {
-      font-size: 60px;
+      font-size: 80px;
+      color: var(--primary-color);
+      margin-bottom: 25px;
+      opacity: 0.7;
     }
 
     .empty-state h3 {
-      font-size: 1.5rem;
+      color: var(--dark-color);
+      margin-bottom: 12px;
+      font-size: 1.8rem;
+      font-weight: 600;
     }
 
     .empty-state p {
+      color: #666;
       font-size: 1rem;
-    }
-  }
-
-  // ✅ Pagination and Filtering
-$items_per_page = 5;
-$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$offset = ($current_page - 1) * $items_per_page;
-
-// Get filter parameters
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$status_filter = isset($_GET['status']) ? $_GET['status'] : '';
-
-// Build WHERE clause
-$where_conditions = ["a.user_id = $1"];
-$params = [$user_id];
-$param_count = 1;
-
-if (!empty($search)) {
-    $param_count++;
-    $where_conditions[] = "(p.name ILIKE $$param_count OR pk.name ILIKE $$param_count)";
-    $params[] = "%$search%";
-}
-
-  @media (max-width: 480px) {
-    .stats-container {
-      grid-template-columns: 1fr;
+      margin-bottom: 30px;
     }
 
-    .page-header h1 {
+    .pagination {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .pagination-info {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .pagination-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      padding: 10px 16px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      background: #f0f0f0;
+      color: var(--dark-color);
+    }
+
+    .page-btn:hover {
+      background: var(--dark-color);
+      color: var(--white-color);
+    }
+
+    .page-btn.active {
+      background: var(--dark-color);
+      color: var(--white-color);
+      font-weight: 600;
+    }
+
+    .alert-message {
+      position: fixed;
+      top: 90px;
+      right: 30px;
+      z-index: 9999;
+      max-width: 400px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      animation: slideInRight 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
+    }
+
+    .alert-message.success {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      border-left: 5px solid #28a745;
+    }
+
+    .alert-message.error {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      color: #721c24;
+      border-left: 5px solid #dc3545;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--white-color);
+      padding: 40px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header h3 {
+      color: var(--dark-color);
       font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
     }
 
-    .table-container {
-      padding: 20px 10px;
+    .modal-header p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 25px;
     }
 
-    table {
-      min-width: 700px;
+    .modal-body {
+      margin-bottom: 25px;
     }
 
-    th, td {
-      padding: 12px 10px;
-    }
-  }
-
-  @media (min-width: 769px) and (max-width: 1024px) {
-    .container {
-      padding: 130px 30px 50px;
-    }
-
-    .stats-container {
-      grid-template-columns: repeat(3, 1fr);
+    .modal-body label {
+      display: block;
+      font-size: 0.85rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      font-weight: 600;
     }
 
-    .table-container {
-      padding: 35px 25px;
+    .modal-body input,
+    .modal-body textarea,
+    .modal-body select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: all 0.2s;
     }
 
-    th, td {
-      padding: 16px 15px;
+    .modal-body input:focus,
+    .modal-body textarea:focus,
+    .modal-body select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
     }
-  }
 
-  /* Base navbar styles */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  position: relative;
-  z-index: 100;
-}
-
-/* Desktop nav menu - visible by default */
-.nav-menu {
-  display: flex;
-  align-items: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 5px;
-}
-
-.nav-item {
-  position: relative;
-  list-style: none;
-}
-
-.nav-link {
-  text-decoration: none;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  color: #2c3e50;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border-radius: 8px;
-}
-
-.nav-link:hover {
-  background-color: rgba(168, 230, 207, 0.1);
-  color: #16a085;
-}
-
-.nav-link.active {
-  background-color: rgba(168, 230, 207, 0.15);
-  color: #16a085;
-}
-
-/* Hide hamburger by default (desktop) */
-.hamburger {
-  display: none;
-}
-
-/* ========================================
-   DESKTOP DROPDOWN (Hover-based)
-   ======================================== */
-@media (min-width: 1025px) {
-  /* Dropdown container */
-  .dropdown {
-    position: relative;
-  }
-
-  /* Dropdown menu - hidden by default */
-  .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    min-width: 220px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    margin-top: 8px;
-    padding: 8px 0;
-    z-index: 1000;
-    list-style: none;
-    pointer-events: none;
-  }
-
-  /* Show dropdown on hover */
-  .dropdown:hover .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  /* Keep dropdown visible when hovering over menu items */
-  .dropdown-menu:hover {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* Dropdown menu items */
-  .dropdown-menu li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .dropdown-menu a {
-    display: block;
-    padding: 12px 20px;
-    color: #2c3e50;
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-left: 3px solid transparent;
-    white-space: nowrap;
-    text-align: left;
-  }
-
-  .dropdown-menu a:hover {
-    background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
-    border-left-color: #A8E6CF;
-    padding-left: 24px;
-    color: #16a085;
-  }
-
-  /* Profile icon styling */
-  .profile-icon {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    position: relative;
-  }
-
-  /* Arrow indicator */
-  .profile-icon::after {
-    content: '\f078';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    font-size: 0.7rem;
-    margin-left: 4px;
-    transition: transform 0.3s ease;
-  }
-
-  .dropdown:hover .profile-icon::after {
-    transform: rotate(180deg);
-  }
-}
-
-/* ========================================
-   MOBILE STYLES (Click-based)
-   ======================================== */
-@media (max-width: 1024px) {
-  .hamburger {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 8px;
-    z-index: 1001;
-    width: 40px;
-    height: 40px;
-    position: relative;
-  }
-
-  .hamburger span {
-    width: 28px;
-    height: 3px;
-    background-color: #2c3e50;
-    transition: all 0.3s ease;
-    border-radius: 3px;
-    display: block;
-    position: relative;
-  }
-
-  .hamburger.active span:nth-child(1) {
-    transform: rotate(45deg);
-    position: absolute;
-    top: 50%;
-    margin-top: -1.5px;
-  }
-
-  .hamburger.active span:nth-child(2) {
-    opacity: 0;
-    transform: scale(0);
-  }
-
-  .hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg);
-    position: absolute;
-    top: 50%;
-    margin-top: -1.5px;
-  }
-
-  .nav-menu {
-    position: fixed;
-    right: -100%;
-    top: 0;
-    flex-direction: column;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    width: 320px;
-    text-align: left;
-    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
-    padding: 100px 0 30px 0;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 999;
-    align-items: stretch;
-    gap: 0;
-  }
-
-  .nav-menu.active {
-    right: 0;
-  }
-
-  .nav-item {
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid #e9ecef;
-    position: relative;
-  }
-
-  .nav-link {
-    font-size: 1.1rem;
-    padding: 18px 30px;
-    display: block;
-    color: #2c3e50;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    width: 100%;
-  }
-
-  .nav-link:hover {
-    background: linear-gradient(90deg, #A8E6CF 0%, transparent 100%);
-    padding-left: 40px;
-    color: #16a085;
-  }
-
-  .nav-link i {
-    margin-right: 12px;
-    font-size: 1.2rem;
-    color: #A8E6CF;
-  }
-
-  .profile-icon {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-  }
-
-  .profile-icon::after {
-    content: 'Profile Menu';
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 1rem;
-  }
-
-  /* Mobile dropdown */
-  .dropdown-menu {
-    position: relative;
-    display: none;
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    box-shadow: none;
-    background-color: #f1f3f5;
-    margin: 0;
-    border-radius: 0;
-    padding: 8px 0;
-    list-style: none;
-  }
-
-  .dropdown.active .dropdown-menu {
-    display: block;
-  }
-
-  .dropdown-menu li {
-    margin: 0;
-    border-bottom: none;
-    list-style: none;
-  }
-
-  .dropdown-menu a {
-    padding: 14px 30px 14px 50px;
-    font-size: 0.95rem;
-    color: #495057;
-    display: block;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .dropdown-menu a::before {
-    content: '•';
-    position: absolute;
-    left: 35px;
-    color: #A8E6CF;
-    font-size: 1.2rem;
-  }
-
-  .dropdown-menu a:hover {
-    background-color: #e9ecef;
-    padding-left: 55px;
-    color: #16a085;
-  }
-
-  .nav-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 998;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .nav-overlay.active {
-    display: block;
-    opacity: 1;
-  }
-}
-
-/* Hide hamburger on desktop */
-@media (min-width: 1025px) {
-  .hamburger {
-    display: none;
-  }
-  
-  .nav-overlay {
-    display: none;
-  }
-}
-
-#rescheduleModal input[type="datetime-local"]:focus {
-  outline: none;
-  border-color: #A8E6CF;
-  background: #fff;
-}
-
-#rescheduleModal input[type="datetime-local"]::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-}
-
-@media (max-width: 640px) {
-  #rescheduleModal > div {
-    padding: 24px !important;
-  }
-  
-  #rescheduleModal h3 {
-    font-size: 20px !important;
-  }
-  
-  #rescheduleModal > div > div:last-child {
-    flex-direction: column-reverse !important;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.cancel-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-  }
-
-  .cancel-modal.show {
-      opacity: 1;
-      visibility: visible;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
+    .modal-body textarea {
+      resize: vertical;
+      min-height: 100px;
     }
-    to {
-      transform: translateY(0);
-      opacity: 1;
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
     }
-  }
 
-  .cancel-modal-content {
-    background: #fff;
-    padding: 0;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 480px;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s ease;
-  }
+    @media (max-width: 1024px) {
+      .hamburger {
+        display: flex;
+      }
 
-  .cancel-modal-header {
-    padding: 24px 28px 20px;
-    border-bottom: 1px solid #e5e7eb;
-  }
+      .nav-menu {
+        position: fixed;
+        right: -100%;
+        top: 0;
+        flex-direction: column;
+        background: var(--white-color);
+        width: 320px;
+        height: 100vh;
+        padding: 100px 30px 30px;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+        transition: right 0.4s;
+        overflow-y: auto;
+        align-items: stretch;
+        gap: 0;
+      }
 
-  .cancel-modal-header h3 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #2d3748;
-  }
+      .nav-menu.active {
+        right: 0;
+      }
 
-  .cancel-modal-header p {
-    margin: 8px 0 0;
-    font-size: 14px;
-    color: #718096;
-    line-height: 1.5;
-  }
+      .nav-item {
+        border-bottom: 1px solid #f0f0f0;
+      }
 
-  .cancel-modal-body {
-    padding: 24px 28px;
-  }
+      .nav-link {
+        padding: 18px 0;
+        font-size: 1.1rem;
+      }
 
-  .cancel-form-group {
-    margin-bottom: 20px;
-  }
+      .dropdown-menu {
+        position: relative;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        box-shadow: none;
+        background-color: #f8f8f8;
+        margin: 0;
+        border-radius: 0;
+      }
 
-  .cancel-form-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #4a5568;
-    margin-bottom: 8px;
-  }
+      .dropdown.active .dropdown-menu {
+        display: block;
+      }
+    }
 
-  .cancel-textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1.5px solid #d1d5db;
-    font-size: 14px;
-    font-family: inherit;
-    resize: vertical;
-    min-height: 120px;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-  }
+    @media (max-width: 768px) {
+      main {
+        padding: 100px 20px 40px;
+      }
 
-  .cancel-textarea:focus {
-    outline: none;
-    border-color: #81e6d9;
-    box-shadow: 0 0 0 3px rgba(129, 230, 217, 0.1);
-  }
+      .navbar {
+        padding: 15px 20px;
+      }
 
-  .cancel-textarea::placeholder {
-    color: #9ca3af;
-  }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
 
-  .cancel-modal-footer {
-    padding: 16px 28px 24px;
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-  }
+      .search-filter-container form {
+        flex-direction: column;
+      }
 
-  .cancel-button-secondary {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    background: #cbd5e0;
-    color: #2d3748;
-  }
+      .form-group {
+        min-width: 100%;
+      }
 
-  .cancel-button-secondary:hover {
-    background: #a0aec0;
-  }
+      .form-actions {
+        width: 100%;
+      }
 
-  .cancel-button-primary {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    background: #81e6d9;
-    color: #2d3748;
-  }
+      .btn {
+        flex: 1;
+      }
 
-  .cancel-button-primary:hover {
-    background: #4fd1c5;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(129, 230, 217, 0.4);
-  }
+      .table-section {
+        padding: 20px;
+        overflow-x: auto;
+      }
 
-  .cancel-button-primary:active {
-    transform: translateY(0);
-  }
- /* Success/Error Message Styling with Auto-dismiss */
-.alert-message {
-  position: fixed;
-  top: 90px; /* Below the navbar */
-  right: 30px; /* Right side of screen */
-  z-index: 9999;
-  max-width: 400px;
-  width: auto;
-  min-width: 300px;
-  padding: 16px 24px;
-  border-radius: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  animation: slideInRight 0.4s ease, fadeOut 0.5s ease 4.5s forwards;
-}
+      table {
+        min-width: 900px;
+      }
 
-.alert-message.success {
-  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-  color: #155724;
-  border-left: 5px solid #28a745;
-}
+      .alert-message {
+        right: 15px;
+        left: 15px;
+        max-width: none;
+      }
+    }
 
-.alert-message.error {
-  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-  color: #721c24;
-  border-left: 5px solid #dc3545;
-}
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+      .header h1 {
+        font-size: 1.5rem;
+      }
 
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-}
-
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .alert-message {
-    top: 80px;
-    right: 15px;
-    left: 15px;
-    max-width: none;
-    min-width: auto;
-  }
-}
+      .modal-content {
+        padding: 25px;
+      }
+    }
   </style>
 </head>
 <body>
+
 <header>
-  <nav class="navbar section-content">
+  <nav class="navbar">
     <a href="#" class="navbar-logo">
-      <img src="../homepage/images/pawsig2.png" alt="Logo" class="icon" />
+      <img src="../homepage/images/pawsig2.png" alt="Logo" />
     </a>
     
-    <!-- Hamburger Menu Button -->
     <button class="hamburger" id="hamburger">
       <span></span>
       <span></span>
       <span></span>
     </button>
-
-    <!-- Overlay for mobile -->
-    <div class="nav-overlay" id="nav-overlay"></div>
 
     <ul class="nav-menu" id="nav-menu">
       <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
@@ -1147,7 +832,7 @@ if (!empty($search)) {
       <li class="nav-item"><a href="../homepage/main.php" class="nav-link"><i class="fas fa-envelope"></i> Contact</a></li>
       <li class="nav-item dropdown" id="profile-dropdown">
         <a href="#" class="nav-link profile-icon active">
-          <i class="fas fa-user"></i>
+          <i class="fas fa-user"></i> Profile
         </a>
         <ul class="dropdown-menu">
           <li><a href="../pets/pet-profile.php">Pet Profiles</a></li>
@@ -1162,52 +847,64 @@ if (!empty($search)) {
   </nav>
 </header>
 
-<div class="container">
+<main>
+  <?php if (isset($_SESSION['success'])): ?>
+    <div class="alert-message success" id="successMessage">
+      <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+      <span><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></span>
+    </div>
+  <?php endif; ?>
 
-<!-- Add this right after opening <div class="container"> -->
-<?php if (isset($_SESSION['success'])): ?>
-  <div class="alert-message success" id="successMessage">
-    <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
-    <span><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></span>
+  <?php if (isset($_SESSION['error'])): ?>
+    <div class="alert-message error" id="errorMessage">
+      <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+      <span><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></span>
+    </div>
+  <?php endif; ?>
+
+  <div class="header">
+    <h1>My Appointments</h1>
+    <p>Manage and track your pet grooming appointments</p>
   </div>
-<?php endif; ?>
 
-<?php if (isset($_SESSION['error'])): ?>
-  <div class="alert-message error" id="errorMessage">
-    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
-    <span><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></span>
+  <?php if ($row_count > 0): ?>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Total</h3>
+      <div class="count" style="color: var(--dark-color);"><?= $total ?></div>
+    </div>
+    
+    <div class="stat-card approved">
+      <h3>Approved</h3>
+      <div class="count"><?= $approved ?></div>
+    </div>
+    
+    <div class="stat-card pending">
+      <h3>Pending</h3>
+      <div class="count"><?= $pending ?></div>
+    </div>
+    
+    <div class="stat-card completed">
+      <h3>Completed</h3>
+      <div class="count"><?= $completed ?></div>
+    </div>
   </div>
-<?php endif; ?>
+  <?php endif; ?>
 
-<!-- ✅ ADD THIS SEARCH & FILTER SECTION HERE -->
-  <div class="search-filter-container" style="background: #fff; padding: 24px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 30px;">
-    <form method="GET" action="" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
-      
-      <!-- Search Input -->
-      <div style="flex: 1; min-width: 250px;">
-        <label style="display: block; font-size: 13px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600;">
-          <i class="fas fa-search" style="color: #A8E6CF; margin-right: 6px;"></i>Search
-        </label>
+  <div class="search-filter-container">
+    <form method="GET" action="">
+      <div class="form-group">
+        <label><i class="fas fa-search"></i>Search</label>
         <input 
           type="text" 
           name="search" 
           placeholder="Search by pet or service name..." 
-          value="<?= htmlspecialchars($search) ?>"
-          style="width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: all 0.3s ease;"
-          onfocus="this.style.borderColor='#A8E6CF'; this.style.boxShadow='0 0 0 3px rgba(168, 230, 207, 0.1)';"
-          onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
+          value="<?= htmlspecialchars($search) ?>">
       </div>
 
-      <!-- Status Filter -->
-      <div style="flex: 0 0 200px; min-width: 180px;">
-        <label style="display: block; font-size: 13px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600;">
-          <i class="fas fa-filter" style="color: #A8E6CF; margin-right: 6px;"></i>Status
-        </label>
-        <select 
-          name="status" 
-          style="width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; cursor: pointer; transition: all 0.3s ease; background: white;"
-          onfocus="this.style.borderColor='#A8E6CF'; this.style.boxShadow='0 0 0 3px rgba(168, 230, 207, 0.1)';"
-          onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
+      <div class="form-group" style="flex: 0 0 200px; min-width: 180px;">
+        <label><i class="fas fa-filter"></i>Status</label>
+        <select name="status">
           <option value="">All Status</option>
           <option value="pending" <?= $status_filter === 'pending' ? 'selected' : '' ?>>Pending</option>
           <option value="approved" <?= $status_filter === 'approved' ? 'selected' : '' ?>>Approved</option>
@@ -1216,30 +913,22 @@ if (!empty($search)) {
         </select>
       </div>
 
-      <!-- Action Buttons -->
-      <div style="display: flex; gap: 10px;">
-        <button 
-          type="submit" 
-          class="button" 
-          style="padding: 12px 24px; white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
           <i class="fas fa-search"></i> Filter
         </button>
         
         <?php if (!empty($search) || !empty($status_filter)): ?>
-          <a 
-            href="appointments.php" 
-            class="button" 
-            style="padding: 12px 24px; background: #e0e0e0; color: #2c3e50; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-decoration: none;">
+          <a href="appointments.php" class="btn btn-secondary">
             <i class="fas fa-times"></i> Reset
           </a>
         <?php endif; ?>
       </div>
     </form>
 
-    <!-- Results Info -->
     <?php if (!empty($search) || !empty($status_filter)): ?>
-      <div style="margin-top: 16px; padding: 12px 16px; background: #e8f5e9; border-left: 4px solid #A8E6CF; border-radius: 8px; color: #2c3e50;">
-        <i class="fas fa-info-circle" style="color: #A8E6CF;"></i>
+      <div class="results-info">
+        <i class="fas fa-info-circle"></i>
         Showing <strong><?= $total_records ?></strong> result<?= $total_records != 1 ? 's' : '' ?>
         <?php if (!empty($search)): ?>
           for "<strong><?= htmlspecialchars($search) ?></strong>"
@@ -1250,221 +939,174 @@ if (!empty($search)) {
       </div>
     <?php endif; ?>
   </div>
-  <!-- ✅ END OF SEARCH & FILTER SECTION -->
 
-  <?php if ($row_count > 0): ?>
-    <!-- Stats Overview -->
-    <div class="stats-container">
-      <?php
-        // Calculate stats
-        $total = $row_count;
-        $approved = 0;
-        $pending = 0;
-        $completed = 0;
-        $cancelled = 0;
-        
-        pg_result_seek($appointments, 0); // Reset pointer
-        while ($row = pg_fetch_assoc($appointments)) {
-          if ($row['status'] === 'cancelled') $cancelled++;
-          elseif ($row['status'] === 'completed') $completed++;
-          elseif ($row['is_approved']) $approved++;
-          else $pending++;
-        }
-        pg_result_seek($appointments, 0); // Reset pointer again
-      ?>
-      
-      <div class="stat-card">
-        <h3><?= $total ?></h3>
-        <p>Total Appointments</p>
-      </div>
-      
-      <div class="stat-card">
-        <h3><?= $approved ?></h3>
-        <p>Approved</p>
-      </div>
-      
-      <div class="stat-card">
-        <h3><?= $pending ?></h3>
-        <p>Pending</p>
-      </div>
-      
-      <div class="stat-card">
-        <h3><?= $completed ?></h3>
-        <p>Completed</p>
-      </div>
-    </div>
-  <?php endif; ?>
+  <div class="table-section">
+    <h2>All Appointments</h2>
 
-  <!-- Table Container -->
-  <div class="table-container">
     <?php if ($row_count > 0): ?>
-      <table>
-        <thead>
-          <tr>
-            <th>Appointment ID</th>
-            <th>Pet</th>
-            <th>Service</th>
-            <th>Date & Time</th>
-            <th>Recommended</th>
-            <th>Approval</th>
-            <th>Status</th>
-            <th>Session Notes</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php while ($row = pg_fetch_assoc($appointments)): ?>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
             <tr>
-              <td><?= htmlspecialchars($row['appointment_id']) ?></td>
-              <td><?= htmlspecialchars($row['pet_name']) ?></td>
-              <td><?= htmlspecialchars($row['package_name']) ?></td>
-
-              <td>
-                <?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?>
-                
-                <!-- Show only if reschedule was auto-rejected (slot was taken) -->
-                <?php if (!empty($row['reschedule_requested']) && $row['reschedule_approved'] === false): ?>
-                  <div style="margin-top:8px; padding:8px; background:#f8d7da; border-left:3px solid #dc3545; border-radius:4px; font-size:0.85rem;">
-                    <strong style="color:#721c24;">⚠️ Last Reschedule Denied</strong><br>
-                    <em style="color:#721c24; font-size:0.8rem;">Time slot was already booked</em>
-                  </div>
-                <?php endif; ?>
-              </td>
-              
-              <!-- RECOMMENDED COLUMN - Keep it clean -->
-              <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
-              <td>
-                <?php if ($row['status'] === 'cancelled'): ?>
-                  <span class="badge cancelled">Cancelled</span>
-                <?php elseif ($row['is_approved']): ?>
-                  <span class="badge approved">Approved</span>
-                <?php else: ?>
-                  <span class="badge pending">Waiting</span>
-                <?php endif; ?>
-              </td>
-              <td><?= ucfirst($row['status']) ?></td>
-              <td><?= !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : '<em>No notes yet.</em>' ?></td>
-              <td>
-                <?php if ($row['status'] !== 'completed' && $row['status'] !== 'cancelled'): ?>
-                  
-                  <!-- Reschedule Button (only if not rescheduled before) -->
-                  <?php if (($row['reschedule_count'] ?? 0) < 1): ?>
-                    <button class="button" type="button" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">Reschedule</button>
-                  <?php else: ?>
-                    <span style="color: #999; font-size: 0.85rem;">(Already rescheduled)</span>
-                  <?php endif; ?>
-                  
-                  <!-- Cancel Button -->
-                  <button class="button" type="button" onclick="openCancelModal(<?= $row['appointment_id'] ?>)">Cancel</button>
-                  
-                <?php endif; ?>
-
-                <!-- Feedback Section -->
-                <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
-                  <button class="button" type="button" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">⭐ Feedback</button>
-                <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
-                  <div class="feedback">
-                    ⭐ <?= $row['rating'] ?>/5<br>
-                    <?= !empty($row['feedback']) ? htmlspecialchars($row['feedback']) : '<em>No comment.</em>' ?>
-                  </div>
-                <?php endif; ?>
-              </td>
+              <th>ID</th>
+              <th>Pet</th>
+              <th>Service</th>
+              <th>Date & Time</th>
+              <th>Recommended</th>
+              <th>Approval</th>
+              <th>Status</th>
+              <th>Session Notes</th>
+              <th>Actions</th>
             </tr>
-          <?php endwhile; ?>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <?php while ($row = pg_fetch_assoc($appointments)): ?>
+              <tr>
+                <td><?= htmlspecialchars($row['appointment_id']) ?></td>
+                <td><?= htmlspecialchars($row['pet_name']) ?></td>
+                <td><?= htmlspecialchars($row['package_name']) ?></td>
+                <td>
+                  <?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?>
+                  
+                  <?php if (!empty($row['reschedule_requested']) && $row['reschedule_approved'] === false): ?>
+                    <div style="margin-top:8px; padding:8px; background:#f8d7da; border-left:3px solid #dc3545; border-radius:4px; font-size:0.85rem;">
+                      <strong style="color:#721c24;">⚠️ Last Reschedule Denied</strong><br>
+                      <em style="color:#721c24; font-size:0.8rem;">Time slot was already booked</em>
+                    </div>
+                  <?php endif; ?>
+                </td>
+                <td><?= htmlspecialchars($row['recommended_package'] ?? 'N/A') ?></td>
+                <td>
+                  <?php if ($row['status'] === 'cancelled'): ?>
+                    <span class="badge cancelled">Cancelled</span>
+                  <?php elseif ($row['is_approved']): ?>
+                    <span class="badge approved">Approved</span>
+                  <?php else: ?>
+                    <span class="badge pending">Waiting</span>
+                  <?php endif; ?>
+                </td>
+                <td>
+                  <?php 
+                    $status = ucfirst($row['status']);
+                    $badge_class = strtolower($row['status']);
+                  ?>
+                  <span class="badge <?= $badge_class ?>"><?= $status ?></span>
+                </td>
+                <td style="max-width: 250px;"><?= !empty($row['notes']) ? nl2br(htmlspecialchars($row['notes'])) : '<em style="color:#999;">No notes yet.</em>' ?></td>
+                <td>
+                  <?php if ($row['status'] !== 'completed' && $row['status'] !== 'cancelled'): ?>
+                    
+                    <?php if (($row['reschedule_count'] ?? 0) < 1): ?>
+                      <button class="btn btn-primary btn-sm" onclick="openRescheduleModal(<?= $row['appointment_id'] ?>)">
+                        <i class="fas fa-calendar-alt"></i> Reschedule
+                      </button>
+                    <?php else: ?>
+                      <span style="color: #999; font-size: 0.85rem;">(Already rescheduled)</span>
+                    <?php endif; ?>
+                    
+                    <button class="btn btn-secondary btn-sm" onclick="openCancelModal(<?= $row['appointment_id'] ?>)">
+                      <i class="fas fa-times"></i> Cancel
+                    </button>
+                    
+                  <?php endif; ?>
 
-      <!-- ✅ ADD PAGINATION HERE -->
+                  <?php if ($row['status'] === 'completed' && is_null($row['rating'])): ?>
+                    <button class="btn btn-primary btn-sm" onclick="openFeedbackModal(<?= $row['appointment_id'] ?>)">
+                      <i class="fas fa-star"></i> Feedback
+                    </button>
+                  <?php elseif ($row['status'] === 'completed' && $row['rating'] !== null): ?>
+                    <div style="margin-top: 8px; padding: 10px; background: #e3f2fd; border-radius: 8px; font-size: 0.85rem; color: #0d47a1;">
+                      <strong>⭐ <?= $row['rating'] ?>/5</strong><br>
+                      <?= !empty($row['feedback']) ? nl2br(htmlspecialchars($row['feedback'])) : '<em style="color:#777;">No comment.</em>' ?>
+                    </div>
+                  <?php endif; ?>
+                </td>
+              </tr>
+            <?php endwhile; ?>
+          </tbody>
+        </table>
+      </div>
+
       <?php if ($total_pages > 1): ?>
-        <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-          
-          <!-- Page Info -->
-          <div style="color: #7f8c8d; font-size: 14px;">
+        <div class="pagination">
+          <div class="pagination-info">
             Showing <strong><?= min($offset + 1, $total_records) ?></strong> to 
             <strong><?= min($offset + $items_per_page, $total_records) ?></strong> of 
             <strong><?= $total_records ?></strong> appointments
           </div>
 
-          <!-- Pagination Buttons -->
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div class="pagination-buttons">
             <?php if ($current_page > 1): ?>
               <a href="?page=<?= $current_page - 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($status_filter) ? '&status=' . $status_filter : '' ?>" 
-                 class="button" 
-                 style="padding: 10px 16px; text-decoration: none;">
+                 class="page-btn">
                 <i class="fas fa-chevron-left"></i> Previous
               </a>
             <?php endif; ?>
 
             <?php
-            // Show page numbers
-            $range = 2; // Show 2 pages on each side of current page
+            $range = 2;
             for ($i = 1; $i <= $total_pages; $i++):
               if ($i == 1 || $i == $total_pages || ($i >= $current_page - $range && $i <= $current_page + $range)):
             ?>
               <a href="?page=<?= $i ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($status_filter) ? '&status=' . $status_filter : '' ?>" 
-                 class="button" 
-                 style="padding: 10px 16px; text-decoration: none; <?= $i == $current_page ? 'background: #87d7b7; font-weight: 700;' : '' ?>">
+                 class="page-btn <?= $i == $current_page ? 'active' : '' ?>">
                 <?= $i ?>
               </a>
             <?php
               elseif ($i == $current_page - $range - 1 || $i == $current_page + $range + 1):
-                echo '<span style="padding: 10px 8px; color: #7f8c8d;">...</span>';
+                echo '<span style="padding: 10px 8px; color: #999;">...</span>';
               endif;
             endfor;
             ?>
 
             <?php if ($current_page < $total_pages): ?>
               <a href="?page=<?= $current_page + 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($status_filter) ? '&status=' . $status_filter : '' ?>" 
-                 class="button" 
-                 style="padding: 10px 16px; text-decoration: none;">
+                 class="page-btn">
                 Next <i class="fas fa-chevron-right"></i>
               </a>
             <?php endif; ?>
           </div>
         </div>
       <?php endif; ?>
-      <!-- ✅ END OF PAGINATION -->
 
     <?php else: ?>
       <div class="empty-state">
         <i class="fas fa-calendar-times"></i>
         <h3>No Appointments Found</h3>
         <p>You don't have any appointments yet. Book your first appointment!</p>
-        <a href="../appointment/book-appointment.php" class="button" style="margin-top: 20px;">Book Now</a>
+        <a href="../appointment/book-appointment.php" class="btn btn-primary" style="margin-top: 20px;">
+          <i class="fas fa-plus"></i> Book Now
+        </a>
       </div>
     <?php endif; ?>
   </div>
-</div>
+</main>
 
-<!-- Cancel Modal HTML - Replace your existing cancel modal -->
-<div id="cancelModal" class="cancel-modal">
-  <div class="cancel-modal-content">
-    <div class="cancel-modal-header">
+<div id="cancelModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
       <h3>Cancel Appointment</h3>
       <p>Please let us know why you need to cancel this appointment.</p>
     </div>
 
     <form action="../appointment/cancel-appointment.php" method="POST">
-      <div class="cancel-modal-body">
+      <div class="modal-body">
         <input type="hidden" name="appointment_id" id="cancel_appointment_id">
         
-        <div class="cancel-form-group">
-          <label class="cancel-form-label">Reason for cancellation</label>
-          <textarea 
-            name="cancel_reason" 
-            class="cancel-textarea"
-            required 
-            placeholder="e.g., Schedule conflict, feeling better, need to reschedule..."
-            rows="5"
-          ></textarea>
-        </div>
+        <label>Reason for cancellation</label>
+        <textarea 
+          name="cancel_reason" 
+          required 
+          placeholder="e.g., Schedule conflict, feeling better, need to reschedule..."
+          rows="5"
+        ></textarea>
       </div>
 
-      <div class="cancel-modal-footer">
-        <button type="button" onclick="closeCancelModal()" class="cancel-button-secondary">
+      <div class="modal-footer">
+        <button type="button" onclick="closeCancelModal()" class="btn btn-secondary">
           Close
         </button>
-        <button type="submit" class="cancel-button-primary">
+        <button type="submit" class="btn btn-primary">
           Submit
         </button>
       </div>
@@ -1472,40 +1114,35 @@ if (!empty($search)) {
   </div>
 </div>
 
-<!-- Reschedule Modal -->
-<div id="rescheduleModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:2000; backdrop-filter:blur(4px);">
-  <div style="background:#fff; border:1px solid #e0e0e0; padding:40px; border-radius:12px; width:90%; max-width:500px; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.15);">
-    <h3 style="color:#2c3e50; font-size:24px; font-weight:600; margin-bottom:8px;">Reschedule Appointment</h3>
-    <p style="color:#7f8c8d; font-size:14px; margin-bottom:32px;">Request a new date and time for your appointment</p>
+<div id="rescheduleModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Reschedule Appointment</h3>
+      <p>Request a new date and time for your appointment</p>
+    </div>
     
     <form action="../appointment/rescheduler-handler.php" method="POST">
-      <input type="hidden" name="appointment_id" id="reschedule_appointment_id">
-      
-      <div style="margin-bottom:24px;">
-        <label for="appointment_date" style="display:block; font-size:13px; color:#7f8c8d; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; font-weight:500;">New Date & Time</label>
-        <input type="datetime-local" name="appointment_date" id="appointment_date" required 
-               min="<?= date('Y-m-d\TH:i') ?>"
-               style="width:100%; padding:12px; background:#f9f9f9; border:1px solid #e0e0e0; border-radius:6px; color:#2c3e50; font-size:16px; font-family:inherit; transition:border-color 0.2s;">
-      </div>
+      <div class="modal-body">
+        <input type="hidden" name="appointment_id" id="reschedule_appointment_id">
+        
+        <div style="margin-bottom: 20px;">
+          <label>New Date & Time</label>
+          <input type="datetime-local" name="appointment_date" id="appointment_date" required 
+                 min="<?= date('Y-m-d\TH:i') ?>">
+        </div>
 
-      <div style="margin-bottom:24px;">
-        <label for="reschedule_reason" style="display:block; font-size:13px; color:#7f8c8d; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; font-weight:500;">Reason for Rescheduling</label>
-        <textarea name="reschedule_reason" id="reschedule_reason" rows="3" 
-                  placeholder="Please explain why you need to reschedule..."
-                  style="width:100%; padding:12px; background:#f9f9f9; border:1px solid #e0e0e0; border-radius:6px; color:#2c3e50; font-size:14px; font-family:inherit; resize:vertical; transition:border-color 0.2s;"></textarea>
+        <div>
+          <label>Reason for Rescheduling</label>
+          <textarea name="reschedule_reason" id="reschedule_reason" rows="3" 
+                    placeholder="Please explain why you need to reschedule..."></textarea>
+        </div>
       </div>
       
-      <div style="display:flex; gap:12px; margin-top:32px;">
-        <button type="button" onclick="closeRescheduleModal()" 
-                style="flex:1; padding:14px 24px; background:#f9f9f9; color:#7f8c8d; border:1px solid #e0e0e0; border-radius:6px; font-size:15px; font-weight:500; cursor:pointer; transition:all 0.2s;" 
-                onmouseover="this.style.borderColor='#A8E6CF'; this.style.color='#2c3e50';" 
-                onmouseout="this.style.borderColor='#e0e0e0'; this.style.color='#7f8c8d';">
+      <div class="modal-footer">
+        <button type="button" onclick="closeRescheduleModal()" class="btn btn-secondary">
           Cancel
         </button>
-        <button type="submit" 
-                style="flex:1; padding:14px 24px; background:linear-gradient(135deg, #7FD4B3 0%, #A8E6CF 100%); color:#2c3e50; border:none; border-radius:6px; font-size:15px; font-weight:600; cursor:pointer; transition:all 0.2s;" 
-                onmouseover="this.style.background='linear-gradient(135deg, #6CC4A3 0%, #97D6BF 100%)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(127, 212, 179, 0.3)';" 
-                onmouseout="this.style.background='linear-gradient(135deg, #7FD4B3 0%, #A8E6CF 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+        <button type="submit" class="btn btn-primary">
           Request Reschedule
         </button>
       </div>
@@ -1513,198 +1150,130 @@ if (!empty($search)) {
   </div>
 </div>
 
-
-<!-- Feedback Modal -->
-<div id="feedbackModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000;">
-  <div style="background:#fff; padding:30px; border-radius:16px; width:90%; max-width:420px; position:relative;">
-    <h3 style="color:#2a9d8f; margin-bottom:10px;">Rate Your Appointment</h3>
-    <p style="font-size:14px; color:#555;">Please rate your experience. <strong>Tell us what you liked or what we can improve!</strong></p>
-    
-    <?php if (isset($_SESSION['error'])): ?>
-      <div style="background: #fdecea; color: #b71c1c; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 10px;">
-        <?= $_SESSION['error']; unset($_SESSION['error']); ?>
-      </div>
-    <?php endif; ?>
-
-    <?php if (isset($_SESSION['success'])): ?>
-      <div style="background: #e6f4ea; color: #2e7d32; padding: 10px; border-radius: 6px; font-weight: 600; margin-bottom: 10px;">
-        <?= $_SESSION['success']; unset($_SESSION['success']); ?>
-      </div>
-    <?php endif; ?>
+<div id="feedbackModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Rate Your Appointment</h3>
+      <p>Please rate your experience and tell us what you liked or what we can improve!</p>
+    </div>
 
     <form action="./feedback/rate-handler.php" method="POST" onsubmit="return validateFeedback();">
-      <input type="hidden" name="appointment_id" id="feedback_appointment_id">
+      <div class="modal-body">
+        <input type="hidden" name="appointment_id" id="feedback_appointment_id">
 
-      <label style="font-weight: 600; margin-top: 15px;">Rating:</label>
-      <select name="rating" required style="width:100%; padding:10px; border-radius:8px; font-size:14px; border:1px solid #ddd;">
-        <option value="">Choose</option>
-        <?php for ($i = 1; $i <= 5; $i++): ?>
-          <option value="<?= $i ?>"><?= $i ?> star<?= $i > 1 ? 's' : '' ?></option>
-        <?php endfor; ?>
-      </select>
+        <div style="margin-bottom: 20px;">
+          <label>Rating</label>
+          <select name="rating" required>
+            <option value="">Choose a rating</option>
+            <?php for ($i = 1; $i <= 5; $i++): ?>
+              <option value="<?= $i ?>"><?= $i ?> star<?= $i > 1 ? 's' : '' ?></option>
+            <?php endfor; ?>
+          </select>
+        </div>
 
-      <label style="font-weight: 600; margin-top: 15px;">Comments <small>(minimum 5 words)</small>:</label>
-      <textarea name="feedback" id="feedback_text" required placeholder="E.g. I loved how gentle the groomer was with my dog." style="width:100%; padding:10px; border-radius:8px; margin:10px 0; border:1px solid #ddd;"></textarea>
+        <div>
+          <label>Comments <small>(minimum 5 words)</small></label>
+          <textarea name="feedback" id="feedback_text" required 
+                    placeholder="E.g. I loved how gentle the groomer was with my dog."></textarea>
+        </div>
+      </div>
 
-      <div style="text-align:right;">
-        <button type="button" onclick="closeFeedbackModal()" style="margin-right:10px; background:#ccc;" class="button">Close</button>
-        <button type="submit" class="button">Submit</button>
+      <div class="modal-footer">
+        <button type="button" onclick="closeFeedbackModal()" class="btn btn-secondary">
+          Close
+        </button>
+        <button type="submit" class="btn btn-primary">
+          Submit Feedback
+        </button>
       </div>
     </form>
   </div>
 </div>
 
 <script>
-  function openCancelModal(id) {
-    document.getElementById('cancel_appointment_id').value = id;
-    document.getElementById('cancelModal').classList.add('show');
-  }
-
-  function closeCancelModal() {
-    document.getElementById('cancelModal').classList.remove('show');
-  }
-
-  // Update your window.onclick to work with the new modal
-  window.onclick = function(event) {
-    const cancelModal = document.getElementById('cancelModal');
-    const rescheduleModal = document.getElementById('rescheduleModal');
-    const feedbackModal = document.getElementById('feedbackModal');
-    
-    // For cancel modal (new design)
-    if (event.target === cancelModal) {
-      closeCancelModal();
-    }
-    
-    // For other modals (old design)
-    if (event.target === rescheduleModal) {
-      rescheduleModal.style.display = 'none';
-    }
-    if (event.target === feedbackModal) {
-      feedbackModal.style.display = 'none';
-    }
-  }
-
-  function openRescheduleModal(id) {
-    document.getElementById('reschedule_appointment_id').value = id;
-    document.getElementById('rescheduleModal').style.display = 'flex';
-  }
-
-  function closeRescheduleModal() {
-    document.getElementById('rescheduleModal').style.display = 'none';
-  }
-
-  function openFeedbackModal(id) {
-    document.getElementById('feedback_appointment_id').value = id;
-    document.getElementById('feedbackModal').style.display = 'flex';
-  }
-
-  function closeFeedbackModal() {
-    document.getElementById('feedbackModal').style.display = 'none';
-  }
-
-  window.onclick = function(event) {
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-      if (event.target === modal) {
-        modal.style.display = 'none';
-      }
-    });
-  }
-
-  function validateFeedback() {
-    const feedback = document.getElementById('feedback_text').value.trim();
-    if (feedback !== '') {
-      const wordCount = feedback.split(/\s+/).length;
-      if (wordCount < 5) {
-        alert("Please enter at least 5 words so we can better understand your experience.");
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
-const navOverlay = document.getElementById('nav-overlay');
 const profileDropdown = document.getElementById('profile-dropdown');
 
 hamburger.addEventListener('click', function() {
-  hamburger.classList.toggle('active');
   navMenu.classList.toggle('active');
-  navOverlay.classList.toggle('active');
-  document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
 });
 
-// Close menu when clicking overlay
-navOverlay.addEventListener('click', function() {
-  hamburger.classList.remove('active');
-  navMenu.classList.remove('active');
-  navOverlay.classList.remove('active');
-  profileDropdown.classList.remove('active');
-  document.body.style.overflow = '';
-});
-
-// Close menu when clicking on regular nav links
 document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
   link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-});
-
-// Handle profile dropdown - ONLY for mobile (click to toggle)
-profileDropdown.addEventListener('click', function(e) {
-  if (window.innerWidth <= 1024) {
-    // Only prevent default and toggle on mobile
-    if (e.target.closest('.profile-icon')) {
-      e.preventDefault();
-      this.classList.toggle('active');
+    if (window.innerWidth <= 1024) {
+      navMenu.classList.remove('active');
     }
-  }
-  // On desktop, do nothing - CSS :hover handles it
-});
-
-// Close menu when clicking dropdown items
-document.querySelectorAll('.dropdown-menu a').forEach(link => {
-  link.addEventListener('click', function() {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
   });
 });
 
-// Reset on window resize
-window.addEventListener('resize', function() {
-  if (window.innerWidth > 1024) {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-    navOverlay.classList.remove('active');
-    profileDropdown.classList.remove('active');
-    document.body.style.overflow = '';
+profileDropdown.addEventListener('click', function(e) {
+  if (window.innerWidth <= 1024 && e.target.closest('.profile-icon')) {
+    e.preventDefault();
+    this.classList.toggle('active');
   }
 });
-// Auto-dismiss notifications after 5 seconds
+
 document.addEventListener('DOMContentLoaded', function() {
   const successMessage = document.getElementById('successMessage');
   const errorMessage = document.getElementById('errorMessage');
   
   if (successMessage) {
-    setTimeout(() => {
-      successMessage.remove();
-    }, 5000);
+    setTimeout(() => successMessage.remove(), 5000);
   }
   
   if (errorMessage) {
-    setTimeout(() => {
-      errorMessage.remove();
-    }, 5000);
+    setTimeout(() => errorMessage.remove(), 5000);
   }
 });
+
+function openCancelModal(id) {
+  document.getElementById('cancel_appointment_id').value = id;
+  document.getElementById('cancelModal').classList.add('show');
+}
+
+function closeCancelModal() {
+  document.getElementById('cancelModal').classList.remove('show');
+}
+
+function openRescheduleModal(id) {
+  document.getElementById('reschedule_appointment_id').value = id;
+  document.getElementById('rescheduleModal').classList.add('show');
+}
+
+function closeRescheduleModal() {
+  document.getElementById('rescheduleModal').classList.remove('show');
+}
+
+function openFeedbackModal(id) {
+  document.getElementById('feedback_appointment_id').value = id;
+  document.getElementById('feedbackModal').classList.add('show');
+}
+
+function closeFeedbackModal() {
+  document.getElementById('feedbackModal').classList.remove('show');
+}
+
+window.onclick = function(event) {
+  const modals = document.querySelectorAll('.modal');
+  modals.forEach(modal => {
+    if (event.target === modal) {
+      modal.classList.remove('show');
+    }
+  });
+}
+
+function validateFeedback() {
+  const feedback = document.getElementById('feedback_text').value.trim();
+  if (feedback !== '') {
+    const wordCount = feedback.split(/\s+/).length;
+    if (wordCount < 5) {
+      alert("Please enter at least 5 words so we can better understand your experience.");
+      return false;
+    }
+  }
+  return true;
+}
 </script>
 
 <?php if (isset($_SESSION['show_feedback_modal']) && $_SESSION['show_feedback_modal']): ?>
@@ -1718,5 +1287,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php unset($_SESSION['show_feedback_modal'], $_SESSION['feedback_appointment_id']); ?>
 <?php endif; ?>
+
 </body>
 </html>
