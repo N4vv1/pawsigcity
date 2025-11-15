@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$user_id = intval($_SESSION['user_id']); // Sanitized
+$user_id = $_SESSION['user_id'];
 
 // Check if the user has pets
 $petCheck = pg_query_params($conn, "SELECT COUNT(*) AS count FROM pets WHERE user_id = $1", [$user_id]);
@@ -16,6 +16,10 @@ if (!$petCheck) {
     die("Query failed: " . pg_last_error($conn));
 }
 $petCount = pg_fetch_assoc($petCheck)['count'];
+
+// DEBUG - Remove after testing
+echo "<!-- DEBUG: Session user_id = " . htmlspecialchars($_SESSION['user_id']) . " -->";
+echo "<!-- DEBUG: Pet count = " . $petCount . " -->";
 
 // Pagination settings
 $images_per_page = 6;

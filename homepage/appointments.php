@@ -482,6 +482,7 @@ if ($row_count > 0) {
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
       margin-bottom: 40px;
+      margin-top: 40px;
     }
 
     .stat-card {
