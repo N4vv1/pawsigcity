@@ -185,90 +185,103 @@ if ($row_count > 0) {
     .hamburger {
       display: none;
     }
+@media (min-width: 1025px) {
+  /* Dropdown container */
+  .dropdown {
+    position: relative;
+  }
 
-    @media (min-width: 1025px) {
-      .dropdown {
-        position: relative;
-      }
+  /* Dropdown menu - hidden by default */
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    min-width: 220px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    transition-delay: 0s, 0s, 0s;
+    margin-top: 8px;
+    padding: 8px 0;
+    z-index: 1000;
+    list-style: none;
+    pointer-events: none;
+  }
 
-      .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: white;
-        min-width: 220px;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(10px);
-        transition: all 0.3s ease;
-        margin-top: 8px;
-        padding: 8px 0;
-        z-index: 1000;
-        list-style: none;
-        pointer-events: none;
-      }
+  /* Show dropdown on hover - appears immediately */
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition-delay: 0s, 0s, 0s;
+  }
 
-      .dropdown:hover .dropdown-menu {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-        pointer-events: auto;
-      }
+  /* Keep dropdown visible when hovering over menu items */
+  .dropdown-menu:hover {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* Add delay when mouse leaves dropdown - waits 300ms before hiding */
+  .dropdown:not(:hover) .dropdown-menu {
+    transition-delay: 0.3s, 0.3s, 0.3s;
+  }
 
-      .dropdown-menu:hover {
-        opacity: 1;
-        visibility: visible;
-      }
+  /* Dropdown menu items */
+  .dropdown-menu li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
 
-      .dropdown-menu li {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
+  .dropdown-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    white-space: nowrap;
+    text-align: left;
+  }
 
-      .dropdown-menu a {
-        display: block;
-        padding: 12px 20px;
-        color: #2c3e50;
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border-left: 3px solid transparent;
-        white-space: nowrap;
-        text-align: left;
-      }
+  .dropdown-menu a:hover {
+    background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
+    border-left-color: #A8E6CF;
+    padding-left: 24px;
+    color: #16a085;
+  }
 
-      .dropdown-menu a:hover {
-        background: linear-gradient(90deg, rgba(168, 230, 207, 0.1) 0%, transparent 100%);
-        border-left-color: #A8E6CF;
-        padding-left: 24px;
-        color: #16a085;
-      }
+  /* Profile icon styling */
+  .profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    position: relative;
+  }
 
-      .profile-icon {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        position: relative;
-      }
+  /* Arrow indicator */
+  .profile-icon::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.7rem;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+  }
 
-      .profile-icon::after {
-        content: '\f078';
-        font-family: 'Font Awesome 6 Free';
-        font-weight: 900;
-        font-size: 0.7rem;
-        margin-left: 4px;
-        transition: transform 0.3s ease;
-      }
-
-      .dropdown:hover .profile-icon::after {
-        transform: rotate(180deg);
-      }
-    }
+  .dropdown:hover .profile-icon::after {
+    transform: rotate(180deg);
+  }
+}
 
     @media (max-width: 1024px) {
       .hamburger {

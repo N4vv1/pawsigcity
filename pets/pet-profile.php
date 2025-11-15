@@ -827,7 +827,8 @@ if (!$pets) {
     opacity: 0;
     visibility: hidden;
     transform: translateY(10px);
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    transition-delay: 0s, 0s, 0s;
     margin-top: 8px;
     padding: 8px 0;
     z-index: 1000;
@@ -835,18 +836,24 @@ if (!$pets) {
     pointer-events: none;
   }
 
-  /* Show dropdown on hover */
+  /* Show dropdown on hover - appears immediately */
   .dropdown:hover .dropdown-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
     pointer-events: auto;
+    transition-delay: 0s, 0s, 0s;
   }
 
   /* Keep dropdown visible when hovering over menu items */
   .dropdown-menu:hover {
     opacity: 1;
     visibility: visible;
+  }
+  
+  /* Add delay when mouse leaves dropdown - waits 300ms before hiding */
+  .dropdown:not(:hover) .dropdown-menu {
+    transition-delay: 0.3s, 0.3s, 0.3s;
   }
 
   /* Dropdown menu items */
