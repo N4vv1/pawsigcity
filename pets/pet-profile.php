@@ -10,6 +10,38 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// Handle pet archiving (soft delete)
+if (isset($_GET['archive_id'])) {
+    $archive_id = $_GET['archive_id'];
+    
+    // Verify the pet belongs to the logged-in user
+    $verify_query = "SELECT user_id, name FROM pets WHERE pet_id = $1";
+    $verify_result = pg_query_params($conn, $verify_query, [$archive_id]);
+    
+    if ($verify_result && pg_num_rows($verify_result) > 0) {
+        $pet = pg_fetch_assoc($verify_result);
+        
+        if ($pet['user_id'] == $user_id) {
+            // Archive the pet
+            $archive_query = "UPDATE pets SET deleted_at = NOW() WHERE pet_id = $1";
+            $archive_result = pg_query_params($conn, $archive_query, [$archive_id]);
+            
+            if ($archive_result) {
+                $_SESSION['success'] = "Pet '{$pet['name']}' has been archived successfully.";
+            } else {
+                $_SESSION['error'] = "Failed to archive pet. Please try again.";
+            }
+        } else {
+            $_SESSION['error'] = "Unauthorized action.";
+        }
+    } else {
+        $_SESSION['error'] = "Pet not found.";
+    }
+    
+    header('Location: pet-profile.php');
+    exit;
+}
+
 // Fetch the logged-in user's info
 $user_result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$user_id]);
 if ($user_result && pg_num_rows($user_result) > 0) {
@@ -19,11 +51,10 @@ if ($user_result && pg_num_rows($user_result) > 0) {
 }
 
 // Query to get user's pets
-$pets = pg_query_params($conn, "SELECT * FROM pets WHERE user_id = $1", [$user_id]);
-if (!$pets) {
-    echo "Query Error: " . pg_last_error($conn);
-    exit;
-}
+$pets = pg_query_params($conn, 
+    "SELECT * FROM pets WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at DESC", 
+    [$user_id]
+);
 ?>
 
 <!DOCTYPE html>
@@ -250,7 +281,7 @@ if (!$pets) {
     }
 
     .btn-delete {
-      background: #ff6b6b;
+      background: #ffa500;
       color: white;
       padding: 8px 16px;
       border-radius: 8px;
@@ -266,7 +297,7 @@ if (!$pets) {
     }
 
     .btn-delete:hover {
-      background: #ee5a52;
+      background: #ff8c00;
       transform: translateY(-1px);
     }
 
@@ -2416,10 +2447,9 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="btn-edit" onclick="togglePetEdit('<?= $pet_id ?>')">
         <i class="fas fa-edit"></i> Edit
       </button>
-      <form action="delete-pet.php" method="POST" onsubmit="return confirmDelete(event, '<?= htmlspecialchars($pet['name']) ?>', '<?= $pet_id ?>');">
-        <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
+      <form action="?archive_id=<?= $pet_id ?>" method="GET" onsubmit="return confirmArchive(event, '<?= htmlspecialchars($pet['name']) ?>');">
         <button type="submit" class="btn-delete">
-          <i class="fas fa-trash"></i> Delete
+          <i class="fas fa-archive"></i> Archive
         </button>
       </form>
     </div>
@@ -2803,6 +2833,10 @@ document.querySelectorAll('.dropdown-menu a').forEach(link => {
   });
 });
 
+function confirmArchive(event, petName) {
+  return confirm(`Archive ${petName}?\n\nThe pet will be archived and only admins can restore it. This is typically used for pets that are no longer active (deceased, rehomed, etc.).`);
+}
+
 // Reset on window resize
 window.addEventListener('resize', function() {
   if (window.innerWidth > 1024) {
@@ -2814,6 +2848,16 @@ window.addEventListener('resize', function() {
   }
 });
 </script>
+
+<?php if (isset($_SESSION['error'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  showNotification('error', 'Error!', <?= json_encode($_SESSION['error']) ?>, 3000);
+});
+</script>
+<?php unset($_SESSION['error']); ?>
+<?php endif; ?>
+
 <div class="floating-chat-btn" onclick="toggleChatModal()">
   <i class="fas fa-comments"></i>
 </div>
@@ -3030,5 +3074,6 @@ document.addEventListener('keydown', function(e) {
   }
 });
 </script>
+
 </body>
 </html>

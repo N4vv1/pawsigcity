@@ -36,6 +36,9 @@ $cancelled_appointments = $cancelled_query ? pg_fetch_result($cancelled_query, 0
 $noshow_query = pg_query($conn, "SELECT COUNT(*) AS count FROM appointments WHERE status = 'no_show'");
 $noshow_appointments = $noshow_query ? pg_fetch_result($noshow_query, 0, 'count') : 0;
 
+$archived_pets_result = pg_query($conn, "SELECT COUNT(*) AS count FROM pets WHERE deleted_at IS NOT NULL");
+$archived_pets = $archived_pets_result ? pg_fetch_result($archived_pets_result, 0, 'count') : 0;
+
 // Auto check for no-shows
 date_default_timezone_set('Asia/Manila');
 $now = new DateTime();
@@ -59,6 +62,26 @@ while ($row = pg_fetch_assoc($autoCheck)) {
             $noShowCount++;
         }
     }
+}
+
+// Handle pet restoration (admin only)
+if (isset($_GET['restore_pet_id'])) {
+    $restore_id = $_GET['restore_pet_id'];
+    
+    $result = pg_query_params(
+        $conn, 
+        "UPDATE pets SET deleted_at = NULL WHERE pet_id = $1", 
+        [$restore_id]
+    );
+    
+    if ($result && pg_affected_rows($result) > 0) {
+        $_SESSION['success'] = "Pet restored successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to restore pet.";
+    }
+    
+    header("Location: admin.php?show=archived_pets");
+    exit;
 }
 
 if ($noShowCount > 0) {
@@ -492,48 +515,6 @@ if ($noShowCount > 0) {
       opacity: 1;
     }
 
-    /* PAGINATION STYLES */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .pagination button {
-      padding: 8px 12px;
-      background-color: var(--primary-color);
-      color: var(--dark-color);
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: var(--font-weight-semi-bold);
-      transition: var(--transition-speed);
-      font-size: 0.9rem;
-    }
-
-    .pagination button:hover:not(:disabled) {
-      background-color: var(--secondary-color);
-    }
-
-    .pagination button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .pagination button.active {
-      background-color: var(--secondary-color);
-      font-weight: var(--font-weight-bold);
-    }
-
-    .pagination-info {
-      font-size: 0.9rem;
-      color: var(--dark-color);
-      font-weight: var(--font-weight-semi-bold);
-    }
-
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -565,7 +546,7 @@ if ($noShowCount > 0) {
 
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig2.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig2.png " alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
@@ -652,6 +633,13 @@ if ($noShowCount > 0) {
       <p><?= $completed_appointments ?></p>
       <a href="javascript:void(0)" onclick="openModal('completed')">View Completed</a>
     </div>
+
+    <div class="card">
+      <div class="card-icon"><i class='bx bx-archive'></i></div>
+      <h3>Archived Pets</h3>
+      <p><?= $archived_pets ?></p>
+      <a href="javascript:void(0)" onclick="openModal('archived_pets')">View Archived</a>
+    </div>
   </div>
 </main>
 
@@ -667,7 +655,7 @@ if ($noShowCount > 0) {
           <th>Email</th>
         </tr>
       </thead>
-      <tbody id="usersTableBody">
+      <tbody>
         <?php
         $userList = pg_query($conn, "SELECT user_id, first_name, middle_name, last_name, email FROM users");
         if ($userList):
@@ -685,7 +673,6 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
-    <div id="usersPagination" class="pagination"></div>
     <button onclick="closeModal('usersModal')">Close</button>
   </div>
 </div>
@@ -703,7 +690,7 @@ if ($noShowCount > 0) {
           <th>Owner ID</th>
         </tr>
       </thead>
-      <tbody id="petsTableBody">
+      <tbody>
         <?php
         $petList = pg_query($conn, "SELECT pet_id, name, breed, user_id FROM pets");
         if ($petList):
@@ -721,7 +708,6 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
-    <div id="petsPagination" class="pagination"></div>
     <button onclick="closeModal('petsModal')">Close</button>
   </div>
 </div>
@@ -740,7 +726,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="cancelledTableBody">
+      <tbody>
         <?php
         $cancelledQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -770,7 +756,6 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
-    <div id="cancelledPagination" class="pagination"></div>
     <button onclick="closeModal('cancelledModal')">Close</button>
   </div>
 </div>
@@ -789,7 +774,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="noshowTableBody">
+      <tbody>
         <?php
         $noshowQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -819,7 +804,6 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
-    <div id="noshowPagination" class="pagination"></div>
     <button onclick="closeModal('noshowModal')">Close</button>
   </div>
 </div>
@@ -838,7 +822,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="confirmedTableBody">
+      <tbody>
         <?php
         $confirmedQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -868,7 +852,6 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
-    <div id="confirmedPagination" class="pagination"></div>
     <button onclick="closeModal('confirmedModal')">Close</button>
   </div>
 </div>
@@ -887,7 +870,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="completedTableBody">
+      <tbody>
         <?php
         $completedQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -917,7 +900,6 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
-    <div id="completedPagination" class="pagination"></div>
     <button onclick="closeModal('completedModal')">Close</button>
   </div>
 </div>
@@ -927,6 +909,8 @@ if ($noShowCount > 0) {
   <div class="modal-content"
      style="max-width: 1400px; max-height: 85vh; overflow-y: auto;
             position: absolute; right: 80px; top: 50%; transform: translateY(-50%);">
+
+
 
     <h2>All Appointments</h2>
     <div style="overflow-x: auto;">
@@ -946,7 +930,7 @@ if ($noShowCount > 0) {
           <th style="min-width: 180px;">Actions</th>
         </tr>
       </thead>
-      <tbody id="appointmentsTableBody">
+      <tbody>
         <?php
         $appointmentQuery = "
             SELECT a.*,
@@ -979,6 +963,7 @@ if ($noShowCount > 0) {
               <?= date('M d, Y g:i A', strtotime($row['appointment_date'])) ?>
             </td>
             
+            <!-- STATUS COLUMN - FIXED -->
             <td>
               <?php if (!empty($row['cancel_reason']) && $row['status'] !== 'cancelled'): ?>
                 <span style="color: red; font-weight: bold; font-size: 0.8rem;">Cancel Request</span>
@@ -1006,6 +991,7 @@ if ($noShowCount > 0) {
               <?= !empty($row['notes']) ? htmlspecialchars(substr($row['notes'], 0, 50)) . (strlen($row['notes']) > 50 ? '...' : '') : '-' ?>
             </td>
             
+            <!-- CANCEL REASON COLUMN - ADDED DATA -->
             <td style="font-size: 0.75rem; color: #d32f2f; max-width: 150px;">
               <?php if (!empty($row['cancel_reason'])): ?>
                 <strong></strong> <?= htmlspecialchars(substr($row['cancel_reason'], 0, 60)) ?><?= strlen($row['cancel_reason']) > 60 ? '...' : '' ?>
@@ -1066,7 +1052,6 @@ if ($noShowCount > 0) {
       </tbody>
     </table>
     </div>
-    <div id="appointmentsPagination" class="pagination"></div>
     <button onclick="closeModal('appointmentsModal')">Close</button>
   </div>
 </div>
@@ -1080,98 +1065,84 @@ if ($noShowCount > 0) {
   </div>
 </div>
 
+<!-- ARCHIVED PETS MODAL -->
+<div id="archived_petsModal" class="modal">
+  <div class="modal-content" style="max-width: 1200px;">
+    <h2>🗄️ Archived Pets</h2>
+    <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">
+      These pets have been archived by their owners. You can restore them if needed.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Pet ID</th>
+          <th>Name</th>
+          <th>Breed</th>
+          <th>Owner</th>
+          <th>Owner Email</th>
+          <th>Archived Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="archived_petsTableBody">
+        <?php
+        $archivedPetsQuery = "
+            SELECT p.pet_id, p.name, p.breed, p.deleted_at,
+                   u.user_id, u.first_name, u.middle_name, u.last_name, u.email
+            FROM pets p
+            JOIN users u ON p.user_id = u.user_id
+            WHERE p.deleted_at IS NOT NULL
+            ORDER BY p.deleted_at DESC
+        ";
+        $archivedPetsList = pg_query($conn, $archivedPetsQuery);
+        
+        if ($archivedPetsList && pg_num_rows($archivedPetsList) > 0):
+          while ($pet = pg_fetch_assoc($archivedPetsList)):
+            $ownerName = trim($pet['first_name'] . ' ' . $pet['middle_name'] . ' ' . $pet['last_name']);
+        ?>
+          <tr>
+            <td><?= htmlspecialchars($pet['pet_id']) ?></td>
+            <td><strong><?= htmlspecialchars($pet['name']) ?></strong></td>
+            <td><?= htmlspecialchars($pet['breed']) ?></td>
+            <td><?= htmlspecialchars($ownerName) ?></td>
+            <td><?= htmlspecialchars($pet['email']) ?></td>
+            <td style="font-size: 0.85rem; color: #666;">
+              <?= date('M d, Y g:i A', strtotime($pet['deleted_at'])) ?>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a href="?restore_pet_id=<?= $pet['pet_id'] ?>" 
+                   class="button" 
+                   style="padding: 5px 10px; font-size: 0.75rem; background-color: #A8E6CF;"
+                   onclick="return confirm('Restore <?= htmlspecialchars($pet['name']) ?>? The pet will be visible to the owner again.')">
+                  <i class='bx bx-undo'></i> Restore
+                </a>
+              </div>
+            </td>
+          </tr>
+        <?php 
+          endwhile;
+        else:
+        ?>
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+              <i class='bx bx-archive' style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+              <strong>No archived pets</strong>
+              <p style="margin-top: 5px; font-size: 0.9rem;">All pets are active</p>
+            </td>
+          </tr>
+        <?php
+        endif;
+        ?>
+      </tbody>
+    </table>
+    <div id="archived_petsPagination" class="pagination"></div>
+    <button onclick="closeModal('archived_petsModal')">Close</button>
+  </div>
+</div>
+
 <script>
-// Pagination Manager Class
-class PaginationManager {
-  constructor(tableBodyId, paginationId, rowsPerPage = 10) {
-    this.tableBody = document.getElementById(tableBodyId);
-    this.pagination = document.getElementById(paginationId);
-    this.rowsPerPage = rowsPerPage;
-    this.currentPage = 1;
-    this.rows = [];
-    
-    if (this.tableBody) {
-      this.rows = Array.from(this.tableBody.querySelectorAll('tr'));
-      this.totalPages = Math.ceil(this.rows.length / this.rowsPerPage);
-      this.init();
-    }
-  }
-
-  init() {
-    if (this.rows.length <= this.rowsPerPage) {
-      // No pagination needed
-      return;
-    }
-    this.showPage(1);
-    this.renderPagination();
-  }
-
-  showPage(page) {
-    this.currentPage = page;
-    const start = (page - 1) * this.rowsPerPage;
-    const end = start + this.rowsPerPage;
-
-    this.rows.forEach((row, index) => {
-      if (index >= start && index < end) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-  }
-
-  renderPagination() {
-    if (!this.pagination || this.totalPages <= 1) return;
-
-    let html = '';
-    
-    // Previous button
-    html += `<button onclick="pagination['${this.pagination.id}'].prevPage()" ${this.currentPage === 1 ? 'disabled' : ''}>← Previous</button>`;
-    
-    // Page info
-    html += `<span class="pagination-info">Page ${this.currentPage} of ${this.totalPages}</span>`;
-    
-    // Page number buttons
-    const maxButtons = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
-    let endPage = Math.min(this.totalPages, startPage + maxButtons - 1);
-    
-    if (endPage - startPage < maxButtons - 1) {
-      startPage = Math.max(1, endPage - maxButtons + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      html += `<button class="${i === this.currentPage ? 'active' : ''}" onclick="pagination['${this.pagination.id}'].goToPage(${i})">${i}</button>`;
-    }
-    
-    // Next button
-    html += `<button onclick="pagination['${this.pagination.id}'].nextPage()" ${this.currentPage === this.totalPages ? 'disabled' : ''}>Next →</button>`;
-    
-    this.pagination.innerHTML = html;
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.goToPage(this.currentPage + 1);
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.goToPage(this.currentPage - 1);
-    }
-  }
-
-  goToPage(page) {
-    this.showPage(page);
-    this.renderPagination();
-  }
-}
-
-// Global pagination instances
-const pagination = {};
-
-// Initialize pagination when modal opens
+// Define functions IMMEDIATELY in global scope
 window.openModal = function(type) {
   const modals = {
     users: 'usersModal',
@@ -1182,25 +1153,22 @@ window.openModal = function(type) {
     confirmed: 'confirmedModal',
     completed: 'completedModal',
     appointments: 'appointmentsModal',
-    history: 'historyModal'
+    history: 'historyModal',
+    archived_pets: 'archived_petsModal'
   };
   
+  console.log('openModal called with:', type);
   const modalId = modals[type];
   if (modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
       modal.style.display = 'flex';
-      
-      // Initialize pagination for this modal if not already done
-      const paginationId = type + 'Pagination';
-      const tableBodyId = type + 'TableBody';
-      
-      if (document.getElementById(paginationId) && document.getElementById(tableBodyId)) {
-        if (!pagination[paginationId]) {
-          pagination[paginationId] = new PaginationManager(tableBodyId, paginationId, 10);
-        }
-      }
+      console.log('Modal opened successfully:', modalId);
+    } else {
+      console.error('Modal element not found:', modalId);
     }
+  } else {
+    console.error('Unknown modal type:', type);
   }
 };
 
@@ -1254,11 +1222,46 @@ window.toggleSidebar = function() {
   }
 };
 
-// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('=== MODAL DEBUG ===');
+  console.log('confirmedModal exists:', document.getElementById('confirmedModal') !== null);
+  console.log('completedModal exists:', document.getElementById('completedModal') !== null);
+  console.log('appointmentsModal exists:', document.getElementById('appointmentsModal') !== null);
+  
+  // Auto-open archived pets modal if there's a show parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('show') === 'archived_pets') {
+    openModal('archived_pets');
+  }
+  
   console.log('Page loaded, pagination ready');
 });
 </script>
+
+<?php if (isset($_SESSION['success'])): ?>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      showToast('<?= addslashes($_SESSION['success']); ?>');
+    });
+  </script>
+  <?php unset($_SESSION['success']); ?>
+<?php elseif (isset($_SESSION['error'])): ?>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let toast = document.getElementById('toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.style.cssText = 'position: fixed; bottom: 30px; right: 30px; background: #F44336; color: white; padding: 15px 20px; border-radius: 10px; z-index: 9999; font-weight: 600; display: block;';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = '<?= addslashes($_SESSION['error']); ?>';
+      toast.style.display = 'block';
+      setTimeout(() => toast.style.display = 'none', 3000);
+    });
+  </script>
+  <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 
 </body>
 </html>
