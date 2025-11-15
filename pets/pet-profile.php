@@ -42,6 +42,48 @@ if (isset($_GET['archive_id'])) {
     exit;
 }
 
+// TEMPORARY DEBUG - Remove after testing
+if (isset($_GET['archive_id'])) {
+    $archive_id = $_GET['archive_id'];
+    
+    // Verify the pet belongs to the logged-in user
+    $verify_query = "SELECT user_id, name FROM pets WHERE pet_id = $1";
+    $verify_result = pg_query_params($conn, $verify_query, [$archive_id]);
+    
+    if ($verify_result && pg_num_rows($verify_result) > 0) {
+        $pet = pg_fetch_assoc($verify_result);
+        
+        if ($pet['user_id'] == $user_id) {
+            // Archive the pet
+            $archive_query = "UPDATE pets SET deleted_at = NOW() WHERE pet_id = $1";
+            $archive_result = pg_query_params($conn, $archive_query, [$archive_id]);
+            
+            if ($archive_result) {
+                echo "DEBUG: Pet archived successfully. Rows affected: " . pg_affected_rows($archive_result) . "<br>";
+                $_SESSION['success'] = "Pet '{$pet['name']}' has been archived successfully.";
+            } else {
+                echo "DEBUG: Archive failed. Error: " . pg_last_error($conn) . "<br>";
+                $_SESSION['error'] = "Failed to archive pet. Please try again.";
+            }
+        } else {
+            $_SESSION['error'] = "Unauthorized action.";
+        }
+    } else {
+        $_SESSION['error'] = "Pet not found.";
+    }
+    
+    // ADD THIS DEBUG CHECK
+    echo "DEBUG: Checking pets after archive...<br>";
+    $debug_pets = pg_query_params($conn, "SELECT pet_id, name, deleted_at FROM pets WHERE user_id = $1", [$user_id]);
+    while ($dp = pg_fetch_assoc($debug_pets)) {
+        echo "Pet ID: {$dp['pet_id']}, Name: {$dp['name']}, Deleted: {$dp['deleted_at']}<br>";
+    }
+    die(); // Stop here to see the debug output
+    
+    header('Location: pet-profile.php');
+    exit;
+}
+
 // Fetch the logged-in user's info
 $user_result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$user_id]);
 if ($user_result && pg_num_rows($user_result) > 0) {
