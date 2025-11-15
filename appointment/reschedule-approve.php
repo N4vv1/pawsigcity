@@ -4,7 +4,7 @@ require_once '../db.php';
 
 // Check if user is admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../dashboard/admin/admin.php");
+    header("Location: https://pawsigcity.onrender.com/dashboard/admin/admin.php");
     exit;
 }
 
