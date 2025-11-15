@@ -58,11 +58,8 @@ if ($user_result && pg_num_rows($user_result) > 0) {
     $user = null;
 }
 
-// Query to get user's pets
-$pets = pg_query_params($conn, 
-    "SELECT * FROM pets WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at DESC", 
-    [$user_id]
-);
+// Query to get user's pets (exclude archived ones)
+$pets = pg_query_params($conn, "SELECT * FROM pets WHERE user_id = $1 AND deleted_at IS NULL ORDER BY created_at DESC", [$user_id]);
 ?>
 
 <!DOCTYPE html>
@@ -2475,10 +2472,11 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="btn-edit" onclick="togglePetEdit('<?= $pet_id ?>')">
         <i class="fas fa-edit"></i> Edit
       </button>
-      <form action="?archive_id=<?= $pet_id ?>" method="GET" onsubmit="return confirmArchive(event, '<?= htmlspecialchars($pet['name']) ?>');">
-        <button type="submit" class="btn-delete">
-          <i class="fas fa-archive"></i> Archive
-        </button>
+      <form action="archive-pet.php" method="POST" onsubmit="return confirmArchive(event, '<?= htmlspecialchars($pet['name']) ?>', '<?= $pet_id ?>');">
+          <input type="hidden" name="pet_id" value="<?= $pet_id ?>">
+          <button type="submit" class="btn-delete">
+              <i class="fas fa-archive"></i> Archive
+          </button>
       </form>
     </div>
   </div>
@@ -2714,8 +2712,8 @@ window.addEventListener('DOMContentLoaded', function() {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
   
-  if (urlParams.has('pet_deleted')) {
-    showNotification('success', 'Deleted!', 'Pet profile deleted successfully', 3000);
+  if (urlParams.has('pet_archived')) {
+    showNotification('success', 'Archived!', 'Pet profile archived successfully', 3000);
     window.history.replaceState({}, document.title, window.location.pathname);
   }
   
@@ -2790,10 +2788,10 @@ function handlePetEdit(event, petId) {
   return true;
 }
 
-function confirmDelete(event, petName, petId) {
+function confirmArchive(event, petName, petId) {
   event.preventDefault();
   
-  if (confirm(`Are you sure you want to delete ${petName}? This action cannot be undone.`)) {
+  if (confirm(`Are you sure you want to archive ${petName}?`)) {
     event.target.submit();
     return true;
   }
