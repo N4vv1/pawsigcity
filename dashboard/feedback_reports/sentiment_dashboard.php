@@ -645,7 +645,7 @@ $feedback_result = pg_query($conn, $feedback_query);
 
   <!-- Date Filter Section -->
   <div class="date-filter-section">
-    <h3><i class='bx bx-calendar'></i> Filter by Date</h3>
+    <h3><i class='bx bx-calendar'></i></h3>
     <form method="GET" action="" id="dateFilterForm">
       <div class="date-filter-controls">
         <div class="filter-group">
@@ -673,7 +673,7 @@ $feedback_result = pg_query($conn, $feedback_query);
         </div>
 
         <button type="submit" class="apply-filter-btn">
-          <i class='bx bx-filter-alt'></i> Apply Filter
+          <i class='bx bx-filter-alt'></i>
         </button>
       </div>
     </form>

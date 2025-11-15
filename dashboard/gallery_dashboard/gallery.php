@@ -40,7 +40,7 @@ $total_records = pg_fetch_assoc($count_result)['total'];
 $total_pages = ceil($total_records / $records_per_page);
 
 // Fetch gallery images with pagination
-$query = "SELECT * FROM gallery $where_clause ORDER BY uploaded_at DESC LIMIT $records_per_page OFFSET $offset";
+$query = "SELECT * FROM gallery $where_clause ORDER BY id ASC LIMIT $records_per_page OFFSET $offset";
 $result = empty($params) ? pg_query($conn, $query) : pg_query_params($conn, $query, $params);
 ?>
 
@@ -945,7 +945,7 @@ $result = empty($params) ? pg_query($conn, $query) : pg_query_params($conn, $que
   
   <!-- Filter Section -->
   <div class="filter-section">
-    <h3><i class='bx bx-filter'></i> Filter by Upload Date</h3>
+    <h3><i class='bx bx-filter'></i></h3>
     <form method="GET" action="" id="filterForm">
       <div class="filter-controls">
         <div class="filter-group">
@@ -972,10 +972,10 @@ $result = empty($params) ? pg_query($conn, $query) : pg_query_params($conn, $que
 
         <div class="filter-buttons">
           <button type="submit" class="filter-btn">
-            <i class='bx bx-search'></i> Apply Filter
+            <i class='bx bx-search'></i>
           </button>
           <a href="gallery.php" class="clear-btn">
-            <i class='bx bx-x'></i> Clear
+            <i class='bx bx-x'></i>
           </a>
         </div>
       </div>
