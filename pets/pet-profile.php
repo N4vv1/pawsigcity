@@ -174,6 +174,26 @@ $pets = pg_query_params($conn,
       transform: translateY(-1px);
     }
 
+    /* Archived Badge (for admin view only) */
+.archived-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f44336;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pet-card.archived {
+  border-left-color: #9e9e9e;
+  opacity: 0.85;
+}
+
     /* Main Content - Pets */
     .main-content h1 {
       font-size: 20px;
