@@ -492,6 +492,48 @@ if ($noShowCount > 0) {
       opacity: 1;
     }
 
+    /* PAGINATION STYLES */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .pagination button {
+      padding: 8px 12px;
+      background-color: var(--primary-color);
+      color: var(--dark-color);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: var(--font-weight-semi-bold);
+      transition: var(--transition-speed);
+      font-size: 0.9rem;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background-color: var(--secondary-color);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination button.active {
+      background-color: var(--secondary-color);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .pagination-info {
+      font-size: 0.9rem;
+      color: var(--dark-color);
+      font-weight: var(--font-weight-semi-bold);
+    }
+
     @media screen and (max-width: 768px) {
       .mobile-menu-btn {
         display: block;
@@ -625,7 +667,7 @@ if ($noShowCount > 0) {
           <th>Email</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="usersTableBody">
         <?php
         $userList = pg_query($conn, "SELECT user_id, first_name, middle_name, last_name, email FROM users");
         if ($userList):
@@ -643,6 +685,7 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
+    <div id="usersPagination" class="pagination"></div>
     <button onclick="closeModal('usersModal')">Close</button>
   </div>
 </div>
@@ -660,7 +703,7 @@ if ($noShowCount > 0) {
           <th>Owner ID</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="petsTableBody">
         <?php
         $petList = pg_query($conn, "SELECT pet_id, name, breed, user_id FROM pets");
         if ($petList):
@@ -678,6 +721,7 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
+    <div id="petsPagination" class="pagination"></div>
     <button onclick="closeModal('petsModal')">Close</button>
   </div>
 </div>
@@ -696,7 +740,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="cancelledTableBody">
         <?php
         $cancelledQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -726,6 +770,7 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
+    <div id="cancelledPagination" class="pagination"></div>
     <button onclick="closeModal('cancelledModal')">Close</button>
   </div>
 </div>
@@ -744,7 +789,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="noshowTableBody">
         <?php
         $noshowQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -774,6 +819,7 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
+    <div id="noshowPagination" class="pagination"></div>
     <button onclick="closeModal('noshowModal')">Close</button>
   </div>
 </div>
@@ -792,7 +838,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="confirmedTableBody">
         <?php
         $confirmedQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -822,6 +868,7 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
+    <div id="confirmedPagination" class="pagination"></div>
     <button onclick="closeModal('confirmedModal')">Close</button>
   </div>
 </div>
@@ -840,7 +887,7 @@ if ($noShowCount > 0) {
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="completedTableBody">
         <?php
         $completedQuery = "
             SELECT a.appointment_id, a.appointment_date, a.status,
@@ -870,6 +917,7 @@ if ($noShowCount > 0) {
         ?>
       </tbody>
     </table>
+    <div id="completedPagination" class="pagination"></div>
     <button onclick="closeModal('completedModal')">Close</button>
   </div>
 </div>
@@ -879,8 +927,6 @@ if ($noShowCount > 0) {
   <div class="modal-content"
      style="max-width: 1400px; max-height: 85vh; overflow-y: auto;
             position: absolute; right: 80px; top: 50%; transform: translateY(-50%);">
-
-
 
     <h2>All Appointments</h2>
     <div style="overflow-x: auto;">
@@ -900,7 +946,7 @@ if ($noShowCount > 0) {
           <th style="min-width: 180px;">Actions</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="appointmentsTableBody">
         <?php
         $appointmentQuery = "
             SELECT a.*,
@@ -933,7 +979,6 @@ if ($noShowCount > 0) {
               <?= date('M d, Y g:i A', strtotime($row['appointment_date'])) ?>
             </td>
             
-            <!-- STATUS COLUMN - FIXED -->
             <td>
               <?php if (!empty($row['cancel_reason']) && $row['status'] !== 'cancelled'): ?>
                 <span style="color: red; font-weight: bold; font-size: 0.8rem;">Cancel Request</span>
@@ -961,7 +1006,6 @@ if ($noShowCount > 0) {
               <?= !empty($row['notes']) ? htmlspecialchars(substr($row['notes'], 0, 50)) . (strlen($row['notes']) > 50 ? '...' : '') : '-' ?>
             </td>
             
-            <!-- CANCEL REASON COLUMN - ADDED DATA -->
             <td style="font-size: 0.75rem; color: #d32f2f; max-width: 150px;">
               <?php if (!empty($row['cancel_reason'])): ?>
                 <strong></strong> <?= htmlspecialchars(substr($row['cancel_reason'], 0, 60)) ?><?= strlen($row['cancel_reason']) > 60 ? '...' : '' ?>
@@ -1022,6 +1066,7 @@ if ($noShowCount > 0) {
       </tbody>
     </table>
     </div>
+    <div id="appointmentsPagination" class="pagination"></div>
     <button onclick="closeModal('appointmentsModal')">Close</button>
   </div>
 </div>
@@ -1036,7 +1081,97 @@ if ($noShowCount > 0) {
 </div>
 
 <script>
-// Define functions IMMEDIATELY in global scope
+// Pagination Manager Class
+class PaginationManager {
+  constructor(tableBodyId, paginationId, rowsPerPage = 10) {
+    this.tableBody = document.getElementById(tableBodyId);
+    this.pagination = document.getElementById(paginationId);
+    this.rowsPerPage = rowsPerPage;
+    this.currentPage = 1;
+    this.rows = [];
+    
+    if (this.tableBody) {
+      this.rows = Array.from(this.tableBody.querySelectorAll('tr'));
+      this.totalPages = Math.ceil(this.rows.length / this.rowsPerPage);
+      this.init();
+    }
+  }
+
+  init() {
+    if (this.rows.length <= this.rowsPerPage) {
+      // No pagination needed
+      return;
+    }
+    this.showPage(1);
+    this.renderPagination();
+  }
+
+  showPage(page) {
+    this.currentPage = page;
+    const start = (page - 1) * this.rowsPerPage;
+    const end = start + this.rowsPerPage;
+
+    this.rows.forEach((row, index) => {
+      if (index >= start && index < end) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  renderPagination() {
+    if (!this.pagination || this.totalPages <= 1) return;
+
+    let html = '';
+    
+    // Previous button
+    html += `<button onclick="pagination['${this.pagination.id}'].prevPage()" ${this.currentPage === 1 ? 'disabled' : ''}>← Previous</button>`;
+    
+    // Page info
+    html += `<span class="pagination-info">Page ${this.currentPage} of ${this.totalPages}</span>`;
+    
+    // Page number buttons
+    const maxButtons = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxButtons - 1);
+    
+    if (endPage - startPage < maxButtons - 1) {
+      startPage = Math.max(1, endPage - maxButtons + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      html += `<button class="${i === this.currentPage ? 'active' : ''}" onclick="pagination['${this.pagination.id}'].goToPage(${i})">${i}</button>`;
+    }
+    
+    // Next button
+    html += `<button onclick="pagination['${this.pagination.id}'].nextPage()" ${this.currentPage === this.totalPages ? 'disabled' : ''}>Next →</button>`;
+    
+    this.pagination.innerHTML = html;
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.goToPage(this.currentPage + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.goToPage(this.currentPage - 1);
+    }
+  }
+
+  goToPage(page) {
+    this.showPage(page);
+    this.renderPagination();
+  }
+}
+
+// Global pagination instances
+const pagination = {};
+
+// Initialize pagination when modal opens
 window.openModal = function(type) {
   const modals = {
     users: 'usersModal',
@@ -1050,18 +1185,22 @@ window.openModal = function(type) {
     history: 'historyModal'
   };
   
-  console.log('openModal called with:', type);
   const modalId = modals[type];
   if (modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
       modal.style.display = 'flex';
-      console.log('Modal opened successfully:', modalId);
-    } else {
-      console.error('Modal element not found:', modalId);
+      
+      // Initialize pagination for this modal if not already done
+      const paginationId = type + 'Pagination';
+      const tableBodyId = type + 'TableBody';
+      
+      if (document.getElementById(paginationId) && document.getElementById(tableBodyId)) {
+        if (!pagination[paginationId]) {
+          pagination[paginationId] = new PaginationManager(tableBodyId, paginationId, 10);
+        }
+      }
     }
-  } else {
-    console.error('Unknown modal type:', type);
   }
 };
 
@@ -1115,12 +1254,9 @@ window.toggleSidebar = function() {
   }
 };
 
-// Debug on page load
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('=== MODAL DEBUG ===');
-  console.log('confirmedModal exists:', document.getElementById('confirmedModal') !== null);
-  console.log('completedModal exists:', document.getElementById('completedModal') !== null);
-  console.log('appointmentsModal exists:', document.getElementById('appointmentsModal') !== null);
+  console.log('Page loaded, pagination ready');
 });
 </script>
 

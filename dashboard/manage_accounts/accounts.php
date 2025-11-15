@@ -382,6 +382,54 @@ if (isset($_GET['id'])) {
       color: var(--white-color);
     }
 
+    /* PAGINATION STYLES */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+      padding-top: 20px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .pagination button {
+      padding: 8px 14px;
+      background-color: var(--primary-color);
+      color: var(--dark-color);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background-color: var(--secondary-color);
+      transform: translateY(-1px);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination button.active {
+      background-color: var(--secondary-color);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .pagination-info {
+      font-size: 0.9rem;
+      color: var(--dark-color);
+      font-weight: 600;
+      padding: 0 10px;
+    }
+
     /* MODAL */
     .modal {
       display: none;
@@ -781,7 +829,7 @@ if (isset($_GET['id'])) {
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="usersTableBody">
           <?php while ($user = pg_fetch_assoc($users)): ?>
           <tr>
             <td><?= $user['user_id'] ?></td>
@@ -812,6 +860,9 @@ if (isset($_GET['id'])) {
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination Controls -->
+    <div id="usersPagination" class="pagination"></div>
   </div>
 </main>
 
@@ -911,6 +962,102 @@ if (isset($_GET['id'])) {
 <?php endif; ?>
 
 <script>
+// Pagination System for Users Table
+class TablePagination {
+  constructor(tableBodyId, paginationId, itemsPerPage = 10) {
+    this.tableBody = document.getElementById(tableBodyId);
+    this.paginationDiv = document.getElementById(paginationId);
+    this.itemsPerPage = itemsPerPage;
+    this.currentPage = 1;
+    this.allRows = [];
+    this.init();
+  }
+
+  init() {
+    if (!this.tableBody) return;
+    this.allRows = Array.from(this.tableBody.querySelectorAll('tr'));
+    if (this.allRows.length > this.itemsPerPage) {
+      this.renderPagination();
+      this.showPage(1);
+    }
+  }
+
+  showPage(pageNum) {
+    this.currentPage = pageNum;
+    const start = (pageNum - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+
+    this.allRows.forEach((row, index) => {
+      row.style.display = (index >= start && index < end) ? '' : 'none';
+    });
+
+    this.updatePaginationButtons();
+  }
+
+  renderPagination() {
+    const totalPages = Math.ceil(this.allRows.length / this.itemsPerPage);
+    
+    let html = `
+      <button onclick="usersPagination.prevPage()" ${this.currentPage === 1 ? 'disabled' : ''}>
+        <i class='bx bx-chevron-left'></i> Previous
+      </button>
+      <span class="pagination-info">Page ${this.currentPage} of ${totalPages}</span>
+    `;
+
+    // Show page numbers
+    const maxButtons = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+    
+    if (endPage - startPage < maxButtons - 1) {
+      startPage = Math.max(1, endPage - maxButtons + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      html += `
+        <button 
+          onclick="usersPagination.showPage(${i})"
+          class="${i === this.currentPage ? 'active' : ''}"
+        >
+          ${i}
+        </button>
+      `;
+    }
+
+    html += `
+      <button onclick="usersPagination.nextPage()" ${this.currentPage === totalPages ? 'disabled' : ''}>
+        Next <i class='bx bx-chevron-right'></i>
+      </button>
+    `;
+
+    this.paginationDiv.innerHTML = html;
+  }
+
+  updatePaginationButtons() {
+    this.renderPagination();
+  }
+
+  nextPage() {
+    const totalPages = Math.ceil(this.allRows.length / this.itemsPerPage);
+    if (this.currentPage < totalPages) {
+      this.showPage(this.currentPage + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.showPage(this.currentPage - 1);
+    }
+  }
+}
+
+// Initialize pagination
+let usersPagination;
+
+document.addEventListener('DOMContentLoaded', function() {
+  usersPagination = new TablePagination('usersTableBody', 'usersPagination', 10);
+});
+
 // Toast Notification System
 function showToast(message, type = 'success') {
   // Remove any existing toasts
