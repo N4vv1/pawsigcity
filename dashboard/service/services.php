@@ -141,7 +141,7 @@ if (isset($_GET['id'])) {
   <title>Admin | Service Management</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig2.png">
 
   <style>
     :root {
@@ -852,7 +852,7 @@ if (isset($_GET['id'])) {
 <!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig2.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
@@ -889,7 +889,7 @@ if (isset($_GET['id'])) {
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
+    <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>

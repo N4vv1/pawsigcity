@@ -276,6 +276,7 @@ if (isset($_GET['id'])) {
       padding: 35px;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
     }
 
     .table-section h2 {
@@ -344,6 +345,7 @@ if (isset($_GET['id'])) {
     .actions {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .actions a,
@@ -383,51 +385,51 @@ if (isset($_GET['id'])) {
     }
 
     /* PAGINATION STYLES */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 25px;
-      flex-wrap: wrap;
-      padding-top: 20px;
-      border-top: 1px solid #f0f0f0;
-    }
-
-    .pagination button {
-      padding: 8px 14px;
-      background-color: var(--primary-color);
-      color: var(--dark-color);
-      border: none;
+    .pagination-btn {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
       border-radius: 6px;
       cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
       font-weight: 600;
       transition: all 0.2s;
-      font-size: 0.9rem;
-      font-family: "Montserrat", sans-serif;
     }
 
-    .pagination button:hover:not(:disabled) {
-      background-color: var(--secondary-color);
+    .pagination-btn:hover:not(:disabled) {
+      background: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
       transform: translateY(-1px);
     }
 
-    .pagination button:disabled {
+    .pagination-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .pagination button.active {
-      background-color: var(--secondary-color);
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    .page-number {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+      min-width: 40px;
+      text-align: center;
     }
 
-    .pagination-info {
-      font-size: 0.9rem;
-      color: var(--dark-color);
-      font-weight: 600;
-      padding: 0 10px;
+    .page-number:hover {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    .page-number.active {
+      background: var(--dark-color);
+      color: white;
+      border-color: var(--dark-color);
     }
 
     /* MODAL */
@@ -512,6 +514,7 @@ if (isset($_GET['id'])) {
       font-size: 1rem;
       color: var(--dark-color);
       transition: all 0.2s;
+      font-family: "Montserrat", sans-serif;
     }
 
     .input-field:focus {
@@ -734,6 +737,7 @@ if (isset($_GET['id'])) {
       .add-btn {
         width: 100%;
         text-align: center;
+        justify-content: center;
       }
 
       table {
@@ -812,10 +816,47 @@ if (isset($_GET['id'])) {
   <button class="add-btn" onclick="openModal()">
     <i class='bx bx-plus'></i> Add New User
   </button>
+
+  <!-- Search and Filter Section -->
+  <div class="table-section" style="margin-bottom: 20px; padding: 25px;">
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+      <div style="flex: 1; min-width: 250px;">
+        <div style="position: relative;">
+          <i class='bx bx-search' style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #999;"></i>
+          <input type="text" id="searchInput" placeholder="Search by name, email, or phone..." 
+                 style="width: 100%; padding: 12px 12px 12px 45px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif;">
+        </div>
+      </div>
+      <div style="min-width: 180px;">
+        <select id="roleFilter" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
+          <option value="all">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="customer">Customer</option>
+          <option value="groomer">Groomer</option>
+          <option value="receptionist">Receptionist</option>
+        </select>
+      </div>
+      <button onclick="clearFilters()" style="padding: 12px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'Montserrat', sans-serif; display: inline-flex; align-items: center; gap: 8px;">
+        <i class='bx bx-x-circle'></i> Clear
+      </button>
+    </div>
+  </div>
   
   <!-- Table Section -->
   <div class="table-section">
-    <h2>All Users</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+      <h2 style="margin: 0;">All Users</h2>
+      <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <div id="resultsCount" style="color: #666; font-size: 0.9rem;"></div>
+        <select id="itemsPerPage" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
+          <option value="5">5 per page</option>
+          <option value="10">10 per page</option>
+          <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="all">Show all</option>
+        </select>
+      </div>
+    </div>
     
     <div style="overflow-x: auto;">
       <table>
@@ -831,7 +872,11 @@ if (isset($_GET['id'])) {
         </thead>
         <tbody id="usersTableBody">
           <?php while ($user = pg_fetch_assoc($users)): ?>
-          <tr>
+          <tr class="user-row"
+              data-name="<?= strtolower(htmlspecialchars($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name'])) ?>"
+              data-email="<?= strtolower(htmlspecialchars($user['email'])) ?>"
+              data-phone="<?= strtolower(htmlspecialchars($user['phone'])) ?>"
+              data-role="<?= strtolower($user['role']) ?>">
             <td><?= $user['user_id'] ?></td>
             <td>
               <?= htmlspecialchars($user['first_name']) ?>
@@ -857,12 +902,35 @@ if (isset($_GET['id'])) {
             </td>
           </tr>
           <?php endwhile; ?>
+          <tr id="noResults" style="display: none;">
+            <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+              <i class='bx bx-search-alt' style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+              <strong>No users found</strong>
+              <p style="margin-top: 5px; font-size: 0.9rem;">Try adjusting your search or filters</p>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Pagination Controls -->
-    <div id="usersPagination" class="pagination"></div>
+    <div id="paginationControls" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 25px; flex-wrap: wrap;">
+      <button onclick="changePage('first')" id="firstBtn" class="pagination-btn">
+        <i class='bx bx-chevrons-left'></i>
+      </button>
+      <button onclick="changePage('prev')" id="prevBtn" class="pagination-btn">
+        <i class='bx bx-chevron-left'></i> Prev
+      </button>
+      
+      <div id="pageNumbers" style="display: flex; gap: 5px; flex-wrap: wrap;"></div>
+      
+      <button onclick="changePage('next')" id="nextBtn" class="pagination-btn">
+        Next <i class='bx bx-chevron-right'></i>
+      </button>
+      <button onclick="changePage('last')" id="lastBtn" class="pagination-btn">
+        <i class='bx bx-chevrons-right'></i>
+      </button>
+    </div>
   </div>
 </main>
 
@@ -962,109 +1030,16 @@ if (isset($_GET['id'])) {
 <?php endif; ?>
 
 <script>
-// Pagination System for Users Table
-class TablePagination {
-  constructor(tableBodyId, paginationId, itemsPerPage = 10) {
-    this.tableBody = document.getElementById(tableBodyId);
-    this.paginationDiv = document.getElementById(paginationId);
-    this.itemsPerPage = itemsPerPage;
-    this.currentPage = 1;
-    this.allRows = [];
-    this.init();
-  }
-
-  init() {
-    if (!this.tableBody) return;
-    this.allRows = Array.from(this.tableBody.querySelectorAll('tr'));
-    if (this.allRows.length > this.itemsPerPage) {
-      this.renderPagination();
-      this.showPage(1);
-    }
-  }
-
-  showPage(pageNum) {
-    this.currentPage = pageNum;
-    const start = (pageNum - 1) * this.itemsPerPage;
-    const end = start + this.itemsPerPage;
-
-    this.allRows.forEach((row, index) => {
-      row.style.display = (index >= start && index < end) ? '' : 'none';
-    });
-
-    this.updatePaginationButtons();
-  }
-
-  renderPagination() {
-    const totalPages = Math.ceil(this.allRows.length / this.itemsPerPage);
-    
-    let html = `
-      <button onclick="usersPagination.prevPage()" ${this.currentPage === 1 ? 'disabled' : ''}>
-        <i class='bx bx-chevron-left'></i> Previous
-      </button>
-      <span class="pagination-info">Page ${this.currentPage} of ${totalPages}</span>
-    `;
-
-    // Show page numbers
-    const maxButtons = 5;
-    let startPage = Math.max(1, this.currentPage - Math.floor(maxButtons / 2));
-    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-    
-    if (endPage - startPage < maxButtons - 1) {
-      startPage = Math.max(1, endPage - maxButtons + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      html += `
-        <button 
-          onclick="usersPagination.showPage(${i})"
-          class="${i === this.currentPage ? 'active' : ''}"
-        >
-          ${i}
-        </button>
-      `;
-    }
-
-    html += `
-      <button onclick="usersPagination.nextPage()" ${this.currentPage === totalPages ? 'disabled' : ''}>
-        Next <i class='bx bx-chevron-right'></i>
-      </button>
-    `;
-
-    this.paginationDiv.innerHTML = html;
-  }
-
-  updatePaginationButtons() {
-    this.renderPagination();
-  }
-
-  nextPage() {
-    const totalPages = Math.ceil(this.allRows.length / this.itemsPerPage);
-    if (this.currentPage < totalPages) {
-      this.showPage(this.currentPage + 1);
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.showPage(this.currentPage - 1);
-    }
-  }
-}
-
-// Initialize pagination
-let usersPagination;
-
-document.addEventListener('DOMContentLoaded', function() {
-  usersPagination = new TablePagination('usersTableBody', 'usersPagination', 10);
-});
+// Pagination variables
+let currentPage = 1;
+let itemsPerPage = 5;
+let filteredRows = [];
 
 // Toast Notification System
 function showToast(message, type = 'success') {
-  // Remove any existing toasts
   const existingToasts = document.querySelectorAll('.toast');
   existingToasts.forEach(toast => toast.remove());
 
-  // Create new toast
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   
@@ -1078,12 +1053,10 @@ function showToast(message, type = 'success') {
   
   document.body.appendChild(toast);
   
-  // Trigger animation
   setTimeout(() => {
     toast.classList.add('show');
   }, 10);
   
-  // Auto hide after 4 seconds
   setTimeout(() => {
     hideToast(toast);
   }, 4000);
@@ -1099,6 +1072,198 @@ function hideToast(toast) {
 function closeToast(closeBtn) {
   const toast = closeBtn.closest('.toast');
   hideToast(toast);
+}
+
+// Search and Filter Functionality
+function filterUsers() {
+  const searchValue = document.getElementById('searchInput').value.toLowerCase();
+  const roleFilter = document.getElementById('roleFilter').value;
+  const rows = document.querySelectorAll('.user-row');
+  filteredRows = [];
+  
+  rows.forEach(row => {
+    const name = row.getAttribute('data-name');
+    const email = row.getAttribute('data-email');
+    const phone = row.getAttribute('data-phone');
+    const role = row.getAttribute('data-role');
+    
+    const matchesSearch = searchValue === '' || 
+                         name.includes(searchValue) || 
+                         email.includes(searchValue) ||
+                         phone.includes(searchValue);
+    
+    const matchesRole = roleFilter === 'all' || role === roleFilter;
+    
+    if (matchesSearch && matchesRole) {
+      filteredRows.push(row);
+    }
+  });
+  
+  currentPage = 1;
+  displayPage();
+}
+
+function displayPage() {
+  const rows = document.querySelectorAll('.user-row');
+  const noResults = document.getElementById('noResults');
+  const itemsPerPageSelect = document.getElementById('itemsPerPage').value;
+  
+  itemsPerPage = itemsPerPageSelect === 'all' ? filteredRows.length : parseInt(itemsPerPageSelect);
+  
+  rows.forEach(row => {
+    row.style.display = 'none';
+  });
+  
+  const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  
+  const pageRows = filteredRows.slice(startIndex, endIndex);
+  pageRows.forEach(row => {
+    row.style.display = '';
+  });
+  
+  if (filteredRows.length === 0) {
+    noResults.style.display = '';
+  } else {
+    noResults.style.display = 'none';
+  }
+  
+  updatePaginationControls(totalPages);
+  updateResultsCount(filteredRows.length, document.querySelectorAll('.user-row').length, startIndex, endIndex);
+}
+
+function updatePaginationControls(totalPages) {
+  const paginationControls = document.getElementById('paginationControls');
+  const pageNumbers = document.getElementById('pageNumbers');
+  const firstBtn = document.getElementById('firstBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const lastBtn = document.getElementById('lastBtn');
+  const itemsPerPageSelect = document.getElementById('itemsPerPage').value;
+  
+  if (itemsPerPageSelect === 'all' || totalPages <= 1) {
+    paginationControls.style.display = 'none';
+    return;
+  }
+  
+  paginationControls.style.display = 'flex';
+  
+  firstBtn.disabled = currentPage === 1;
+  prevBtn.disabled = currentPage === 1;
+  nextBtn.disabled = currentPage === totalPages;
+  lastBtn.disabled = currentPage === totalPages;
+  
+  pageNumbers.innerHTML = '';
+  
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, startPage + 4);
+  
+  if (endPage - startPage < 4) {
+    startPage = Math.max(1, endPage - 4);
+  }
+  
+  if (startPage > 1) {
+    const firstPage = createPageButton(1);
+    pageNumbers.appendChild(firstPage);
+    
+    if (startPage > 2) {
+      const ellipsis = document.createElement('span');
+      ellipsis.textContent = '...';
+      ellipsis.style.padding = '8px 4px';
+      ellipsis.style.color = '#999';
+      pageNumbers.appendChild(ellipsis);
+    }
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const pageBtn = createPageButton(i);
+    pageNumbers.appendChild(pageBtn);
+  }
+  
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      const ellipsis = document.createElement('span');
+      ellipsis.textContent = '...';
+      ellipsis.style.padding = '8px 4px';
+      ellipsis.style.color = '#999';
+      pageNumbers.appendChild(ellipsis);
+    }
+    
+    const lastPage = createPageButton(totalPages);
+    pageNumbers.appendChild(lastPage);
+  }
+}
+
+function createPageButton(pageNum) {
+  const btn = document.createElement('button');
+  btn.textContent = pageNum;
+  btn.className = 'page-number' + (pageNum === currentPage ? ' active' : '');
+  btn.onclick = () => goToPage(pageNum);
+  return btn;
+}
+
+function goToPage(pageNum) {
+  currentPage = pageNum;
+  displayPage();
+  document.querySelector('.table-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function changePage(direction) {
+  const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+  
+  switch(direction) {
+    case 'first':
+      currentPage = 1;
+      break;
+    case 'prev':
+      if (currentPage > 1) currentPage--;
+      break;
+    case 'next':
+      if (currentPage < totalPages) currentPage++;
+      break;
+    case 'last':
+      currentPage = totalPages;
+      break;
+  }
+  
+  displayPage();
+  document.querySelector('.table-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function initPagination() {
+  const rows = document.querySelectorAll('.user-row');
+  filteredRows = Array.from(rows);
+  displayPage();
+}
+
+function updateResultsCount(visible = null, total = null, startIndex = 0, endIndex = 0) {
+  const resultsCount = document.getElementById('resultsCount');
+  const rows = document.querySelectorAll('.user-row');
+  
+  if (visible === null) {
+    visible = rows.length;
+    total = rows.length;
+  }
+  
+  const itemsPerPageSelect = document.getElementById('itemsPerPage').value;
+  
+  if (itemsPerPageSelect === 'all' || visible <= itemsPerPage) {
+    if (visible === total) {
+      resultsCount.textContent = `Showing all ${total} user${total !== 1 ? 's' : ''}`;
+    } else {
+      resultsCount.textContent = `Showing ${visible} of ${total} user${total !== 1 ? 's' : ''}`;
+    }
+  } else {
+    const showing = Math.min(endIndex, visible);
+    resultsCount.textContent = `Showing ${startIndex + 1}-${showing} of ${visible} user${visible !== 1 ? 's' : ''}`;
+  }
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('roleFilter').value = 'all';
+  filterUsers();
 }
 
 // Dropdown functionality
@@ -1159,7 +1324,7 @@ document.addEventListener('click', function(event) {
   if (event.target === editModal) closeEditModal();
 });
 
-// Close sidebar on menu link click (mobile)
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
   const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
   menuLinks.forEach(link => {
@@ -1172,6 +1337,29 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+  
+  // Initialize pagination
+  initPagination();
+  
+  // Attach event listeners
+  const searchInput = document.getElementById('searchInput');
+  const roleFilter = document.getElementById('roleFilter');
+  const itemsPerPageSelect = document.getElementById('itemsPerPage');
+  
+  if (searchInput) {
+    searchInput.addEventListener('keyup', filterUsers);
+  }
+  
+  if (roleFilter) {
+    roleFilter.addEventListener('change', filterUsers);
+  }
+  
+  if (itemsPerPageSelect) {
+    itemsPerPageSelect.addEventListener('change', function() {
+      currentPage = 1;
+      displayPage();
+    });
+  }
 });
 </script>
 
