@@ -11,38 +11,60 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Handle pet archiving (soft delete)
+error_log("DEBUG: Full GET parameters: " . print_r($_GET, true));
+
 if (isset($_GET['archive_id'])) {
+    error_log("DEBUG: Archive ID received: " . $_GET['archive_id']);
+    
     $archive_id = $_GET['archive_id'];
+    
+    error_log("DEBUG: Starting archive process for pet ID: " . $archive_id);
     
     // Verify the pet belongs to the logged-in user
     $verify_query = "SELECT user_id, name FROM pets WHERE pet_id = $1";
     $verify_result = pg_query_params($conn, $verify_query, [$archive_id]);
     
+    error_log("DEBUG: Verify query executed. Rows found: " . pg_num_rows($verify_result));
+    
     if ($verify_result && pg_num_rows($verify_result) > 0) {
         $pet = pg_fetch_assoc($verify_result);
         
+        error_log("DEBUG: Pet found. Name: " . $pet['name'] . ", Owner ID: " . $pet['user_id'] . ", Current User ID: " . $user_id);
+        
         if ($pet['user_id'] == $user_id) {
+            error_log("DEBUG: User authorized. Executing archive query...");
+            
             // Archive the pet
             $archive_query = "UPDATE pets SET deleted_at = NOW() WHERE pet_id = $1";
             $archive_result = pg_query_params($conn, $archive_query, [$archive_id]);
             
             if ($archive_result) {
+                $affected = pg_affected_rows($archive_result);
+                error_log("DEBUG: Archive successful! Rows affected: " . $affected);
+                
                 $_SESSION['success'] = "Pet '{$pet['name']}' has been archived successfully.";
             } else {
+                error_log("DEBUG: Archive FAILED! Error: " . pg_last_error($conn));
                 $_SESSION['error'] = "Failed to archive pet. Please try again.";
             }
         } else {
+            error_log("DEBUG: Unauthorized! Pet owner: " . $pet['user_id'] . " vs Current user: " . $user_id);
             $_SESSION['error'] = "Unauthorized action.";
         }
     } else {
+        error_log("DEBUG: Pet not found in database!");
         $_SESSION['error'] = "Pet not found.";
     }
     
+    error_log("DEBUG: Redirecting to pet-profile.php");
     header('Location: pet-profile.php');
     exit;
+} else {
+    error_log("DEBUG: archive_id NOT found in GET parameters");
 }
 
-// TEMPORARY DEBUG - Remove after testing
+
+// Handle pet archiving (soft delete)
 if (isset($_GET['archive_id'])) {
     $archive_id = $_GET['archive_id'];
     
@@ -59,10 +81,8 @@ if (isset($_GET['archive_id'])) {
             $archive_result = pg_query_params($conn, $archive_query, [$archive_id]);
             
             if ($archive_result) {
-                echo "DEBUG: Pet archived successfully. Rows affected: " . pg_affected_rows($archive_result) . "<br>";
                 $_SESSION['success'] = "Pet '{$pet['name']}' has been archived successfully.";
             } else {
-                echo "DEBUG: Archive failed. Error: " . pg_last_error($conn) . "<br>";
                 $_SESSION['error'] = "Failed to archive pet. Please try again.";
             }
         } else {
@@ -71,14 +91,6 @@ if (isset($_GET['archive_id'])) {
     } else {
         $_SESSION['error'] = "Pet not found.";
     }
-    
-    // ADD THIS DEBUG CHECK
-    echo "DEBUG: Checking pets after archive...<br>";
-    $debug_pets = pg_query_params($conn, "SELECT pet_id, name, deleted_at FROM pets WHERE user_id = $1", [$user_id]);
-    while ($dp = pg_fetch_assoc($debug_pets)) {
-        echo "Pet ID: {$dp['pet_id']}, Name: {$dp['name']}, Deleted: {$dp['deleted_at']}<br>";
-    }
-    die(); // Stop here to see the debug output
     
     header('Location: pet-profile.php');
     exit;
