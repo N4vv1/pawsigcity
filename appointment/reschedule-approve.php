@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../db.php';
+require_once '../db.php';
 
 // Check if user is admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
