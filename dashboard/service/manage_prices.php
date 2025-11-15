@@ -170,7 +170,7 @@ if (isset($_GET['edit'])) {
     :root {
       --white-color: #fff;
       --dark-color: #252525;
-      --primary-color: #016B61;
+      --primary-color: #3ABB87;
       --secondary-color: #FFE29D;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;

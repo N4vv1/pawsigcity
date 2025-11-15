@@ -69,7 +69,7 @@ if (!$result) {
       --white-color: #fff;
       --dark-color: #252525;
       --primary-color: #A8E6CF;
-      --secondary-color: #016B61;
+      --secondary-color: #3ABB87;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
       --edit-color: #4CAF50;
