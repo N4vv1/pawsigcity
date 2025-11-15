@@ -1587,9 +1587,19 @@ if ($row_count > 0) {
                 <td>
                   <?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?>
                   
-                  <?php if (!empty($row['reschedule_requested']) && $row['reschedule_approved'] === false): ?>
+                  <?php if (!empty($row['reschedule_requested']) && $row['reschedule_approved'] === true): ?>
+                    <div style="margin-top:8px; padding:8px; background:#d4edda; border-left:3px solid #28a745; border-radius:4px; font-size:0.85rem;">
+                      <strong style="color:#155724;">✅ Reschedule Approved!</strong><br>
+                      <em style="color:#155724; font-size:0.8rem;">New date: <?= date("M d, Y h:i A", strtotime($row['reschedule_requested'])) ?></em>
+                    </div>
+                  <?php elseif (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
+                    <div style="margin-top:8px; padding:8px; background:#fff3cd; border-left:3px solid #ffc107; border-radius:4px; font-size:0.85rem;">
+                      <strong style="color:#856404;">⏳ Reschedule Pending</strong><br>
+                      <em style="color:#856404; font-size:0.8rem;">Requested: <?= date("M d, Y h:i A", strtotime($row['reschedule_requested'])) ?></em>
+                    </div>
+                  <?php elseif (!empty($row['reschedule_requested']) && $row['reschedule_approved'] === false): ?>
                     <div style="margin-top:8px; padding:8px; background:#f8d7da; border-left:3px solid #dc3545; border-radius:4px; font-size:0.85rem;">
-                      <strong style="color:#721c24;">⚠️ Last Reschedule Denied</strong><br>
+                      <strong style="color:#721c24;">⚠️ Reschedule Denied</strong><br>
                       <em style="color:#721c24; font-size:0.8rem;">Time slot was already booked</em>
                     </div>
                   <?php endif; ?>
