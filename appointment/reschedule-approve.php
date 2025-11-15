@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once '../db.php';
+require_once '../../db.php';
 
 // Check if user is admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: https://pawsigcity.onrender.com/dashboard/admin/admin.php");
+    header("Location: ../../homepage/main.php");
     exit;
 }
 
@@ -16,7 +16,7 @@ if (pg_connection_status($conn) !== PGSQL_CONNECTION_OK) {
 // Get appointment ID from URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     $_SESSION['error'] = "Invalid appointment ID.";
-    header("Location: ../admin/admin.php");
+    header("Location: ../dashboard/admin/admin.php");
     exit;
 }
 
@@ -28,7 +28,7 @@ $result = pg_query_params($conn, $query, [$appointment_id]);
 
 if (!$result || pg_num_rows($result) === 0) {
     $_SESSION['error'] = "Appointment not found.";
-    header("Location: ../admin/admin.php");
+    header("Location: ../dashboard/admin/admin.php");
     exit;
 }
 
@@ -37,14 +37,14 @@ $appointment = pg_fetch_assoc($result);
 // Check if there's a reschedule request
 if (empty($appointment['reschedule_reason'])) {
     $_SESSION['error'] = "No reschedule request found for this appointment.";
-    header("Location: ../admin/admin.php");
+    header("Location: ../dashboard/admin/admin.php");
     exit;
 }
 
 // Check if already approved
 if ($appointment['reschedule_approved'] === 't') {
     $_SESSION['error'] = "This reschedule request has already been approved.";
-    header("Location: ../admin/admin.php");
+    header("Location: ../dashboard/admin/admin.php");
     exit;
 }
 
@@ -66,6 +66,6 @@ if ($update_result && pg_affected_rows($update_result) > 0) {
 }
 
 // Redirect back to admin panel
-header("Location: ../admin/admin.php?show=appointments");
+header("Location: ../dashboard/admin/admin.php?show=appointments");
 exit;
 ?>
