@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
 
 // Handle user update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
-    $id         = intval($_POST['user_id']);
+    $id         = $_POST['user_id']; // Keep as-is to match database type
     $first_name  = trim($_POST['first_name']);
     $middle_name = trim($_POST['middle_name']);
     $last_name   = trim($_POST['last_name']);
@@ -57,42 +57,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
     } else {
         $_SESSION['error'] = "Failed to update user.";
     }
-    header("Location: " . $_SERVER['PHP_SELF']);
+    header("Location: accounts.php");
     exit;
 }
 
-// Handle user deletion
+// Handle user deletion (soft delete - archive)
 if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
+    $delete_id = $_GET['delete_id']; // Keep as-is
     
-    $result = pg_query_params($conn, "DELETE FROM users WHERE user_id = $1", [$delete_id]);
+    // Soft delete: set deleted_at timestamp instead of actually deleting
+    $result = pg_query_params(
+        $conn, 
+        "UPDATE users SET deleted_at = NOW() WHERE user_id = $1", 
+        [$delete_id]
+    );
     
     if ($result) {
-        $_SESSION['success'] = "User deleted successfully!";
+        $_SESSION['success'] = "User archived successfully!";
     } else {
-        $_SESSION['error'] = "Failed to delete user.";
+        $_SESSION['error'] = "Failed to archive user.";
     }
-    header("Location: " . $_SERVER['PHP_SELF']);
+    header("Location: accounts.php");
     exit;
 }
 
-// Fetch users
-$users = pg_query($conn, "SELECT * FROM users ORDER BY user_id ASC");
+// Handle user restore (unarchive)
+if (isset($_GET['restore_id'])) {
+    $restore_id = $_GET['restore_id']; // Keep as-is
+    
+    $result = pg_query_params(
+        $conn, 
+        "UPDATE users SET deleted_at = NULL WHERE user_id = $1", 
+        [$restore_id]
+    );
+    
+    if ($result) {
+        $_SESSION['success'] = "User restored successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to restore user.";
+    }
+    header("Location: accounts.php");
+    exit;
+}
 
-// If editing specific user - FIXED VERSION
+// If editing specific user - fetch BEFORE filtering the main list
 $edit_user = null;
 if (isset($_GET['id'])) {
-    $edit_id = intval($_GET['id']);
+    $edit_id = $_GET['id']; // Keep as string to preserve leading zeros if needed
+    
+    // Don't filter by deleted_at when fetching for edit
     $result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$edit_id]);
     
     // Check if query was successful and returned a row
     if ($result && pg_num_rows($result) > 0) {
         $edit_user = pg_fetch_assoc($result);
+        // Successfully found user, continue to show edit modal
     } else {
-        $_SESSION['error'] = "User not found.";
-        header("Location: " . $_SERVER['PHP_SELF']);
+        // User not found - redirect without showing modal
+        $_SESSION['error'] = "User not found with ID: " . htmlspecialchars($edit_id);
+        header("Location: accounts.php");
         exit;
     }
+}
+
+// Determine which users to show (active or archived)
+$show_archived = isset($_GET['show']) && $_GET['show'] === 'archived';
+
+// Fetch users based on filter
+if ($show_archived) {
+    $users = pg_query($conn, "SELECT * FROM users WHERE deleted_at IS NOT NULL ORDER BY user_id ASC");
+} else {
+    $users = pg_query($conn, "SELECT * FROM users WHERE deleted_at IS NULL ORDER BY user_id ASC");
 }
 ?>
 
@@ -825,6 +860,19 @@ if (isset($_GET['id'])) {
     <i class='bx bx-plus'></i> Add New User
   </button>
 
+  <!-- Archive Toggle Button -->
+  <div style="margin-bottom: 20px;">
+    <?php if ($show_archived): ?>
+      <a href="?" style="padding: 12px 25px; background: var(--primary-color); color: var(--dark-color); text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        <i class='bx bx-user'></i> Show Active Users
+      </a>
+    <?php else: ?>
+      <a href="?show=archived" style="padding: 12px 25px; background: #6c757d; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        <i class='bx bx-archive'></i> Show Archived Users
+      </a>
+    <?php endif; ?>
+  </div>
+
   <!-- Search and Filter Section -->
   <div class="table-section" style="margin-bottom: 20px; padding: 25px;">
     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
@@ -853,7 +901,7 @@ if (isset($_GET['id'])) {
   <!-- Table Section -->
   <div class="table-section">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-      <h2 style="margin: 0;">All Users</h2>
+      <h2 style="margin: 0;"><?= $show_archived ? 'Archived Users' : 'Active Users' ?></h2>
       <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
         <div id="resultsCount" style="color: #666; font-size: 0.9rem;"></div>
         <select id="itemsPerPage" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
@@ -900,12 +948,18 @@ if (isset($_GET['id'])) {
             </td>
             <td>
               <div class="actions">
-                <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">
-                  <i class='bx bx-edit'></i> Edit
-                </a>
-                <button onclick="confirmDelete(<?= $user['user_id'] ?>)" class="delete-btn">
-                  <i class='bx bx-trash'></i> Delete
-                </button>
+                <?php if ($show_archived): ?>
+                  <button onclick="confirmRestore(<?= $user['user_id'] ?>)" class="edit-btn">
+                    <i class='bx bx-undo'></i> Restore
+                  </button>
+                <?php else: ?>
+                  <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">
+                    <i class='bx bx-edit'></i> Edit
+                  </a>
+                  <button onclick="confirmDelete(<?= $user['user_id'] ?>)" class="delete-btn">
+                    <i class='bx bx-archive'></i> Archive
+                  </button>
+                <?php endif; ?>
               </div>
             </td>
           </tr>
@@ -1318,8 +1372,15 @@ function closeEditModal() {
 
 // Delete confirmation
 function confirmDelete(userId) {
-  if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+  if (confirm('Are you sure you want to archive this user? You can restore them later from the archived users view.')) {
     window.location.href = '?delete_id=' + userId;
+  }
+}
+
+// Restore confirmation
+function confirmRestore(userId) {
+  if (confirm('Are you sure you want to restore this user?')) {
+    window.location.href = '?restore_id=' + userId;
   }
 }
 
