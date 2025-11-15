@@ -1046,16 +1046,6 @@ if ($noShowCount > 0) {
                   <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Delete?')">Delete</a>
                 <?php endif; ?>
 
-                <!-- ADD THE RESCHEDULE BUTTON HERE ⬇️ -->
-                <?php if (!empty($row['reschedule_reason']) && $row['reschedule_approved'] !== true): ?>
-                  <a href="../../appointment/reschedule-approve.php?id=<?= $appointmentId ?>" 
-                    class="button secondary" 
-                    style="padding: 5px 10px; font-size: 0.75rem; background-color: #FFE29D;" 
-                    onclick="return confirm('Approve reschedule request?\n\nReason: <?= addslashes($row['reschedule_reason'] ?? 'No reason provided') ?>')">
-                    <i class='bx bx-calendar-check'></i> Approve Reschedule
-                  </a>
-                <?php endif; ?>
-
                 <?php if (!empty($row['cancel_reason']) && $status !== 'cancelled'): ?>
                   <a href="../../appointment/cancel-approve.php?id=<?= $appointmentId ?>&action=approve" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Confirm cancellation?')">Process Cancel</a>
                 <?php endif; ?>
