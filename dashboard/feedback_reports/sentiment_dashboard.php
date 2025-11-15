@@ -133,6 +133,7 @@ $feedback_result = pg_query($conn, $feedback_query);
       gap: 20px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       overflow-y: auto;
+      z-index: 999;
     }
 
     .sidebar .logo {
@@ -178,6 +179,43 @@ $feedback_result = pg_query($conn, $feedback_query);
       border: none;
       border-top: 1px solid var(--secondary-color);
       margin: 9px 0;
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      text-decoration: none;
+      color: var(--dark-color);
+      border-radius: 14px;
+      transition: background 0.3s, color 0.3s;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .dropdown-toggle:hover,
+    .dropdown-toggle.active {
+      background-color: var(--secondary-color);
+      color: var(--dark-color);
+    }
+
+    .dropdown-menu {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+
+    .dropdown-menu a {
+      padding: 8px 12px;
+      font-size: 0.9rem;
     }
 
     /* MAIN CONTENT */
@@ -612,11 +650,13 @@ $feedback_result = pg_query($conn, $feedback_query);
 
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig2.png " alt="Logo" />
+    <img src="../../homepage/images/pawsig2.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="../admin/admin.php" class="active"><i class='bx bx-home'></i>Overview</a>
+    <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
+
+    <!-- USERS DROPDOWN -->
     <div class="dropdown">
       <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
@@ -627,7 +667,10 @@ $feedback_result = pg_query($conn, $feedback_query);
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
       </div>
     </div>
+
     <hr>
+
+    <!-- SERVICES DROPDOWN -->
     <div class="dropdown">
       <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
         <span><i class='bx bx-spa'></i> Services</span>
@@ -638,12 +681,13 @@ $feedback_result = pg_query($conn, $feedback_query);
         <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
       </div>
     </div>
+
     <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
+    <a href="../feedback_reports/sentiment_dashboard.php" class="active"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
@@ -664,7 +708,7 @@ $feedback_result = pg_query($conn, $feedback_query);
 
   <!-- Date Filter Section -->
   <div class="date-filter-section">
-    <h3><i class='bx bx-calendar'></i></h3>
+    <h3><i class='bx bx-calendar'></i> Filter by Date</h3>
     <form method="GET" action="" id="dateFilterForm">
       <div class="date-filter-controls">
         <div class="filter-group">
@@ -692,7 +736,7 @@ $feedback_result = pg_query($conn, $feedback_query);
         </div>
 
         <button type="submit" class="apply-filter-btn">
-          <i class='bx bx-filter-alt'></i>
+          <i class='bx bx-filter-alt'></i> Apply
         </button>
       </div>
     </form>
@@ -847,6 +891,24 @@ $feedback_result = pg_query($conn, $feedback_query);
 <div id="toast" class="toast"></div>
 
 <script>
+// Dropdown functionality
+function toggleDropdown(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const dropdown = event.currentTarget.nextElementSibling;
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+  if (!event.target.closest('.dropdown')) {
+    const dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (let i = 0; i < dropdowns.length; i++) {
+      dropdowns[i].style.display = 'none';
+    }
+  }
+});
+
 // Toggle custom date inputs
 function toggleCustomDates() {
   const select = document.getElementById('dateFilterSelect');
