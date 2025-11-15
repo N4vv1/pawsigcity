@@ -1,4 +1,24 @@
-<?php session_start(); 
+<?php
+session_start();
+
+// Check if user is already logged in
+if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
+    // User is logged in, redirect to appropriate page
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: ../dashboard/admin/admin.php");
+        exit;
+    } elseif ($_SESSION['role'] === 'groomer') {
+        header("Location: ../groomer_dashboard/groomer_dashboard.php");
+        exit;
+    } elseif ($_SESSION['role'] === 'receptionist') {
+        header("Location: ../groomer_dashboard/groomer_dashboard.php");
+        exit;
+    } else {
+        header("Location: ../../../../index.php");
+        exit;
+    }
+}
+
 // Prevent browser caching
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
