@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_groomer'])) {
 
 // Handle groomer update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_groomer'])) {
-    $id           = intval($_POST['groomer_id']);
+    $id           = trim($_POST['groomer_id']);
     $groomer_name = trim($_POST['groomer_name']);
     $email        = trim($_POST['email']);
 
@@ -53,23 +53,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_groomer'])) {
     exit;
 }
 
-// Handle groomer deletion
-if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
+// Handle groomer archiving (soft delete)
+if (isset($_GET['archive_id'])) {
+    $archive_id = trim($_GET['archive_id']);
     
-    $result = pg_query_params($conn, "DELETE FROM groomer WHERE groomer_id = $1", [$delete_id]);
+    $result = pg_query_params($conn, "UPDATE groomer SET deleted_at = NOW() WHERE groomer_id = $1", [$archive_id]);
     
     if ($result) {
-        $_SESSION['success'] = "Groomer deleted successfully!";
+        $_SESSION['success'] = "Groomer archived successfully!";
     } else {
-        $_SESSION['error'] = "Failed to delete groomer: " . pg_last_error($conn);
+        $_SESSION['error'] = "Failed to archive groomer: " . pg_last_error($conn);
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-// Fetch groomers
-$groomers = pg_query($conn, "SELECT * FROM groomer ORDER BY groomer_id ASC");
+// Handle groomer restoration
+if (isset($_GET['restore_id'])) {
+    $restore_id = trim($_GET['restore_id']);
+    
+    $result = pg_query_params($conn, "UPDATE groomer SET deleted_at = NULL WHERE groomer_id = $1", [$restore_id]);
+    
+    if ($result) {
+        $_SESSION['success'] = "Groomer restored successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to restore groomer: " . pg_last_error($conn);
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Fetch groomers (exclude archived by default)
+$show_archived = isset($_GET['show_archived']) ? true : false;
+
+if ($show_archived) {
+    $groomers = pg_query($conn, "SELECT * FROM groomer WHERE deleted_at IS NOT NULL ORDER BY groomer_id ASC");
+} else {
+    $groomers = pg_query($conn, "SELECT * FROM groomer WHERE deleted_at IS NULL ORDER BY groomer_id ASC");
+}
+
 if ($groomers === false) {
     die("Query failed: " . pg_last_error($conn));
 }
@@ -80,9 +102,9 @@ $total_groomers = pg_num_rows($groomers);
 // If editing specific groomer
 $edit_groomer = null;
 if (isset($_GET['id'])) {
-    $edit_id = intval($_GET['id']);
+    $edit_id = trim($_GET['id']);
     $result = pg_query_params($conn, "SELECT * FROM groomer WHERE groomer_id=$1", [$edit_id]);
-    if ($result !== false) {
+    if ($result !== false && pg_num_rows($result) > 0) {
         $edit_groomer = pg_fetch_assoc($result);
     } else {
         $_SESSION['error'] = "Failed to fetch groomer: " . pg_last_error($conn);
@@ -257,7 +279,6 @@ if (isset($_GET['id'])) {
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      margin-bottom: 30px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -352,6 +373,16 @@ if (isset($_GET['id'])) {
 
     .delete-btn:hover {
       background: var(--delete-color);
+      color: var(--white-color);
+    }
+
+    .restore-btn {
+      background: rgba(33, 150, 243, 0.1);
+      color: #2196F3;
+    }
+
+    .restore-btn:hover {
+      background: #2196F3;
       color: var(--white-color);
     }
 
@@ -784,10 +815,16 @@ if (isset($_GET['id'])) {
     <p>Manage groomer accounts and permissions</p>
   </div>
   
-  <!-- Add Button -->
-  <button class="add-btn" onclick="openModal()">
-    <i class='bx bx-plus'></i> Add New Groomer
-  </button>
+  <!-- Add Buttons -->
+  <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+    <button class="add-btn" onclick="openModal()">
+      <i class='bx bx-plus'></i> Add New Groomer
+    </button>
+    <button class="add-btn" onclick="toggleArchived()" style="background: <?= $show_archived ? '#F44336' : '#6c757d' ?>;">
+      <i class='bx <?= $show_archived ? 'bx-undo' : 'bx-archive' ?>'></i> 
+      <?= $show_archived ? 'Show Active' : 'Show Archived' ?>
+    </button>
+  </div>
 
   <!-- Search Section -->
   <div class="table-section" style="margin-bottom: 20px; padding: 25px;">
@@ -808,7 +845,7 @@ if (isset($_GET['id'])) {
   <!-- Table Section -->
   <div class="table-section">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-      <h2 style="margin: 0;">All Groomers</h2>
+      <h2 style="margin: 0;"><?= $show_archived ? 'Archived Groomers' : 'Active Groomers' ?></h2>
       <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
         <div id="resultsCount" style="color: #666; font-size: 0.9rem;"></div>
         <select id="itemsPerPage" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
@@ -828,6 +865,9 @@ if (isset($_GET['id'])) {
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
+            <?php if ($show_archived): ?>
+              <th>Archived At</th>
+            <?php endif; ?>
             <th>Actions</th>
           </tr>
         </thead>
@@ -840,30 +880,41 @@ if (isset($_GET['id'])) {
               <tr class="groomer-row"
                   data-name="<?= strtolower(htmlspecialchars($g['groomer_name'])) ?>"
                   data-email="<?= strtolower(htmlspecialchars($g['email'])) ?>">
-                <td><?= $g['groomer_id'] ?></td>
+                <td><?= htmlspecialchars($g['groomer_id']) ?></td>
                 <td><?= htmlspecialchars($g['groomer_name']) ?></td>
                 <td><?= htmlspecialchars($g['email']) ?></td>
+                <?php if ($show_archived): ?>
+                  <td><?= $g['deleted_at'] ? date('M d, Y g:i A', strtotime($g['deleted_at'])) : 'N/A' ?></td>
+                <?php endif; ?>
                 <td>
                   <div class="actions">
-                    <a href="?id=<?= $g['groomer_id'] ?>" class="edit-btn">
-                      <i class='bx bx-edit'></i> Edit
-                    </a>
-                    <button onclick="confirmDelete(<?= $g['groomer_id'] ?>)" class="delete-btn">
-                      <i class='bx bx-trash'></i> Delete
-                    </button>
+                    <?php if ($show_archived): ?>
+                      <button onclick="confirmRestore('<?= htmlspecialchars($g['groomer_id']) ?>')" class="restore-btn">
+                        <i class='bx bx-undo'></i> Restore
+                      </button>
+                    <?php else: ?>
+                      <a href="?id=<?= htmlspecialchars($g['groomer_id']) ?>" class="edit-btn">
+                        <i class='bx bx-edit'></i> Edit
+                      </a>
+                      <button onclick="confirmArchive('<?= htmlspecialchars($g['groomer_id']) ?>')" class="delete-btn">
+                        <i class='bx bx-archive'></i> Archive
+                      </button>
+                    <?php endif; ?>
                   </div>
                 </td>
               </tr>
             <?php endwhile; ?>
             <tr id="noResults" style="display: none;">
-              <td colspan="4" style="text-align: center; padding: 40px; color: #999;">
+              <td colspan="<?= $show_archived ? '5' : '4' ?>" style="text-align: center; padding: 40px; color: #999;">
                 <i class='bx bx-search-alt' style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
                 <strong>No groomers found</strong>
                 <p style="margin-top: 5px; font-size: 0.9rem;">Try adjusting your search</p>
               </td>
             </tr>
           <?php else: ?>
-            <tr><td colspan="4" style="text-align: center; color: #999;">No groomers found</td></tr>
+            <tr><td colspan="<?= $show_archived ? '5' : '4' ?>" style="text-align: center; color: #999;">
+              <?= $show_archived ? 'No archived groomers found' : 'No active groomers found' ?>
+            </td></tr>
           <?php endif; ?>
         </tbody>
       </table>
@@ -921,7 +972,7 @@ if (isset($_GET['id'])) {
       <span class="close" onclick="closeEditModal()">&times;</span>
       <h2>Edit Groomer</h2>
       <form method="POST">
-        <input type="hidden" name="groomer_id" value="<?= $edit_groomer['groomer_id'] ?>">
+        <input type="hidden" name="groomer_id" value="<?= htmlspecialchars($edit_groomer['groomer_id']) ?>">
         <div class="input_box">
           <label>Groomer Name</label>
           <input type="text" name="groomer_name" class="input-field" value="<?= htmlspecialchars($edit_groomer['groomer_name']) ?>" required>
@@ -1166,6 +1217,30 @@ function clearFilters() {
   filterGroomers();
 }
 
+// Toggle archived view
+function toggleArchived() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('show_archived')) {
+    window.location.href = window.location.pathname;
+  } else {
+    window.location.href = window.location.pathname + '?show_archived=1';
+  }
+}
+
+// Archive confirmation
+function confirmArchive(groomerId) {
+  if (confirm('Are you sure you want to archive this groomer? They can be restored later.')) {
+    window.location.href = '?archive_id=' + encodeURIComponent(groomerId);
+  }
+}
+
+// Restore confirmation
+function confirmRestore(groomerId) {
+  if (confirm('Are you sure you want to restore this groomer?')) {
+    window.location.href = '?restore_id=' + encodeURIComponent(groomerId);
+  }
+}
+
 // Dropdown functionality
 function toggleDropdown(event) {
   event.preventDefault();
@@ -1206,13 +1281,6 @@ function closeModal() {
 function closeEditModal() { 
   document.getElementById('editGroomerModal').style.display='none'; 
   window.history.replaceState(null, null, window.location.pathname); 
-}
-
-// Delete confirmation
-function confirmDelete(groomerId) {
-  if (confirm('Are you sure you want to delete this groomer? This action cannot be undone.')) {
-    window.location.href = '?delete_id=' + groomerId;
-  }
 }
 
 // Close modals when clicking outside
