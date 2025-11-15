@@ -1675,6 +1675,14 @@ if ($selected_pet_id) {
     let selectedTime = null;
     let closedDates = [];
 
+    // Helper function to format date without timezone issues
+    function formatDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     // Load closed dates on page initialization
     async function loadClosedDates() {
       try {
@@ -1871,7 +1879,9 @@ if ($selected_pet_id) {
       for (let day = 1; day <= daysInMonth; day++) {
         const dayDate = new Date(year, month, day);
         dayDate.setHours(0, 0, 0, 0);
-        const dateStr = dayDate.toISOString().split('T')[0];
+        
+        // Format date without timezone conversion (FIXED)
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
         const dayElement = document.createElement('div');
         dayElement.className = 'calendar-day';
@@ -2001,7 +2011,11 @@ if ($selected_pet_id) {
       // Clear previous time slots
       grid.innerHTML = '';
       
-      const dateStr = date.toISOString().split('T')[0];
+      // Format date without timezone conversion (FIXED)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
       const hourCounts = appointmentCounts[dateStr] || {};
       
       // Generate time slots from 9 AM to 6 PM (30-minute intervals)
@@ -2060,8 +2074,11 @@ if ($selected_pet_id) {
       // Add selection to clicked element
       element.classList.add('selected');
       
-      // Create full datetime string
-      const dateStr = date.toISOString().split('T')[0];
+      // Create full datetime string without timezone conversion (FIXED)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
       const fullDateTime = `${dateStr} ${time}:00`;
       
       // Update hidden input
