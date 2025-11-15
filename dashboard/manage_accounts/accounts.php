@@ -79,12 +79,20 @@ if (isset($_GET['delete_id'])) {
 // Fetch users
 $users = pg_query($conn, "SELECT * FROM users ORDER BY user_id ASC");
 
-// If editing specific user
+// If editing specific user - FIXED VERSION
 $edit_user = null;
 if (isset($_GET['id'])) {
     $edit_id = intval($_GET['id']);
     $result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$edit_id]);
-    $edit_user = pg_fetch_assoc($result);
+    
+    // Check if query was successful and returned a row
+    if ($result && pg_num_rows($result) > 0) {
+        $edit_user = pg_fetch_assoc($result);
+    } else {
+        $_SESSION['error'] = "User not found.";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
 }
 ?>
 
@@ -800,7 +808,7 @@ if (isset($_GET['id'])) {
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
+    <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Sentiment Analysis</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
@@ -990,13 +998,13 @@ if (isset($_GET['id'])) {
 </div>
 
 <!-- Edit User Modal -->
-<?php if (isset($edit_user)): ?>
+<?php if (isset($edit_user) && $edit_user): ?>
 <div id="editModal" class="modal" style="display:flex;">
   <div class="modal-content">
     <span class="close" onclick="closeEditModal()">&times;</span>
     <h2>Edit User</h2>
     <form method="POST">
-      <input type="hidden" name="user_id" value="<?= $edit_user['user_id'] ?>">
+      <input type="hidden" name="user_id" value="<?= htmlspecialchars($edit_user['user_id']) ?>">
       
       <div class="input_box">
         <label>First Name</label>
@@ -1005,7 +1013,7 @@ if (isset($_GET['id'])) {
 
       <div class="input_box">
         <label>Middle Name</label>
-        <input type="text" name="middle_name" class="input-field" value="<?= htmlspecialchars($edit_user['middle_name']) ?>">
+        <input type="text" name="middle_name" class="input-field" value="<?= htmlspecialchars($edit_user['middle_name'] ?? '') ?>">
       </div>
 
       <div class="input_box">
@@ -1020,7 +1028,7 @@ if (isset($_GET['id'])) {
 
       <div class="input_box">
         <label>Phone Number</label>
-        <input type="text" name="phone" class="input-field" value="<?= htmlspecialchars($edit_user['phone']) ?>" required>
+        <input type="text" name="phone" class="input-field" value="<?= htmlspecialchars($edit_user['phone'] ?? '') ?>" required>
       </div>
 
       <input type="submit" name="update_user" class="input-submit" value="Update User">
