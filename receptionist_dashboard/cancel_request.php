@@ -287,7 +287,7 @@ if (!$result) {
   </div>
   <nav class="menu">
     <a href="receptionist_home.php"><i class='bx bx-home'></i>All Appointments</a>
-    <a href="cancel_requests.php" class="active"><i class='bx bx-x-circle'></i>Cancellation Requests</a>
+    <a href="cancel_request.php" class="active"><i class='bx bx-x-circle'></i>Cancellation Requests</a>
   </nav>
 </aside>
 

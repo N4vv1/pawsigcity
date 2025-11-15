@@ -18,7 +18,7 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 // Validate appointment ID
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     $_SESSION['error_message'] = "No appointment ID provided.";
-    header("Location: cancel_requests.php");
+    header("Location: cancel_request.php");
     exit();
 }
 
@@ -26,7 +26,7 @@ $appointment_id = intval($_GET['id']);
 
 if ($appointment_id <= 0) {
     $_SESSION['error_message'] = "Invalid appointment ID.";
-    header("Location: cancel_requests.php");
+    header("Location: cancel_request.php");
     exit();
 }
 
@@ -216,7 +216,7 @@ try {
         }
     }
     
-    header("Location: cancel_requests.php");
+    header("Location: cancel_request.php");
     exit();
     
 } catch (Exception $e) {
