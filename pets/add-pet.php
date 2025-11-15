@@ -295,54 +295,85 @@ if (!$pets) {
     border-left: 5px solid #dc3545;
   }
 
-  /* SUCCESS NOTIFICATION TOAST */
-  .success-notification {
+  /* SUCCESS MODAL OVERLAY */
+  .success-modal-overlay {
     position: fixed;
-    top: 100px;
-    right: 30px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .success-modal-overlay.active {
+    display: flex;
+  }
+
+  /* SUCCESS MODAL */
+  .success-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: modalSlideIn 0.4s ease;
+    position: relative;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-50px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
     background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 18px 24px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(40, 167, 69, 0.3);
-    font-weight: 600;
-    font-size: 16px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 12px;
-    z-index: 10000;
-    animation: slideInRight 0.5s ease, slideOutRight 0.5s ease 4.5s;
-    opacity: 0;
+    justify-content: center;
+    margin: 0 auto 20px;
+    animation: successPulse 0.6s ease;
   }
 
-  .success-notification i {
-    font-size: 24px;
-    animation: checkmark 0.6s ease;
+  .success-icon i {
+    font-size: 40px;
+    color: white;
+    animation: checkmarkPop 0.6s ease;
   }
 
-  @keyframes slideInRight {
-    from {
-      transform: translateX(400px);
-      opacity: 0;
+  @keyframes successPulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
     }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideOutRight {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(400px);
-      opacity: 0;
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 20px rgba(40, 167, 69, 0);
     }
   }
 
-  @keyframes checkmark {
+  @keyframes checkmarkPop {
     0% {
       transform: scale(0) rotate(-45deg);
     }
@@ -352,6 +383,79 @@ if (!$pets) {
     100% {
       transform: scale(1) rotate(0deg);
     }
+  }
+
+  .success-modal h3 {
+    color: #252525;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .success-modal p {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+
+  .success-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .modal-btn-primary {
+    background: linear-gradient(135deg, #A8E6CF, #91dbc3);
+    color: #252525;
+    box-shadow: 0 4px 15px rgba(168, 230, 207, 0.4);
+  }
+
+  .modal-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(168, 230, 207, 0.6);
+  }
+
+  .modal-btn-secondary {
+    background: #f0f0f0;
+    color: #252525;
+  }
+
+  .modal-btn-secondary:hover {
+    background: #e0e0e0;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #e9ecef;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #A8E6CF, #91dbc3);
+    width: 0%;
+    animation: progressFill 3s linear;
+  }
+
+  @keyframes progressFill {
+    from { width: 0%; }
+    to { width: 100%; }
   }
 
   /* RESPONSIVE */
@@ -385,12 +489,22 @@ if (!$pets) {
     .add-pet-container {
       padding: 140px 20px 40px;
     }
-    .success-notification {
-      top: 80px;
-      right: 20px;
-      left: 20px;
+    .success-modal {
+      padding: 30px 20px;
+      max-width: 90%;
+    }
+    
+    .success-modal h3 {
+      font-size: 22px;
+    }
+    
+    .success-modal p {
       font-size: 14px;
-      padding: 14px 18px;
+    }
+    
+    .modal-btn {
+      padding: 10px 20px;
+      font-size: 14px;
     }
   }
 
@@ -1174,6 +1288,15 @@ if (!$pets) {
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
 @media (max-width: 480px) {
   .chat-modal-content {
     border-radius: 20px;
@@ -1235,18 +1358,32 @@ if (!$pets) {
   </nav>
 </header>
 
-<div class="add-pet-container">
-  
-  <?php if (isset($_SESSION['success'])): ?>
-    <div class="success-notification" id="successNotification">
-      <i class="fas fa-check-circle"></i>
-      <span><?= $_SESSION['success'] ?></span>
+<!-- Success Modal -->
+<div class="success-modal-overlay" id="successModalOverlay">
+  <div class="success-modal">
+    <div class="success-icon">
+      <i class="fas fa-check"></i>
     </div>
-    <?php unset($_SESSION['success']); ?>
-  <?php endif; ?>
+    <h3>🎉 Pet Added Successfully!</h3>
+    <p>Your pet has been added to your profile. You can now view and manage their information.</p>
+    <div class="success-modal-buttons">
+      <button class="modal-btn modal-btn-primary" onclick="goToPetProfile()">
+        <i class="fas fa-paw"></i> View Pet Profile
+      </button>
+      <button class="modal-btn modal-btn-secondary" onclick="addAnotherPet()">
+        <i class="fas fa-plus"></i> Add Another Pet
+      </button>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+    </div>
+  </div>
+</div>
+
+<div class="add-pet-container">
 
   <div class="form-wrapper">
-      <form method="POST" action="add-pet-handler.php" enctype="multipart/form-data">
+      <form method="POST" action="add-pet-handler.php" enctype="multipart/form-data" id="addPetForm">
         <div class="form-grid">
           
           <?php if (isset($_SESSION['error'])): ?>
@@ -1362,335 +1499,3 @@ if (!$pets) {
         </div>
       </form>
     </div>
-  </div>
-
-<script>
-    function previewImage(event) {
-      const input = event.target;
-      const preview = document.getElementById('preview');
-
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-        };
-
-        reader.readAsDataURL(input.files[0]);
-      } else {
-        preview.src = "#";
-        preview.style.display = "none";
-      }
-    }
-
-    // Weight validation based on size
-    document.getElementById('size').addEventListener('change', function() {
-      const weightInput = document.getElementById('weight');
-      const size = this.value;
-      
-      if (size === 'Small') {
-        weightInput.setAttribute('max', '10');
-        weightInput.placeholder = 'Enter weight (under 10 kg)';
-      } else if (size === 'Medium') {
-        weightInput.setAttribute('min', '10');
-        weightInput.setAttribute('max', '25');
-        weightInput.placeholder = 'Enter weight (10-25 kg)';
-      } else if (size === 'Large') {
-        weightInput.setAttribute('min', '25');
-        weightInput.removeAttribute('max');
-        weightInput.placeholder = 'Enter weight (25+ kg)';
-      }
-    });
-
-    // Hamburger Menu Toggle
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
-    const navOverlay = document.getElementById('nav-overlay');
-    const profileDropdown = document.getElementById('profile-dropdown');
-
-    hamburger.addEventListener('click', function() {
-      hamburger.classList.toggle('active');
-      navMenu.classList.toggle('active');
-      navOverlay.classList.toggle('active');
-      document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-    });
-
-    navOverlay.addEventListener('click', function() {
-      hamburger.classList.remove('active');
-      navMenu.classList.remove('active');
-      navOverlay.classList.remove('active');
-      profileDropdown.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-
-    document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
-      link.addEventListener('click', function() {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        navOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    });
-
-    profileDropdown.addEventListener('click', function(e) {
-      if (window.innerWidth <= 1024) {
-        if (e.target.closest('.profile-icon')) {
-          e.preventDefault();
-          this.classList.toggle('active');
-        }
-      }
-    });
-
-    document.querySelectorAll('.dropdown-menu a').forEach(link => {
-      link.addEventListener('click', function() {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        navOverlay.classList.remove('active');
-        profileDropdown.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    });
-
-    window.addEventListener('resize', function() {
-      if (window.innerWidth > 1024) {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        navOverlay.classList.remove('active');
-        profileDropdown.classList.remove('active');
-        document.body.style.overflow = '';
-      }
-    });
-  </script>
-
-  <script>
-    // Auto-hide success notification after 5 seconds
-    const successNotification = document.getElementById('successNotification');
-    if (successNotification) {
-      setTimeout(() => {
-        successNotification.remove();
-      }, 5000);
-    }
-  </script>
-  <!-- Floating Chat Button -->
-<div class="floating-chat-btn" onclick="toggleChatModal()">
-  <i class="fas fa-comments"></i>
-</div>
-
-<!-- Chat Modal -->
-<div class="chat-modal" id="chatModal" onclick="closeChatModalOnOverlay(event)">
-  <div class="chat-modal-content" onclick="event.stopPropagation()">
-    <!-- Header -->
-    <div class="chat-modal-header">
-      <h3><i class="fas fa-paw"></i> HelpPAWL</h3>
-      <button class="close-chat-modal" onclick="toggleChatModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <!-- Body -->
-    <div class="chat-modal-body" id="chatModalBody">
-      <!-- Welcome Message -->
-      <div class="welcome-message">
-        <h4>👋 Welcome to PAWsig City!</h4>
-        <p>I'm HelpPAWL, your friendly assistant. Click any question below to get instant answers!</p>
-      </div>
-
-      <!-- Chat Messages -->
-      <div class="chat-messages" id="chatMessages">
-        <!-- Messages will be added here -->
-      </div>
-
-      <!-- Typing Indicator -->
-      <div class="typing-indicator" id="typingIndicator">
-        <div class="message-avatar bot-avatar">
-          <i class="fas fa-paw"></i>
-        </div>
-        <div>
-          <div style="font-size: 11px; color: #9ca3af; font-weight: 500; margin-bottom: 4px;">Assistant is typing...</div>
-          <div class="typing-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Questions -->
-      <div class="quick-questions-section">
-        <div class="questions-header">
-          <i class="fas fa-magic"></i>
-          Quick Questions
-        </div>
-
-
-        <div class="question-category">
-          <div class="category-label">
-            <i class="fas fa-map-marker-alt"></i>
-            Location & Contact
-          </div>
-          <div class="question-buttons">
-            <button class="question-btn" onclick="sendQuickQuestion('where are you located')">Where are you located?</button>
-            <button class="question-btn" onclick="sendQuickQuestion('what are your contact')">Contact info?</button>
-            <button class="question-btn" onclick="sendQuickQuestion('when are you open')">When are you open?</button>
-          </div>
-        </div>
-
-        <div class="question-category">
-          <div class="category-label">
-            <i class="fas fa-calendar-alt"></i>
-            Booking & Appointments
-          </div>
-          <div class="question-buttons">
-            <button class="question-btn" onclick="sendQuickQuestion('how can i book an appointment')">How to book?</button>
-            <button class="question-btn" onclick="sendQuickQuestion('do you accept walk-ins')">Walk-ins accepted?</button>
-          </div>
-        </div>
-
-        <div class="question-category">
-          <div class="category-label">
-            <i class="fas fa-cut"></i>
-            Services & Pricing
-          </div>
-          <div class="question-buttons">
-            <button class="question-btn" onclick="sendQuickQuestion('what services do you offer')">All services?</button>
-            <button class="question-btn" onclick="sendQuickQuestion('do you offer grooming services')">Grooming services?</button>
-            <button class="question-btn" onclick="sendQuickQuestion('how much is grooming')">Grooming cost?</button>
-          </div>
-        </div>
-
-        <div class="question-category">
-          <div class="category-label">
-            <i class="fas fa-credit-card"></i>
-            Payment
-          </div>
-          <div class="question-buttons">
-            <button class="question-btn" onclick="sendQuickQuestion('what payment methods do you accept')">Payment methods?</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Add this JavaScript before the closing </body> tag -->
-<script>
-// Q&A Database
-const qaDatabase = {
-  "hi": "Hello there! 👋",
-  "hello": "Hi! How can I assist you today? 😊",
-  "where are you located": "Hello! PAWsig City is located at 2F Hampton Gardens Arcade, C. Raymundo, Maybunga, Pasig, Philippines. 📍",
-  "what are your contact": "You can message us on our Facebook page or send a message at 0954 476 0085. 📱",
-  "when are you open": "We're open daily from 9:00 AM to 8:00 PM, Monday to Sunday. 🕐",
-  "what is your name": "Hi! I'm HelpPAWL, your friendly assistant at PAWsig City. 🐾",
-  "how can i book an appointment": "You can book an appointment online through our website or contact us directly via call, text, and Facebook messenger. 📅",
-  "do you offer grooming services": "Yes! We offer pet grooming services including Full Grooming, Bath and Dry, and Spa Bath. ✨",
-  "how much is grooming": "Grooming prices start at ₱499 depending on the size and breed of your pet. 💰",
-  "do you accept walk-ins": "We highly recommend appointments, but we do accept walk-ins when available. 🚶‍♂️",
-  "what services do you offer": "We offer Full Grooming, Bath and Dry, and Spa Bath. 🛁",
-  "what payment methods do you accept": "We accept cash and GCash for walk-ins. 💳",
-  "thank you": "You're welcome! Let me know if there's anything else I can help with. 😊",
-  "bye": "Goodbye! Hope to see you and your pet soon! 🐾"
-};
-
-// Toggle Chat Modal
-function toggleChatModal() {
-  const modal = document.getElementById('chatModal');
-  modal.classList.toggle('active');
-  
-  if (modal.classList.contains('active')) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
-}
-
-// Close modal when clicking overlay
-function closeChatModalOnOverlay(event) {
-  if (event.target.id === 'chatModal') {
-    toggleChatModal();
-  }
-}
-
-// Get bot response
-function getResponse(userMessage) {
-  const normalizedMessage = userMessage.toLowerCase().trim();
-  
-  if (qaDatabase[normalizedMessage]) {
-    return qaDatabase[normalizedMessage];
-  }
-  
-  for (const [question, answer] of Object.entries(qaDatabase)) {
-    if (normalizedMessage.includes(question) || question.includes(normalizedMessage)) {
-      return answer;
-    }
-  }
-  
-  return "I'm sorry, I didn't quite understand that. 🤔 Try clicking one of the quick questions below!";
-}
-
-// Send Quick Question
-function sendQuickQuestion(question) {
-  const chatMessages = document.getElementById('chatMessages');
-  const typingIndicator = document.getElementById('typingIndicator');
-  const chatBody = document.getElementById('chatModalBody');
-  
-  // Add user message
-  const userMessageDiv = document.createElement('div');
-  userMessageDiv.className = 'message-item user';
-  userMessageDiv.innerHTML = `
-    <div class="message-avatar user-avatar">
-      <i class="fas fa-user"></i>
-    </div>
-    <div class="message-bubble user-message">${escapeHtml(question)}</div>
-  `;
-  chatMessages.appendChild(userMessageDiv);
-  
-  // Scroll to bottom
-  chatBody.scrollTop = chatBody.scrollHeight;
-  
-  // Show typing indicator
-  typingIndicator.classList.add('active');
-  chatBody.scrollTop = chatBody.scrollHeight;
-  
-  // Get bot response
-  const botResponse = getResponse(question);
-  
-  // Simulate typing delay
-  setTimeout(() => {
-    typingIndicator.classList.remove('active');
-    
-    const botMessageDiv = document.createElement('div');
-    botMessageDiv.className = 'message-item';
-    botMessageDiv.innerHTML = `
-      <div class="message-avatar bot-avatar">
-        <i class="fas fa-paw"></i>
-      </div>
-      <div class="message-bubble bot-message">${botResponse}</div>
-    `;
-    chatMessages.appendChild(botMessageDiv);
-    
-    // Scroll to bottom
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }, Math.random() * 800 + 600);
-}
-
-// Escape HTML
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-// Close modal on ESC key
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    const modal = document.getElementById('chatModal');
-    if (modal.classList.contains('active')) {
-      toggleChatModal();
-    }
-  }
-});
-</script>
-</body>
-</html>
