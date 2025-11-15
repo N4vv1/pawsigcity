@@ -332,7 +332,7 @@ if (!$result) {
             <td>
               <button class="cancel-btn" 
                       onclick="if(confirm('Approve this cancellation request? The customer will be notified via email.')) { 
-                        window.location.href='process_cancellation.php?id=<?= $row['appointment_id'] ?>'; 
+                        window.location.href='./process_cancellation.php?id=<?= $row['appointment_id'] ?>'; 
                       }">
                 <i class='bx bx-check'></i> Approve Cancel
               </button>
