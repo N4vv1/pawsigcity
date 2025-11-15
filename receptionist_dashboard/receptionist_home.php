@@ -424,7 +424,7 @@ $packages_result = pg_query($conn, $packages_query);
 
     table {
       width: 100%;
-      min-width: 1200px;
+      min-width: 1100px;
       border-collapse: collapse;
     }
 
@@ -477,13 +477,7 @@ $packages_result = pg_query($conn, $packages_query);
       color: #FFC107;
     }
 
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .action-buttons button {
+    .edit-btn {
       padding: 6px 14px;
       font-size: 0.85rem;
       font-weight: 600;
@@ -494,16 +488,6 @@ $packages_result = pg_query($conn, $packages_query);
       display: inline-flex;
       align-items: center;
       gap: 5px;
-    }
-
-    .action-buttons button:disabled {
-      background-color: var(--disabled-color) !important;
-      color: #999 !important;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    .edit-btn {
       background: rgba(76, 175, 80, 0.1);
       color: var(--edit-color);
     }
@@ -513,14 +497,11 @@ $packages_result = pg_query($conn, $packages_query);
       color: var(--white-color);
     }
 
-    .cancel-btn-table {
-      background: rgba(244, 67, 54, 0.1);
-      color: var(--delete-color);
-    }
-
-    .cancel-btn-table:hover:not(:disabled) {
-      background: var(--delete-color);
-      color: var(--white-color);
+    .edit-btn:disabled {
+      background-color: var(--disabled-color) !important;
+      color: #999 !important;
+      cursor: not-allowed;
+      opacity: 0.6;
     }
 
     #noResults {
@@ -731,7 +712,7 @@ $packages_result = pg_query($conn, $packages_query);
     @media screen and (max-width: 1024px) {
       table {
         font-size: 0.85rem;
-        min-width: 1100px;
+        min-width: 1000px;
       }
 
       th, td {
@@ -796,20 +777,11 @@ $packages_result = pg_query($conn, $packages_query);
 
       table {
         font-size: 0.8rem;
-        min-width: 1000px;
+        min-width: 900px;
       }
 
       th, td {
         padding: 10px 8px;
-      }
-
-      .action-buttons {
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .action-buttons button {
-        width: 100%;
       }
 
       .modal-content {
@@ -850,7 +822,7 @@ $packages_result = pg_query($conn, $packages_query);
 
       table {
         font-size: 0.75rem;
-        min-width: 900px;
+        min-width: 800px;
       }
 
       th, td {
@@ -888,7 +860,8 @@ $packages_result = pg_query($conn, $packages_query);
     <img src="../homepage/images/pawsig.png" alt="Logo" />
   </div>
   <nav class="menu">
-    <a href="#" class="active"><i class='bx bx-home'></i>All Appointments</a>
+    <a href="receptionist_home.php" class="active"><i class='bx bx-home'></i>All Appointments</a>
+    <a href="cancel_requests.php"><i class='bx bx-x-circle'></i>Cancellation Requests</a>
   </nav>
 </aside>
 
@@ -1012,22 +985,15 @@ $packages_result = pg_query($conn, $packages_query);
             </td>
             <td><?= htmlspecialchars($row['groomer_name']) ?></td>
             <td>
-              <div class="action-buttons">
-                <button class="edit-btn"
-                        data-id="<?= $row['appointment_id'] ?>"
-                        data-date="<?= $row['appointment_date'] ?>"
-                        data-package="<?= $row['package_id'] ?>"
-                        data-status="<?= $row['status'] ?>"
-                        data-groomer="<?= htmlspecialchars($row['groomer_name']) ?>"
-                        <?= $is_disabled ? 'disabled title="Cannot edit completed/cancelled appointments"' : '' ?>>
-                  <i class='bx bx-edit'></i> Edit
-                </button>
-                <button class="cancel-btn-table"
-                        onclick="if(confirm('Cancel this appointment? The customer will be notified via email.')) { window.location.href='cancel_appointment.php?id=<?= $row['appointment_id'] ?>'; }"
-                        <?= $is_disabled ? 'disabled title="Already completed/cancelled"' : '' ?>>
-                  <i class='bx bx-trash'></i> Cancel
-                </button>
-              </div>
+              <button class="edit-btn"
+                      data-id="<?= $row['appointment_id'] ?>"
+                      data-date="<?= $row['appointment_date'] ?>"
+                      data-package="<?= $row['package_id'] ?>"
+                      data-status="<?= $row['status'] ?>"
+                      data-groomer="<?= htmlspecialchars($row['groomer_name']) ?>"
+                      <?= $is_disabled ? 'disabled title="Cannot edit completed/cancelled appointments"' : '' ?>>
+                <i class='bx bx-edit'></i> Edit
+              </button>
             </td>
           </tr>
         <?php endwhile; ?>
