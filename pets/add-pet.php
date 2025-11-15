@@ -731,7 +731,467 @@ if (!$pets) {
     display: none;
   }
 }
+/* Floating Chat Button - Bottom Right */
+.floating-chat-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(168, 230, 207, 0.4);
+  z-index: 999;
+  transition: all 0.3s ease;
+  border: 3px solid #ffffff;
+  animation: pulse-chat 2s infinite;
+}
 
+.floating-chat-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(168, 230, 207, 0.6);
+}
+
+.floating-chat-btn i {
+  font-size: 28px;
+  color: #252525;
+  animation: bounce-icon 2s ease-in-out infinite;
+}
+
+@keyframes pulse-chat {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(168, 230, 207, 0.4);
+  }
+  50% {
+    box-shadow: 0 8px 24px rgba(168, 230, 207, 0.6), 0 0 0 10px rgba(168, 230, 207, 0.1);
+  }
+}
+
+@keyframes bounce-icon {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Chat Modal */
+.chat-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.chat-modal.active {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.chat-modal-content {
+  background: #ffffff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chat Header */
+.chat-modal-header {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+.chat-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #252525;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-modal-header h3 i {
+  font-size: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.close-chat-modal {
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #252525;
+  font-size: 20px;
+}
+
+.close-chat-modal:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: rotate(90deg);
+}
+
+/* Chat Body */
+.chat-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+}
+
+/* Messages */
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.message-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: messageSlide 0.3s ease;
+}
+
+@keyframes messageSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bot-avatar {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  color: #252525;
+}
+
+.user-avatar {
+  background: linear-gradient(135deg, #252525 0%, #3a3a3a 100%);
+  color: white;
+}
+
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 16px;
+  max-width: 80%;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.bot-message {
+  background: #ffffff;
+  color: #252525;
+  border: 2px solid #A8E6CF;
+  border-bottom-left-radius: 4px;
+}
+
+.user-message {
+  background: linear-gradient(135deg, #252525 0%, #3a3a3a 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+  margin-left: auto;
+}
+
+.message-item.user {
+  flex-direction: row-reverse;
+}
+
+/* Welcome Message */
+.welcome-message {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-message::before {
+  content: '🐾';
+  position: absolute;
+  font-size: 60px;
+  right: -10px;
+  bottom: -10px;
+  opacity: 0.2;
+}
+
+.welcome-message h4 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #252525;
+}
+
+.welcome-message p {
+  margin: 0;
+  font-size: 14px;
+  color: #252525;
+  line-height: 1.6;
+}
+
+/* Quick Questions */
+.quick-questions-section {
+  margin-top: 20px;
+}
+
+.questions-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: #252525;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.questions-header i {
+  color: #A8E6CF;
+  font-size: 16px;
+}
+
+.question-category {
+  margin-bottom: 16px;
+}
+
+.category-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.category-label i {
+  color: #A8E6CF;
+  font-size: 12px;
+}
+
+.question-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.question-btn {
+  background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+  color: #252525;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.question-btn:hover {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  border-color: #A8E6CF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
+}
+
+.question-btn:active {
+  transform: translateY(0);
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 2px solid #A8E6CF;
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  max-width: 80%;
+}
+
+.typing-indicator.active {
+  display: flex;
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #A8E6CF;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typing {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Scrollbar */
+.chat-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-modal-body::-webkit-scrollbar-thumb {
+  background: #A8E6CF;
+  border-radius: 3px;
+}
+
+.chat-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #7ed6ad;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .chat-modal-content {
+    max-width: 95%;
+    max-height: 85vh;
+  }
+
+  .chat-modal-header {
+    padding: 16px 20px;
+  }
+
+  .chat-modal-header h3 {
+    font-size: 18px;
+  }
+
+  .chat-modal-body {
+    padding: 20px;
+  }
+
+  .message-bubble {
+    font-size: 13px;
+    max-width: 85%;
+  }
+
+  .floating-chat-btn {
+    width: 60px;
+    height: 60px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .floating-chat-btn i {
+    font-size: 26px;
+  }
+
+  .question-btn {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-modal-content {
+    border-radius: 20px;
+  }
+
+  .welcome-message {
+    padding: 16px;
+  }
+
+  .welcome-message h4 {
+    font-size: 16px;
+  }
+
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
 </style>
 
 
@@ -1013,5 +1473,225 @@ if (!$pets) {
       }, 5000);
     }
   </script>
+  <!-- Floating Chat Button -->
+<div class="floating-chat-btn" onclick="toggleChatModal()">
+  <i class="fas fa-comments"></i>
+</div>
+
+<!-- Chat Modal -->
+<div class="chat-modal" id="chatModal" onclick="closeChatModalOnOverlay(event)">
+  <div class="chat-modal-content" onclick="event.stopPropagation()">
+    <!-- Header -->
+    <div class="chat-modal-header">
+      <h3><i class="fas fa-paw"></i> HelpPAWL</h3>
+      <button class="close-chat-modal" onclick="toggleChatModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="chat-modal-body" id="chatModalBody">
+      <!-- Welcome Message -->
+      <div class="welcome-message">
+        <h4>👋 Welcome to PAWsig City!</h4>
+        <p>I'm HelpPAWL, your friendly assistant. Click any question below to get instant answers!</p>
+      </div>
+
+      <!-- Chat Messages -->
+      <div class="chat-messages" id="chatMessages">
+        <!-- Messages will be added here -->
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="message-avatar bot-avatar">
+          <i class="fas fa-paw"></i>
+        </div>
+        <div>
+          <div style="font-size: 11px; color: #9ca3af; font-weight: 500; margin-bottom: 4px;">Assistant is typing...</div>
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Questions -->
+      <div class="quick-questions-section">
+        <div class="questions-header">
+          <i class="fas fa-magic"></i>
+          Quick Questions
+        </div>
+
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-map-marker-alt"></i>
+            Location & Contact
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('where are you located')">Where are you located?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('what are your contact')">Contact info?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('when are you open')">When are you open?</button>
+          </div>
+        </div>
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-calendar-alt"></i>
+            Booking & Appointments
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('how can i book an appointment')">How to book?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('do you accept walk-ins')">Walk-ins accepted?</button>
+          </div>
+        </div>
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-cut"></i>
+            Services & Pricing
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('what services do you offer')">All services?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('do you offer grooming services')">Grooming services?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('how much is grooming')">Grooming cost?</button>
+          </div>
+        </div>
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-credit-card"></i>
+            Payment
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('what payment methods do you accept')">Payment methods?</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add this JavaScript before the closing </body> tag -->
+<script>
+// Q&A Database
+const qaDatabase = {
+  "hi": "Hello there! 👋",
+  "hello": "Hi! How can I assist you today? 😊",
+  "where are you located": "Hello! PAWsig City is located at 2F Hampton Gardens Arcade, C. Raymundo, Maybunga, Pasig, Philippines. 📍",
+  "what are your contact": "You can message us on our Facebook page or send a message at 0954 476 0085. 📱",
+  "when are you open": "We're open daily from 9:00 AM to 8:00 PM, Monday to Sunday. 🕐",
+  "what is your name": "Hi! I'm HelpPAWL, your friendly assistant at PAWsig City. 🐾",
+  "how can i book an appointment": "You can book an appointment online through our website or contact us directly via call, text, and Facebook messenger. 📅",
+  "do you offer grooming services": "Yes! We offer pet grooming services including Full Grooming, Bath and Dry, and Spa Bath. ✨",
+  "how much is grooming": "Grooming prices start at ₱499 depending on the size and breed of your pet. 💰",
+  "do you accept walk-ins": "We highly recommend appointments, but we do accept walk-ins when available. 🚶‍♂️",
+  "what services do you offer": "We offer Full Grooming, Bath and Dry, and Spa Bath. 🛁",
+  "what payment methods do you accept": "We accept cash and GCash for walk-ins. 💳",
+  "thank you": "You're welcome! Let me know if there's anything else I can help with. 😊",
+  "bye": "Goodbye! Hope to see you and your pet soon! 🐾"
+};
+
+// Toggle Chat Modal
+function toggleChatModal() {
+  const modal = document.getElementById('chatModal');
+  modal.classList.toggle('active');
+  
+  if (modal.classList.contains('active')) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+// Close modal when clicking overlay
+function closeChatModalOnOverlay(event) {
+  if (event.target.id === 'chatModal') {
+    toggleChatModal();
+  }
+}
+
+// Get bot response
+function getResponse(userMessage) {
+  const normalizedMessage = userMessage.toLowerCase().trim();
+  
+  if (qaDatabase[normalizedMessage]) {
+    return qaDatabase[normalizedMessage];
+  }
+  
+  for (const [question, answer] of Object.entries(qaDatabase)) {
+    if (normalizedMessage.includes(question) || question.includes(normalizedMessage)) {
+      return answer;
+    }
+  }
+  
+  return "I'm sorry, I didn't quite understand that. 🤔 Try clicking one of the quick questions below!";
+}
+
+// Send Quick Question
+function sendQuickQuestion(question) {
+  const chatMessages = document.getElementById('chatMessages');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const chatBody = document.getElementById('chatModalBody');
+  
+  // Add user message
+  const userMessageDiv = document.createElement('div');
+  userMessageDiv.className = 'message-item user';
+  userMessageDiv.innerHTML = `
+    <div class="message-avatar user-avatar">
+      <i class="fas fa-user"></i>
+    </div>
+    <div class="message-bubble user-message">${escapeHtml(question)}</div>
+  `;
+  chatMessages.appendChild(userMessageDiv);
+  
+  // Scroll to bottom
+  chatBody.scrollTop = chatBody.scrollHeight;
+  
+  // Show typing indicator
+  typingIndicator.classList.add('active');
+  chatBody.scrollTop = chatBody.scrollHeight;
+  
+  // Get bot response
+  const botResponse = getResponse(question);
+  
+  // Simulate typing delay
+  setTimeout(() => {
+    typingIndicator.classList.remove('active');
+    
+    const botMessageDiv = document.createElement('div');
+    botMessageDiv.className = 'message-item';
+    botMessageDiv.innerHTML = `
+      <div class="message-avatar bot-avatar">
+        <i class="fas fa-paw"></i>
+      </div>
+      <div class="message-bubble bot-message">${botResponse}</div>
+    `;
+    chatMessages.appendChild(botMessageDiv);
+    
+    // Scroll to bottom
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }, Math.random() * 800 + 600);
+}
+
+// Escape HTML
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('chatModal');
+    if (modal.classList.contains('active')) {
+      toggleChatModal();
+    }
+  }
+});
+</script>
 </body>
 </html>

@@ -2797,19 +2797,6 @@ document.addEventListener('keydown', function(e) {
 
         <div class="question-category">
           <div class="category-label">
-            <i class="fas fa-comments"></i>
-            General
-          </div>
-          <div class="question-buttons">
-            <button class="question-btn" onclick="sendQuickQuestion('hi')">Hi</button>
-            <button class="question-btn" onclick="sendQuickQuestion('hello')">Hello</button>
-            <button class="question-btn" onclick="sendQuickQuestion('what is your name')">What is your name?</button>
-            <button class="question-btn" onclick="sendQuickQuestion('thank you')">Thank you</button>
-          </div>
-        </div>
-
-        <div class="question-category">
-          <div class="category-label">
             <i class="fas fa-map-marker-alt"></i>
             Location & Contact
           </div>
@@ -2970,12 +2957,10 @@ window.addEventListener('resize', function() {
     });
     // Q&A Database
 const qaDatabase = {
-  "hi": "Hello there! 👋",
-  "hello": "Hi! How can I assist you today? 😊",
   "where are you located": "Hello! PAWsig City is located at 2F Hampton Gardens Arcade, C. Raymundo, Maybunga, Pasig, Philippines. 📍",
   "what are your contact": "You can message us on our Facebook page or send a message at 0954 476 0085. 📱",
   "when are you open": "We're open daily from 9:00 AM to 8:00 PM, Monday to Sunday. 🕐",
-  "what is your name": "Hi! I'm HelpPAWL, your friendly assistant at PAWsig City. 🐾",
+
   "how can i book an appointment": "You can book an appointment online through our website or contact us directly via call, text, and Facebook messenger. 📅",
   "do you offer grooming services": "Yes! We offer pet grooming services including Full Grooming, Bath and Dry, and Spa Bath. ✨",
   "how much is grooming": "Grooming prices start at ₱499 depending on the size and breed of your pet. 💰",
