@@ -127,7 +127,7 @@ if (isset($_GET['id'])) {
       --white-color: #fff;
       --dark-color: #252525;
       --primary-color: #A8E6CF;
-      --secondary-color: #FFE29D;
+      --secondary-color: #016B61;
       --light-pink-color: #faf4f5;
       --edit-color: #4CAF50;
       --delete-color: #F44336;

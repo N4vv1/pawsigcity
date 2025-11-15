@@ -13,7 +13,7 @@
       --white-color: #fff;
       --dark-color: #252525;
       --primary-color: #A8E6CF;
-      --secondary-color: #FFE29D;
+      --secondary-color: #016B61;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
       --font-size-s: 0.9rem;
