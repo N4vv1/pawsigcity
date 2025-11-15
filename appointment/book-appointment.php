@@ -253,7 +253,6 @@ if ($selected_pet_id) {
     error_log("Found " . pg_num_rows($packages_result) . " matching packages");
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -488,9 +487,9 @@ if ($selected_pet_id) {
     /* Calendar Styles */
     .calendar-container {
       background: #f8f9fa;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
       border: 2px solid #e0e0e0;
     }
 
@@ -498,87 +497,86 @@ if ($selected_pet_id) {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
     }
 
     .calendar-header h3 {
       margin: 0;
       color: #2c3e50;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 700;
     }
 
     .calendar-nav {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
 
     .calendar-nav button {
       background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 8px 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 6px 12px;
       cursor: pointer;
       font-weight: 600;
       color: #34495e;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       font-family: inherit;
+      font-size: 0.85rem;
     }
 
     .calendar-nav button:hover {
       background: #A8E6CF;
       border-color: #A8E6CF;
       color: white;
-      transform: translateY(-2px);
     }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-bottom: 20px;
+      gap: 4px;
+      margin-bottom: 12px;
     }
 
     .calendar-day-header {
       text-align: center;
       font-weight: 600;
       color: #7f8c8d;
-      padding: 12px 0;
-      font-size: 0.9rem;
+      padding: 8px 0;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
 
     .calendar-day {
       aspect-ratio: 1;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       background: white;
       position: relative;
-      padding: 8px;
-      min-height: 80px;
+      padding: 4px;
+      min-height: 50px;
     }
 
     .calendar-day:hover:not(.disabled):not(.other-month) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       border-color: #A8E6CF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .calendar-day.disabled {
       background: #f0f0f0;
       cursor: not-allowed;
-      opacity: 0.5;
+      opacity: 0.4;
     }
 
     .calendar-day.other-month {
-      opacity: 0.3;
+      opacity: 0.25;
       cursor: not-allowed;
       background: #fafafa;
     }
@@ -588,25 +586,25 @@ if ($selected_pet_id) {
       border-color: #A8E6CF;
       color: white;
       font-weight: 700;
-      box-shadow: 0 6px 20px rgba(168, 230, 207, 0.4);
+      box-shadow: 0 3px 10px rgba(168, 230, 207, 0.4);
     }
 
     .calendar-day.today {
       border-color: #3498db;
-      border-width: 3px;
+      border-width: 2px;
     }
 
     .day-number {
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .day-indicator {
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 10px;
+      padding: 2px 6px;
+      border-radius: 6px;
       white-space: nowrap;
     }
 
@@ -627,7 +625,7 @@ if ($selected_pet_id) {
 
     /* Time Slot Selection */
     .time-slots-container {
-      margin-top: 20px;
+      margin-top: 16px;
       display: none;
       animation: slideDown 0.3s ease;
     }
@@ -650,50 +648,50 @@ if ($selected_pet_id) {
     .time-slots-header {
       font-weight: 600;
       color: #34495e;
-      margin-bottom: 16px;
-      font-size: 1.1rem;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 16px;
+      padding: 10px 12px;
       background: linear-gradient(135deg, #e8fff3 0%, #d4f5e5 100%);
-      border-radius: 10px;
-      border-left: 4px solid #A8E6CF;
+      border-radius: 8px;
+      border-left: 3px solid #A8E6CF;
     }
 
     .time-slots-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
     }
 
     .time-slot {
-      padding: 14px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       background: white;
       font-weight: 600;
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      font-size: 0.9rem;
     }
 
     .time-slot:hover:not(.disabled) {
       border-color: #A8E6CF;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(168, 230, 207, 0.3);
+      box-shadow: 0 2px 6px rgba(168, 230, 207, 0.3);
     }
 
     .time-slot.selected {
       background: linear-gradient(135deg, #A8E6CF 0%, #87d7b7 100%);
       border-color: #A8E6CF;
       color: white;
-      box-shadow: 0 6px 20px rgba(168, 230, 207, 0.4);
+      box-shadow: 0 3px 10px rgba(168, 230, 207, 0.4);
     }
 
     .time-slot.disabled {
@@ -703,9 +701,9 @@ if ($selected_pet_id) {
     }
 
     .time-slot-badge {
-      font-size: 0.7rem;
-      padding: 3px 8px;
-      border-radius: 8px;
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 6px;
       display: inline-block;
       font-weight: 700;
     }
@@ -914,57 +912,6 @@ if ($selected_pet_id) {
     .pet-card .btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
-    }
-
-    .legend-container {
-      background-color: #fff;
-      padding: 16px 20px;
-      border-radius: 12px;
-      margin-top: 16px;
-      border: 2px solid #e0e0e0;
-    }
-
-    .legend-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #34495e;
-      margin-bottom: 12px;
-    }
-
-    .legend-items {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      color: #34495e;
-    }
-
-    .legend-color {
-      width: 20px;
-      height: 20px;
-      border-radius: 6px;
-      border: 2px solid #ccc;
-    }
-
-    .legend-color.available {
-      background-color: #d4edda;
-      border-color: #155724;
-    }
-
-    .legend-color.busy {
-      background-color: #fff3cd;
-      border-color: #856404;
-    }
-
-    .legend-color.full {
-      background-color: #f8d7da;
-      border-color: #721c24;
     }
 
     select option:disabled {
@@ -1358,30 +1305,30 @@ if ($selected_pet_id) {
 
       .calendar-day {
         padding: 4px;
-        min-height: 70px;
+        min-height: 45px;
       }
 
       .day-number {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
       }
 
       .day-indicator {
-        font-size: 0.6rem;
-        padding: 2px 6px;
+        font-size: 0.55rem;
+        padding: 2px 4px;
       }
 
       .time-slots-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 6px;
       }
 
       .calendar-header h3 {
-        font-size: 1.1rem;
+        font-size: 1rem;
       }
 
       .calendar-nav button {
-        padding: 6px 12px;
-        font-size: 0.9rem;
+        padding: 5px 10px;
+        font-size: 0.8rem;
       }
 
       h2 {
@@ -1617,24 +1564,6 @@ if ($selected_pet_id) {
                   
                   <div class="calendar-grid" id="calendarGrid">
                     <!-- Calendar will be generated by JavaScript -->
-                  </div>
-
-                  <div class="legend-container">
-                    <div class="legend-title">Availability Legend:</div>
-                    <div class="legend-items">
-                      <div class="legend-item">
-                        <div class="legend-color available"></div>
-                        <span>Available (0-5 bookings)</span>
-                      </div>
-                      <div class="legend-item">
-                        <div class="legend-color busy"></div>
-                        <span>Busy (6-10 bookings)</span>
-                      </div>
-                      <div class="legend-item">
-                        <div class="legend-color full"></div>
-                        <span>Very Busy (11+ bookings)</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
@@ -1893,20 +1822,20 @@ if ($selected_pet_id) {
           
           if (stats.total <= 5) {
             indicator.classList.add('available');
-            indicator.textContent = `${stats.total} apt${stats.total !== 1 ? 's' : ''}`;
+            indicator.textContent = `${stats.total}`;
           } else if (stats.total <= 10) {
             indicator.classList.add('busy');
-            indicator.textContent = `${stats.total} apts`;
+            indicator.textContent = `${stats.total}`;
           } else {
             indicator.classList.add('full');
-            indicator.textContent = `${stats.total} apts`;
+            indicator.textContent = `${stats.total}`;
           }
           
           dayElement.appendChild(indicator);
         } else if (dayDate >= today) {
           const indicator = document.createElement('div');
           indicator.className = 'day-indicator available';
-          indicator.textContent = 'Open';
+          indicator.textContent = '0';
           dayElement.appendChild(indicator);
         }
         
