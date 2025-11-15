@@ -5,13 +5,13 @@ session_start();
 if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     // User is logged in, redirect to appropriate page
     if ($_SESSION['role'] === 'admin') {
-        header("Location: ../dashboard/admin/admin.php");
+        header("Location: ../../../../dashboard/admin/admin.php");
         exit;
     } elseif ($_SESSION['role'] === 'groomer') {
-        header("Location: ../groomer_dashboard/groomer_dashboard.php");
+        header("Location: ../../../../groomer_dashboard/home_groomer.php");
         exit;
     } elseif ($_SESSION['role'] === 'receptionist') {
-        header("Location: ../groomer_dashboard/groomer_dashboard.php");
+        header("Location: ../../../../receptionist_dashboard/receptionist_home.php");
         exit;
     } else {
         header("Location: ../../../../index.php");
