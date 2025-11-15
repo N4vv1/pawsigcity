@@ -143,13 +143,21 @@ if ($selected_pet_id) {
         // CRITICAL: Verify pet has required size information
         if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
             $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
+            $missing_fields = [];
+            
+            if (empty($valid_pet['species'])) $missing_fields[] = 'Species';
+            if (empty($valid_pet['size'])) $missing_fields[] = 'Size';
+            if (empty($valid_pet['weight'])) $missing_fields[] = 'Weight';
+            
+            $missing_text = implode(', ', $missing_fields);
+            
             error_log("Pet missing required info:");
             error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
             error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
             error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
             
-            $_SESSION['error'] = "{$pet_name} is missing size information. Please update the pet profile first.";
-            header("Location: ../pets/pet-profile.php");
+            $_SESSION['pet_profile_error'] = "{$pet_name} is missing required information: {$missing_text}. Please complete the profile before booking.";
+            header("Location: ../pets/pet-profile.php?missing_info=1&pet_id=" . urlencode($selected_pet_id));
             exit;
         }
         
@@ -784,17 +792,204 @@ if ($selected_pet_id) {
       box-shadow: none !important;
     }
 
-    .alert-success,
-    .alert-error {
-      padding: 16px 20px;
-      border-radius: 12px;
-      font-weight: 500;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      animation: slideIn 0.3s ease;
-    }
+   /* Enhanced Alert Container */
+.alert-container {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 90%;
+  max-width: 600px;
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.alert-success,
+.alert-error,
+.alert-warning {
+  padding: 18px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 2px solid;
+  position: relative;
+  animation: slideIn 0.3s ease;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #ffeaa7;
+}
+
+.alert-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.alert-message {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.alert-close:hover {
+  opacity: 1;
+}
+/* Missing Pet Info Warning */
+.pet-info-required {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe8a3 100%);
+  border-left: 5px solid #ff9800;
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+}
+
+.pet-info-required i {
+  font-size: 28px;
+  color: #ff9800;
+  margin-top: 2px;
+}
+
+.pet-info-required-content h4 {
+  margin: 0 0 8px 0;
+  color: #e65100;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pet-info-required-content p {
+  margin: 0 0 12px 0;
+  color: #856404;
+  line-height: 1.6;
+}
+
+.pet-info-required-content ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  color: #856404;
+}
+
+.pet-info-required-content ul li {
+  margin-bottom: 6px;
+}
+
+.update-pet-btn {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+.update-pet-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+/* No Packages Available Warning */
+.no-packages-warning {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border-left: 5px solid #dc3545;
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+.no-packages-warning i {
+  font-size: 28px;
+  color: #dc3545;
+  margin-top: 2px;
+}
+
+/* No Groomers Available Warning */
+.no-groomers-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe8a3 100%);
+  border-left: 5px solid #ff9800;
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #856404;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+}
+
+.no-groomers-warning i {
+  font-size: 20px;
+  color: #ff9800;
+}
 
     @keyframes slideIn {
       from {
@@ -1909,22 +2104,117 @@ if ($selected_pet_id) {
   <div class="form-wrapper">
     <div class="page-content">
       
-      <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert-success">
-          <i class="fas fa-check-circle"></i>
-          <?= $_SESSION['success'] ?>
-        </div>
-        <?php unset($_SESSION['success']); ?>
-      <?php endif; ?>
+     <!-- Enhanced Notification Container -->
+<?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
+<div class="alert-container">
+  <?php if (isset($_SESSION['success'])): ?>
+    <div class="alert-success">
+      <i class="fas fa-check-circle alert-icon"></i>
+      <div class="alert-content">
+        <div class="alert-title">Success!</div>
+        <div class="alert-message"><?= htmlspecialchars($_SESSION['success']) ?></div>
+      </div>
+      <button class="alert-close" onclick="this.parentElement.remove()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+  <?php endif; ?>
 
-      <?php if (isset($_SESSION['error'])): ?>
-        <div class="alert-error">
-          <i class="fas fa-exclamation-circle"></i>
-          <?= $_SESSION['error'] ?>
-        </div>
-        <?php unset($_SESSION['error']); ?>
-      <?php endif; ?>
+  <?php if (isset($_SESSION['error'])): ?>
+    <div class="alert-error">
+      <i class="fas fa-exclamation-circle alert-icon"></i>
+      <div class="alert-content">
+        <div class="alert-title">Error</div>
+        <div class="alert-message"><?= htmlspecialchars($_SESSION['error']) ?></div>
+      </div>
+      <button class="alert-close" onclick="this.parentElement.remove()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+  <?php endif; ?>
+</div>
 
+<script>
+// Auto-dismiss alerts after 5 seconds
+setTimeout(() => {
+  const alertContainer = document.querySelector('.alert-container');
+  if (alertContainer) {
+    alertContainer.style.opacity = '0';
+    alertContainer.style.transform = 'translateX(-50%) translateY(-30px)';
+    setTimeout(() => alertContainer.remove(), 300);
+  }
+}, 5000);
+</script>
+<?php endif; ?>
+      <?php
+// Check if pet is missing required information
+if ($selected_pet_id && $valid_pet) {
+    $missing_fields = [];
+    
+    if (empty($valid_pet['species'])) $missing_fields[] = 'Species';
+    if (empty($valid_pet['size'])) $missing_fields[] = 'Size';
+    if (empty($valid_pet['weight'])) $missing_fields[] = 'Weight';
+    
+    if (!empty($missing_fields)) {
+        $pet_name = htmlspecialchars($valid_pet['name']);
+        ?>
+        <div class="pet-info-required">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="pet-info-required-content">
+            <h4><i class="fas fa-paw"></i> <?= $pet_name ?> Needs Profile Update</h4>
+            <p>Before booking an appointment, please complete your pet's profile with the following information:</p>
+            <ul>
+              <?php foreach ($missing_fields as $field): ?>
+                <li><strong><?= $field ?></strong> is required</li>
+              <?php endforeach; ?>
+            </ul>
+            <p style="margin-top: 12px; font-size: 13px; color: #666;">
+              <i class="fas fa-info-circle"></i> This information helps us provide the best grooming service for your pet.
+            </p>
+            <a href="../pets/pet-profile.php" class="update-pet-btn">
+              <i class="fas fa-edit"></i> Update Pet Profile
+            </a>
+          </div>
+        </div>
+        <?php
+        // Exit early to prevent showing the booking form
+        echo '</div></div></body></html>';
+        exit;
+    }
+}
+
+// Check if no packages are available
+if ($selected_pet_id && $valid_pet && isset($packages_result) && pg_num_rows($packages_result) === 0) {
+    ?>
+    <div class="no-packages-warning">
+      <i class="fas fa-box-open"></i>
+      <div>
+        <h4 style="margin: 0 0 8px 0; color: #721c24; font-size: 18px; font-weight: 700;">
+          <i class="fas fa-times-circle"></i> No Packages Available
+        </h4>
+        <p style="margin: 0 0 8px 0; color: #721c24; line-height: 1.6;">
+          Unfortunately, we don't have grooming packages available for:
+        </p>
+        <ul style="margin: 8px 0; padding-left: 20px; color: #721c24;">
+          <li><strong>Species:</strong> <?= htmlspecialchars($valid_pet['species']) ?></li>
+          <li><strong>Size:</strong> <?= htmlspecialchars($valid_pet['size']) ?></li>
+          <li><strong>Weight:</strong> <?= htmlspecialchars($valid_pet['weight']) ?> kg</li>
+        </ul>
+        <p style="margin: 12px 0 0 0; font-size: 14px; color: #721c24;">
+          <i class="fas fa-phone"></i> Please contact us at <strong>0954 476 0085</strong> or message our Facebook page for assistance.
+        </p>
+        <a href="book-appointment.php" class="update-pet-btn" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+          <i class="fas fa-arrow-left"></i> Choose Another Pet
+        </a>
+      </div>
+    </div>
+    <?php
+    echo '</div></div></body></html>';
+    exit;
+}
+?>
       <?php if (!$selected_pet_id): ?>
         <div class="booking-section">
           <h2>Choose Your Pet</h2>
@@ -2064,9 +2354,12 @@ if ($selected_pet_id) {
                 ?>
                 
                 <?php if (!$has_active_groomer && count($groomers_array) > 0): ?>
-                  <div style="margin-top: 10px; padding: 12px; background: #fff3cd; border-left: 4px solid #ff9800; border-radius: 8px; color: #856404;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    All groomers are currently offline. Please try again later or contact support.
+                  <div class="no-groomers-warning">
+                    <i class="fas fa-user-times"></i>
+                    <div>
+                      <strong>All Groomers Offline</strong><br>
+                      <span style="font-size: 13px;">All our groomers are currently unavailable. Please try again later or contact us at <strong>0954 476 0085</strong>.</span>
+                    </div>
                   </div>
                 <?php elseif (count($groomers_array) === 0): ?>
                   <div style="margin-top: 10px; padding: 12px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px; color: #721c24;">
@@ -2200,33 +2493,112 @@ if ($selected_pet_id) {
         generateCalendar();
       });
 
-      // Form submission validation
-      document.getElementById('bookingForm').addEventListener('submit', function(e) {
-        const groomerSelect = document.getElementById('groomer_id');
-        const packageSelect = document.getElementById('package_id');
-        const appointmentDate = document.getElementById('appointment_date_hidden');
-        
-        if (!packageSelect.value) {
-          e.preventDefault();
-          alert('Please select a service package.');
-          return false;
-        }
-        
-        if (!appointmentDate.value) {
-          e.preventDefault();
-          alert('Please select a date and time for your appointment.');
-          return false;
-        }
-        
-        if (groomerSelect) {
-          const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
-          if (selectedOption && selectedOption.disabled) {
-            e.preventDefault();
-            alert('Please select an available groomer.');
-            return false;
-          }
-        }
-      });
+      // Enhanced form submission validation
+document.getElementById('bookingForm')?.addEventListener('submit', function(e) {
+  // Package validation
+  const packageSelect = document.getElementById('package_id');
+  if (packageSelect && !packageSelect.value) {
+    e.preventDefault();
+    showValidationError('Please select a grooming package', 'package_id');
+    return false;
+  }
+  
+  // Groomer validation
+  const groomerSelect = document.getElementById('groomer_id');
+  if (groomerSelect) {
+    if (!groomerSelect.value) {
+      e.preventDefault();
+      showValidationError('Please select a groomer', 'groomer_id');
+      return false;
+    }
+    
+    const selectedOption = groomerSelect.options[groomerSelect.selectedIndex];
+    if (selectedOption && selectedOption.disabled) {
+      e.preventDefault();
+      showValidationError('The selected groomer is currently offline. Please choose another groomer.', 'groomer_id');
+      return false;
+    }
+  }
+  
+  // Date and time validation
+  const appointmentDate = document.getElementById('appointment_date_hidden');
+  if (!appointmentDate || !appointmentDate.value) {
+    e.preventDefault();
+    showValidationError('Please select a date and time for your appointment', 'calendarGrid');
+    return false;
+  }
+});
+
+// Validation error display function
+function showValidationError(message, fieldId) {
+  // Create alert if it doesn't exist
+  let alertContainer = document.querySelector('.alert-container');
+  if (!alertContainer) {
+    alertContainer = document.createElement('div');
+    alertContainer.className = 'alert-container';
+    document.body.appendChild(alertContainer);
+  }
+  
+  // Clear existing alerts
+  alertContainer.innerHTML = '';
+  
+  // Create new alert
+  const alert = document.createElement('div');
+  alert.className = 'alert-warning';
+  alert.innerHTML = `
+    <i class="fas fa-exclamation-triangle alert-icon"></i>
+    <div class="alert-content">
+      <div class="alert-title">Validation Error</div>
+      <div class="alert-message">${message}</div>
+    </div>
+    <button class="alert-close" onclick="this.parentElement.remove()">
+      <i class="fas fa-times"></i>
+    </button>
+  `;
+  
+  alertContainer.appendChild(alert);
+  
+  // Scroll to the field
+  const field = document.getElementById(fieldId);
+  if (field) {
+    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Add highlight effect
+    if (field.tagName === 'SELECT' || field.tagName === 'INPUT') {
+      field.style.border = '2px solid #ff9800';
+      field.focus();
+      setTimeout(() => {
+        field.style.border = '';
+      }, 2000);
+    }
+  }
+  
+  // Auto-dismiss after 5 seconds
+  setTimeout(() => {
+    alert.style.opacity = '0';
+    alert.style.transform = 'translateY(-30px)';
+    setTimeout(() => alert.remove(), 300);
+  }, 5000);
+}
+
+// Real-time validation feedback
+document.getElementById('package_id')?.addEventListener('change', function() {
+  if (this.value) {
+    this.style.borderColor = '#A8E6CF';
+    setTimeout(() => { this.style.borderColor = ''; }, 1000);
+  }
+});
+
+document.getElementById('groomer_id')?.addEventListener('change', function() {
+  const selectedOption = this.options[this.selectedIndex];
+  if (this.value && !selectedOption.disabled) {
+    this.style.borderColor = '#A8E6CF';
+    setTimeout(() => { this.style.borderColor = ''; }, 1000);
+  } else if (selectedOption.disabled) {
+    this.style.borderColor = '#ff9800';
+    showValidationError('This groomer is currently offline. Please select an available groomer.', 'groomer_id');
+  }
+});
 
       // Update submit button when package or groomer changes
       document.getElementById('package_id')?.addEventListener('change', updateSubmitButton);
