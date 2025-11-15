@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once '../db.php';
+require_once '../../db.php';
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
