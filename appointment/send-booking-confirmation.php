@@ -2,7 +2,6 @@
 /**
  * Send Booking Confirmation Email
  * Filename: send-booking-confirmation.php
- * Place this file in: E:\xampp\htdocs\Purrfect-paws\appointment\
  */
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -10,7 +9,7 @@ use PHPMailer\PHPMailer\Exception;
 
 function sendBookingConfirmation($conn, $appointment_id) {
     try {
-        // Fetch appointment details with all related information
+        // Fetch appointment details with FIXED type casting
         $query = "
             SELECT 
                 a.appointment_id,
@@ -24,9 +23,9 @@ function sendBookingConfirmation($conn, $appointment_id) {
                 p.pet_id,
                 p.name as pet_name,
                 p.breed,
-                p.species,
+                p.species::text as species,
                 p.age,
-                p.size,
+                p.size::text as size,
                 p.weight,
                 pkg.name as package_name,
                 pp.price as package_price,
@@ -37,8 +36,8 @@ function sendBookingConfirmation($conn, $appointment_id) {
             JOIN pets p ON a.pet_id = p.pet_id
             JOIN packages pkg ON a.package_id = pkg.package_id
             LEFT JOIN package_prices pp ON a.package_id = pp.package_id 
-                AND p.species = pp.species 
-                AND p.size = pp.size 
+                AND p.species::text = pp.species 
+                AND p.size::text = pp.size 
                 AND p.weight BETWEEN pp.min_weight AND pp.max_weight
             LEFT JOIN groomer g ON a.groomer_id = g.groomer_id
             WHERE a.appointment_id = $1
@@ -46,7 +45,13 @@ function sendBookingConfirmation($conn, $appointment_id) {
         
         $result = pg_query_params($conn, $query, [$appointment_id]);
         
-        if (!$result || pg_num_rows($result) === 0) {
+        if (!$result) {
+            $error = pg_last_error($conn);
+            error_log("Query failed in sendBookingConfirmation: " . $error);
+            return ['success' => false, 'message' => 'Database query failed: ' . $error];
+        }
+        
+        if (pg_num_rows($result) === 0) {
             error_log("Appointment not found: $appointment_id");
             return ['success' => false, 'message' => 'Appointment not found'];
         }
