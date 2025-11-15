@@ -4,7 +4,7 @@ require_once '../db.php';
 
 // Check if user is admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../homepage/main.php");
+    header("Location: ../dashboard/admin/admin.php");
     exit;
 }
 
