@@ -1673,12 +1673,38 @@ if ($selected_pet_id) {
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
+    let closedDates = [];
+
+    // Load closed dates on page initialization
+    async function loadClosedDates() {
+      try {
+        const response = await fetch('get_closed_dates.php');
+        const data = await response.json();
+        
+        if (data.success) {
+          closedDates = data.dates.map(cd => cd.closed_date);
+          console.log('Loaded closed dates:', closedDates);
+        } else {
+          console.error('Error loading closed dates:', data.message);
+        }
+      } catch (error) {
+        console.error('Failed to load closed dates:', error);
+      }
+    }
 
     // Initialize calendar on page load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('Page loaded, fetching data...');
+      
+      // Load closed dates first
+      await loadClosedDates();
+      
+      // Then generate calendar
       generateCalendar();
       setupEventListeners();
       setupMobileMenu();
+      
+      console.log('Dashboard initialized');
     });
 
     function setupEventListeners() {
@@ -1807,7 +1833,7 @@ if ($selected_pet_id) {
       const grid = document.getElementById('calendarGrid');
       grid.innerHTML = '';
       
-      // Add day headers
+      // Add day headers (Sunday to Saturday)
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       days.forEach(day => {
         const header = document.createElement('div');
@@ -1816,18 +1842,21 @@ if ($selected_pet_id) {
         grid.appendChild(header);
       });
       
-      // Get first day of month and number of days
+      // Get first day of month (0 = Sunday, 6 = Saturday)
       const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
       
-      // Get previous month's last days for filling
+      // Get number of days in current month
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      // Get number of days in previous month
       const prevMonth = month === 0 ? 11 : month - 1;
       const prevYear = month === 0 ? year - 1 : year;
       const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
       
-      // Add previous month's days
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Add previous month's trailing days
       for (let i = firstDay - 1; i >= 0; i--) {
         const emptyDay = document.createElement('div');
         emptyDay.className = 'calendar-day other-month';
@@ -1838,26 +1867,35 @@ if ($selected_pet_id) {
         grid.appendChild(emptyDay);
       }
       
-      // Add days of the month
+      // Add current month's days
       for (let day = 1; day <= daysInMonth; day++) {
         const dayDate = new Date(year, month, day);
         dayDate.setHours(0, 0, 0, 0);
+        const dateStr = dayDate.toISOString().split('T')[0];
         
         const dayElement = document.createElement('div');
         dayElement.className = 'calendar-day';
         
+        // Check if date is closed
+        const isClosed = closedDates.includes(dateStr);
+        
         // Check if date is in the past
         if (dayDate < today) {
           dayElement.classList.add('disabled');
+        } else if (isClosed) {
+          // Mark as closed (disabled with special styling)
+          dayElement.classList.add('disabled');
+          dayElement.classList.add('closed');
+          dayElement.title = 'This date is closed for bookings';
         }
         
         // Check if it's today
-        if (dayDate.getTime() === today.getTime()) {
+        if (dayDate.getTime() === today.getTime() && !isClosed) {
           dayElement.classList.add('today');
         }
         
         // Check if this date is selected
-        if (selectedDate && dayDate.getTime() === selectedDate.getTime()) {
+        if (selectedDate && dayDate.getTime() === selectedDate.getTime() && !isClosed) {
           dayElement.classList.add('selected');
         }
         
@@ -1867,44 +1905,58 @@ if ($selected_pet_id) {
         dayNumber.textContent = day;
         dayElement.appendChild(dayNumber);
         
-        // Get appointment count for this date
-        const dateStr = dayDate.toISOString().split('T')[0];
-        const stats = appointmentStats[dateStr];
-        
-        if (stats && dayDate >= today) {
-          const indicator = document.createElement('div');
-          indicator.className = 'day-indicator';
+        if (isClosed) {
+          // Add closed indicator
+          const closedBadge = document.createElement('div');
+          closedBadge.className = 'day-indicator';
+          closedBadge.style.background = '#ff6b6b';
+          closedBadge.style.color = 'white';
+          closedBadge.textContent = 'CLOSED';
+          dayElement.appendChild(closedBadge);
+        } else {
+          // Get appointment count for this date
+          const stats = appointmentStats[dateStr];
           
-          if (stats.total <= 5) {
-            indicator.classList.add('available');
-            indicator.textContent = `${stats.total}`;
-          } else if (stats.total <= 10) {
-            indicator.classList.add('busy');
-            indicator.textContent = `${stats.total}`;
-          } else {
-            indicator.classList.add('full');
-            indicator.textContent = `${stats.total}`;
+          if (stats && dayDate >= today) {
+            const indicator = document.createElement('div');
+            indicator.className = 'day-indicator';
+            
+            if (stats.total <= 5) {
+              indicator.classList.add('available');
+              indicator.textContent = `${stats.total}`;
+            } else if (stats.total <= 10) {
+              indicator.classList.add('busy');
+              indicator.textContent = `${stats.total}`;
+            } else {
+              indicator.classList.add('full');
+              indicator.textContent = `${stats.total}`;
+            }
+            
+            dayElement.appendChild(indicator);
+          } else if (dayDate >= today) {
+            const indicator = document.createElement('div');
+            indicator.className = 'day-indicator available';
+            indicator.textContent = '0';
+            dayElement.appendChild(indicator);
           }
-          
-          dayElement.appendChild(indicator);
-        } else if (dayDate >= today) {
-          const indicator = document.createElement('div');
-          indicator.className = 'day-indicator available';
-          indicator.textContent = '0';
-          dayElement.appendChild(indicator);
         }
         
-        // Add click handler if not disabled
-        if (!dayElement.classList.contains('disabled')) {
+        // Add click handler only if not disabled or closed
+        if (!dayElement.classList.contains('disabled') && !isClosed) {
           dayElement.addEventListener('click', () => selectDate(dayDate, dayElement));
         }
         
         grid.appendChild(dayElement);
       }
       
-      // Add next month's days to fill the grid
-      const totalCells = grid.children.length - 7; // Subtract day headers
-      const remainingCells = 42 - totalCells; // 6 rows * 7 days
+      // Calculate how many cells we've filled so far
+      const totalCellsFilled = firstDay + daysInMonth;
+      
+      // Calculate remaining cells needed to complete 6 rows (42 cells total)
+      const totalCellsNeeded = 42;
+      const remainingCells = totalCellsNeeded - totalCellsFilled;
+      
+      // Add next month's days to fill remaining cells
       for (let day = 1; day <= remainingCells; day++) {
         const nextDay = document.createElement('div');
         nextDay.className = 'calendar-day other-month';
@@ -2045,182 +2097,6 @@ if ($selected_pet_id) {
         }
       }
     }
-    // Add this to your existing book-appointment.php JavaScript section
-
-// Global variables - add this to your existing variables
-let closedDates = [];
-
-// Load closed dates on page initialization
-async function loadClosedDates() {
-  try {
-    const response = await fetch('get_closed_dates.php');
-    const data = await response.json();
-    
-    if (data.success) {
-      closedDates = data.dates.map(cd => cd.closed_date);
-      console.log('Loaded closed dates:', closedDates);
-    } else {
-      console.error('Error loading closed dates:', data.message);
-    }
-  } catch (error) {
-    console.error('Failed to load closed dates:', error);
-  }
-}
-
-// Modified generateCalendar function - replace your existing one
-function generateCalendar() {
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  
-  // Update month display
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
-  document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
-  
-  const grid = document.getElementById('calendarGrid');
-  grid.innerHTML = '';
-  
-  // Add day headers
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  days.forEach(day => {
-    const header = document.createElement('div');
-    header.className = 'calendar-day-header';
-    header.textContent = day;
-    grid.appendChild(header);
-  });
-  
-  // Get first day of month and number of days
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  // Get previous month's last days for filling
-  const prevMonth = month === 0 ? 11 : month - 1;
-  const prevYear = month === 0 ? year - 1 : year;
-  const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
-  
-  // Add previous month's days
-  for (let i = firstDay - 1; i >= 0; i--) {
-    const emptyDay = document.createElement('div');
-    emptyDay.className = 'calendar-day other-month';
-    const dayNum = document.createElement('div');
-    dayNum.className = 'day-number';
-    dayNum.textContent = daysInPrevMonth - i;
-    emptyDay.appendChild(dayNum);
-    grid.appendChild(emptyDay);
-  }
-  
-  // Add days of the month
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dayDate = new Date(year, month, day);
-    dayDate.setHours(0, 0, 0, 0);
-    const dateStr = dayDate.toISOString().split('T')[0];
-    
-    const dayElement = document.createElement('div');
-    dayElement.className = 'calendar-day';
-    
-    // Check if date is closed
-    const isClosed = closedDates.includes(dateStr);
-    
-    // Check if date is in the past
-    if (dayDate < today) {
-      dayElement.classList.add('disabled');
-    } else if (isClosed) {
-      // Mark as closed (disabled with special styling)
-      dayElement.classList.add('disabled');
-      dayElement.classList.add('closed');
-      dayElement.title = 'This date is closed for bookings';
-    }
-    
-    // Check if it's today
-    if (dayDate.getTime() === today.getTime() && !isClosed) {
-      dayElement.classList.add('today');
-    }
-    
-    // Check if this date is selected
-    if (selectedDate && dayDate.getTime() === selectedDate.getTime() && !isClosed) {
-      dayElement.classList.add('selected');
-    }
-    
-    // Day number
-    const dayNumber = document.createElement('div');
-    dayNumber.className = 'day-number';
-    dayNumber.textContent = day;
-    dayElement.appendChild(dayNumber);
-    
-    if (isClosed) {
-      // Add closed indicator
-      const closedBadge = document.createElement('div');
-      closedBadge.className = 'day-indicator';
-      closedBadge.style.background = '#ff6b6b';
-      closedBadge.style.color = 'white';
-      closedBadge.textContent = 'CLOSED';
-      dayElement.appendChild(closedBadge);
-    } else {
-      // Get appointment count for this date (existing code)
-      const stats = appointmentStats[dateStr];
-      
-      if (stats && dayDate >= today) {
-        const indicator = document.createElement('div');
-        indicator.className = 'day-indicator';
-        
-        if (stats.total <= 5) {
-          indicator.classList.add('available');
-          indicator.textContent = `${stats.total}`;
-        } else if (stats.total <= 10) {
-          indicator.classList.add('busy');
-          indicator.textContent = `${stats.total}`;
-        } else {
-          indicator.classList.add('full');
-          indicator.textContent = `${stats.total}`;
-        }
-        
-        dayElement.appendChild(indicator);
-      } else if (dayDate >= today) {
-        const indicator = document.createElement('div');
-        indicator.className = 'day-indicator available';
-        indicator.textContent = '0';
-        dayElement.appendChild(indicator);
-      }
-    }
-    
-    // Add click handler only if not disabled or closed
-    if (!dayElement.classList.contains('disabled') && !isClosed) {
-      dayElement.addEventListener('click', () => selectDate(dayDate, dayElement));
-    }
-    
-    grid.appendChild(dayElement);
-  }
-  
-  // Add next month's days to fill the grid
-  const totalCells = grid.children.length - 7; // Subtract day headers
-  const remainingCells = 42 - totalCells; // 6 rows * 7 days
-  for (let day = 1; day <= remainingCells; day++) {
-    const nextDay = document.createElement('div');
-    nextDay.className = 'calendar-day other-month';
-    const dayNum = document.createElement('div');
-    dayNum.className = 'day-number';
-    dayNum.textContent = day;
-    nextDay.appendChild(dayNum);
-    grid.appendChild(nextDay);
-  }
-}
-
-// Update the DOMContentLoaded event - modify your existing one
-document.addEventListener('DOMContentLoaded', async function() {
-  console.log('Page loaded, fetching data...');
-  
-  // Load closed dates first
-  await loadClosedDates();
-  
-  // Then generate calendar
-  generateCalendar();
-  setupEventListeners();
-  setupMobileMenu();
-  
-  console.log('Dashboard initialized');
-});
-  </script>
+</script>
 </body>
 </html>
