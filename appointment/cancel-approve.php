@@ -6,7 +6,7 @@ $id = $_GET['id'] ?? null;
 $action = $_GET['action'] ?? null;
 
 if (!$id || !in_array($action, ['approve', 'reject'])) {
-    header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php&cancelled=1");
+    header("Location: ../../../dashboard/admin/admin.php");
     exit;
 }
 
@@ -36,6 +36,6 @@ if (!$result) {
 }
 
 // Redirect without query string
-header("Location: http://localhost/purrfect-paws/dashboard/home_dashboard/home.php?show=appointments&cancelled=1");
+header("Location: ../../../dashboard/admin/admin.php");
 exit;
 ?>
