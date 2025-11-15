@@ -3,7 +3,7 @@ session_start();
 require '../db.php';
 
 // ✅ Include PHPMailer and email function
-require_once './vendor/autoload.php';
+require_once '../homepage/login/vendor/autoload.php';
 require_once 'send-booking-confirmation.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
