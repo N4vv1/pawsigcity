@@ -919,6 +919,7 @@ if ($noShowCount > 0) {
           <th style="min-width: 100px;">Groomer</th>
           <th style="min-width: 120px;">Notes</th>
           <th style="min-width: 150px;">Cancel Reason</th>
+          <th style="min-width: 150px;">Reschedule Reason</th>
           <th style="min-width: 100px;">Feedback</th>
           <th style="min-width: 180px;">Actions</th>
         </tr>
@@ -960,16 +961,22 @@ if ($noShowCount > 0) {
             <td>
               <?php if (!empty($row['cancel_reason']) && $row['status'] !== 'cancelled'): ?>
                 <span style="color: red; font-weight: bold; font-size: 0.8rem;">Cancel Request</span>
-              <?php elseif (!empty($row['reschedule_requested']) && is_null($row['reschedule_approved'])): ?>
-                <span style="color: orange; font-weight: bold; font-size: 0.8rem;">Reschedule</span>
+              
+              <?php elseif ($row['reschedule_requested'] === true && $row['reschedule_approved'] !== true): ?>
+                <span style="color: orange; font-weight: bold; font-size: 0.8rem;">Reschedule Request</span>
+              
               <?php elseif ($row['status'] === 'no_show'): ?>
                 <span style="color: red; font-weight: bold; font-size: 0.8rem;">No Show</span>
+              
               <?php elseif ($row['status'] === 'cancelled'): ?>
                 <span style="color: red; font-size: 0.8rem;">Cancelled</span>
+              
               <?php elseif ($row['status'] === 'completed'): ?>
                 <span style="color: green; font-size: 0.8rem;">Completed</span>
+              
               <?php elseif ($row['status'] === 'confirmed'): ?>
                 <span style="color: green; font-size: 0.8rem;">Confirmed</span>
+              
               <?php else: ?>
                 <span style="color: orange; font-size: 0.8rem;">Pending</span>
               <?php endif; ?>
@@ -988,6 +995,15 @@ if ($noShowCount > 0) {
             <td style="font-size: 0.75rem; color: #d32f2f; max-width: 150px;">
               <?php if (!empty($row['cancel_reason'])): ?>
                 <strong></strong> <?= htmlspecialchars(substr($row['cancel_reason'], 0, 60)) ?><?= strlen($row['cancel_reason']) > 60 ? '...' : '' ?>
+              <?php else: ?>
+                <span style="color: #999;">-</span>
+              <?php endif; ?>
+            </td>
+
+            <!-- RESCHEDULE REASON COLUMN - NEW -->
+            <td style="font-size: 0.75rem; color: #ff9800; max-width: 150px;">
+              <?php if (!empty($row['reschedule_reason'])): ?>
+                <strong>Reason:</strong> <?= htmlspecialchars(substr($row['reschedule_reason'], 0, 60)) ?><?= strlen($row['reschedule_reason']) > 60 ? '...' : '' ?>
               <?php else: ?>
                 <span style="color: #999;">-</span>
               <?php endif; ?>
@@ -1028,6 +1044,16 @@ if ($noShowCount > 0) {
 
                 <?php elseif ($status === 'cancelled' || $status === 'no_show' || $status === 'completed'): ?>
                   <a href="../../appointment/delete-appointment.php?id=<?= $appointmentId ?>" class="button danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="return confirm('Delete?')">Delete</a>
+                <?php endif; ?>
+
+                <!-- RESCHEDULE REQUEST BUTTON -->
+                <?php if ($row['reschedule_requested'] === true && $row['reschedule_approved'] !== true): ?>
+                  <a href="../../appointment/reschedule-approve.php?id=<?= $appointmentId ?>" 
+                    class="button secondary" 
+                    style="padding: 5px 10px; font-size: 0.75rem; background-color: #FFE29D;" 
+                    onclick="return confirm('Approve reschedule request?\n\nReason: <?= addslashes($row['reschedule_reason'] ?? 'No reason provided') ?>')">
+                    <i class='bx bx-calendar-check'></i> Approve Reschedule
+                  </a>
                 <?php endif; ?>
 
                 <?php if (!empty($row['cancel_reason']) && $status !== 'cancelled'): ?>
