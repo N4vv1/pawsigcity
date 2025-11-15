@@ -140,34 +140,31 @@ if ($selected_pet_id) {
     if ($valid_pet) {
         error_log("Pet found: " . $valid_pet['name']);
         
-        // CRITICAL: Verify pet has required size information
-        $pet_missing_info = false;
-        $missing_info_message = '';
-        
         if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
-            $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
-            $missing_fields = [];
-            
-            if (empty($valid_pet['species'])) $missing_fields[] = 'Species';
-            if (empty($valid_pet['size'])) $missing_fields[] = 'Size';
-            if (empty($valid_pet['weight'])) $missing_fields[] = 'Weight';
-            
-            $missing_text = implode(', ', $missing_fields);
-            
-            error_log("Pet missing required info:");
-            error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
-            error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
-            error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
-            
-            // Set flag and message (DON'T REDIRECT - let page render with warning)
-            $pet_missing_info = true;
-            $missing_info_message = "{$pet_name} is missing required information: {$missing_text}. Please complete the profile before booking.";
-            $_SESSION['error'] = $missing_info_message;
-            
-            error_log("Pet validation FAILED - Missing info flag set");
-        } else {
-            error_log("Pet validation PASSED - All required info present");
-        }
+        $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
+        $missing_fields = [];
+        
+        if (empty($valid_pet['species'])) $missing_fields[] = 'Species';
+        if (empty($valid_pet['size'])) $missing_fields[] = 'Size';
+        if (empty($valid_pet['weight'])) $missing_fields[] = 'Weight';
+        
+        $missing_text = implode(', ', $missing_fields);
+        
+        error_log("Pet missing required info:");
+        error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
+        error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
+        error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
+        
+        // Store error for display on THIS page (not redirect)
+        $_SESSION['error'] = "{$pet_name} is missing required information: {$missing_text}. Please complete the profile before booking.";
+        
+        // Set the valid_pet to null so the warning box shows
+        $show_missing_info_warning = true;
+    }
+        
+        error_log("Pet validation PASSED");
+    } else {
+        error_log("No pet found with query");
         
         // Check if pet exists at all
         $pet_exists_check = pg_query_params(
