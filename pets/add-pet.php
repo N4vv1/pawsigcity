@@ -1228,7 +1228,6 @@ if (!$pets) {
           <li><a href="../pets/add-pet.php">Add Pet</a></li>
           <li><a href="../appointment/book-appointment.php">Book</a></li>
           <li><a href="../homepage/appointments.php">Appointments</a></li>
-          <li><a href="../ai/templates/index.html">Help Center</a></li>
           <li><a href="../homepage/logout/logout.php">Logout</a></li>
         </ul>
       </li>
