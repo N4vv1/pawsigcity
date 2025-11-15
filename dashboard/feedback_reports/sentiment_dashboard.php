@@ -8,11 +8,47 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
    exit;
 }
 
-// Get sentiment counts
-$positive_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments WHERE sentiment = 'positive'"), 0, 0);
-$neutral_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments WHERE sentiment = 'neutral'"), 0, 0);
-$negative_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments WHERE sentiment = 'negative'"), 0, 0);
-$pending_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments WHERE feedback IS NOT NULL AND (sentiment IS NULL OR sentiment IN ('pending', '', ' '))"), 0, 0);
+// Pagination settings
+$records_per_page = 3;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $records_per_page;
+
+// Date filter
+$date_filter = isset($_GET['date_filter']) ? $_GET['date_filter'] : 'all';
+$custom_start = isset($_GET['custom_start']) ? $_GET['custom_start'] : '';
+$custom_end = isset($_GET['custom_end']) ? $_GET['custom_end'] : '';
+
+// Build date condition
+$date_condition = "";
+switch ($date_filter) {
+    case 'today':
+        $date_condition = "AND DATE(a.appointment_date) = CURRENT_DATE";
+        break;
+    case 'yesterday':
+        $date_condition = "AND DATE(a.appointment_date) = CURRENT_DATE - INTERVAL '1 day'";
+        break;
+    case 'this_week':
+        $date_condition = "AND a.appointment_date >= DATE_TRUNC('week', CURRENT_DATE)";
+        break;
+    case 'this_month':
+        $date_condition = "AND a.appointment_date >= DATE_TRUNC('month', CURRENT_DATE)";
+        break;
+    case 'last_month':
+        $date_condition = "AND a.appointment_date >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month') 
+                          AND a.appointment_date < DATE_TRUNC('month', CURRENT_DATE)";
+        break;
+    case 'custom':
+        if ($custom_start && $custom_end) {
+            $date_condition = "AND DATE(a.appointment_date) BETWEEN '$custom_start' AND '$custom_end'";
+        }
+        break;
+}
+
+// Get sentiment counts (with date filter)
+$positive_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments a WHERE sentiment = 'positive' $date_condition"), 0, 0);
+$neutral_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments a WHERE sentiment = 'neutral' $date_condition"), 0, 0);
+$negative_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments a WHERE sentiment = 'negative' $date_condition"), 0, 0);
+$pending_count = pg_fetch_result(pg_query($conn, "SELECT COUNT(*) FROM appointments a WHERE feedback IS NOT NULL AND (sentiment IS NULL OR sentiment IN ('pending', '', ' ')) $date_condition"), 0, 0);
 
 $total_feedback = $positive_count + $neutral_count + $negative_count + $pending_count;
 
@@ -21,7 +57,17 @@ $positive_percent = $total_feedback > 0 ? round(($positive_count / $total_feedba
 $neutral_percent = $total_feedback > 0 ? round(($neutral_count / $total_feedback) * 100, 1) : 0;
 $negative_percent = $total_feedback > 0 ? round(($negative_count / $total_feedback) * 100, 1) : 0;
 
-// Get all feedback with sentiment
+// Get total count for pagination
+$count_query = "
+    SELECT COUNT(*) as total
+    FROM appointments a
+    WHERE a.feedback IS NOT NULL $date_condition
+";
+$count_result = pg_query($conn, $count_query);
+$total_records = pg_fetch_result($count_result, 0, 0);
+$total_pages = ceil($total_records / $records_per_page);
+
+// Get feedback with pagination
 $feedback_query = "
     SELECT a.appointment_id, a.feedback, a.rating, a.sentiment, a.appointment_date,
            u.first_name, u.middle_name, u.last_name,
@@ -29,8 +75,9 @@ $feedback_query = "
     FROM appointments a
     JOIN users u ON a.user_id = u.user_id
     JOIN pets p ON a.pet_id = p.pet_id
-    WHERE a.feedback IS NOT NULL
+    WHERE a.feedback IS NOT NULL $date_condition
     ORDER BY a.appointment_date DESC
+    LIMIT $records_per_page OFFSET $offset
 ";
 $feedback_result = pg_query($conn, $feedback_query);
 ?>
@@ -142,17 +189,123 @@ $feedback_result = pg_query($conn, $feedback_query);
 
     .header {
       margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
     }
 
-    .header h1 {
+    .header-left h1 {
       font-size: 2rem;
       color: var(--dark-color);
       margin-bottom: 10px;
     }
 
-    .header p {
+    .header-left p {
       color: #666;
       font-size: 0.95rem;
+    }
+
+    .export-btn {
+      background: var(--primary-color);
+      color: var(--dark-color);
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .export-btn:hover {
+      background: #8fd4b3;
+      transform: translateY(-1px);
+    }
+
+    .export-btn i {
+      font-size: 1.1rem;
+    }
+
+    /* DATE FILTER */
+    .date-filter-section {
+      background: var(--white-color);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 30px;
+    }
+
+    .date-filter-section h3 {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      color: var(--dark-color);
+      font-weight: 600;
+    }
+
+    .date-filter-controls {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .filter-group select,
+    .filter-group input[type="date"] {
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background: white;
+      color: var(--dark-color);
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .filter-group select:focus,
+    .filter-group input[type="date"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .apply-filter-btn {
+      padding: 10px 25px;
+      background: var(--dark-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .apply-filter-btn:hover {
+      background: #1a1a1a;
+    }
+
+    .custom-date-inputs {
+      display: none;
+      gap: 10px;
+    }
+
+    .custom-date-inputs.active {
+      display: flex;
     }
 
     /* STATS CARDS */
@@ -353,6 +506,45 @@ $feedback_result = pg_query($conn, $feedback_query);
       font-size: 0.9rem;
     }
 
+    /* PAGINATION */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .pagination a,
+    .pagination span {
+      padding: 8px 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--dark-color);
+      font-weight: 500;
+      transition: all 0.2s;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .pagination a:hover {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .pagination span.current {
+      background: var(--dark-color);
+      color: white;
+      border-color: var(--dark-color);
+    }
+
+    .pagination .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     /* TOAST */
     .toast {
       position: fixed;
@@ -399,6 +591,21 @@ $feedback_result = pg_query($conn, $feedback_query);
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    @media print {
+      .sidebar, .export-btn, .analyze-section, .filter-buttons, .pagination, .apply-filter-btn {
+        display: none !important;
+      }
+      
+      main {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .feedback-section {
+        box-shadow: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -426,8 +633,50 @@ $feedback_result = pg_query($conn, $feedback_query);
 <main>
   <!-- Header -->
   <div class="header">
-    <h1>Feedbacks</h1>
-    <p>Analyze customer feedback</p>
+    <div class="header-left">
+      <h1>Feedbacks</h1>
+      <p>Analyze customer feedback</p>
+    </div>
+    <button class="export-btn" onclick="exportToPDF()">
+      <i class='bx bx-download'></i>
+      Export to PDF
+    </button>
+  </div>
+
+  <!-- Date Filter Section -->
+  <div class="date-filter-section">
+    <h3><i class='bx bx-calendar'></i> Filter by Date</h3>
+    <form method="GET" action="" id="dateFilterForm">
+      <div class="date-filter-controls">
+        <div class="filter-group">
+          <label>Time Period</label>
+          <select name="date_filter" id="dateFilterSelect" onchange="toggleCustomDates()">
+            <option value="all" <?= $date_filter == 'all' ? 'selected' : '' ?>>All Time</option>
+            <option value="today" <?= $date_filter == 'today' ? 'selected' : '' ?>>Today</option>
+            <option value="yesterday" <?= $date_filter == 'yesterday' ? 'selected' : '' ?>>Yesterday</option>
+            <option value="this_week" <?= $date_filter == 'this_week' ? 'selected' : '' ?>>This Week</option>
+            <option value="this_month" <?= $date_filter == 'this_month' ? 'selected' : '' ?>>This Month</option>
+            <option value="last_month" <?= $date_filter == 'last_month' ? 'selected' : '' ?>>Last Month</option>
+            <option value="custom" <?= $date_filter == 'custom' ? 'selected' : '' ?>>Custom Range</option>
+          </select>
+        </div>
+
+        <div class="custom-date-inputs <?= $date_filter == 'custom' ? 'active' : '' ?>" id="customDateInputs">
+          <div class="filter-group">
+            <label>Start Date</label>
+            <input type="date" name="custom_start" value="<?= htmlspecialchars($custom_start) ?>">
+          </div>
+          <div class="filter-group">
+            <label>End Date</label>
+            <input type="date" name="custom_end" value="<?= htmlspecialchars($custom_end) ?>">
+          </div>
+        </div>
+
+        <button type="submit" class="apply-filter-btn">
+          <i class='bx bx-filter-alt'></i> Apply Filter
+        </button>
+      </div>
+    </form>
   </div>
 
   <!-- Stats Cards -->
@@ -472,7 +721,7 @@ $feedback_result = pg_query($conn, $feedback_query);
 
   <!-- Feedback Table -->
   <div class="feedback-section">
-    <h2>All Feedback</h2>
+    <h2>All Feedback (Page <?= $page ?> of <?= $total_pages ?>)</h2>
     
     <div class="filter-buttons">
       <button class="filter-btn active" onclick="filterFeedback('all')">All</button>
@@ -495,10 +744,12 @@ $feedback_result = pg_query($conn, $feedback_query);
           </tr>
         </thead>
         <tbody>
-          <?php while ($row = pg_fetch_assoc($feedback_result)): 
-            $customer_name = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
-            $sentiment = $row['sentiment'] ?? 'pending';
-            $sentiment_class = in_array($sentiment, ['positive', 'neutral', 'negative']) ? $sentiment : 'pending';
+          <?php 
+          if (pg_num_rows($feedback_result) > 0):
+            while ($row = pg_fetch_assoc($feedback_result)): 
+              $customer_name = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+              $sentiment = $row['sentiment'] ?? 'pending';
+              $sentiment_class = in_array($sentiment, ['positive', 'neutral', 'negative']) ? $sentiment : 'pending';
           ?>
           <tr data-sentiment="<?= $sentiment_class ?>">
             <td><?= date('M d, Y', strtotime($row['appointment_date'])) ?></td>
@@ -518,10 +769,58 @@ $feedback_result = pg_query($conn, $feedback_query);
               </span>
             </td>
           </tr>
-          <?php endwhile; ?>
+          <?php 
+            endwhile;
+          else:
+          ?>
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 30px; color: #999;">
+              No feedback found for the selected date range.
+            </td>
+          </tr>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination -->
+    <?php if ($total_pages > 1): ?>
+    <div class="pagination">
+      <?php
+      $query_params = http_build_query(array_merge($_GET, ['page' => '']));
+      $query_params = $query_params ? '&' . $query_params : '';
+      ?>
+      
+      <a href="?page=1<?= $query_params ?>" class="<?= $page <= 1 ? 'disabled' : '' ?>">
+        <i class='bx bx-chevrons-left'></i>
+      </a>
+      
+      <a href="?page=<?= max(1, $page - 1) ?><?= $query_params ?>" class="<?= $page <= 1 ? 'disabled' : '' ?>">
+        <i class='bx bx-chevron-left'></i>
+      </a>
+
+      <?php
+      $start_page = max(1, $page - 2);
+      $end_page = min($total_pages, $page + 2);
+      
+      for ($i = $start_page; $i <= $end_page; $i++):
+      ?>
+        <?php if ($i == $page): ?>
+          <span class="current"><?= $i ?></span>
+        <?php else: ?>
+          <a href="?page=<?= $i ?><?= $query_params ?>"><?= $i ?></a>
+        <?php endif; ?>
+      <?php endfor; ?>
+
+      <a href="?page=<?= min($total_pages, $page + 1) ?><?= $query_params ?>" class="<?= $page >= $total_pages ? 'disabled' : '' ?>">
+        <i class='bx bx-chevron-right'></i>
+      </a>
+      
+      <a href="?page=<?= $total_pages ?><?= $query_params ?>" class="<?= $page >= $total_pages ? 'disabled' : '' ?>">
+        <i class='bx bx-chevrons-right'></i>
+      </a>
+    </div>
+    <?php endif; ?>
   </div>
 </main>
 
@@ -529,6 +828,18 @@ $feedback_result = pg_query($conn, $feedback_query);
 <div id="toast" class="toast"></div>
 
 <script>
+// Toggle custom date inputs
+function toggleCustomDates() {
+  const select = document.getElementById('dateFilterSelect');
+  const customInputs = document.getElementById('customDateInputs');
+  
+  if (select.value === 'custom') {
+    customInputs.classList.add('active');
+  } else {
+    customInputs.classList.remove('active');
+  }
+}
+
 // Filter feedback table
 function filterFeedback(sentiment) {
   const rows = document.querySelectorAll('#feedbackTable tbody tr');
@@ -600,6 +911,11 @@ function runSentimentAnalysis() {
       btn.disabled = false;
       btn.innerHTML = originalText;
     });
+}
+
+// Export to PDF
+function exportToPDF() {
+  window.print();
 }
 </script>
 
