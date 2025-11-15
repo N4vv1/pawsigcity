@@ -72,10 +72,13 @@ if (isset($_GET['delete_id'])) {
         [$delete_id]
     );
     
-    if ($result) {
+    // Check how many rows were affected
+    $affected_rows = pg_affected_rows($result);
+    
+    if ($result && $affected_rows > 0) {
         $_SESSION['success'] = "User archived successfully!";
     } else {
-        $_SESSION['error'] = "Failed to archive user.";
+        $_SESSION['error'] = "Failed to archive user. User ID: " . htmlspecialchars($delete_id) . " (Rows affected: " . $affected_rows . ")";
     }
     header("Location: accounts.php");
     exit;
@@ -949,14 +952,14 @@ if ($show_archived) {
             <td>
               <div class="actions">
                 <?php if ($show_archived): ?>
-                  <button onclick="confirmRestore(<?= $user['user_id'] ?>)" class="edit-btn">
+                  <button onclick="confirmRestore('<?= htmlspecialchars($user['user_id']) ?>')" class="edit-btn">
                     <i class='bx bx-undo'></i> Restore
                   </button>
                 <?php else: ?>
-                  <a href="?id=<?= $user['user_id'] ?>" class="edit-btn">
+                  <a href="?id=<?= urlencode($user['user_id']) ?>" class="edit-btn">
                     <i class='bx bx-edit'></i> Edit
                   </a>
-                  <button onclick="confirmDelete(<?= $user['user_id'] ?>)" class="delete-btn">
+                  <button onclick="confirmDelete('<?= htmlspecialchars($user['user_id']) ?>')" class="delete-btn">
                     <i class='bx bx-archive'></i> Archive
                   </button>
                 <?php endif; ?>
