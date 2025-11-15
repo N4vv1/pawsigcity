@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
 
 // Handle user update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
-    $id         = intval($_POST['user_id']);
+    $id         = $_POST['user_id']; // Keep as-is to match database type
     $first_name  = trim($_POST['first_name']);
     $middle_name = trim($_POST['middle_name']);
     $last_name   = trim($_POST['last_name']);
@@ -57,13 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
     } else {
         $_SESSION['error'] = "Failed to update user.";
     }
-    header("Location: " . $_SERVER['PHP_SELF']);
+    header("Location: accounts.php");
     exit;
 }
 
 // Handle user deletion (soft delete - archive)
 if (isset($_GET['delete_id'])) {
-    $delete_id = intval($_GET['delete_id']);
+    $delete_id = $_GET['delete_id']; // Keep as-is
     
     // Soft delete: set deleted_at timestamp instead of actually deleting
     $result = pg_query_params(
@@ -77,13 +77,13 @@ if (isset($_GET['delete_id'])) {
     } else {
         $_SESSION['error'] = "Failed to archive user.";
     }
-    header("Location: " . $_SERVER['PHP_SELF']);
+    header("Location: accounts.php");
     exit;
 }
 
 // Handle user restore (unarchive)
 if (isset($_GET['restore_id'])) {
-    $restore_id = intval($_GET['restore_id']);
+    $restore_id = $_GET['restore_id']; // Keep as-is
     
     $result = pg_query_params(
         $conn, 
@@ -96,23 +96,26 @@ if (isset($_GET['restore_id'])) {
     } else {
         $_SESSION['error'] = "Failed to restore user.";
     }
-    header("Location: " . $_SERVER['PHP_SELF']);
+    header("Location: accounts.php");
     exit;
 }
 
 // If editing specific user - fetch BEFORE filtering the main list
 $edit_user = null;
 if (isset($_GET['id'])) {
-    $edit_id = intval($_GET['id']);
+    $edit_id = $_GET['id']; // Keep as string to preserve leading zeros if needed
+    
     // Don't filter by deleted_at when fetching for edit
     $result = pg_query_params($conn, "SELECT * FROM users WHERE user_id = $1", [$edit_id]);
     
     // Check if query was successful and returned a row
     if ($result && pg_num_rows($result) > 0) {
         $edit_user = pg_fetch_assoc($result);
+        // Successfully found user, continue to show edit modal
     } else {
-        $_SESSION['error'] = "User not found.";
-        header("Location: " . $_SERVER['PHP_SELF']);
+        // User not found - redirect without showing modal
+        $_SESSION['error'] = "User not found with ID: " . htmlspecialchars($edit_id);
+        header("Location: accounts.php");
         exit;
     }
 }
