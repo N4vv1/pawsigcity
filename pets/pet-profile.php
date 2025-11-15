@@ -2253,22 +2253,6 @@ if (!$pets) {
 </header>
 
 
-<!-- Enhanced Notification Display -->
-<?php if (isset($_SESSION['pet_profile_error'])): ?>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  showNotification('error', 'Missing Information', <?= json_encode($_SESSION['pet_profile_error']) ?>, 5000);
-});
-</script>
-<?php unset($_SESSION['pet_profile_error']); ?>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['success'])): ?>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  showNotification('success', 'Success!', <?= json_encode($_SESSION['success']) ?>, 3000);
-});
-</script>
 <?php if (isset($_SESSION['pet_added_success'])): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -3048,4 +3032,3 @@ document.addEventListener('keydown', function(e) {
 </script>
 </body>
 </html>
-<?php endif; ?>
