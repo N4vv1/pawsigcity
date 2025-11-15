@@ -1335,6 +1335,61 @@ if ($selected_pet_id) {
         font-size: 1.6rem;
       }
     }
+    /* Add these styles to your book-appointment.php style section */
+
+/* Closed date styling */
+.calendar-day.closed {
+  background: linear-gradient(135deg, #ffe0e0 0%, #ffcccc 100%);
+  border-color: #ff6b6b;
+  opacity: 0.7;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.calendar-day.closed::before {
+  content: '✖';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: #ff6b6b;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.calendar-day.closed .day-number {
+  position: relative;
+  z-index: 1;
+}
+
+.calendar-day.closed .day-indicator {
+  position: relative;
+  z-index: 1;
+  background: #ff6b6b !important;
+  color: white !important;
+  font-weight: 700;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day.closed:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #ff6b6b;
+}
+
+/* Legend update - add to your existing legend */
+.legend .legend-item.closed-legend {
+  background: #ffe0e0;
+  border: 2px solid #ff6b6b;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.legend .legend-item.closed-legend i {
+  color: #ff6b6b;
+}
   </style>
 </head>
 <body>
@@ -1990,6 +2045,182 @@ if ($selected_pet_id) {
         }
       }
     }
+    // Add this to your existing book-appointment.php JavaScript section
+
+// Global variables - add this to your existing variables
+let closedDates = [];
+
+// Load closed dates on page initialization
+async function loadClosedDates() {
+  try {
+    const response = await fetch('get_closed_dates.php');
+    const data = await response.json();
+    
+    if (data.success) {
+      closedDates = data.dates.map(cd => cd.closed_date);
+      console.log('Loaded closed dates:', closedDates);
+    } else {
+      console.error('Error loading closed dates:', data.message);
+    }
+  } catch (error) {
+    console.error('Failed to load closed dates:', error);
+  }
+}
+
+// Modified generateCalendar function - replace your existing one
+function generateCalendar() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  
+  // Update month display
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+  
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  
+  // Add day headers
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  days.forEach(day => {
+    const header = document.createElement('div');
+    header.className = 'calendar-day-header';
+    header.textContent = day;
+    grid.appendChild(header);
+  });
+  
+  // Get first day of month and number of days
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Get previous month's last days for filling
+  const prevMonth = month === 0 ? 11 : month - 1;
+  const prevYear = month === 0 ? year - 1 : year;
+  const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
+  
+  // Add previous month's days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const emptyDay = document.createElement('div');
+    emptyDay.className = 'calendar-day other-month';
+    const dayNum = document.createElement('div');
+    dayNum.className = 'day-number';
+    dayNum.textContent = daysInPrevMonth - i;
+    emptyDay.appendChild(dayNum);
+    grid.appendChild(emptyDay);
+  }
+  
+  // Add days of the month
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayDate = new Date(year, month, day);
+    dayDate.setHours(0, 0, 0, 0);
+    const dateStr = dayDate.toISOString().split('T')[0];
+    
+    const dayElement = document.createElement('div');
+    dayElement.className = 'calendar-day';
+    
+    // Check if date is closed
+    const isClosed = closedDates.includes(dateStr);
+    
+    // Check if date is in the past
+    if (dayDate < today) {
+      dayElement.classList.add('disabled');
+    } else if (isClosed) {
+      // Mark as closed (disabled with special styling)
+      dayElement.classList.add('disabled');
+      dayElement.classList.add('closed');
+      dayElement.title = 'This date is closed for bookings';
+    }
+    
+    // Check if it's today
+    if (dayDate.getTime() === today.getTime() && !isClosed) {
+      dayElement.classList.add('today');
+    }
+    
+    // Check if this date is selected
+    if (selectedDate && dayDate.getTime() === selectedDate.getTime() && !isClosed) {
+      dayElement.classList.add('selected');
+    }
+    
+    // Day number
+    const dayNumber = document.createElement('div');
+    dayNumber.className = 'day-number';
+    dayNumber.textContent = day;
+    dayElement.appendChild(dayNumber);
+    
+    if (isClosed) {
+      // Add closed indicator
+      const closedBadge = document.createElement('div');
+      closedBadge.className = 'day-indicator';
+      closedBadge.style.background = '#ff6b6b';
+      closedBadge.style.color = 'white';
+      closedBadge.textContent = 'CLOSED';
+      dayElement.appendChild(closedBadge);
+    } else {
+      // Get appointment count for this date (existing code)
+      const stats = appointmentStats[dateStr];
+      
+      if (stats && dayDate >= today) {
+        const indicator = document.createElement('div');
+        indicator.className = 'day-indicator';
+        
+        if (stats.total <= 5) {
+          indicator.classList.add('available');
+          indicator.textContent = `${stats.total}`;
+        } else if (stats.total <= 10) {
+          indicator.classList.add('busy');
+          indicator.textContent = `${stats.total}`;
+        } else {
+          indicator.classList.add('full');
+          indicator.textContent = `${stats.total}`;
+        }
+        
+        dayElement.appendChild(indicator);
+      } else if (dayDate >= today) {
+        const indicator = document.createElement('div');
+        indicator.className = 'day-indicator available';
+        indicator.textContent = '0';
+        dayElement.appendChild(indicator);
+      }
+    }
+    
+    // Add click handler only if not disabled or closed
+    if (!dayElement.classList.contains('disabled') && !isClosed) {
+      dayElement.addEventListener('click', () => selectDate(dayDate, dayElement));
+    }
+    
+    grid.appendChild(dayElement);
+  }
+  
+  // Add next month's days to fill the grid
+  const totalCells = grid.children.length - 7; // Subtract day headers
+  const remainingCells = 42 - totalCells; // 6 rows * 7 days
+  for (let day = 1; day <= remainingCells; day++) {
+    const nextDay = document.createElement('div');
+    nextDay.className = 'calendar-day other-month';
+    const dayNum = document.createElement('div');
+    dayNum.className = 'day-number';
+    dayNum.textContent = day;
+    nextDay.appendChild(dayNum);
+    grid.appendChild(nextDay);
+  }
+}
+
+// Update the DOMContentLoaded event - modify your existing one
+document.addEventListener('DOMContentLoaded', async function() {
+  console.log('Page loaded, fetching data...');
+  
+  // Load closed dates first
+  await loadClosedDates();
+  
+  // Then generate calendar
+  generateCalendar();
+  setupEventListeners();
+  setupMobileMenu();
+  
+  console.log('Dashboard initialized');
+});
   </script>
 </body>
 </html>

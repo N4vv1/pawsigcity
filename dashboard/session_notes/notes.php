@@ -9,26 +9,26 @@
   <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
 
   <style>
-        :root {
-        --white-color: #fff;
-        --dark-color: #252525;
-        --primary-color: #A8E6CF;
-        --secondary-color: #FFE29D;
-        --light-pink-color: #faf4f5;
-        --medium-gray-color: #ccc;
-        --font-size-s: 0.9rem;
-        --font-size-n: 1rem;
-        --font-size-l: 1.5rem;
-        --font-size-xl: 2rem;
-        --font-weight-semi-bold: 600;
-        --font-weight-bold: 700;
-        --border-radius-s: 8px;
-        --border-radius-circle: 50%;
-        --site-max-width: 1300px;
-        --sidebar-width: 260px;
-        --transition-speed: 0.3s;  /* ADD THIS LINE */
-        --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);  /* ADD THIS LINE */
-      }
+    :root {
+      --white-color: #fff;
+      --dark-color: #252525;
+      --primary-color: #A8E6CF;
+      --secondary-color: #FFE29D;
+      --light-pink-color: #faf4f5;
+      --medium-gray-color: #ccc;
+      --font-size-s: 0.9rem;
+      --font-size-n: 1rem;
+      --font-size-l: 1.5rem;
+      --font-size-xl: 2rem;
+      --font-weight-semi-bold: 600;
+      --font-weight-bold: 700;
+      --border-radius-s: 8px;
+      --border-radius-circle: 50%;
+      --site-max-width: 1300px;
+      --sidebar-width: 260px;
+      --transition-speed: 0.3s;
+      --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
 
     * {
       margin: 0;
@@ -55,7 +55,7 @@
       flex-direction: column;
       gap: 20px;
       overflow-y: auto;
-      transition: transform var(--transition-speed);  /* ADD THIS */
+      transition: transform var(--transition-speed);
       z-index: 999;
     }
 
@@ -136,77 +136,6 @@
       transition: margin-left var(--transition-speed), width var(--transition-speed);
     }
 
-    .header {
-      margin-bottom: 20px;
-    }
-
-    .header h1 {
-      color: var(--dark-color);
-      font-size: 1.8rem;
-      margin-bottom: 5px;
-    }
-
-    .header p {
-      color: #666;
-      font-size: 0.9rem;
-    }
-
-    .model-status {
-      background: linear-gradient(135deg, #d4edda, #c3e6cb);
-      padding: 15px 20px;
-      margin-bottom: 20px;
-      border-radius: var(--border-radius-s);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .model-status.error {
-      background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-    }
-
-    .model-status i {
-      font-size: 28px;
-    }
-
-    .model-info {
-      flex: 1;
-    }
-
-    .model-info h4 {
-      margin: 0 0 5px 0;
-      font-size: 1rem;
-      color: var(--dark-color);
-    }
-
-    .model-info p {
-      margin: 0;
-      font-size: 0.8rem;
-      color: #666;
-    }
-
-    .retrain-btn {
-      background: var(--primary-color);
-      color: var(--dark-color);
-      border: none;
-      padding: 10px 18px;
-      border-radius: var(--border-radius-s);
-      font-weight: var(--font-weight-semi-bold);
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .retrain-btn:hover {
-      background: var(--secondary-color);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -258,6 +187,7 @@
       border-radius: var(--border-radius-s);
       padding: 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
 
     .calendar-header {
@@ -283,19 +213,25 @@
       align-items: center;
     }
 
-    .calendar-nav button {
+    .calendar-nav button, .retrain-btn {
       background: var(--primary-color);
       border: none;
       padding: 10px 18px;
       border-radius: var(--border-radius-s);
       cursor: pointer;
       font-weight: var(--font-weight-semi-bold);
-      transition: background 0.3s;
+      transition: all 0.3s;
       font-size: 0.9rem;
+      color: var(--dark-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .calendar-nav button:hover {
+    .calendar-nav button:hover, .retrain-btn:hover {
       background: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
     .calendar-nav select {
@@ -356,7 +292,6 @@
     .calendar-day.empty:hover {
       transform: none;
       box-shadow: none;
-      border-color: #f0f0f0;
     }
 
     .calendar-day.today {
@@ -371,11 +306,6 @@
       font-weight: var(--font-weight-bold);
       color: var(--dark-color);
       margin-bottom: 8px;
-    }
-
-    .day-stats {
-      font-size: 0.75rem;
-      margin-top: 5px;
     }
 
     .appointments-count {
@@ -411,35 +341,13 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    .peak-level.high {
-      background: #ff6b6b;
-      box-shadow: 0 0 10px #ff6b6b;
-    }
+    .peak-level.high { background: #ff6b6b; box-shadow: 0 0 10px #ff6b6b; }
+    .peak-level.medium { background: #ffd43b; box-shadow: 0 0 10px #ffd43b; }
+    .peak-level.low { background: #51cf66; box-shadow: 0 0 10px #51cf66; }
 
-    .peak-level.medium {
-      background: #ffd43b;
-      box-shadow: 0 0 10px #ffd43b;
-    }
-
-    .peak-level.low {
-      background: #51cf66;
-      box-shadow: 0 0 10px #51cf66;
-    }
-
-    .noshow-high {
-      background: #ffe0e0;
-      color: #c92a2a;
-    }
-
-    .noshow-medium {
-      background: #fff3bf;
-      color: #e67700;
-    }
-
-    .noshow-low {
-      background: #d3f9d8;
-      color: #2b8a3e;
-    }
+    .noshow-high { background: #ffe0e0; color: #c92a2a; }
+    .noshow-medium { background: #fff3bf; color: #e67700; }
+    .noshow-low { background: #d3f9d8; color: #2b8a3e; }
 
     .legend {
       display: flex;
@@ -572,50 +480,99 @@
       line-height: 1.6;
     }
 
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 250px;
-      }
-      .content {
-        margin-left: 200px;
-        width: calc(100% - 200px);
-      }
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-      .calendar-grid {
-        gap: 5px;
-      }
-      .calendar-day {
-        min-height: 80px;
-        padding: 6px;
-      }
+    .closed-dates-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
     }
-        /* MOBILE MENU BUTTON */
-      .mobile-menu-btn {
-        display: none;
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 1001;
-        background: var(--primary-color);
-        border: none;
-        border-radius: 8px;
-        padding: 12px;
-        cursor: pointer;
-        box-shadow: var(--shadow-light);
-        transition: var(--transition-speed);
-      }
+
+    .closed-date-card {
+      background: linear-gradient(135deg, #ffe0e0 0%, #ffcccc 100%);
+      border-left: 4px solid #ff6b6b;
+      padding: 15px;
+      border-radius: var(--border-radius-s);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .closed-date-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .closed-date-info {
+      flex: 1;
+    }
+
+    .closed-date-date {
+      font-size: 1.1rem;
+      font-weight: var(--font-weight-bold);
+      color: #c92a2a;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .closed-date-reason {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .btn-delete {
+      background: #ff6b6b;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      font-weight: var(--font-weight-semi-bold);
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+
+    .btn-delete:hover {
+      background: #c92a2a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(201, 42, 42, 0.3);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      font-style: italic;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: #ddd;
+      margin-bottom: 10px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-light);
+    }
 
     .mobile-menu-btn i {
       font-size: 24px;
       color: var(--dark-color);
     }
 
-    .mobile-menu-btn:hover {
-      background: var(--secondary-color);
-    }
-        /* SIDEBAR OVERLAY */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -633,567 +590,21 @@
       display: block;
       opacity: 1;
     }
-    /* RESPONSIVE DESIGN */
-@media screen and (max-width: 1024px) {
-  .dashboard {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-  }
 
-  .card {
-    padding: 25px;
-    min-height: 200px;
-  }
-}
-
-/* REPLACE your existing media queries with these improved responsive styles */
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Prevent iOS zoom on inputs */
-input, select, button {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  font-size: 16px;
-}
-
-/* TABLET RESPONSIVE (769px - 1024px) */
-@media screen and (min-width: 769px) and (max-width: 1024px) {
-  .content {
-    padding: 30px 25px;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-  }
-
-  .card {
-    padding: 18px;
-  }
-
-  .stat-value {
-    font-size: 1.8rem;
-  }
-
-  .calendar-grid {
-    gap: 8px;
-  }
-
-  .calendar-day {
-    min-height: 90px;
-    padding: 8px;
-  }
-}
-
-/* MOBILE RESPONSIVE (up to 768px) */
-@media screen and (max-width: 768px) {
-  /* Show mobile menu button */
-  .mobile-menu-btn {
-    display: block;
-  }
-
-  /* Hide sidebar by default */
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  /* Show sidebar when active */
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  /* Adjust content area */
-  .content {
-    margin-left: 0;
-    width: 100%;
-    padding: 80px 20px 40px;
-  }
-
-  .header h1 {
-    font-size: 1.5rem;
-  }
-
-  .header p {
-    font-size: 0.85rem;
-  }
-
-  /* Model status responsive */
-  .model-status {
-    flex-direction: column;
-    text-align: center;
-    padding: 12px 15px;
-  }
-
-  .model-info h4 {
-    font-size: 0.95rem;
-  }
-
-  .retrain-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Dashboard grid - stack vertically */
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(150px, 200px)); /* Smaller, fixed-width boxes */
-  gap: 15px;
-  margin-bottom: 20px;
-  justify-content: start; /* Align to the left/top */
-}
-
-.card {
-  background: var(--white-color);
-  border-radius: var(--border-radius-s);
-  padding: 15px; /* Reduced padding */
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  min-height: auto; /* Remove min-height to make it compact */
-}
-
-.card h3 {
-  color: var(--dark-color);
-  font-size: 0.85rem; /* Smaller heading */
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.card-icon {
-  width: 28px; /* Smaller icon container */
-  height: 28px;
-  background: var(--primary-color);
-  border-radius: var(--border-radius-s);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0; /* Prevent icon from shrinking */
-}
-
-.stat-value {
-  font-size: 1.5rem; /* Smaller stat number */
-  font-weight: var(--font-weight-bold);
-  color: var(--primary-color);
-  margin: 5px 0;
-  line-height: 1;
-}
-
-.stat-label {
-  color: #666;
-  font-size: 0.75rem; /* Smaller label */
-  margin: 0;
-}
-
-  /* Calendar responsive */
-  .calendar-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
-
-  .calendar-header h2 {
-    font-size: 1.2rem;
-  }
-
-  .calendar-nav {
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .calendar-nav button {
-    padding: 8px 14px;
-    font-size: 0.85rem;
-  }
-
-  .calendar-nav select {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
-
-  .calendar-grid {
-    gap: 5px;
-  }
-
-  .calendar-day-header {
-    padding: 8px 4px;
-    font-size: 0.75rem;
-  }
-
-  .calendar-day {
-    min-height: 80px;
-    padding: 6px;
-  }
-
-  .day-number {
-    font-size: 0.95rem;
-  }
-
-  .appointments-count,
-  .noshow-badge {
-    font-size: 0.65rem;
-    padding: 2px 6px;
-  }
-
-  .peak-level {
-    width: 12px;
-    height: 12px;
-  }
-
-  /* Legend responsive */
-  .legend {
-    justify-content: center;
-    font-size: 0.75rem;
-  }
-
-  .legend-item {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-  }
-
-  .legend-color {
-    width: 12px;
-    height: 12px;
-  }
-
-  /* Modal responsive */
-  .modal-content {
-    width: 95%;
-    padding: 20px;
-    max-height: 85vh;
-  }
-
-  .modal-header h3 {
-    font-size: 1.1rem;
-  }
-
-  .detail-row {
-    padding: 10px;
-    font-size: 0.85rem;
-    flex-direction: column;
-    gap: 5px;
-    text-align: left;
-  }
-
-  .hour-item {
-    padding: 10px;
-    font-size: 0.85rem;
-  }
-
-  .algorithm-info {
-    font-size: 0.75rem;
-    padding: 12px;
-  }
-}
-
-/* SMALL MOBILE (up to 480px) */
-@media screen and (max-width: 480px) {
-  .content {
-    padding: 70px 15px 30px;
-  }
-
-  .header h1 {
-    font-size: 1.3rem;
-  }
-
-  .sidebar .logo img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .menu a {
-    padding: 8px 10px;
-    font-size: 0.9rem;
-  }
-
-  .menu a i {
-    font-size: 18px;
-  }
-
-  /* Model status */
-  .model-status i {
-    font-size: 24px;
-  }
-
-  .model-info h4 {
-    font-size: 0.9rem;
-  }
-
-  .model-info p {
-    font-size: 0.75rem;
-  }
-
-  .retrain-btn {
-    padding: 8px 14px;
-    font-size: 0.85rem;
-  }
-
-  /* Dashboard cards */
-  .card {
-    padding: 15px;
-  }
-
-  .card h3 {
-    font-size: 0.85rem;
-  }
-
-  .card-icon {
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-  }
-
-  .stat-value {
-    font-size: 1.5rem;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-  }
-
-  /* Calendar */
-  .calendar-container {
-    padding: 15px;
-  }
-
-  .calendar-header h2 {
-    font-size: 1.1rem;
-  }
-
-  .calendar-nav {
-    gap: 5px;
-  }
-
-  .calendar-nav button {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
-
-  .calendar-nav select {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
-
-  .calendar-day-header {
-    padding: 6px 2px;
-    font-size: 0.7rem;
-  }
-
-  .calendar-day {
-    min-height: 70px;
-    padding: 5px;
-  }
-
-  .day-number {
-    font-size: 0.85rem;
-  }
-
-  .appointments-count,
-  .noshow-badge {
-    font-size: 0.6rem;
-    padding: 2px 5px;
-  }
-
-  .peak-level {
-    width: 10px;
-    height: 10px;
-    top: 4px;
-    right: 4px;
-  }
-
-  /* Legend */
-  .legend {
-    padding: 10px;
-    gap: 8px;
-  }
-
-  .legend-item {
-    padding: 3px 6px;
-  }
-
-  /* Modal */
-  .modal-content {
-    padding: 15px;
-  }
-
-  .modal-header {
-    padding-bottom: 10px;
-  }
-
-  .modal-header h3 {
-    font-size: 1rem;
-  }
-
-  .close-modal {
-    font-size: 24px;
-  }
-
-  .detail-row {
-    padding: 8px;
-    font-size: 0.8rem;
-  }
-
-  .hourly-breakdown h4 {
-    font-size: 0.9rem;
-  }
-
-  .hour-item {
-    padding: 8px;
-    font-size: 0.8rem;
-  }
-
-  .algorithm-info {
-    padding: 10px;
-    font-size: 0.7rem;
-  }
-}
-
-/* EXTRA SMALL DEVICES (up to 360px) */
-@media screen and (max-width: 360px) {
-  .content {
-    padding: 70px 10px 30px;
-  }
-
-  .header h1 {
-    font-size: 1.2rem;
-  }
-
-  .calendar-container {
-    padding: 12px;
-  }
-
-  .calendar-grid {
-    gap: 3px;
-  }
-
-  .calendar-day {
-    min-height: 65px;
-    padding: 4px;
-  }
-
-  .day-number {
-    font-size: 0.8rem;
-  }
-
-  .appointments-count,
-  .noshow-badge {
-    font-size: 0.55rem;
-    padding: 1px 4px;
-  }
-
-  .card {
-    padding: 12px;
-  }
-
-  .stat-value {
-    font-size: 1.3rem;
-  }
-
-  .menu a {
-    font-size: 0.85rem;
-    padding: 7px 8px;
-  }
-}
-
-/* LANDSCAPE ORIENTATION (for phones in landscape) */
-@media screen and (max-height: 600px) and (orientation: landscape) {
-  .modal-content {
-    max-height: 95vh;
-    padding: 15px;
-  }
-
-  .sidebar {
-    padding: 15px 10px;
-  }
-
-  .sidebar .logo img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .menu a {
-    padding: 6px 10px;
-  }
-
-  .calendar-day {
-    min-height: 60px;
-  }
-}
-
-/* TOUCH DEVICE OPTIMIZATIONS */
-@media (hover: none) and (pointer: coarse) {
-  /* Better touch targets */
-  .menu a,
-  .dropdown-toggle {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-
-  .calendar-nav button,
-  .retrain-btn {
-    min-height: 44px;
-  }
-
-  .calendar-nav select {
-    min-height: 44px;
-  }
-
-  .calendar-day {
-    cursor: pointer;
-  }
-}
-
-/* PRINT STYLES */
-@media print {
-  .sidebar,
-  .mobile-menu-btn,
-  .sidebar-overlay,
-  .retrain-btn,
-  .calendar-nav,
-  .model-status {
-    display: none !important;
-  }
-
-  .content {
-    margin-left: 0;
-    width: 100%;
-    padding: 20px;
-  }
-
-  .calendar-container {
-    page-break-inside: avoid;
-  }
-
-  .modal {
-    display: none !important;
-  }
-}
-
-/* DESKTOP - Keep original design (1025px and above) */
-@media screen and (min-width: 1025px) {
-  /* Desktop maintains all original styles */
-  /* No changes needed - original design preserved */
-}
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.active { transform: translateX(0); }
+      .content { margin-left: 0; width: 100%; padding: 80px 20px 40px; }
+      .dashboard-grid { grid-template-columns: 1fr; gap: 15px; }
+      .calendar-grid { gap: 5px; }
+      .calendar-day { min-height: 80px; padding: 6px; }
+    }
   </style>
 </head>
 <body>
 
 <?php
-// Load trained models
 $peakHourModel = null;
 $noshowModel = null;
 $modelStatus = 'not_trained';
@@ -1213,12 +624,13 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
     }
 }
 ?>
+
 <button class="mobile-menu-btn" onclick="toggleSidebar()">
   <i class='bx bx-menu'></i>
 </button>
 
-<!-- Sidebar Overlay -->
 <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 <aside class="sidebar">
   <div class="logo">
     <img src="../../homepage/images/pawsig.png" alt="Logo" />
@@ -1226,7 +638,6 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
     <hr>
-
     <div class="dropdown">
       <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
         <span><i class='bx bx-user'></i> Users</span>
@@ -1237,21 +648,17 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
         <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
       </div>
     </div>
-
     <hr>
-
-     <!-- SERVICES DROPDOWN -->
-      <div class="dropdown">
-        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
-          <span><i class='bx bx-spa'></i> Services</span>
-          <i class='bx bx-chevron-down'></i>
-        </a>
-        <div class="dropdown-menu">
-           <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
-          <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
-        </div>
+    <div class="dropdown">
+      <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
+        <span><i class='bx bx-spa'></i> Services</span>
+        <i class='bx bx-chevron-down'></i>
+      </a>
+      <div class="dropdown-menu">
+        <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
+        <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
       </div>
-
+    </div>
     <hr>
     <a href="../session_notes/notes.php" class="active"><i class='bx bx-note'></i>Analytics</a>
     <hr>
@@ -1264,35 +671,32 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
 </aside>
 
 <main class="content">
-
-
   <div class="dashboard-grid">
     <div class="card">
-      <h3>
-        <div class="card-icon"><i class='bx bx-calendar'></i></div>
-        Total Appointments
-      </h3>
+      <h3><div class="card-icon"><i class='bx bx-calendar'></i></div>Total Appointments</h3>
       <div class="stat-value" id="totalAppointments">0</div>
       <div class="stat-label">All time bookings</div>
     </div>
-
     <div class="card">
-      <h3>
-        <div class="card-icon"><i class='bx bx-error'></i></div>
-        No-Show Rate
-      </h3>
+      <h3><div class="card-icon"><i class='bx bx-error'></i></div>No-Show Rate</h3>
       <div class="stat-value" id="noshowRate">0%</div>
       <div class="stat-label"><span id="noshowCount">0</span> no-shows detected</div>
     </div>
-
     <div class="card">
-      <h3>
-        <div class="card-icon"><i class='bx bx-time'></i></div>
-        Peak Hour
-      </h3>
+      <h3><div class="card-icon"><i class='bx bx-time'></i></div>Peak Hour</h3>
       <div class="stat-value" id="peakHour">--:00</div>
       <div class="stat-label" id="peakHourCount">0 appointments</div>
     </div>
+  </div>
+
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <h2><i class='bx bx-calendar-x'></i> Manage Closed Dates</h2>
+      <button onclick="showAddClosedDateModal()" class="retrain-btn">
+        <i class='bx bx-plus-circle'></i> Add Closed Date
+      </button>
+    </div>
+    <div class="closed-dates-list" id="closedDatesList"></div>
   </div>
 
   <div class="calendar-container">
@@ -1326,33 +730,18 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
         <button onclick="changeMonth(1)">Next →</button>
       </div>
     </div>
-
     <div class="calendar-grid" id="calendarGrid"></div>
-
     <div class="legend">
       <div style="font-weight: bold;">Peak Level:</div>
-      <div class="legend-item">
-        <span class="legend-color" style="background: #ff6b6b;"></span>
-        <span>High</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-color" style="background: #ffd43b;"></span>
-        <span>Medium</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-color" style="background: #51cf66;"></span>
-        <span>Low</span>
-      </div>
+      <div class="legend-item"><span class="legend-color" style="background: #ff6b6b;"></span><span>High</span></div>
+      <div class="legend-item"><span class="legend-color" style="background: #ffd43b;"></span><span>Medium</span></div>
+      <div class="legend-item"><span class="legend-color" style="background: #51cf66;"></span><span>Low</span></div>
       <div style="font-weight: bold; margin-left: 20px;">No-Show Risk:</div>
-      <div class="legend-item">
-        <span style="background: #ffe0e0; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">High</span>
-      </div>
-      <div class="legend-item">
-        <span style="background: #fff3bf; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">Medium</span>
-      </div>
-      <div class="legend-item">
-        <span style="background: #d3f9d8; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">Low</span>
-      </div>
+      <div class="legend-item"><span style="background: #ffe0e0; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">High</span></div>
+      <div class="legend-item"><span style="background: #fff3bf; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">Medium</span></div>
+      <div class="legend-item"><span style="background: #d3f9d8; padding: 3px 8px; border-radius: 8px; font-size: 0.75rem;">Low</span></div>
+      <div style="font-weight: bold; margin-left: 20px;">Status:</div>
+      <div class="legend-item"><i class='bx bx-calendar-x' style="color: #ff6b6b; font-size: 1.2rem;"></i><span>Closed Date</span></div>
     </div>
   </div>
 
@@ -1365,15 +754,38 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
       <div id="modalBody"></div>
     </div>
   </div>
+
+  <div id="addClosedDateModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Closed Date</h3>
+        <button class="close-modal" onclick="closeAddClosedDateModal()">×</button>
+      </div>
+      <div style="padding: 20px;">
+        <form id="addClosedDateForm" onsubmit="addClosedDate(event)">
+          <div class="detail-row" style="flex-direction: column; align-items: flex-start;">
+            <label class="detail-label" style="margin-bottom: 8px;">Date</label>
+            <input type="date" id="newClosedDate" required min="<?= date('Y-m-d') ?>"
+                   style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+          </div>
+          <div class="detail-row" style="flex-direction: column; align-items: flex-start; margin-top: 15px;">
+            <label class="detail-label" style="margin-bottom: 8px;">Reason (optional)</label>
+            <input type="text" id="newClosedReason" placeholder="e.g., Holiday, Maintenance"
+                   style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem;">
+          </div>
+          <button type="submit" class="retrain-btn" style="width: 100%; margin-top: 20px; justify-content: center;">
+            <i class='bx bx-save'></i> Add Closed Date
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script>
-  // Load trained models from PHP
   const MODELS_LOADED = <?php echo $modelStatus === 'trained' ? 'true' : 'false'; ?>;
   const peakHourModel = <?php echo $peakHourModel ? json_encode($peakHourModel) : 'null'; ?>;
   const noshowModel = <?php echo $noshowModel ? json_encode($noshowModel) : 'null'; ?>;
-
-  console.log('Models loaded:', MODELS_LOADED);
 
   let appointments = [];
   let currentYear = new Date().getFullYear();
@@ -1390,22 +802,6 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
       }
     }
     return node.value;
-  }
-
-  function showTrainingInstructions() {
-    alert('📚 Training Instructions:\n\n' +
-          '1. Open your terminal/command prompt\n' +
-          '2. Navigate to: ' + window.location.pathname.replace('/notes.php', '') + '\n' +
-          '3. Run: python train_analytics.py\n' +
-          '4. Wait for training visualization to complete\n' +
-          '5. Refresh this page\n\n' +
-          'Models will be saved in the models/ folder.');
-  }
-
-  function showRetrainInstructions() {
-    if (confirm('Retrain ML models with latest data?\n\nThis will:\n• Fetch latest appointments\n• Train new models\n• Show training visualizations\n\nContinue?')) {
-      showTrainingInstructions();
-    }
   }
 
   function updateDashboard() {
@@ -1706,6 +1102,12 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
         <span class="detail-label">No-Show Risk:</span>
         <span class="detail-value"><strong style="color: ${riskColor};">${noshowPct}% (${riskLevel})</strong></span>
       </div>
+      <div class="algorithm-info">
+        <strong>🤖 ML Prediction:</strong> Based on ${historicalCount} historical bookings for this day of the week.
+      </div>
+      <div class="algorithm-info">
+        <strong>💡 Recommendation:</strong> ${recommendation}
+      </div>
     `;
 
     modal.classList.add('show');
@@ -1740,21 +1142,169 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
   }
 
   function toggleDropdown(event) {
-  event.preventDefault();
-  event.stopPropagation(); // ADD THIS LINE
-  const dropdown = event.currentTarget.parentElement;
-  const menu = dropdown.querySelector('.dropdown-menu');
-  menu.classList.toggle('show');
+    event.preventDefault();
+    event.stopPropagation();
+    const dropdown = event.currentTarget.parentElement;
+    const menu = dropdown.querySelector('.dropdown-menu');
+    menu.classList.toggle('show');
   }
-  // Close dropdown if clicked outside
-document.addEventListener('click', function(event) {
-  if (!event.target.closest('.dropdown')) {
-    const dropdowns = document.querySelectorAll('.dropdown-menu');
-    dropdowns.forEach(menu => menu.classList.remove('show'));
-  }
-});
 
-  // Fetch appointments and initialize
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('.dropdown')) {
+      const dropdowns = document.querySelectorAll('.dropdown-menu');
+      dropdowns.forEach(menu => menu.classList.remove('show'));
+    }
+  });
+
+  window.toggleSidebar = function() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar && overlay) {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+  };
+
+  // Closed Dates Management
+  async function loadClosedDates() {
+    try {
+      const response = await fetch('manage_closed_dates.php?action=get');
+      const data = await response.json();
+      
+      if (data.success) {
+        displayClosedDates(data.dates);
+      } else {
+        console.error('Error loading closed dates:', data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  function displayClosedDates(dates) {
+    const container = document.getElementById('closedDatesList');
+    
+    if (dates.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class='bx bx-calendar-check'></i>
+          <p>No closed dates set. All dates are available for booking.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    container.innerHTML = dates.map(date => {
+      const formattedDate = new Date(date.closed_date + 'T00:00:00').toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      return `
+        <div class="closed-date-card">
+          <div class="closed-date-info">
+            <div class="closed-date-date">
+              <i class='bx bx-calendar-x'></i>
+              ${formattedDate}
+            </div>
+            <div class="closed-date-reason">
+              ${date.reason || 'No reason specified'}
+            </div>
+          </div>
+          <div class="closed-date-actions">
+            <button class="btn-delete" onclick="deleteClosedDate(${date.closed_date_id}, '${formattedDate}')">
+              <i class='bx bx-trash'></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function showAddClosedDateModal() {
+    document.getElementById('addClosedDateModal').classList.add('show');
+  }
+
+  function closeAddClosedDateModal() {
+    document.getElementById('addClosedDateModal').classList.remove('show');
+    document.getElementById('addClosedDateForm').reset();
+  }
+
+  async function addClosedDate(event) {
+    event.preventDefault();
+    
+    const closedDate = document.getElementById('newClosedDate').value;
+    const reason = document.getElementById('newClosedReason').value;
+    
+    if (!closedDate) {
+      alert('Please select a date');
+      return;
+    }
+    
+    try {
+      const formData = new FormData();
+      formData.append('action', 'add');
+      formData.append('closed_date', closedDate);
+      formData.append('reason', reason);
+      formData.append('created_by', 'admin');
+      
+      const response = await fetch('manage_closed_dates.php', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        closeAddClosedDateModal();
+        loadClosedDates();
+        alert('Closed date added successfully!');
+      } else {
+        alert('Error: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to add closed date');
+    }
+  }
+
+  async function deleteClosedDate(closedDateId, formattedDate) {
+    if (!confirm(`Are you sure you want to remove the closed date for ${formattedDate}?`)) {
+      return;
+    }
+    
+    try {
+      const formData = new FormData();
+      formData.append('action', 'delete');
+      formData.append('closed_date_id', closedDateId);
+      
+      const response = await fetch('manage_closed_dates.php', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        loadClosedDates();
+        alert('Closed date removed successfully!');
+      } else {
+        alert('Error: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to remove closed date');
+    }
+  }
+
+  document.getElementById('addClosedDateModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeAddClosedDateModal();
+  });
+
+  // Initialize on page load
   window.addEventListener('DOMContentLoaded', async () => {
     console.log('Page loaded, fetching appointments...');
     
@@ -1786,35 +1336,10 @@ document.addEventListener('click', function(event) {
     
     updateDashboard();
     renderCalendar();
+    loadClosedDates();
     
     console.log('Dashboard initialized');
   });
-
-  window.toggleSidebar = function() {
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.querySelector('.sidebar-overlay');
-  
-  if (sidebar && overlay) {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-  }
-};
-document.addEventListener('DOMContentLoaded', function() {
-  // ...your existing code...
-
-  // Close sidebar when clicking a link on mobile
-  const menuLinks = document.querySelectorAll('.menu a:not(.dropdown-toggle)');
-  menuLinks.forEach(link => {
-    link.addEventListener('click', function() {
-      if (window.innerWidth <= 768) {
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.querySelector('.sidebar-overlay');
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-      }
-    });
-  });
-});
 </script>
 
 </body>
