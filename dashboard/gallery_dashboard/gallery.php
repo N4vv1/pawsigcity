@@ -15,7 +15,7 @@ $result = pg_query($conn, $query);
   <title>Admin | Pet Gallery</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig2.png">
 
   <style>
     :root {
@@ -672,7 +672,7 @@ $result = pg_query($conn, $query);
 <!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig2.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
@@ -718,7 +718,6 @@ $result = pg_query($conn, $query);
   <!-- Header -->
   <div class="header">
     <h1>Pet Gallery</h1>
-    <p>Manage your pet gallery images</p>
   </div>
   
   <!-- Add Button -->

@@ -633,7 +633,7 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
 
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig.png" alt="Logo" />
+    <img src="../../homepage/images/pawsig2.png" alt="Logo" />
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>
