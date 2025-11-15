@@ -105,7 +105,7 @@ if ($noShowCount > 0) {
       --white-color: #fff;
       --dark-color: #252525;
       --primary-color: #A8E6CF;
-      --secondary-color: #FFE29D;
+      --secondary-color: #016B61;
       --light-pink-color: #faf4f5;
       --medium-gray-color: #ccc;
       --font-size-s: 0.9rem;
@@ -558,19 +558,12 @@ if ($noShowCount > 0) {
       </a>
       <div class="dropdown-menu">
         <a href="../manage_accounts/accounts.php"><i class='bx bx-user-circle'></i> All Users</a>
-        <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-scissors'></i> Groomers</a>
+        <a href="../groomer_management/groomer_accounts.php"><i class='bx bx-user-circle'></i> Groomers</a>
       </div>
     </div>
     <hr>
     <div class="dropdown">
-      <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleDropdown(event)">
-        <span><i class='bx bx-spa'></i> Services</span>
-        <i class='bx bx-chevron-down'></i>
-      </a>
-      <div class="dropdown-menu">
-        <a href="../service/services.php"><i class='bx bx-list-ul'></i> All Services</a>
-        <a href="../service/manage_prices.php"><i class='bx bx-dollar'></i> Manage Pricing</a>
-      </div>
+        <a href="../service/services.php"><i class='bx bx-list-ul'></i>Services</a>
     </div>
     <hr>
     <a href="../session_notes/notes.php"><i class='bx bx-note'></i>Analytics</a>
