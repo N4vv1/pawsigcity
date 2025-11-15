@@ -2269,6 +2269,33 @@ document.addEventListener('DOMContentLoaded', function() {
   showNotification('success', 'Success!', <?= json_encode($_SESSION['success']) ?>, 3000);
 });
 </script>
+<?php if (isset($_SESSION['pet_added_success'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  showNotification('success', 'Pet Added Successfully! 🎉', <?= json_encode($_SESSION['pet_added_success']) ?>, 4000);
+  
+  // Optional: Scroll to the newly added pet (last pet card)
+  setTimeout(() => {
+    const petCards = document.querySelectorAll('.pet-card');
+    if (petCards.length > 0) {
+      const lastPetCard = petCards[petCards.length - 1];
+      lastPetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Add a highlight effect to the new pet
+      lastPetCard.style.border = '3px solid #A8E6CF';
+      lastPetCard.style.boxShadow = '0 0 20px rgba(168, 230, 207, 0.6)';
+      
+      // Remove highlight after 3 seconds
+      setTimeout(() => {
+        lastPetCard.style.border = '';
+        lastPetCard.style.boxShadow = '';
+      }, 3000);
+    }
+  }, 500);
+});
+</script>
+<?php unset($_SESSION['pet_added_success']); ?>
+<?php endif; ?>
 <?php unset($_SESSION['success']); ?>
 <?php endif; ?>
 

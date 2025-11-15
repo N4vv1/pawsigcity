@@ -156,15 +156,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                            VALUES ($1, $2, $3, $4)";
         pg_query_params($conn, $query_behavior, [$pet_id, $behavior_notes, $nail_trimming, $haircut_style]);
 
-        // ✅ Success message with optional weight warning
-        $success_message = "✅ Pet '{$name}' added successfully!";
-        
+        // ✅ Success message with pet creation notification
+        $success_message = "{$name} has been added to your pet family! You can now book grooming appointments.";
+
+        // Add weight warnings if any
         if (!empty($weight_warnings)) {
             $success_message .= " Note: " . implode(' ', $weight_warnings);
         }
-        
-        $_SESSION['success'] = $success_message;
-        header("Location: pet-profile.php");
+
+        // Use the pet_added_success session variable for special notification
+        $_SESSION['pet_added_success'] = $success_message;
+        header("Location: pet-profile.php?pet_added=1&new_pet_id=" . urlencode($pet_id));
         exit;
     } else {
         $_SESSION['error'] = "❌ Error adding pet: " . pg_last_error($conn);

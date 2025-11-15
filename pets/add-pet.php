@@ -202,30 +202,6 @@ if (!$pets) {
     margin-left: 4px;
   } 
 
-    /* SIZE GUIDE BOX */
-  .size-guide {
-    grid-column: 1 / -1;
-    background: linear-gradient(135deg, #e8f5f9 0%, #f0f9ff 100%);
-    border-left: 5px solid #2196F3;
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin: 10px 0;
-  }
-
-  .size-guide h4 {
-    color: #1565C0;
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
-
-  .size-guide ul {
-    margin: 0;
-    padding-left: 20px;
-    color: #424242;
-    font-size: 14px;
-    line-height: 1.8;
-  }
-
   /* SUBMIT BUTTON */
   .submit-button {
     grid-column: 1 / -1;
@@ -458,6 +434,380 @@ if (!$pets) {
     to { width: 100%; }
   }
 
+/* ============================================
+   SIZE GUIDE MODAL STYLES
+   ============================================ */
+.size-guide-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 10002;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.size-guide-modal.active {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.size-guide-content {
+  background: #ffffff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.size-guide-header {
+  background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
+  padding: 28px 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.size-guide-header-content h2 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #252525;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.size-guide-header-content p {
+  margin: 0;
+  color: #2a2a2a;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.close-size-guide {
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #252525;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.close-size-guide:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: rotate(90deg);
+}
+
+.size-guide-body {
+  padding: 32px;
+  overflow-y: auto;
+  max-height: calc(90vh - 140px);
+}
+
+/* Size Categories */
+.size-category {
+  margin-bottom: 40px;
+}
+
+.size-category:last-child {
+  margin-bottom: 0;
+}
+
+.size-category h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2a2a2a;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #f0f0f0;
+}
+
+.size-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.size-card {
+  border: 3px solid #e8e8e8;
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: #fafafa;
+}
+
+.size-card:hover {
+  border-color: #A8E6CF;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(168, 230, 207, 0.25);
+  transform: translateY(-4px);
+}
+
+.size-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.size-card-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #2a2a2a;
+}
+
+.size-card-header i {
+  color: #A8E6CF;
+  font-size: 24px;
+}
+
+.size-weight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: #f0f9f6;
+  border-radius: 10px;
+  border-left: 4px solid #A8E6CF;
+}
+
+.size-weight i {
+  color: #16a085;
+  font-size: 18px;
+}
+
+.size-weight span {
+  font-weight: 700;
+  color: #16a085;
+  font-size: 16px;
+}
+
+.size-description {
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.size-examples {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.7;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.size-examples strong {
+  color: #2a2a2a;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Info Box */
+.size-info-box {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+  border: 3px solid #90caf9;
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.size-info-box h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1565c0;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.size-info-box h4 i {
+  font-size: 22px;
+}
+
+.size-info-box ul {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.size-info-box li {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.size-info-box li:last-child {
+  margin-bottom: 0;
+}
+
+/* Size Guide Button */
+.size-guide-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.size-guide-btn {
+  background: linear-gradient(135deg, #A8E6CF 0%, #91dbc3 100%);
+  color: #252525;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(168, 230, 207, 0.3);
+}
+
+.size-guide-btn:hover {
+  background: linear-gradient(135deg, #91dbc3 0%, #7ed6ad 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(168, 230, 207, 0.5);
+}
+
+.size-guide-btn i {
+  font-size: 16px;
+}
+
+.size-help-text {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: #666;
+  margin-top: -12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #A8E6CF;
+}
+
+.size-help-text i {
+  color: #A8E6CF;
+  font-size: 14px;
+}
+
+/* Quick Reference */
+.quick-size-reference {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 3px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.quick-size-reference h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2a2a2a;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-size-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.quick-size-item {
+  background: white;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.quick-size-item:hover {
+  border-color: #A8E6CF;
+  box-shadow: 0 4px 12px rgba(168, 230, 207, 0.2);
+  transform: translateY(-2px);
+}
+
+.quick-size-item .size-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #2a2a2a;
+  margin-bottom: 4px;
+}
+
+.quick-size-item .size-range {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Scrollbar Styling */
+.size-guide-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.size-guide-body::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.size-guide-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #A8E6CF 0%, #91dbc3 100%);
+  border-radius: 10px;
+}
+
+.size-guide-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #91dbc3 0%, #7ed6ad 100%);
+}
+
   /* RESPONSIVE */
   @media (max-width: 1024px) {
     .form-grid {
@@ -465,8 +815,18 @@ if (!$pets) {
     }
     .form-grid textarea,
     .form-section-title,
-    .submit-button {
+    .submit-button,
+    .size-help-text,
+    .quick-size-reference {
       grid-column: 1 / -1;
+    }
+    
+    .size-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .quick-size-grid {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
@@ -476,7 +836,9 @@ if (!$pets) {
     }
     .form-grid textarea,
     .form-section-title,
-    .submit-button {
+    .submit-button,
+    .size-help-text,
+    .quick-size-reference {
       grid-column: 1 / -1;
     }
     .back-button {
@@ -505,6 +867,30 @@ if (!$pets) {
     .modal-btn {
       padding: 10px 20px;
       font-size: 14px;
+    }
+    
+    .size-guide-content {
+      max-width: 95%;
+    }
+    
+    .size-guide-header {
+      padding: 20px;
+    }
+    
+    .size-guide-header-content h2 {
+      font-size: 22px;
+    }
+    
+    .size-guide-body {
+      padding: 20px;
+    }
+    
+    .size-cards {
+      grid-template-columns: 1fr;
+    }
+    
+    .quick-size-grid {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
@@ -657,9 +1043,7 @@ if (!$pets) {
   }
 }
 
-/* ========================================
-   MOBILE STYLES (Click-based)
-   ======================================== */
+/* MOBILE STYLES */
 @media (max-width: 1024px) {
   .hamburger {
     display: flex;
@@ -768,7 +1152,6 @@ if (!$pets) {
     font-size: 1rem;
   }
 
-  /* Mobile dropdown */
   .dropdown-menu {
     position: relative;
     display: none;
@@ -835,7 +1218,6 @@ if (!$pets) {
   }
 }
 
-/* Hide hamburger on desktop */
 @media (min-width: 1025px) {
   .hamburger {
     display: none;
@@ -845,7 +1227,8 @@ if (!$pets) {
     display: none;
   }
 }
-/* Floating Chat Button - Bottom Right */
+
+/* Floating Chat Button */
 .floating-chat-btn {
   position: fixed;
   bottom: 30px;
@@ -912,16 +1295,6 @@ if (!$pets) {
 
 .chat-modal.active {
   display: flex;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .chat-modal-content {
@@ -937,18 +1310,6 @@ if (!$pets) {
   animation: slideUp 0.3s ease;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Chat Header */
 .chat-modal-header {
   background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
   padding: 20px 24px;
@@ -966,11 +1327,6 @@ if (!$pets) {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.chat-modal-header h3 i {
-  font-size: 24px;
-  animation: float 3s ease-in-out infinite;
 }
 
 .close-chat-modal {
@@ -993,7 +1349,6 @@ if (!$pets) {
   transform: rotate(90deg);
 }
 
-/* Chat Body */
 .chat-modal-body {
   padding: 24px;
   overflow-y: auto;
@@ -1001,7 +1356,6 @@ if (!$pets) {
   background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
 }
 
-/* Messages */
 .chat-messages {
   display: flex;
   flex-direction: column;
@@ -1075,7 +1429,6 @@ if (!$pets) {
   flex-direction: row-reverse;
 }
 
-/* Welcome Message */
 .welcome-message {
   background: linear-gradient(135deg, #A8E6CF 0%, #7ed6ad 100%);
   border-radius: 16px;
@@ -1109,7 +1462,6 @@ if (!$pets) {
   line-height: 1.6;
 }
 
-/* Quick Questions */
 .quick-questions-section {
   margin-top: 20px;
 }
@@ -1122,11 +1474,6 @@ if (!$pets) {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.questions-header i {
-  color: #A8E6CF;
-  font-size: 16px;
 }
 
 .question-category {
@@ -1143,11 +1490,6 @@ if (!$pets) {
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.category-label i {
-  color: #A8E6CF;
-  font-size: 12px;
 }
 
 .question-buttons {
@@ -1176,11 +1518,6 @@ if (!$pets) {
   box-shadow: 0 4px 12px rgba(168, 230, 207, 0.4);
 }
 
-.question-btn:active {
-  transform: translateY(0);
-}
-
-/* Typing Indicator */
 .typing-indicator {
   display: none;
   align-items: center;
@@ -1229,7 +1566,6 @@ if (!$pets) {
   }
 }
 
-/* Scrollbar */
 .chat-modal-body::-webkit-scrollbar {
   width: 6px;
 }
@@ -1242,82 +1578,7 @@ if (!$pets) {
   background: #A8E6CF;
   border-radius: 3px;
 }
-
-.chat-modal-body::-webkit-scrollbar-thumb:hover {
-  background: #7ed6ad;
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-  .chat-modal-content {
-    max-width: 95%;
-    max-height: 85vh;
-  }
-
-  .chat-modal-header {
-    padding: 16px 20px;
-  }
-
-  .chat-modal-header h3 {
-    font-size: 18px;
-  }
-
-  .chat-modal-body {
-    padding: 20px;
-  }
-
-  .message-bubble {
-    font-size: 13px;
-    max-width: 85%;
-  }
-
-  .floating-chat-btn {
-    width: 60px;
-    height: 60px;
-    bottom: 20px;
-    right: 20px;
-  }
-
-  .floating-chat-btn i {
-    font-size: 26px;
-  }
-
-  .question-btn {
-    font-size: 12px;
-    padding: 8px 14px;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@media (max-width: 480px) {
-  .chat-modal-content {
-    border-radius: 20px;
-  }
-
-  .welcome-message {
-    padding: 16px;
-  }
-
-  .welcome-message h4 {
-    font-size: 16px;
-  }
-
-  .message-avatar {
-    width: 32px;
-    height: 32px;
-  }
-}
 </style>
-
-
 
 </head>
 <body>
@@ -1358,6 +1619,159 @@ if (!$pets) {
   </nav>
 </header>
 
+<!-- Size Guide Modal -->
+<div class="size-guide-modal" id="sizeGuideModal">
+  <div class="size-guide-content">
+    <div class="size-guide-header">
+      <div class="size-guide-header-content">
+        <h2><i class="fas fa-paw"></i> Pet Size & Weight Guide</h2>
+        <p>Choose the right size for accurate grooming prices</p>
+      </div>
+      <button class="close-size-guide" onclick="closeSizeGuide()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="size-guide-body">
+      <!-- Dog Sizes -->
+      <div class="size-category">
+        <h3><i class="fas fa-dog"></i> Dog Sizes</h3>
+        <div class="size-cards">
+          <div class="size-card">
+            <div class="size-card-header">
+              <h4>Small</h4>
+              <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="size-weight">
+              <i class="fas fa-balance-scale"></i>
+              <span>0-10 kg</span>
+            </div>
+            <p class="size-description">Toy and small breeds</p>
+            <div class="size-examples">
+              <strong>Examples:</strong>
+              Chihuahua, Pomeranian, Yorkshire Terrier, Shih Tzu, Maltese, Toy Poodle
+            </div>
+          </div>
+          
+          <div class="size-card">
+            <div class="size-card-header">
+              <h4>Medium</h4>
+              <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="size-weight">
+              <i class="fas fa-balance-scale"></i>
+              <span>11-20 kg</span>
+            </div>
+            <p class="size-description">Medium-sized breeds</p>
+            <div class="size-examples">
+              <strong>Examples:</strong>
+              Beagle, Cocker Spaniel, Border Collie, Bulldog, French Bulldog, Corgi
+            </div>
+          </div>
+          
+          <div class="size-card">
+            <div class="size-card-header">
+              <h4>Large</h4>
+              <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="size-weight">
+              <i class="fas fa-balance-scale"></i>
+              <span>21-30 kg</span>
+            </div>
+            <p class="size-description">Large breeds</p>
+            <div class="size-examples">
+              <strong>Examples:</strong>
+              Labrador Retriever, Golden Retriever, German Shepherd, Boxer, Siberian Husky
+            </div>
+          </div>
+          
+          <div class="size-card">
+            <div class="size-card-header">
+              <h4>X-Large</h4>
+              <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="size-weight">
+              <i class="fas fa-balance-scale"></i>
+              <span>31-40 kg</span>
+            </div>
+            <p class="size-description">Extra large breeds</p>
+            <div class="size-examples">
+              <strong>Examples:</strong>
+              Rottweiler, Doberman Pinscher, Akita, Alaskan Malamute, Weimaraner
+            </div>
+          </div>
+          
+          <div class="size-card">
+            <div class="size-card-header">
+              <h4>XX-Large</h4>
+              <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="size-weight">
+              <i class="fas fa-balance-scale"></i>
+              <span>41-50 kg</span>
+            </div>
+            <p class="size-description">Giant breeds</p>
+            <div class="size-examples">
+              <strong>Examples:</strong>
+              Great Dane, Saint Bernard, Mastiff, Newfoundland, Bernese Mountain Dog
+            </div>
+          </div>
+          
+          <div class="size-card">
+            <div class="size-card-header">
+              <h4>XXX-Large</h4>
+              <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="size-weight">
+              <i class="fas fa-balance-scale"></i>
+              <span>51+ kg</span>
+            </div>
+            <p class="size-description">Super giant breeds</p>
+            <div class="size-examples">
+              <strong>Examples:</strong>
+              English Mastiff, Irish Wolfhound, Leonberger, Great Pyrenees, Caucasian Shepherd
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cat Sizes -->
+      <div class="size-category">
+        <h3><span style="font-size: 24px;">🐱</span> Cat Sizes</h3>
+        <div class="size-cards">
+          <div class="size-card">
+            <div class="size-card-header">
+              <h4>All Sizes</h4>
+              <i class="fas fa-weight-hanging"></i>
+            </div>
+            <div class="size-weight">
+              <i class="fas fa-balance-scale"></i>
+              <span>0-10 kg</span>
+            </div>
+            <p class="size-description">Most domestic cat breeds</p>
+            <div class="size-examples">
+              <strong>Examples:</strong>
+              Persian, Siamese, Maine Coon, British Shorthair, Ragdoll, Bengal
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Important Notes -->
+      <div class="size-info-box">
+        <h4><i class="fas fa-info-circle"></i> Important Notes</h4>
+        <ul>
+          <li><strong>Weights are approximate ranges.</strong> Your pet's actual weight determines the final size category.</li>
+          <li><strong>Mixed breeds</strong> should be sized based on their current weight, not parent breeds.</li>
+          <li><strong>Grooming prices vary by size.</strong> Larger pets require more time and resources.</li>
+          <li><strong>If unsure,</strong> our staff can help determine the correct size during your visit.</li>
+          <li><strong>Weight matters most.</strong> Always weigh your pet for the most accurate size category.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Success Modal -->
 <div class="success-modal-overlay" id="successModalOverlay">
   <div class="success-modal">
@@ -1381,121 +1795,484 @@ if (!$pets) {
 </div>
 
 <div class="add-pet-container">
-
   <div class="form-wrapper">
-      <form method="POST" action="add-pet-handler.php" enctype="multipart/form-data" id="addPetForm">
-        <div class="form-grid">
-          
-          <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-error">
-              <i class="fas fa-exclamation-circle"></i>
-              <?= $_SESSION['error'] ?>
-            </div>
-            <?php unset($_SESSION['error']); ?>
-          <?php endif; ?>
-
-          <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
-
-          <label>Name:<span class="required">*</span>
-            <input type="text" name="name" placeholder="Enter pet name" required>
-          </label>
-
-          <label>Species:<span class="required">*</span>
-            <select name="species" required>
-              <option value="">Select Species</option>
-              <option value="Dog">Dog</option>
-              <option value="Cat">Cat</option>
-            </select>
-          </label>
-
-          <label>Breed:<span class="required">*</span>
-            <input type="text" name="breed" placeholder="Enter breed" required>
-          </label>
-
-          <label>Gender:<span class="required">*</span>
-            <select name="gender" required>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </label>
-
-          <label>Age:
-            <input type="text" name="age" placeholder="Enter age (e.g., 2)">
-          </label>
-
-          <label>Birthday:
-            <input type="date" name="birthday">
-          </label>
-
-          <label>Color:
-            <input type="text" name="color" placeholder="Enter color">
-          </label>
-
-          <label>Photo:
-            <input type="file" name="photo" accept="image/*" onchange="previewImage(event)">
-            <div class="preview-wrapper">
-              <img id="preview" src="#" alt="Selected Photo" />
-            </div>
-          </label>
-
-          <span class="form-section-title"><i class="fas fa-ruler-combined"></i> Size & Weight</span>
-
-          <div class="size-guide">
-            <h4><i class="fas fa-info-circle"></i> Size Guidelines:</h4>
-            <ul>
-              <li><strong>Small:</strong> Under 10 kg (Chihuahua, Pomeranian, Shih Tzu, etc.)</li>
-              <li><strong>Medium:</strong> 10-25 kg (Beagle, Cocker Spaniel, Bulldog, etc.)</li>
-              <li><strong>Large:</strong> 25+ kg (Golden Retriever, German Shepherd, Labrador, etc.)</li>
-            </ul>
+    <form method="POST" action="add-pet-handler.php" enctype="multipart/form-data" id="addPetForm">
+      <div class="form-grid">
+        
+        <?php if (isset($_SESSION['error'])): ?>
+          <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <?= $_SESSION['error'] ?>
           </div>
+          <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
 
-          <label>Size:<span class="required">*</span>
-            <select name="size" id="size" required>
-              <option value="">Select Size</option>
-              <option value="Small">Small (Under 10 kg)</option>
-              <option value="Medium">Medium (10-25 kg)</option>
-              <option value="Large">Large (25+ kg)</option>
-            </select>
-          </label>
+        <span class="form-section-title"><i class="fas fa-paw"></i> Basic Information</span>
 
-          <label>Weight (kg):<span class="required">*</span>
-            <input type="number" name="weight" id="weight" step="0.1" min="0.1" placeholder="Enter weight in kg" required>
-          </label>
+        <label>Name:<span class="required">*</span>
+          <input type="text" name="name" placeholder="Enter pet name" required>
+        </label>
 
-          <span class="form-section-title"><i class="fas fa-heartbeat"></i> Health Information</span>
+        <label>Species:<span class="required">*</span>
+          <select name="species" required>
+            <option value="">Select Species</option>
+            <option value="Dog">Dog</option>
+            <option value="Cat">Cat</option>
+          </select>
+        </label>
 
-          <label>Allergies:
-            <textarea name="allergies" placeholder="Any allergies?"></textarea>
-          </label>
+        <label>Breed:<span class="required">*</span>
+          <input type="text" name="breed" placeholder="Enter breed" required>
+        </label>
 
-          <label>Medications:
-            <textarea name="medications" placeholder="Current medications"></textarea>
-          </label>
+        <label>Gender:<span class="required">*</span>
+          <select name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </label>
 
-          <label>Medical Conditions:
-            <textarea name="medical_conditions" placeholder="Ongoing conditions"></textarea>
-          </label>
+        <label>Age:
+          <input type="text" name="age" placeholder="Enter age (e.g., 2)">
+        </label>
 
-          <span class="form-section-title"><i class="fas fa-dog"></i> Behavior & Preferences</span>
+        <label>Birthday:
+          <input type="date" name="birthday">
+        </label>
 
-          <label>Behavior Notes:
-            <textarea name="behavior_notes" placeholder="Describe pet behavior"></textarea>
-          </label>
+        <label>Color:
+          <input type="text" name="color" placeholder="Enter color">
+        </label>
 
-          <label>Nail Trimming:
-            <select name="nail_trimming">
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </label>
+        <label>Photo:
+          <input type="file" name="photo" accept="image/*" onchange="previewImage(event)">
+          <div class="preview-wrapper">
+            <img id="preview" src="#" alt="Selected Photo" />
+          </div>
+        </label>
 
-          <label>Haircut Style:
-            <input type="text" name="haircut_style" placeholder="Preferred haircut">
-          </label>
+        <span class="form-section-title"><i class="fas fa-ruler-combined"></i> Size & Weight</span>
 
-          <button type="submit" class="submit-button">
-            <i class="fas fa-plus-circle"></i> Add Pet
-          </button>
+        <!-- Quick Reference Card -->
+        <div class="quick-size-reference">
+          <h4><i class="fas fa-th"></i> Quick Reference</h4>
+          <div class="quick-size-grid">
+            <div class="quick-size-item">
+              <div class="size-name">Small</div>
+              <div class="size-range">0-10 kg</div>
+            </div>
+            <div class="quick-size-item">
+              <div class="size-name">Medium</div>
+              <div class="size-range">11-20 kg</div>
+            </div>
+            <div class="quick-size-item">
+              <div class="size-name">Large</div>
+              <div class="size-range">21-30 kg</div>
+            </div>
+            <div class="quick-size-item">
+              <div class="size-name">X-Large</div>
+              <div class="size-range">31-40 kg</div>
+            </div>
+            <div class="quick-size-item">
+              <div class="size-name">XX-Large</div>
+              <div class="size-range">41-50 kg</div>
+            </div>
+            <div class="quick-size-item">
+              <div class="size-name">XXX-Large</div>
+              <div class="size-range">51+ kg</div>
+            </div>
+          </div>
         </div>
-      </form>
+
+        <label>
+          <div class="size-guide-trigger">
+            <span>Size:<span class="required">*</span></span>
+            <button type="button" class="size-guide-btn" onclick="openSizeGuide()">
+              <i class="fas fa-info-circle"></i> Size Guide
+            </button>
+          </div>
+          <select name="size" id="size" required>
+            <option value="">Select Size</option>
+            <option value="Small">Small (0-10 kg)</option>
+            <option value="Medium">Medium (11-20 kg)</option>
+            <option value="Large">Large (21-30 kg)</option>
+            <option value="X-Large">X-Large (31-40 kg)</option>
+            <option value="XX-Large">XX-Large (41-50 kg)</option>
+            <option value="XXX-Large">XXX-Large (51+ kg)</option>
+          </select>
+        </label>
+
+        <label>Weight (kg):<span class="required">*</span>
+          <input type="number" name="weight" id="weight" step="0.1" min="0.1" placeholder="Enter weight in kg" required>
+        </label>
+
+        <p class="size-help-text">
+          <i class="fas fa-lightbulb"></i>
+          Not sure which size? Click "Size Guide" to see breed examples and weight ranges for accurate selection.
+        </p>
+
+        <span class="form-section-title"><i class="fas fa-heartbeat"></i> Health Information</span>
+
+        <label>Allergies:
+          <textarea name="allergies" placeholder="Any allergies? (e.g., chicken, dairy, pollen)"></textarea>
+        </label>
+
+        <label>Medications:
+          <textarea name="medications" placeholder="Current medications and dosages"></textarea>
+        </label>
+
+        <label>Medical Conditions:
+          <textarea name="medical_conditions" placeholder="Ongoing medical conditions or health concerns"></textarea>
+        </label>
+
+        <span class="form-section-title"><i class="fas fa-dog"></i> Behavior & Preferences</span>
+
+        <label>Behavior Notes:
+          <textarea name="behavior_notes" placeholder="Describe pet behavior, temperament, likes, dislikes"></textarea>
+        </label>
+
+        <label>Nail Trimming:
+          <select name="nail_trimming">
+            <option value="">Select preference</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </label>
+
+        <label>Haircut Style:
+          <input type="text" name="haircut_style" placeholder="Preferred haircut style (e.g., Puppy cut, Lion cut)">
+        </label>
+
+        <button type="submit" class="submit-button">
+          <i class="fas fa-plus-circle"></i> Add Pet
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Floating Chat Button -->
+<div class="floating-chat-btn" onclick="toggleChatModal()">
+  <i class="fas fa-comments"></i>
+</div>
+
+<!-- Chat Modal -->
+<div class="chat-modal" id="chatModal" onclick="closeChatModalOnOverlay(event)">
+  <div class="chat-modal-content" onclick="event.stopPropagation()">
+    <div class="chat-modal-header">
+      <h3><i class="fas fa-paw"></i> HelpPAWL</h3>
+      <button class="close-chat-modal" onclick="toggleChatModal()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
+
+    <div class="chat-modal-body" id="chatModalBody">
+      <div class="welcome-message">
+        <h4>👋 Welcome to PAWsig City!</h4>
+        <p>I'm HelpPAWL, your friendly assistant. Click any question below to get instant answers!</p>
+      </div>
+
+      <div class="chat-messages" id="chatMessages"></div>
+
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="message-avatar bot-avatar">
+          <i class="fas fa-paw"></i>
+        </div>
+        <div>
+          <div style="font-size: 11px; color: #9ca3af; font-weight: 500; margin-bottom: 4px;">Assistant is typing...</div>
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-questions-section">
+        <div class="questions-header">
+          <i class="fas fa-magic"></i>
+          Quick Questions
+        </div>
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-map-marker-alt"></i>
+            Location & Contact
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('where are you located')">Where are you located?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('what are your contact')">Contact info?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('when are you open')">When are you open?</button>
+          </div>
+        </div>
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-calendar-alt"></i>
+            Booking & Appointments
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('how can i book an appointment')">How to book?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('do you accept walk-ins')">Walk-ins accepted?</button>
+          </div>
+        </div>
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-cut"></i>
+            Services & Pricing
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('what services do you offer')">All services?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('do you offer grooming services')">Grooming services?</button>
+            <button class="question-btn" onclick="sendQuickQuestion('how much is grooming')">Grooming cost?</button>
+          </div>
+        </div>
+
+        <div class="question-category">
+          <div class="category-label">
+            <i class="fas fa-credit-card"></i>
+            Payment
+          </div>
+          <div class="question-buttons">
+            <button class="question-btn" onclick="sendQuickQuestion('what payment methods do you accept')">Payment methods?</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// SIZE GUIDE MODAL
+// ==========================================
+function openSizeGuide() {
+  document.getElementById('sizeGuideModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSizeGuide() {
+  document.getElementById('sizeGuideModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close modal when clicking overlay
+document.getElementById('sizeGuideModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeSizeGuide();
+  }
+});
+
+// Close on ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const sizeModal = document.getElementById('sizeGuideModal');
+    if (sizeModal.classList.contains('active')) {
+      closeSizeGuide();
+    }
+    const chatModal = document.getElementById('chatModal');
+    if (chatModal.classList.contains('active')) {
+      toggleChatModal();
+    }
+  }
+});
+
+// ==========================================
+// IMAGE PREVIEW
+// ==========================================
+function previewImage(event) {
+  const preview = document.getElementById('preview');
+  const file = event.target.files[0];
+  
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    }
+    reader.readAsDataURL(file);
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+// ==========================================
+// SUCCESS MODAL FUNCTIONS
+// ==========================================
+function goToPetProfile() {
+  window.location.href = 'pet-profile.php';
+}
+
+function addAnotherPet() {
+  window.location.href = 'add-pet.php';
+}
+
+// ==========================================
+// HAMBURGER MENU
+// ==========================================
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
+const navOverlay = document.getElementById('nav-overlay');
+const profileDropdown = document.getElementById('profile-dropdown');
+
+if (hamburger) {
+  hamburger.addEventListener('click', function() {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+    navOverlay.classList.toggle('active');
+    document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+  });
+}
+
+if (navOverlay) {
+  navOverlay.addEventListener('click', function() {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+    navOverlay.classList.remove('active');
+    if (profileDropdown) profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+}
+
+document.querySelectorAll('.nav-link:not(.profile-icon)').forEach(link => {
+  link.addEventListener('click', function() {
+    if (hamburger) hamburger.classList.remove('active');
+    if (navMenu) navMenu.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+});
+
+if (profileDropdown) {
+  profileDropdown.addEventListener('click', function(e) {
+    if (window.innerWidth <= 1024) {
+      if (e.target.closest('.profile-icon')) {
+        e.preventDefault();
+        this.classList.toggle('active');
+      }
+    }
+  });
+}
+
+document.querySelectorAll('.dropdown-menu a').forEach(link => {
+  link.addEventListener('click', function() {
+    if (hamburger) hamburger.classList.remove('active');
+    if (navMenu) navMenu.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
+    if (profileDropdown) profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+});
+
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 1024) {
+    if (hamburger) hamburger.classList.remove('active');
+    if (navMenu) navMenu.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
+    if (profileDropdown) profileDropdown.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
+
+// ==========================================
+// CHAT MODAL
+// ==========================================
+const qaDatabase = {
+  "hi": "Hello there! 👋",
+  "hello": "Hi! How can I assist you today? 😊",
+  "where are you located": "Hello! PAWsig City is located at 2F Hampton Gardens Arcade, C. Raymundo, Maybunga, Pasig, Philippines. 📍",
+  "what are your contact": "You can message us on our Facebook page or send a message at 0954 476 0085. 📱",
+  "when are you open": "We're open daily from 9:00 AM to 8:00 PM, Monday to Sunday. 🕐",
+  "what is your name": "Hi! I'm HelpPAWL, your friendly assistant at PAWsig City. 🐾",
+  "how can i book an appointment": "You can book an appointment online through our website or contact us directly via call, text, and Facebook messenger. 📅",
+  "do you offer grooming services": "Yes! We offer pet grooming services including Full Grooming, Bath and Dry, and Spa Bath. ✨",
+  "how much is grooming": "Grooming prices start at ₱499 depending on the size and breed of your pet. 💰",
+  "do you accept walk-ins": "We highly recommend appointments, but we do accept walk-ins when available. 🚶‍♂️",
+  "what services do you offer": "We offer Full Grooming, Bath and Dry, and Spa Bath. 🛁",
+  "what payment methods do you accept": "We accept cash and GCash for walk-ins. 💳",
+  "thank you": "You're welcome! Let me know if there's anything else I can help with. 😊",
+  "bye": "Goodbye! Hope to see you and your pet soon! 🐾"
+};
+
+function toggleChatModal() {
+  const modal = document.getElementById('chatModal');
+  modal.classList.toggle('active');
+  
+  if (modal.classList.contains('active')) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+function closeChatModalOnOverlay(event) {
+  if (event.target.id === 'chatModal') {
+    toggleChatModal();
+  }
+}
+
+function getResponse(userMessage) {
+  const normalizedMessage = userMessage.toLowerCase().trim();
+  
+  if (qaDatabase[normalizedMessage]) {
+    return qaDatabase[normalizedMessage];
+  }
+  
+  for (const [question, answer] of Object.entries(qaDatabase)) {
+    if (normalizedMessage.includes(question) || question.includes(normalizedMessage)) {
+      return answer;
+    }
+  }
+  
+  return "I'm sorry, I didn't quite understand that. 🤔 Try clicking one of the quick questions below!";
+}
+
+function sendQuickQuestion(question) {
+  const chatMessages = document.getElementById('chatMessages');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const chatBody = document.getElementById('chatModalBody');
+  
+  const userMessageDiv = document.createElement('div');
+  userMessageDiv.className = 'message-item user';
+  userMessageDiv.innerHTML = `
+    <div class="message-avatar user-avatar">
+      <i class="fas fa-user"></i>
+    </div>
+    <div class="message-bubble user-message">${escapeHtml(question)}</div>
+  `;
+  chatMessages.appendChild(userMessageDiv);
+  
+  chatBody.scrollTop = chatBody.scrollHeight;
+  
+  typingIndicator.classList.add('active');
+  chatBody.scrollTop = chatBody.scrollHeight;
+  
+  const botResponse = getResponse(question);
+  
+  setTimeout(() => {
+    typingIndicator.classList.remove('active');
+    
+    const botMessageDiv = document.createElement('div');
+    botMessageDiv.className = 'message-item';
+    botMessageDiv.innerHTML = `
+      <div class="message-avatar bot-avatar">
+        <i class="fas fa-paw"></i>
+      </div>
+      <div class="message-bubble bot-message">${botResponse}</div>
+    `;
+    chatMessages.appendChild(botMessageDiv);
+    
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }, Math.random() * 800 + 600);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>
