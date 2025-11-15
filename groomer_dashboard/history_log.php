@@ -654,11 +654,6 @@ if (!$result) {
     <p>View your completed grooming sessions and track your performance</p>
   </div>
 
-  <div class="stats-card">
-    <h3 id="totalCount"><?= pg_num_rows($result) ?></h3>
-    <p>Total Completed Appointments</p>
-  </div>
-
   <?php if (pg_num_rows($result) == 0): ?>
     <div class="table-section">
       <div class="empty-state">
