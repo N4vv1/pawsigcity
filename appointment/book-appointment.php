@@ -143,13 +143,21 @@ if ($selected_pet_id) {
         // CRITICAL: Verify pet has required size information
         if (empty($valid_pet['species']) || empty($valid_pet['size']) || empty($valid_pet['weight'])) {
             $pet_name = isset($valid_pet['name']) ? $valid_pet['name'] : 'This pet';
+            $missing_fields = [];
+            
+            if (empty($valid_pet['species'])) $missing_fields[] = 'Species';
+            if (empty($valid_pet['size'])) $missing_fields[] = 'Size';
+            if (empty($valid_pet['weight'])) $missing_fields[] = 'Weight';
+            
+            $missing_text = implode(', ', $missing_fields);
+            
             error_log("Pet missing required info:");
             error_log("  - Species: '" . ($valid_pet['species'] ?? 'NULL') . "'");
             error_log("  - Size: '" . ($valid_pet['size'] ?? 'NULL') . "'");
             error_log("  - Weight: '" . ($valid_pet['weight'] ?? 'NULL') . "'");
             
-            $_SESSION['error'] = "{$pet_name} is missing size information. Please update the pet profile first.";
-            header("Location: ../pets/pet-profile.php");
+            $_SESSION['pet_profile_error'] = "{$pet_name} is missing required information: {$missing_text}. Please complete the profile before booking.";
+            header("Location: ../pets/pet-profile.php?missing_info=1&pet_id=" . urlencode($selected_pet_id));
             exit;
         }
         

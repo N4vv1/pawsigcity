@@ -2252,6 +2252,57 @@ if (!$pets) {
   </nav>
 </header>
 
+
+<!-- Enhanced Notification Display -->
+<?php if (isset($_SESSION['pet_profile_error'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  showNotification('error', 'Missing Information', <?= json_encode($_SESSION['pet_profile_error']) ?>, 5000);
+});
+</script>
+<?php unset($_SESSION['pet_profile_error']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['success'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  showNotification('success', 'Success!', <?= json_encode($_SESSION['success']) ?>, 3000);
+});
+</script>
+<?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  showNotification('error', 'Error!', <?= json_encode($_SESSION['error']) ?>, 4000);
+});
+</script>
+<?php unset($_SESSION['error']); ?>
+<?php endif; ?>
+
+<?php if (isset($_GET['missing_info']) && isset($_GET['pet_id'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Scroll to the specific pet card
+  const petId = <?= json_encode($_GET['pet_id']) ?>;
+  const petCard = document.querySelector(`[id*="${petId}"]`)?.closest('.pet-card');
+  if (petCard) {
+    setTimeout(() => {
+      petCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      petCard.style.border = '3px solid #ff6b6b';
+      petCard.style.boxShadow = '0 0 20px rgba(255, 107, 107, 0.4)';
+      
+      // Remove highlight after 3 seconds
+      setTimeout(() => {
+        petCard.style.border = '';
+        petCard.style.boxShadow = '';
+      }, 3000);
+    }, 500);
+  }
+});
+</script>
+<?php endif; ?>
   <!-- Notification Container -->
   <div id="notification-container"></div>
 
