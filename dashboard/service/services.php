@@ -49,7 +49,7 @@ if (isset($_GET['delete_id'])) {
     // Check if deleted_at column exists, if not use regular delete
     $column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='packages' AND column_name='deleted_at'");
     
-    if (pg_num_rows($column_check) > 0) {
+    if ($column_check && pg_num_rows($column_check) > 0) {
         // Archive the service by setting deleted_at timestamp
         $result = pg_query_params($conn, "UPDATE packages SET deleted_at = NOW() WHERE package_id = $1", [$delete_id]);
         $message = "Service archived successfully!";
@@ -123,7 +123,7 @@ if (isset($_GET['id'])) {
     $edit_id = trim($_GET['id']);
     
     if ($has_deleted_at) {
-        $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1 AND (deleted_at IS NULL OR deleted_at = '')", [$edit_id]);
+        $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1 AND deleted_at IS NULL", [$edit_id]);
     } else {
         $result = pg_query_params($conn, "SELECT * FROM packages WHERE package_id = $1", [$edit_id]);
     }
@@ -905,9 +905,44 @@ if (isset($_GET['id'])) {
   <button class="add-btn" onclick="openModal()">
     <i class='bx bx-plus'></i> Add New Service
   </button>
+
+  <!-- Search and Filter Section -->
+  <div class="table-wrapper" style="margin-bottom: 20px; padding: 25px;">
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+      <div style="flex: 1; min-width: 250px;">
+        <div style="position: relative;">
+          <i class='bx bx-search' style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #999;"></i>
+          <input type="text" id="searchInput" placeholder="Search services..." 
+                 style="width: 100%; padding: 12px 12px 12px 45px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif;">
+        </div>
+      </div>
+      <div style="min-width: 180px;">
+        <select id="statusFilter" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
+          <option value="all">All Status</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
+      </div>
+      <button onclick="clearFilters()" style="padding: 12px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'Montserrat', sans-serif; display: inline-flex; align-items: center; gap: 8px;">
+        <i class='bx bx-x-circle'></i> Clear
+      </button>
+    </div>
+  </div>
   
   <div class="table-wrapper">
-    <h3>All Services</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+      <h3 style="margin: 0;">All Services</h3>
+      <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <div id="resultsCount" style="color: #666; font-size: 0.9rem;"></div>
+        <select id="itemsPerPage" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
+          <option value="5">5 per page</option>
+          <option value="10">10 per page</option>
+          <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="all">Show all</option>
+        </select>
+      </div>
+    </div>
     
     <div style="overflow-x: auto;">
       <table>
@@ -923,7 +958,11 @@ if (isset($_GET['id'])) {
         </thead>
         <tbody>
           <?php while ($service = pg_fetch_assoc($services)): ?>
-          <tr>
+          <tr class="service-row" 
+              data-name="<?= strtolower(htmlspecialchars($service['name'])) ?>"
+              data-description="<?= strtolower(htmlspecialchars($service['description'])) ?>"
+              data-id="<?= strtolower(htmlspecialchars($service['package_id'])) ?>"
+              data-status="<?= $service['is_active'] == 't' ? 'active' : 'inactive' ?>">
             <td><?= htmlspecialchars($service['package_id']) ?></td>
             <td><strong><?= htmlspecialchars($service['name']) ?></strong></td>
             <td style="max-width: 300px;">
@@ -962,6 +1001,13 @@ if (isset($_GET['id'])) {
             </td>
           </tr>
           <?php endwhile; ?>
+          <tr id="noResults" style="display: none;">
+            <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+              <i class='bx bx-search-alt' style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+              <strong>No services found</strong>
+              <p style="margin-top: 5px; font-size: 0.9rem;">Try adjusting your search or filters</p>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -1147,6 +1193,87 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+  
+  // Initialize results count
+  updateResultsCount();
+});
+
+// Search and Filter Functionality
+function filterServices() {
+  const searchValue = document.getElementById('searchInput').value.toLowerCase();
+  const statusFilter = document.getElementById('statusFilter').value;
+  const rows = document.querySelectorAll('.service-row');
+  let visibleCount = 0;
+  
+  rows.forEach(row => {
+    const name = row.getAttribute('data-name');
+    const description = row.getAttribute('data-description');
+    const id = row.getAttribute('data-id');
+    const status = row.getAttribute('data-status');
+    
+    // Check search match
+    const matchesSearch = searchValue === '' || 
+                         name.includes(searchValue) || 
+                         description.includes(searchValue) ||
+                         id.includes(searchValue);
+    
+    // Check status filter
+    const matchesStatus = statusFilter === 'all' || status === statusFilter;
+    
+    // Show/hide row
+    if (matchesSearch && matchesStatus) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  // Show/hide no results message
+  const noResults = document.getElementById('noResults');
+  if (visibleCount === 0) {
+    noResults.style.display = '';
+  } else {
+    noResults.style.display = 'none';
+  }
+  
+  updateResultsCount(visibleCount, rows.length);
+}
+
+function updateResultsCount(visible = null, total = null) {
+  const resultsCount = document.getElementById('resultsCount');
+  const rows = document.querySelectorAll('.service-row');
+  
+  if (visible === null) {
+    visible = rows.length;
+    total = rows.length;
+  }
+  
+  if (visible === total) {
+    resultsCount.textContent = `Showing all ${total} service${total !== 1 ? 's' : ''}`;
+  } else {
+    resultsCount.textContent = `Showing ${visible} of ${total} service${total !== 1 ? 's' : ''}`;
+  }
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('statusFilter').value = 'all';
+  filterServices();
+}
+
+// Attach event listeners for search and filter
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const statusFilter = document.getElementById('statusFilter');
+  
+  if (searchInput) {
+    searchInput.addEventListener('keyup', filterServices);
+  }
+  
+  if (statusFilter) {
+    statusFilter.addEventListener('change', filterServices);
+  }
 });
 </script>
 

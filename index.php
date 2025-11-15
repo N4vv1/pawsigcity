@@ -1781,7 +1781,7 @@ function getServiceImage($serviceName) {
      <section class="about-section" id="about">
       <div class="section-content">
         <div class="about-image-wrapper">
-          <img src="./images/pawsig2.png" alt="About Our Shop" class="about-image" />
+          <img src="./homepage/images/pawsig2.png" alt="About Our Shop" class="about-image" />
         </div>
         <div class="about-details">
           <h2 class="section-title">About Us</h2>
