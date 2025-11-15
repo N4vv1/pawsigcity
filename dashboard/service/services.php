@@ -42,27 +42,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_service'])) {
     exit;
 }
 
-// Handle service deletion (archive)
-if (isset($_GET['delete_id'])) {
-    $delete_id = trim($_GET['delete_id']);
+// Handle service archiving
+if (isset($_GET['archive_id'])) {
+    $archive_id = trim($_GET['archive_id']);
     
-    // Check if deleted_at column exists, if not use regular delete
-    $column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='packages' AND column_name='deleted_at'");
-    
-    if ($column_check && pg_num_rows($column_check) > 0) {
-        // Archive the service by setting deleted_at timestamp
-        $result = pg_query_params($conn, "UPDATE packages SET deleted_at = NOW() WHERE package_id = $1", [$delete_id]);
-        $message = "Service archived successfully!";
-    } else {
-        // Fallback to regular delete if deleted_at column doesn't exist
-        $result = pg_query_params($conn, "DELETE FROM packages WHERE package_id = $1", [$delete_id]);
-        $message = "Service deleted successfully!";
-    }
+    $result = pg_query_params($conn, "UPDATE packages SET deleted_at = NOW() WHERE package_id = $1", [$archive_id]);
     
     if ($result) {
-        $_SESSION['success'] = $message;
+        $_SESSION['success'] = "Service archived successfully!";
     } else {
-        $_SESSION['error'] = "Failed to process service.";
+        $_SESSION['error'] = "Failed to archive service: " . pg_last_error($conn);
+    }
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Handle service restoration
+if (isset($_GET['restore_id'])) {
+    $restore_id = trim($_GET['restore_id']);
+    
+    $result = pg_query_params($conn, "UPDATE packages SET deleted_at = NULL WHERE package_id = $1", [$restore_id]);
+    
+    if ($result) {
+        $_SESSION['success'] = "Service restored successfully!";
+    } else {
+        $_SESSION['error'] = "Failed to restore service: " . pg_last_error($conn);
     }
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
@@ -72,24 +76,47 @@ if (isset($_GET['delete_id'])) {
 $column_check = pg_query($conn, "SELECT column_name FROM information_schema.columns WHERE table_name='packages' AND column_name='deleted_at'");
 $has_deleted_at = $column_check && pg_num_rows($column_check) > 0;
 
-// Fetch all services with pricing info
+// Determine if showing archived services
+$show_archived = isset($_GET['show_archived']) ? true : false;
+
+// Fetch services with pricing info
 if ($has_deleted_at) {
-    // Exclude archived services
-    $services_query = "
-        SELECT 
-            p.package_id,
-            p.name,
-            p.description,
-            p.is_active,
-            MIN(pp.price) as min_price,
-            MAX(pp.price) as max_price,
-            COUNT(CASE WHEN pp.deleted_at IS NULL THEN pp.price_id END) as price_count
-        FROM packages p
-        LEFT JOIN package_prices pp ON p.package_id = pp.package_id 
-        WHERE p.deleted_at IS NULL
-        GROUP BY p.package_id, p.name, p.description, p.is_active
-        ORDER BY p.package_id ASC
-    ";
+    if ($show_archived) {
+        // Show only archived services
+        $services_query = "
+            SELECT 
+                p.package_id,
+                p.name,
+                p.description,
+                p.is_active,
+                p.deleted_at,
+                MIN(pp.price) as min_price,
+                MAX(pp.price) as max_price,
+                COUNT(CASE WHEN pp.deleted_at IS NULL THEN pp.price_id END) as price_count
+            FROM packages p
+            LEFT JOIN package_prices pp ON p.package_id = pp.package_id 
+            WHERE p.deleted_at IS NOT NULL
+            GROUP BY p.package_id, p.name, p.description, p.is_active, p.deleted_at
+            ORDER BY p.deleted_at DESC
+        ";
+    } else {
+        // Show only active (non-archived) services
+        $services_query = "
+            SELECT 
+                p.package_id,
+                p.name,
+                p.description,
+                p.is_active,
+                MIN(pp.price) as min_price,
+                MAX(pp.price) as max_price,
+                COUNT(CASE WHEN pp.deleted_at IS NULL THEN pp.price_id END) as price_count
+            FROM packages p
+            LEFT JOIN package_prices pp ON p.package_id = pp.package_id 
+            WHERE p.deleted_at IS NULL
+            GROUP BY p.package_id, p.name, p.description, p.is_active
+            ORDER BY p.package_id ASC
+        ";
+    }
 } else {
     // Show all services if no deleted_at column
     $services_query = "
@@ -347,7 +374,6 @@ if (isset($_GET['id'])) {
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      margin-bottom: 30px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -479,6 +505,16 @@ if (isset($_GET['id'])) {
 
     .delete-btn:hover {
       background: var(--delete-color);
+      color: var(--white-color);
+    }
+
+    .restore-btn {
+      background: rgba(33, 150, 243, 0.1);
+      color: #2196F3;
+    }
+
+    .restore-btn:hover {
+      background: #2196F3;
       color: var(--white-color);
     }
 
@@ -902,9 +938,18 @@ if (isset($_GET['id'])) {
     <h1>Service Management</h1>
   </div>
 
-  <button class="add-btn" onclick="openModal()">
-    <i class='bx bx-plus'></i> Add New Service
-  </button>
+  <!-- Action Buttons -->
+  <div style="display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
+    <button class="add-btn" onclick="openModal()">
+      <i class='bx bx-plus'></i> Add New Service
+    </button>
+    <?php if ($has_deleted_at): ?>
+    <button class="add-btn" onclick="toggleArchived()" style="background: <?= $show_archived ? '#F44336' : '#6c757d' ?>;">
+      <i class='bx <?= $show_archived ? 'bx-undo' : 'bx-archive' ?>'></i> 
+      <?= $show_archived ? 'Show Active' : 'Show Archived' ?>
+    </button>
+    <?php endif; ?>
+  </div>
 
   <!-- Search and Filter Section -->
   <div class="table-wrapper" style="margin-bottom: 20px; padding: 25px;">
@@ -916,6 +961,7 @@ if (isset($_GET['id'])) {
                  style="width: 100%; padding: 12px 12px 12px 45px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif;">
         </div>
       </div>
+      <?php if (!$show_archived): ?>
       <div style="min-width: 180px;">
         <select id="statusFilter" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
           <option value="all">All Status</option>
@@ -923,6 +969,7 @@ if (isset($_GET['id'])) {
           <option value="inactive">Inactive Only</option>
         </select>
       </div>
+      <?php endif; ?>
       <button onclick="clearFilters()" style="padding: 12px 20px; background: #6c757d; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'Montserrat', sans-serif; display: inline-flex; align-items: center; gap: 8px;">
         <i class='bx bx-x-circle'></i> Clear
       </button>
@@ -931,7 +978,7 @@ if (isset($_GET['id'])) {
   
   <div class="table-wrapper">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-      <h3 style="margin: 0;">All Services</h3>
+      <h3 style="margin: 0;"><?= $show_archived ? 'Archived Services' : 'Active Services' ?></h3>
       <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
         <div id="resultsCount" style="color: #666; font-size: 0.9rem;"></div>
         <select id="itemsPerPage" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; font-family: 'Montserrat', sans-serif; background-color: white; cursor: pointer;">
@@ -952,7 +999,11 @@ if (isset($_GET['id'])) {
             <th>Service Name</th>
             <th>Description</th>
             <th>Price Range</th>
+            <?php if (!$show_archived): ?>
             <th>Status</th>
+            <?php else: ?>
+            <th>Archived At</th>
+            <?php endif; ?>
             <th>Actions</th>
           </tr>
         </thead>
@@ -979,6 +1030,7 @@ if (isset($_GET['id'])) {
                 <span style="color: #999;">No pricing set</span>
               <?php endif; ?>
             </td>
+            <?php if (!$show_archived): ?>
             <td>
               <?php if ($service['is_active'] == 't'): ?>
                 <span class="status-badge status-active">Active</span>
@@ -986,17 +1038,32 @@ if (isset($_GET['id'])) {
                 <span class="status-badge status-inactive">Inactive</span>
               <?php endif; ?>
             </td>
+            <?php else: ?>
+            <td><?= isset($service['deleted_at']) ? date('M d, Y g:i A', strtotime($service['deleted_at'])) : 'N/A' ?></td>
+            <?php endif; ?>
             <td>
               <div class="actions">
-                <a href="manage_prices.php?id=<?= urlencode($service['package_id']) ?>" class="view-btn">
-                  <i class='bx bx-dollar'></i> Pricing
-                </a>
-                <a href="?id=<?= urlencode($service['package_id']) ?>" class="edit-btn">
-                  <i class='bx bx-edit'></i> Edit
-                </a>
-                <button onclick="confirmDelete('<?= htmlspecialchars($service['package_id'], ENT_QUOTES) ?>')" class="delete-btn">
-                  <i class='bx bx-<?= $has_deleted_at ? 'archive' : 'trash' ?>'></i> <?= $has_deleted_at ? 'Archive' : 'Delete' ?>
-                </button>
+                <?php if ($show_archived): ?>
+                  <button onclick="confirmRestore('<?= htmlspecialchars($service['package_id'], ENT_QUOTES) ?>')" class="restore-btn">
+                    <i class='bx bx-undo'></i> Restore
+                  </button>
+                <?php else: ?>
+                  <a href="manage_prices.php?id=<?= urlencode($service['package_id']) ?>" class="view-btn">
+                    <i class='bx bx-dollar'></i> Pricing
+                  </a>
+                  <a href="?id=<?= urlencode($service['package_id']) ?>" class="edit-btn">
+                    <i class='bx bx-edit'></i> Edit
+                  </a>
+                  <?php if ($has_deleted_at): ?>
+                  <button onclick="confirmArchive('<?= htmlspecialchars($service['package_id'], ENT_QUOTES) ?>')" class="delete-btn">
+                    <i class='bx bx-archive'></i> Archive
+                  </button>
+                  <?php else: ?>
+                  <button onclick="confirmDelete('<?= htmlspecialchars($service['package_id'], ENT_QUOTES) ?>')" class="delete-btn">
+                    <i class='bx bx-trash'></i> Delete
+                  </button>
+                  <?php endif; ?>
+                <?php endif; ?>
               </div>
             </td>
           </tr>
@@ -1076,11 +1143,9 @@ if (isset($_GET['id'])) {
 <script>
 // Toast Notification System
 function showToast(message, type = 'success') {
-  // Remove any existing toasts
   const existingToasts = document.querySelectorAll('.toast');
   existingToasts.forEach(toast => toast.remove());
 
-  // Create new toast
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   
@@ -1094,12 +1159,10 @@ function showToast(message, type = 'success') {
   
   document.body.appendChild(toast);
   
-  // Trigger animation
   setTimeout(() => {
     toast.classList.add('show');
   }, 10);
   
-  // Auto hide after 4 seconds
   setTimeout(() => {
     hideToast(toast);
   }, 4000);
@@ -1115,6 +1178,37 @@ function hideToast(toast) {
 function closeToast(closeBtn) {
   const toast = closeBtn.closest('.toast');
   hideToast(toast);
+}
+
+// Toggle archived view
+function toggleArchived() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('show_archived')) {
+    window.location.href = window.location.pathname;
+  } else {
+    window.location.href = window.location.pathname + '?show_archived=1';
+  }
+}
+
+// Archive confirmation
+function confirmArchive(serviceId) {
+  if (confirm('Are you sure you want to archive this service? It can be restored later.')) {
+    window.location.href = '?archive_id=' + encodeURIComponent(serviceId);
+  }
+}
+
+// Restore confirmation
+function confirmRestore(serviceId) {
+  if (confirm('Are you sure you want to restore this service?')) {
+    window.location.href = '?restore_id=' + encodeURIComponent(serviceId);
+  }
+}
+
+// Delete confirmation (for systems without deleted_at column)
+function confirmDelete(serviceId) {
+  if (confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+    window.location.href = '?delete_id=' + encodeURIComponent(serviceId);
+  }
 }
 
 // Dropdown functionality
@@ -1159,18 +1253,6 @@ function closeEditModal() {
   window.history.replaceState(null, null, window.location.pathname);
 }
 
-// Delete confirmation - Updated to handle text IDs
-function confirmDelete(serviceId) {
-  const hasDeletedAt = <?= $has_deleted_at ? 'true' : 'false' ?>;
-  const message = hasDeletedAt 
-    ? 'Are you sure you want to archive this service? It will be hidden from the list but can be restored later.'
-    : 'Are you sure you want to delete this service? This action cannot be undone.';
-    
-  if (confirm(message)) {
-    window.location.href = '?delete_id=' + encodeURIComponent(serviceId);
-  }
-}
-
 // Close modals when clicking outside
 document.addEventListener('click', function(event) {
   const addModal = document.getElementById('serviceModal');
@@ -1194,14 +1276,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  // Initialize results count
   updateResultsCount();
 });
 
 // Search and Filter Functionality
 function filterServices() {
   const searchValue = document.getElementById('searchInput').value.toLowerCase();
-  const statusFilter = document.getElementById('statusFilter').value;
+  const statusFilter = document.getElementById('statusFilter') ? document.getElementById('statusFilter').value : 'all';
   const rows = document.querySelectorAll('.service-row');
   let visibleCount = 0;
   
@@ -1211,16 +1292,13 @@ function filterServices() {
     const id = row.getAttribute('data-id');
     const status = row.getAttribute('data-status');
     
-    // Check search match
     const matchesSearch = searchValue === '' || 
                          name.includes(searchValue) || 
                          description.includes(searchValue) ||
                          id.includes(searchValue);
     
-    // Check status filter
     const matchesStatus = statusFilter === 'all' || status === statusFilter;
     
-    // Show/hide row
     if (matchesSearch && matchesStatus) {
       row.style.display = '';
       visibleCount++;
@@ -1229,7 +1307,6 @@ function filterServices() {
     }
   });
   
-  // Show/hide no results message
   const noResults = document.getElementById('noResults');
   if (visibleCount === 0) {
     noResults.style.display = '';
@@ -1258,7 +1335,10 @@ function updateResultsCount(visible = null, total = null) {
 
 function clearFilters() {
   document.getElementById('searchInput').value = '';
-  document.getElementById('statusFilter').value = 'all';
+  const statusFilter = document.getElementById('statusFilter');
+  if (statusFilter) {
+    statusFilter.value = 'all';
+  }
   filterServices();
 }
 
