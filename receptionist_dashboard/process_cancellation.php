@@ -224,7 +224,7 @@ try {
     error_log("Cancellation error: " . $e->getMessage());
     
     $_SESSION['error_message'] = $e->getMessage();
-    header("Location: cancel_requests.php");
+    header("Location: cancel_request.php");
     exit();
 }
 
