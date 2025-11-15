@@ -861,7 +861,7 @@ $packages_result = pg_query($conn, $packages_query);
   </div>
   <nav class="menu">
     <a href="receptionist_home.php" class="active"><i class='bx bx-home'></i>All Appointments</a>
-    <a href="cancel_requests.php"><i class='bx bx-x-circle'></i>Cancellation Requests</a>
+    <a href="./cancel_request.php"><i class='bx bx-x-circle'></i>Cancellation Requests</a>
   </nav>
 </aside>
 
