@@ -2296,16 +2296,14 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php unset($_SESSION['pet_added_success']); ?>
 <?php endif; ?>
-<?php unset($_SESSION['success']); ?>
-<?php endif; ?>
 
-<?php if (isset($_SESSION['error'])): ?>
+<?php if (isset($_SESSION['success'])): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  showNotification('error', 'Error!', <?= json_encode($_SESSION['error']) ?>, 4000);
+  showNotification('success', 'Success!', <?= json_encode($_SESSION['success']) ?>, 3000);
 });
 </script>
-<?php unset($_SESSION['error']); ?>
+<?php unset($_SESSION['success']); ?>
 <?php endif; ?>
 
 <?php if (isset($_GET['missing_info']) && isset($_GET['pet_id'])): ?>
