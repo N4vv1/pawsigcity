@@ -44,7 +44,7 @@ $feedback_result = pg_query($conn, $feedback_query);
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="icon" type="image/png" href="../../homepage/images/pawsig.png">
+  <link rel="icon" type="image/png" href="../../homepage/images/pawsig2.png">
   
   <style>
     :root {
@@ -406,7 +406,7 @@ $feedback_result = pg_query($conn, $feedback_query);
 <!-- Sidebar -->
 <aside class="sidebar">
   <div class="logo">
-    <img src="../../homepage/images/pawsig.png" alt="Logo">
+    <img src="../../homepage/images/pawsig2.png" alt="Logo">
   </div>
   <nav class="menu">
     <a href="../admin/admin.php"><i class='bx bx-home'></i>Overview</a>

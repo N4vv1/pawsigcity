@@ -3,9 +3,45 @@ session_start();
 require '../../db.php';
 require_once '../admin/check_admin.php';
 
-// Fetch all gallery images
-$query = "SELECT * FROM gallery ORDER BY id ASC";
-$result = pg_query($conn, $query);
+// Pagination settings
+$records_per_page = 5;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$current_page = max(1, $current_page);
+$offset = ($current_page - 1) * $records_per_page;
+
+// Date filter
+$date_filter = isset($_GET['date_filter']) ? $_GET['date_filter'] : '';
+$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '';
+$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : '';
+
+// Build query with filters
+$where_conditions = [];
+$params = [];
+$param_count = 1;
+
+if ($date_filter === 'today') {
+    $where_conditions[] = "DATE(uploaded_at) = CURRENT_DATE";
+} elseif ($date_filter === 'week') {
+    $where_conditions[] = "uploaded_at >= CURRENT_DATE - INTERVAL '7 days'";
+} elseif ($date_filter === 'month') {
+    $where_conditions[] = "uploaded_at >= CURRENT_DATE - INTERVAL '30 days'";
+} elseif ($date_filter === 'custom' && $start_date && $end_date) {
+    $where_conditions[] = "DATE(uploaded_at) BETWEEN $" . $param_count++ . " AND $" . $param_count++;
+    $params[] = $start_date;
+    $params[] = $end_date;
+}
+
+$where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "";
+
+// Count total records
+$count_query = "SELECT COUNT(*) as total FROM gallery $where_clause";
+$count_result = empty($params) ? pg_query($conn, $count_query) : pg_query_params($conn, $count_query, $params);
+$total_records = pg_fetch_assoc($count_result)['total'];
+$total_pages = ceil($total_records / $records_per_page);
+
+// Fetch gallery images with pagination
+$query = "SELECT * FROM gallery $where_clause ORDER BY uploaded_at DESC LIMIT $records_per_page OFFSET $offset";
+$result = empty($params) ? pg_query($conn, $query) : pg_query_params($conn, $query, $params);
 ?>
 
 <!DOCTYPE html>
@@ -161,6 +197,106 @@ $result = pg_query($conn, $query);
       font-size: 0.95rem;
     }
 
+    /* FILTER SECTION */
+    .filter-section {
+      background: var(--white-color);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 25px;
+    }
+
+    .filter-section h3 {
+      font-size: 1rem;
+      color: var(--dark-color);
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .filter-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 150px;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--dark-color);
+    }
+
+    .filter-group select,
+    .filter-group input[type="date"] {
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: var(--white-color);
+      color: var(--dark-color);
+      transition: border-color 0.2s;
+    }
+
+    .filter-group select:focus,
+    .filter-group input[type="date"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .custom-date-range {
+      display: none;
+      gap: 15px;
+    }
+
+    .custom-date-range.active {
+      display: flex;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .filter-btn, .clear-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      background: var(--dark-color);
+      color: var(--white-color);
+    }
+
+    .filter-btn:hover {
+      background: #1a1a1a;
+    }
+
+    .clear-btn {
+      background: rgba(244, 67, 54, 0.1);
+      color: #F44336;
+    }
+
+    .clear-btn:hover {
+      background: #F44336;
+      color: var(--white-color);
+    }
+
     /* ADD BUTTON */
     .add-btn {
       background: var(--dark-color);
@@ -175,7 +311,7 @@ $result = pg_query($conn, $query);
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .add-btn:hover {
@@ -193,6 +329,16 @@ $result = pg_query($conn, $query);
       padding: 35px;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .results-info {
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .results-info strong {
+      color: var(--dark-color);
     }
 
     .table-wrapper {
@@ -293,6 +439,51 @@ $result = pg_query($conn, $query);
     .delete-btn:hover {
       background: #F44336;
       color: var(--white-color);
+    }
+
+    /* PAGINATION */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .pagination a,
+    .pagination span {
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pagination a {
+      background: var(--white-color);
+      color: var(--dark-color);
+      border: 1px solid #e0e0e0;
+    }
+
+    .pagination a:hover {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .pagination span.current {
+      background: var(--dark-color);
+      color: var(--white-color);
+    }
+
+    .pagination a.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
     }
 
     /* EMPTY STATE */
@@ -593,6 +784,28 @@ $result = pg_query($conn, $query);
         font-size: 1.5rem;
       }
 
+      .filter-controls {
+        flex-direction: column;
+      }
+
+      .filter-group {
+        width: 100%;
+      }
+
+      .filter-buttons {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .filter-btn, .clear-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .custom-date-range {
+        flex-direction: column;
+      }
+
       .add-btn {
         width: 100%;
         justify-content: center;
@@ -626,6 +839,16 @@ $result = pg_query($conn, $query);
       .actions a {
         width: 100%;
         justify-content: center;
+      }
+
+      .pagination {
+        gap: 5px;
+      }
+
+      .pagination a,
+      .pagination span {
+        padding: 8px 12px;
+        font-size: 0.85rem;
       }
 
       .toast {
@@ -720,6 +943,45 @@ $result = pg_query($conn, $query);
     <h1>Pet Gallery</h1>
   </div>
   
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <h3><i class='bx bx-filter'></i> Filter by Upload Date</h3>
+    <form method="GET" action="" id="filterForm">
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label for="date_filter">Date Range</label>
+          <select name="date_filter" id="date_filter" onchange="toggleCustomDateRange()">
+            <option value="">All Time</option>
+            <option value="today" <?= $date_filter === 'today' ? 'selected' : '' ?>>Today</option>
+            <option value="week" <?= $date_filter === 'week' ? 'selected' : '' ?>>Last 7 Days</option>
+            <option value="month" <?= $date_filter === 'month' ? 'selected' : '' ?>>Last 30 Days</option>
+            <option value="custom" <?= $date_filter === 'custom' ? 'selected' : '' ?>>Custom Range</option>
+          </select>
+        </div>
+
+        <div class="custom-date-range <?= $date_filter === 'custom' ? 'active' : '' ?>" id="customDateRange">
+          <div class="filter-group">
+            <label for="start_date">Start Date</label>
+            <input type="date" name="start_date" id="start_date" value="<?= htmlspecialchars($start_date) ?>">
+          </div>
+          <div class="filter-group">
+            <label for="end_date">End Date</label>
+            <input type="date" name="end_date" id="end_date" value="<?= htmlspecialchars($end_date) ?>">
+          </div>
+        </div>
+
+        <div class="filter-buttons">
+          <button type="submit" class="filter-btn">
+            <i class='bx bx-search'></i> Apply Filter
+          </button>
+          <a href="gallery.php" class="clear-btn">
+            <i class='bx bx-x'></i> Clear
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+
   <!-- Add Button -->
   <button class="add-btn" onclick="openAddModal()">
     <i class='bx bx-plus'></i> Add New Image
@@ -727,6 +989,12 @@ $result = pg_query($conn, $query);
 
   <!-- Gallery Table -->
   <div class="table-section">
+    <?php if ($total_records > 0): ?>
+      <div class="results-info">
+        Showing <strong><?= $offset + 1 ?></strong> to <strong><?= min($offset + $records_per_page, $total_records) ?></strong> of <strong><?= $total_records ?></strong> images
+      </div>
+    <?php endif; ?>
+
     <div class="table-wrapper">
       <?php if (pg_num_rows($result) > 0): ?>
       <table>
@@ -771,11 +1039,76 @@ $result = pg_query($conn, $query);
           <?php endwhile; ?>
         </tbody>
       </table>
+
+      <!-- Pagination -->
+      <?php if ($total_pages > 1): 
+        $query_params = [];
+        if ($date_filter) $query_params['date_filter'] = $date_filter;
+        if ($start_date) $query_params['start_date'] = $start_date;
+        if ($end_date) $query_params['end_date'] = $end_date;
+        
+        function buildUrl($page, $params) {
+          $params['page'] = $page;
+          return '?' . http_build_query($params);
+        }
+      ?>
+      <div class="pagination">
+        <!-- Previous Button -->
+        <?php if ($current_page > 1): ?>
+          <a href="<?= buildUrl($current_page - 1, $query_params) ?>">
+            <i class='bx bx-chevron-left'></i> Previous
+          </a>
+        <?php else: ?>
+          <a href="#" class="disabled">
+            <i class='bx bx-chevron-left'></i> Previous
+          </a>
+        <?php endif; ?>
+
+        <!-- Page Numbers -->
+        <?php
+        $start_page = max(1, $current_page - 2);
+        $end_page = min($total_pages, $current_page + 2);
+        
+        if ($start_page > 1): ?>
+          <a href="<?= buildUrl(1, $query_params) ?>">1</a>
+          <?php if ($start_page > 2): ?>
+            <span>...</span>
+          <?php endif; ?>
+        <?php endif; ?>
+
+        <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
+          <?php if ($i == $current_page): ?>
+            <span class="current"><?= $i ?></span>
+          <?php else: ?>
+            <a href="<?= buildUrl($i, $query_params) ?>"><?= $i ?></a>
+          <?php endif; ?>
+        <?php endfor; ?>
+
+        <?php if ($end_page < $total_pages): ?>
+          <?php if ($end_page < $total_pages - 1): ?>
+            <span>...</span>
+          <?php endif; ?>
+          <a href="<?= buildUrl($total_pages, $query_params) ?>"><?= $total_pages ?></a>
+        <?php endif; ?>
+
+        <!-- Next Button -->
+        <?php if ($current_page < $total_pages): ?>
+          <a href="<?= buildUrl($current_page + 1, $query_params) ?>">
+            Next <i class='bx bx-chevron-right'></i>
+          </a>
+        <?php else: ?>
+          <a href="#" class="disabled">
+            Next <i class='bx bx-chevron-right'></i>
+          </a>
+        <?php endif; ?>
+      </div>
+      <?php endif; ?>
+
       <?php else: ?>
       <div class="empty-state">
         <i class='bx bx-image'></i>
-        <h3>No images in gallery</h3>
-        <p>Click "Add New Image" to upload your first image</p>
+        <h3>No images found</h3>
+        <p><?= !empty($where_conditions) ? 'Try adjusting your filters or add new images' : 'Click "Add New Image" to upload your first image' ?></p>
       </div>
       <?php endif; ?>
     </div>
@@ -870,6 +1203,17 @@ function toggleSidebar() {
   const overlay = document.querySelector('.sidebar-overlay');
   sidebar.classList.toggle('active');
   overlay.classList.toggle('active');
+}
+
+function toggleCustomDateRange() {
+  const select = document.getElementById('date_filter');
+  const customRange = document.getElementById('customDateRange');
+  
+  if (select.value === 'custom') {
+    customRange.classList.add('active');
+  } else {
+    customRange.classList.remove('active');
+  }
 }
 
 function openAddModal() {
