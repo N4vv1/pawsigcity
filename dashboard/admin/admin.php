@@ -657,7 +657,7 @@ if ($noShowCount > 0) {
       </thead>
       <tbody>
         <?php
-        $userList = pg_query($conn, "SELECT user_id, first_name, middle_name, last_name, email FROM users");
+        $userList = pg_query($conn, "SELECT user_id, first_name, middle_name, last_name, email FROM users ORDER BY user_id ASC");
         if ($userList):
           while ($user = pg_fetch_assoc($userList)):
             $fullName = trim($user['first_name'] . ' ' . $user['middle_name'] . ' ' . $user['last_name']);
@@ -692,7 +692,7 @@ if ($noShowCount > 0) {
       </thead>
       <tbody>
         <?php
-        $petList = pg_query($conn, "SELECT pet_id, name, breed, user_id FROM pets");
+        $petList = pg_query($conn, "SELECT pet_id, name, breed, user_id FROM pets WHERE deleted_at IS NULL ORDER BY pet_id ASC");
         if ($petList):
           while ($pet = pg_fetch_assoc($petList)):
         ?>
@@ -736,7 +736,7 @@ if ($noShowCount > 0) {
             JOIN pets p ON a.pet_id = p.pet_id
             JOIN users u ON p.user_id = u.user_id
             WHERE a.status = 'cancelled'
-            ORDER BY a.appointment_date DESC
+            ORDER BY a.appointment_id ASC
         ";
         $cancelledResult = pg_query($conn, $cancelledQuery);
         if ($cancelledResult):
@@ -784,7 +784,7 @@ if ($noShowCount > 0) {
             JOIN pets p ON a.pet_id = p.pet_id
             JOIN users u ON p.user_id = u.user_id
             WHERE a.status = 'no_show'
-            ORDER BY a.appointment_date DESC
+            ORDER BY a.appointment_id ASC
         ";
         $noshowResult = pg_query($conn, $noshowQuery);
         if ($noshowResult):
@@ -832,7 +832,7 @@ if ($noShowCount > 0) {
             JOIN pets p ON a.pet_id = p.pet_id
             JOIN users u ON p.user_id = u.user_id
             WHERE a.status = 'confirmed'
-            ORDER BY a.appointment_date DESC
+            ORDER BY a.appointment_id ASC
         ";
         $confirmedResult = pg_query($conn, $confirmedQuery);
         if ($confirmedResult):
@@ -880,7 +880,7 @@ if ($noShowCount > 0) {
             JOIN pets p ON a.pet_id = p.pet_id
             JOIN users u ON p.user_id = u.user_id
             WHERE a.status = 'completed'
-            ORDER BY a.appointment_date DESC
+            ORDER BY a.appointment_id ASC
         ";
         $completedResult = pg_query($conn, $completedQuery);
         if ($completedResult):
@@ -945,7 +945,7 @@ if ($noShowCount > 0) {
             JOIN users u ON a.user_id = u.user_id
             JOIN pets p ON a.pet_id = p.pet_id
             JOIN packages pk ON a.package_id = pk.package_id
-            ORDER BY a.appointment_date DESC
+            ORDER BY a.appointment_id ASC
         ";
         $appointmentList = pg_query($conn, $appointmentQuery);
         if ($appointmentList):
@@ -1068,7 +1068,7 @@ if ($noShowCount > 0) {
 <!-- ARCHIVED PETS MODAL -->
 <div id="archived_petsModal" class="modal">
   <div class="modal-content" style="max-width: 1200px;">
-    <h2>🗄️ Archived Pets</h2>
+    <h2>Archived Pets</h2>
     <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">
       These pets have been archived by their owners. You can restore them if needed.
     </p>
@@ -1092,7 +1092,7 @@ if ($noShowCount > 0) {
             FROM pets p
             JOIN users u ON p.user_id = u.user_id
             WHERE p.deleted_at IS NOT NULL
-            ORDER BY p.deleted_at DESC
+            ORDER BY p.pet_id ASC
         ";
         $archivedPetsList = pg_query($conn, $archivedPetsQuery);
         
