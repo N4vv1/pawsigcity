@@ -77,9 +77,9 @@ $packages_result = pg_query($conn, $packages_query);
     body {
       background: var(--light-pink-color);
       display: flex;
+      min-height: 100vh;
     }
 
-    /* TOAST NOTIFICATION */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -288,7 +288,94 @@ $packages_result = pg_query($conn, $packages_query);
       font-size: 0.95rem;
     }
 
-    /* TABLE SECTION */
+    .filter-section {
+      background: var(--white-color);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #999;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 12px 12px 45px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Montserrat', sans-serif;
+      transition: all 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
+    }
+
+    .filter-group {
+      min-width: 160px;
+    }
+
+    .filter-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Montserrat', sans-serif;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .filter-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.1);
+    }
+
+    .clear-btn {
+      padding: 12px 20px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .clear-btn:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
     .table-section {
       background: var(--white-color);
       padding: 35px;
@@ -297,16 +384,47 @@ $packages_result = pg_query($conn, $packages_query);
       overflow-x: auto;
     }
 
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
     .table-section h2 {
       font-size: 1.3rem;
-      margin-bottom: 25px;
       color: var(--dark-color);
       font-weight: 600;
+      margin: 0;
+    }
+
+    .table-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .results-count {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .items-per-page {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: 'Montserrat', sans-serif;
+      background-color: white;
+      cursor: pointer;
     }
 
     table {
       width: 100%;
-      min-width: 1000px;
+      min-width: 1200px;
       border-collapse: collapse;
     }
 
@@ -403,6 +521,82 @@ $packages_result = pg_query($conn, $packages_query);
     .cancel-btn-table:hover:not(:disabled) {
       background: var(--delete-color);
       color: var(--white-color);
+    }
+
+    #noResults {
+      display: none;
+    }
+
+    #noResults td {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    #noResults i {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+      color: #ddd;
+    }
+
+    #paginationControls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-number {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .page-number:hover {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      transform: translateY(-1px);
+    }
+
+    .page-number.active {
+      background: var(--dark-color);
+      color: white;
+      border-color: var(--dark-color);
     }
 
     .modal {
@@ -537,7 +731,7 @@ $packages_result = pg_query($conn, $packages_query);
     @media screen and (max-width: 1024px) {
       table {
         font-size: 0.85rem;
-        min-width: 900px;
+        min-width: 1100px;
       }
 
       th, td {
@@ -568,13 +762,41 @@ $packages_result = pg_query($conn, $packages_query);
         font-size: 1.6rem;
       }
 
+      .filter-section {
+        padding: 20px;
+      }
+
+      .filter-controls {
+        flex-direction: column;
+      }
+
+      .search-box,
+      .filter-group {
+        width: 100%;
+      }
+
+      .clear-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
       .table-section {
         padding: 20px;
       }
 
+      .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .table-info {
+        width: 100%;
+        justify-content: space-between;
+      }
+
       table {
         font-size: 0.8rem;
-        min-width: 800px;
+        min-width: 1000px;
       }
 
       th, td {
@@ -622,9 +844,13 @@ $packages_result = pg_query($conn, $packages_query);
         font-size: 1.4rem;
       }
 
+      .filter-section {
+        padding: 15px;
+      }
+
       table {
         font-size: 0.75rem;
-        min-width: 700px;
+        min-width: 900px;
       }
 
       th, td {
@@ -672,8 +898,74 @@ $packages_result = pg_query($conn, $packages_query);
     <p>Manage and track all grooming appointments</p>
   </div>
 
+  <div class="filter-section">
+    <div class="filter-controls">
+      <div class="search-box">
+        <i class='bx bx-search'></i>
+        <input type="text" id="searchInput" placeholder="Search by ID, customer, pet, breed..." />
+      </div>
+      <div class="filter-group">
+        <select id="statusFilter">
+          <option value="all">All Status</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="no_show">No Show</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <select id="packageFilter">
+          <option value="all">All Packages</option>
+          <?php
+          pg_result_seek($packages_result, 0);
+          while ($pkg = pg_fetch_assoc($packages_result)):
+          ?>
+          <option value="<?= strtolower(htmlspecialchars($pkg['name'])) ?>"><?= htmlspecialchars($pkg['name']) ?></option>
+          <?php endwhile; ?>
+        </select>
+      </div>
+      <div class="filter-group">
+        <select id="groomerFilter">
+          <option value="all">All Groomers</option>
+          <?php
+          pg_result_seek($groomers_result, 0);
+          while ($g = pg_fetch_assoc($groomers_result)):
+          ?>
+          <option value="<?= strtolower(htmlspecialchars($g['groomer_name'])) ?>"><?= htmlspecialchars($g['groomer_name']) ?></option>
+          <?php endwhile; ?>
+        </select>
+      </div>
+      <div class="filter-group">
+        <select id="dateRangeFilter">
+          <option value="all">All Dates</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="past">Past</option>
+        </select>
+      </div>
+      <button class="clear-btn" onclick="clearFilters()">
+        <i class='bx bx-x-circle'></i> Clear
+      </button>
+    </div>
+  </div>
+
   <div class="table-section">
-    <h2>Appointment List</h2>
+    <div class="table-header">
+      <h2>Appointment List</h2>
+      <div class="table-info">
+        <div class="results-count" id="resultsCount"></div>
+        <select class="items-per-page" id="itemsPerPage">
+          <option value="10">10 per page</option>
+          <option value="25">25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
+          <option value="all">Show all</option>
+        </select>
+      </div>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -696,8 +988,17 @@ $packages_result = pg_query($conn, $packages_query);
             $status = strtolower($row['status']);
             $is_disabled = ($status === 'completed' || $status === 'cancelled');
           ?>
-          <tr>
-            <td><?= $counter++ ?></td>
+          <tr class="appointment-row"
+              data-id="<?= strtolower(htmlspecialchars($row['appointment_id'] ?? '')) ?>"
+              data-date="<?= htmlspecialchars($row['appointment_date'] ?? '') ?>"
+              data-customer="<?= strtolower(htmlspecialchars($row['customer_name'] ?? '')) ?>"
+              data-package="<?= strtolower(htmlspecialchars($row['package_name'] ?? '')) ?>"
+              data-pet="<?= strtolower(htmlspecialchars($row['pet_name'] ?? '')) ?>"
+              data-breed="<?= strtolower(htmlspecialchars($row['pet_breed'] ?? '')) ?>"
+              data-status="<?= $status ?>"
+              data-groomer="<?= strtolower(htmlspecialchars($row['groomer_name'])) ?>"
+              data-counter="<?= $counter ?>">
+            <td class="row-counter"><?= $counter++ ?></td>
             <td><?= htmlspecialchars($row['appointment_id'] ?? '') ?></td>
             <td><?= htmlspecialchars($row['appointment_date'] ?? '') ?></td>
             <td><?= htmlspecialchars($row['customer_name'] ?? 'N/A') ?></td>
@@ -730,8 +1031,33 @@ $packages_result = pg_query($conn, $packages_query);
             </td>
           </tr>
         <?php endwhile; ?>
+        <tr id="noResults">
+          <td colspan="10">
+            <i class='bx bx-search-alt'></i>
+            <strong>No appointments found</strong>
+            <p style="margin-top: 5px; font-size: 0.9rem;">Try adjusting your search or filters</p>
+          </td>
+        </tr>
       </tbody>
     </table>
+
+    <div id="paginationControls">
+      <button onclick="changePage('first')" id="firstBtn" class="pagination-btn">
+        <i class='bx bx-chevrons-left'></i>
+      </button>
+      <button onclick="changePage('prev')" id="prevBtn" class="pagination-btn">
+        <i class='bx bx-chevron-left'></i> Prev
+      </button>
+      
+      <div id="pageNumbers" style="display: flex; gap: 5px; flex-wrap: wrap;"></div>
+      
+      <button onclick="changePage('next')" id="nextBtn" class="pagination-btn">
+        Next <i class='bx bx-chevron-right'></i>
+      </button>
+      <button onclick="changePage('last')" id="lastBtn" class="pagination-btn">
+        <i class='bx bx-chevrons-right'></i>
+      </button>
+    </div>
   </div>
 </main>
 
@@ -790,6 +1116,10 @@ $packages_result = pg_query($conn, $packages_query);
 </div>
 
 <script>
+let currentPage = 1;
+let itemsPerPage = 10;
+let filteredRows = [];
+
 function showToast(message, type = 'success') {
   const existingToasts = document.querySelectorAll('.toast');
   existingToasts.forEach(toast => toast.remove());
@@ -884,6 +1214,279 @@ document.addEventListener('DOMContentLoaded', function() {
       modal.style.display = "none";
     }
   });
+
+  initPagination();
+});
+
+function filterAppointments() {
+  const searchValue = document.getElementById('searchInput').value.toLowerCase();
+  const statusFilter = document.getElementById('statusFilter').value;
+  const packageFilter = document.getElementById('packageFilter').value;
+  const groomerFilter = document.getElementById('groomerFilter').value;
+  const dateRangeFilter = document.getElementById('dateRangeFilter').value;
+  const rows = document.querySelectorAll('.appointment-row');
+  filteredRows = [];
+  
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  rows.forEach(row => {
+    const id = row.getAttribute('data-id');
+    const appointmentDateStr = row.getAttribute('data-date');
+    const customer = row.getAttribute('data-customer');
+    const packageName = row.getAttribute('data-package');
+    const petName = row.getAttribute('data-pet');
+    const breed = row.getAttribute('data-breed');
+    const status = row.getAttribute('data-status');
+    const groomer = row.getAttribute('data-groomer');
+    
+    const matchesSearch = searchValue === '' || 
+                         id.includes(searchValue) || 
+                         customer.includes(searchValue) ||
+                         packageName.includes(searchValue) ||
+                         petName.includes(searchValue) ||
+                         breed.includes(searchValue) ||
+                         groomer.includes(searchValue);
+    
+    const matchesStatus = statusFilter === 'all' || status === statusFilter;
+    const matchesPackage = packageFilter === 'all' || packageName === packageFilter;
+    const matchesGroomer = groomerFilter === 'all' || groomer === groomerFilter;
+    
+    let matchesDateRange = true;
+    if (appointmentDateStr && dateRangeFilter !== 'all') {
+      const appointmentDate = new Date(appointmentDateStr);
+      
+      if (dateRangeFilter === 'today') {
+        const apptDate = new Date(appointmentDate.getFullYear(), appointmentDate.getMonth(), appointmentDate.getDate());
+        matchesDateRange = apptDate.getTime() === today.getTime();
+      } else if (dateRangeFilter === 'week') {
+        const weekFromNow = new Date(today);
+        weekFromNow.setDate(weekFromNow.getDate() + 7);
+        matchesDateRange = appointmentDate >= today && appointmentDate <= weekFromNow;
+      } else if (dateRangeFilter === 'month') {
+        const monthFromNow = new Date(today);
+        monthFromNow.setMonth(monthFromNow.getMonth() + 1);
+        matchesDateRange = appointmentDate >= today && appointmentDate <= monthFromNow;
+      } else if (dateRangeFilter === 'upcoming') {
+        matchesDateRange = appointmentDate >= now;
+      } else if (dateRangeFilter === 'past') {
+        matchesDateRange = appointmentDate < now;
+      }
+    }
+    
+    if (matchesSearch && matchesStatus && matchesPackage && matchesGroomer && matchesDateRange) {
+      filteredRows.push(row);
+    }
+  });
+  
+  currentPage = 1;
+  displayPage();
+}
+
+function displayPage() {
+  const rows = document.querySelectorAll('.appointment-row');
+  const noResults = document.getElementById('noResults');
+  const itemsPerPageSelect = document.getElementById('itemsPerPage').value;
+  
+  itemsPerPage = itemsPerPageSelect === 'all' ? filteredRows.length : parseInt(itemsPerPageSelect);
+  
+  rows.forEach(row => {
+    row.style.display = 'none';
+  });
+  
+  const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  
+  const pageRows = filteredRows.slice(startIndex, endIndex);
+  pageRows.forEach((row, index) => {
+    row.style.display = '';
+    const counterCell = row.querySelector('.row-counter');
+    if (counterCell) {
+      counterCell.textContent = startIndex + index + 1;
+    }
+  });
+  
+  if (filteredRows.length === 0) {
+    noResults.style.display = '';
+  } else {
+    noResults.style.display = 'none';
+  }
+  
+  updatePaginationControls(totalPages);
+  updateResultsCount(filteredRows.length, document.querySelectorAll('.appointment-row').length, startIndex, endIndex);
+}
+
+function updatePaginationControls(totalPages) {
+  const paginationControls = document.getElementById('paginationControls');
+  const pageNumbers = document.getElementById('pageNumbers');
+  const firstBtn = document.getElementById('firstBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const lastBtn = document.getElementById('lastBtn');
+  const itemsPerPageSelect = document.getElementById('itemsPerPage').value;
+  
+  if (itemsPerPageSelect === 'all' || totalPages <= 1) {
+    paginationControls.style.display = 'none';
+    return;
+  }
+  
+  paginationControls.style.display = 'flex';
+  
+  firstBtn.disabled = currentPage === 1;
+  prevBtn.disabled = currentPage === 1;
+  nextBtn.disabled = currentPage === totalPages;
+  lastBtn.disabled = currentPage === totalPages;
+  
+  pageNumbers.innerHTML = '';
+  
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, startPage + 4);
+  
+  if (endPage - startPage < 4) {
+    startPage = Math.max(1, endPage - 4);
+  }
+  
+  if (startPage > 1) {
+    const firstPage = createPageButton(1);
+    pageNumbers.appendChild(firstPage);
+    
+    if (startPage > 2) {
+      const ellipsis = document.createElement('span');
+      ellipsis.textContent = '...';
+      ellipsis.style.padding = '8px 4px';
+      ellipsis.style.color = '#999';
+      pageNumbers.appendChild(ellipsis);
+    }
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const pageBtn = createPageButton(i);
+    pageNumbers.appendChild(pageBtn);
+  }
+  
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      const ellipsis = document.createElement('span');
+      ellipsis.textContent = '...';
+      ellipsis.style.padding = '8px 4px';
+      ellipsis.style.color = '#999';
+      pageNumbers.appendChild(ellipsis);
+    }
+    
+    const lastPage = createPageButton(totalPages);
+    pageNumbers.appendChild(lastPage);
+  }
+}
+
+function createPageButton(pageNum) {
+  const btn = document.createElement('button');
+  btn.textContent = pageNum;
+  btn.className = 'page-number' + (pageNum === currentPage ? ' active' : '');
+  btn.onclick = () => goToPage(pageNum);
+  return btn;
+}
+
+function goToPage(pageNum) {
+  currentPage = pageNum;
+  displayPage();
+  document.querySelector('.table-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function changePage(direction) {
+  const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+  
+  switch(direction) {
+    case 'first':
+      currentPage = 1;
+      break;
+    case 'prev':
+      if (currentPage > 1) currentPage--;
+      break;
+    case 'next':
+      if (currentPage < totalPages) currentPage++;
+      break;
+    case 'last':
+      currentPage = totalPages;
+      break;
+  }
+  
+  displayPage();
+  document.querySelector('.table-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function initPagination() {
+  const rows = document.querySelectorAll('.appointment-row');
+  filteredRows = Array.from(rows);
+  displayPage();
+}
+
+function updateResultsCount(visible = null, total = null, startIndex = 0, endIndex = 0) {
+  const resultsCount = document.getElementById('resultsCount');
+  const rows = document.querySelectorAll('.appointment-row');
+  
+  if (visible === null) {
+    visible = rows.length;
+    total = rows.length;
+  }
+  
+  const itemsPerPageSelect = document.getElementById('itemsPerPage').value;
+  
+  if (itemsPerPageSelect === 'all' || visible <= itemsPerPage) {
+    if (visible === total) {
+      resultsCount.textContent = `Showing all ${total} appointment${total !== 1 ? 's' : ''}`;
+    } else {
+      resultsCount.textContent = `Showing ${visible} of ${total} appointment${total !== 1 ? 's' : ''}`;
+    }
+  } else {
+    const showing = Math.min(endIndex, visible);
+    resultsCount.textContent = `Showing ${startIndex + 1}-${showing} of ${visible} appointment${visible !== 1 ? 's' : ''}`;
+  }
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('statusFilter').value = 'all';
+  document.getElementById('packageFilter').value = 'all';
+  document.getElementById('groomerFilter').value = 'all';
+  document.getElementById('dateRangeFilter').value = 'all';
+  filterAppointments();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  const statusFilter = document.getElementById('statusFilter');
+  const packageFilter = document.getElementById('packageFilter');
+  const groomerFilter = document.getElementById('groomerFilter');
+  const dateRangeFilter = document.getElementById('dateRangeFilter');
+  const itemsPerPageSelect = document.getElementById('itemsPerPage');
+  
+  if (searchInput) {
+    searchInput.addEventListener('keyup', filterAppointments);
+  }
+  
+  if (statusFilter) {
+    statusFilter.addEventListener('change', filterAppointments);
+  }
+  
+  if (packageFilter) {
+    packageFilter.addEventListener('change', filterAppointments);
+  }
+  
+  if (groomerFilter) {
+    groomerFilter.addEventListener('change', filterAppointments);
+  }
+  
+  if (dateRangeFilter) {
+    dateRangeFilter.addEventListener('change', filterAppointments);
+  }
+
+  if (itemsPerPageSelect) {
+    itemsPerPageSelect.addEventListener('change', function() {
+      currentPage = 1;
+      displayPage();
+    });
+  }
 });
 </script>
 
