@@ -12,58 +12,40 @@ $user_id = $_SESSION['user_id'];
 
 // Handle pet archiving (soft delete)
 if (isset($_GET['archive_id'])) {
-    $archive_id = $_GET['archive_id']; // Keep as text
+    $archive_id = $_GET['archive_id']; // Keep as text since pet_id might be text too
     
-    error_log("=== ARCHIVE DEBUG ===");
-    error_log("Archive ID: " . $archive_id);
-    error_log("User ID: " . $user_id);
-    
-    // Verify the pet belongs to the logged-in user (REMOVE deleted_at check here)
-    $verify_query = "SELECT user_id, name, deleted_at FROM pets WHERE pet_id = $1";
+    // Verify the pet belongs to the logged-in user
+    $verify_query = "SELECT user_id, name FROM pets WHERE pet_id = $1";
     $verify_result = pg_query_params($conn, $verify_query, [$archive_id]);
-    
-    error_log("Query executed. Rows found: " . pg_num_rows($verify_result));
     
     if ($verify_result && pg_num_rows($verify_result) > 0) {
         $pet = pg_fetch_assoc($verify_result);
         
-        error_log("Pet found: " . $pet['name']);
-        error_log("Pet owner: " . $pet['user_id']);
-        error_log("Current deleted_at: " . ($pet['deleted_at'] ?? 'NULL'));
-        
         if ($pet['user_id'] == $user_id) {
-            error_log("User authorized. Executing archive...");
-            
-            // Archive the pet (soft delete)
-            $archive_query = "UPDATE pets SET deleted_at = CURRENT_TIMESTAMP WHERE pet_id = $1";
-            $archive_result = pg_query_params($conn, $archive_query, [$archive_id]);
+            // Archive the pet (soft delete) - set timestamp
+            $archive_query = "UPDATE pets SET deleted_at = CURRENT_TIMESTAMP WHERE pet_id = $1 AND user_id = $2";
+            $archive_result = pg_query_params($conn, $archive_query, [$archive_id, $user_id]);
             
             if ($archive_result) {
                 $affected = pg_affected_rows($archive_result);
-                error_log("Rows affected: " . $affected);
-                
                 if ($affected > 0) {
                     $_SESSION['success'] = "Pet '{$pet['name']}' has been archived successfully.";
                 } else {
                     $_SESSION['error'] = "Failed to archive pet. No rows affected.";
-                    error_log("ERROR: No rows affected!");
+                    error_log("Archive failed: No rows affected for pet_id=$archive_id");
                 }
             } else {
-                $error = pg_last_error($conn);
-                $_SESSION['error'] = "Database error: " . $error;
-                error_log("ERROR: " . $error);
+                $_SESSION['error'] = "Database error: " . pg_last_error($conn);
+                error_log("Archive query failed: " . pg_last_error($conn));
             }
         } else {
             $_SESSION['error'] = "Unauthorized action.";
-            error_log("ERROR: User not authorized");
         }
     } else {
         $_SESSION['error'] = "Pet not found.";
-        error_log("ERROR: Pet not found in database");
     }
     
-    error_log("=== END ARCHIVE DEBUG ===");
-    
+    // Redirect to clean URL
     header('Location: pet-profile.php');
     exit;
 }
