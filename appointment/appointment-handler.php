@@ -2,6 +2,13 @@
 session_start();
 require '../db.php';
 
+// ✅ Include PHPMailer and email function
+require_once './vendor/autoload.php';
+require_once 'send-booking-confirmation.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // ✅ DEBUG: Log all incoming data
 error_log("=== APPOINTMENT HANDLER STARTED ===");
 error_log("POST data: " . print_r($_POST, true));
@@ -96,7 +103,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $row = pg_fetch_assoc($result);
         $appointment_id = $row['appointment_id'];
         
-        error_log("Appointment created successfully! ID: $appointment_id");
+        error_log("✓ Appointment created successfully! ID: $appointment_id");
+
+        // ✅ NEW: Send confirmation email
+        error_log("Attempting to send confirmation email...");
+        $email_result = sendBookingConfirmation($conn, $appointment_id);
+        
+        if ($email_result['success']) {
+            error_log("✓ Confirmation email sent successfully to: " . $email_result['recipient']);
+            $_SESSION['success'] = "🎉 Appointment booked successfully! A confirmation email has been sent to your email address.";
+        } else {
+            error_log("✗ Failed to send confirmation email: " . $email_result['message']);
+            // Still show success since appointment was created
+            $_SESSION['success'] = "✓ Appointment booked successfully! However, we couldn't send the confirmation email. Please check your appointments page.";
+        }
 
         // Run Python script for recommendation (optional)
         $pythonPath = "C:\\Users\\Ivan\\AppData\\Local\\Programs\\Python\\Python313\\python.exe";
@@ -105,9 +125,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $output = shell_exec($command);
 
         // Redirect to appointment confirmation page
-        $_SESSION['success'] = "Appointment booked successfully!";
         header("Location: ../homepage/appointments.php?appointment_id=$appointment_id");
         exit;
+        
     } else {
         $error = pg_last_error($conn);
         error_log("ERROR: Database insert failed - $error");
