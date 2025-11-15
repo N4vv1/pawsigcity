@@ -12,7 +12,7 @@ $user_id = $_SESSION['user_id'];
 
 // Handle pet archiving (soft delete)
 if (isset($_GET['archive_id'])) {
-    $archive_id = intval($_GET['archive_id']); // Sanitize input
+    $archive_id = ($_GET['archive_id']); // Sanitize input
     
     // Verify the pet belongs to the logged-in user
     $verify_query = "SELECT user_id, name FROM pets WHERE pet_id = $1 AND deleted_at IS NULL";
