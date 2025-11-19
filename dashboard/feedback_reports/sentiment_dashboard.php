@@ -676,7 +676,7 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
     <hr>
     <a href="../feedback_reports/sentiment_dashboard.php" class="active"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="email_notifications.php" class="active"><i class='bx bx-mail-send'></i>Email Notifications</a>
+    <a href="../Notification/email_notifications.php"><i class='bx bx-mail-send'></i>Email Notifications</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>

@@ -804,6 +804,7 @@ if (isset($_GET['id'])) {
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
+    <a href="../Notification/email_notifications.php" class="active"><i class='bx bx-mail-send'></i>Email Notifications</a>
     <a href="email_notifications.php" class="active"><i class='bx bx-mail-send'></i>Email Notifications</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
