@@ -939,7 +939,7 @@ if ($noShowCount > 0) {
             JOIN users u ON a.user_id = u.user_id
             JOIN pets p ON a.pet_id = p.pet_id
             JOIN packages pk ON a.package_id = pk.package_id
-            ORDER BY a.appointment_id ASC
+            ORDER BY a.appointment_id DESC
         ";
         $appointmentList = pg_query($conn, $appointmentQuery);
         if ($appointmentList):
