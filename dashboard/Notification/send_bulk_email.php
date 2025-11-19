@@ -34,7 +34,7 @@ if (!file_exists('../../db.php')) {
 require_once '../../db.php';
 
 // Check for PHPMailer
-$autoload_paths = ['/homepage/login/vendor/autoload.php', '../vendor/autoload.php', '../../vendor/autoload.php'];
+$autoload_paths = ['/homepage/login/vendor/autoload.php', '../Notification/vendor/autoload.php', '../../vendor/autoload.php'];
 $autoload_found = false;
 
 foreach ($autoload_paths as $path) {
