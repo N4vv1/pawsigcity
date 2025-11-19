@@ -827,6 +827,8 @@ if (isset($_GET['edit'])) {
     <hr>
     <a href="../feedback_reports/feedback-reports.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
+    <a href="email_notifications.php" class="active"><i class='bx bx-mail-send'></i>Email Notifications</a>
+    <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
 </aside>

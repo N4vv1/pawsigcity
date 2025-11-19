@@ -570,7 +570,9 @@ if ($noShowCount > 0) {
     <hr>
     <a href="../gallery_dashboard/gallery.php"><i class='bx bx-camera'></i>Pet Gallery</a>
     <hr>
-    <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
+    <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Sentiment Analysis</a>
+    <hr>
+    <a href="email_notifications.php" class="active"><i class='bx bx-mail-send'></i>Email Notifications</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>

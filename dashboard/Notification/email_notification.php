@@ -596,7 +596,7 @@ $templates = include('email_templates.php');
       </div>
     </div>
 
-    <!-- Custom Content (shown for custom template or override) -->
+    <!-- Custom Content (shown for custom template, announcement, or override) -->
     <div class="card" id="customContent" style="display: none;">
       <h2><i class='bx bx-edit'></i> Customize Your Message</h2>
       <div class="form-group">
@@ -679,23 +679,33 @@ document.getElementById('template').addEventListener('change', function() {
   
   if (templateType) {
     const template = templates[templateType];
-    preview.style.display = 'block';
     
-    previewContent.innerHTML = `
-      <h3 style="color: #2d5f4a; margin-bottom: 15px;">${template.title}</h3>
-      <p style="font-size: 14px; color: #666; margin-bottom: 10px;"><strong>Subject:</strong> ${template.subject}</p>
-      <div style="border-top: 1px solid #ddd; padding-top: 15px; margin-top: 15px;">
-        ${template.content}
-      </div>
-    `;
-    
-    // Show custom content section for custom template
+    // Show custom content for custom template OR general announcement
     if (templateType === 'custom') {
+      // For custom template: no preview, show editable fields
+      preview.style.display = 'none';
+      customContent.style.display = 'block';
+      document.getElementById('customSubject').value = template.subject;
+      document.getElementById('customMessage').value = template.content;
+    } else if (templateType === 'announcement') {
+      // For general announcement: no preview, show editable fields with default content
+      preview.style.display = 'none';
       customContent.style.display = 'block';
       document.getElementById('customSubject').value = template.subject;
       document.getElementById('customMessage').value = template.content;
     } else {
+      // For other templates: show preview, hide custom content
+      preview.style.display = 'block';
       customContent.style.display = 'none';
+      
+      previewContent.innerHTML = `
+        <h3 style="color: #2d5f4a; margin-bottom: 15px;">${template.title}</h3>
+        <p style="font-size: 14px; color: #666; margin-bottom: 10px;"><strong>Subject:</strong> ${template.subject}</p>
+        <div style="border-top: 1px solid #ddd; padding-top: 15px; margin-top: 15px;">
+          ${template.content}
+        </div>
+      `;
+      
       document.getElementById('customSubject').value = '';
       document.getElementById('customMessage').value = '';
     }
@@ -745,6 +755,17 @@ document.getElementById('emailForm').addEventListener('submit', async function(e
     const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
     if (checkedBoxes.length === 0) {
       showToast('Please select at least one recipient', 'error');
+      return;
+    }
+  }
+  
+  // Validate custom content for custom and announcement templates
+  if (templateType === 'custom' || templateType === 'announcement') {
+    const customSubject = document.getElementById('customSubject').value.trim();
+    const customMessage = document.getElementById('customMessage').value.trim();
+    
+    if (!customSubject || !customMessage) {
+      showToast('Please fill in both subject and message content', 'error');
       return;
     }
   }
