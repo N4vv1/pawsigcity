@@ -80,6 +80,33 @@ $feedback_query = "
     LIMIT $records_per_page OFFSET $offset
 ";
 $feedback_result = pg_query($conn, $feedback_query);
+
+// Get all feedback for export (without pagination)
+$all_feedback_query = "
+    SELECT a.appointment_id, a.feedback, a.rating, a.sentiment, a.appointment_date,
+           u.first_name, u.middle_name, u.last_name,
+           p.name AS pet_name
+    FROM appointments a
+    JOIN users u ON a.user_id = u.user_id
+    JOIN pets p ON a.pet_id = p.pet_id
+    WHERE a.feedback IS NOT NULL $date_condition
+    ORDER BY a.sentiment DESC, a.appointment_date DESC
+";
+$all_feedback_result = pg_query($conn, $all_feedback_query);
+
+// Organize feedback by sentiment
+$feedback_by_sentiment = [
+    'positive' => [],
+    'neutral' => [],
+    'negative' => [],
+    'pending' => []
+];
+
+while ($row = pg_fetch_assoc($all_feedback_result)) {
+    $sentiment = $row['sentiment'] ?? 'pending';
+    $sentiment_key = in_array($sentiment, ['positive', 'neutral', 'negative']) ? $sentiment : 'pending';
+    $feedback_by_sentiment[$sentiment_key][] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -630,18 +657,89 @@ $feedback_result = pg_query($conn, $feedback_query);
       100% { transform: rotate(360deg); }
     }
 
+    /* PRINT STYLES */
     @media print {
-      .sidebar, .export-btn, .analyze-section, .filter-buttons, .pagination, .apply-filter-btn {
+      .sidebar, .export-btn, .analyze-section, .filter-buttons, .pagination, .apply-filter-btn, .date-filter-section, #screenDisplay {
         display: none !important;
       }
       
       main {
         margin-left: 0;
         width: 100%;
+        padding: 20px;
       }
 
-      .feedback-section {
-        box-shadow: none;
+      .header {
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+      }
+
+      #exportDisplay {
+        display: block !important;
+      }
+
+      .sentiment-section {
+        page-break-inside: avoid;
+        margin-bottom: 30px;
+      }
+
+      .sentiment-summary {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+      }
+
+      .sentiment-header {
+        font-size: 1.1rem;
+        font-weight: 700;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 4px;
+      }
+
+      .sentiment-header.positive {
+        background-color: rgba(76, 175, 80, 0.15);
+        color: #2e7d32;
+      }
+
+      .sentiment-header.neutral {
+        background-color: rgba(255, 152, 0, 0.15);
+        color: #e65100;
+      }
+
+      .sentiment-header.negative {
+        background-color: rgba(244, 67, 54, 0.15);
+        color: #c62828;
+      }
+
+      .sentiment-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+      }
+
+      .sentiment-table th,
+      .sentiment-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+        font-size: 0.9rem;
+      }
+
+      .sentiment-table th {
+        background-color: #f0f0f0;
+        font-weight: 600;
+      }
+
+      .no-feedback {
+        text-align: center;
+        padding: 15px;
+        color: #999;
+        font-style: italic;
       }
     }
   </style>
@@ -782,8 +880,8 @@ $feedback_result = pg_query($conn, $feedback_query);
   </div>
   <?php endif; ?>
 
-  <!-- Feedback Table -->
-  <div class="feedback-section">
+  <!-- Screen Display Feedback Table -->
+  <div class="feedback-section" id="screenDisplay">
     <h2>All Feedback (Page <?= $page ?> of <?= $total_pages ?>)</h2>
     
     <div class="filter-buttons">
@@ -882,6 +980,162 @@ $feedback_result = pg_query($conn, $feedback_query);
       <a href="?page=<?= $total_pages ?><?= $query_params ?>" class="<?= $page >= $total_pages ? 'disabled' : '' ?>">
         <i class='bx bx-chevrons-right'></i>
       </a>
+    </div>
+    <?php endif; ?>
+  </div>
+
+  <!-- PDF Export Display (Hidden from screen, visible on print) -->
+  <div id="exportDisplay" style="display: none;">
+    <h2>Feedback Report - Organized by Sentiment</h2>
+    <p style="margin-bottom: 20px; color: #666;">Report Generated: <?= date('M d, Y H:i') ?></p>
+
+    <!-- POSITIVE FEEDBACK -->
+    <div class="sentiment-section">
+      <div class="sentiment-header positive">
+        ✓ POSITIVE FEEDBACK (<?= count($feedback_by_sentiment['positive']) ?> responses)
+      </div>
+      <div class="sentiment-summary">
+        <strong>Count:</strong> <?= count($feedback_by_sentiment['positive']) ?> | 
+        <strong>Percentage:</strong> <?= $positive_percent ?>% of total feedback
+      </div>
+      <?php if (count($feedback_by_sentiment['positive']) > 0): ?>
+      <table class="sentiment-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Pet</th>
+            <th>Rating</th>
+            <th>Feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($feedback_by_sentiment['positive'] as $row): 
+            $customer_name = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+          ?>
+          <tr>
+            <td><?= date('M d, Y', strtotime($row['appointment_date'])) ?></td>
+            <td><?= htmlspecialchars($customer_name) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= $row['rating'] ?>/5 ⭐</td>
+            <td><?= htmlspecialchars($row['feedback']) ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+      <?php else: ?>
+      <p class="no-feedback">No positive feedback in this period.</p>
+      <?php endif; ?>
+    </div>
+
+    <!-- NEUTRAL FEEDBACK -->
+    <div class="sentiment-section">
+      <div class="sentiment-header neutral">
+        ◆ NEUTRAL FEEDBACK (<?= count($feedback_by_sentiment['neutral']) ?> responses)
+      </div>
+      <div class="sentiment-summary">
+        <strong>Count:</strong> <?= count($feedback_by_sentiment['neutral']) ?> | 
+        <strong>Percentage:</strong> <?= $neutral_percent ?>% of total feedback
+      </div>
+      <?php if (count($feedback_by_sentiment['neutral']) > 0): ?>
+      <table class="sentiment-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Pet</th>
+            <th>Rating</th>
+            <th>Feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($feedback_by_sentiment['neutral'] as $row): 
+            $customer_name = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+          ?>
+          <tr>
+            <td><?= date('M d, Y', strtotime($row['appointment_date'])) ?></td>
+            <td><?= htmlspecialchars($customer_name) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= $row['rating'] ?>/5 ⭐</td>
+            <td><?= htmlspecialchars($row['feedback']) ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+      <?php else: ?>
+      <p class="no-feedback">No neutral feedback in this period.</p>
+      <?php endif; ?>
+    </div>
+
+    <!-- NEGATIVE FEEDBACK -->
+    <div class="sentiment-section">
+      <div class="sentiment-header negative">
+        ✗ NEGATIVE FEEDBACK (<?= count($feedback_by_sentiment['negative']) ?> responses)
+      </div>
+      <div class="sentiment-summary">
+        <strong>Count:</strong> <?= count($feedback_by_sentiment['negative']) ?> | 
+        <strong>Percentage:</strong> <?= $negative_percent ?>% of total feedback
+      </div>
+      <?php if (count($feedback_by_sentiment['negative']) > 0): ?>
+      <table class="sentiment-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Pet</th>
+            <th>Rating</th>
+            <th>Feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($feedback_by_sentiment['negative'] as $row): 
+            $customer_name = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+          ?>
+          <tr>
+            <td><?= date('M d, Y', strtotime($row['appointment_date'])) ?></td>
+            <td><?= htmlspecialchars($customer_name) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= $row['rating'] ?>/5 ⭐</td>
+            <td><?= htmlspecialchars($row['feedback']) ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+      <?php else: ?>
+      <p class="no-feedback">No negative feedback in this period.</p>
+      <?php endif; ?>
+    </div>
+
+    <!-- PENDING FEEDBACK -->
+    <?php if (count($feedback_by_sentiment['pending']) > 0): ?>
+    <div class="sentiment-section">
+      <div class="sentiment-header" style="background-color: rgba(158, 158, 158, 0.15); color: #616161;">
+        ⏳ PENDING ANALYSIS (<?= count($feedback_by_sentiment['pending']) ?> responses)
+      </div>
+      <table class="sentiment-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Pet</th>
+            <th>Rating</th>
+            <th>Feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($feedback_by_sentiment['pending'] as $row): 
+            $customer_name = trim($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+          ?>
+          <tr>
+            <td><?= date('M d, Y', strtotime($row['appointment_date'])) ?></td>
+            <td><?= htmlspecialchars($customer_name) ?></td>
+            <td><?= htmlspecialchars($row['pet_name']) ?></td>
+            <td><?= $row['rating'] ?>/5 ⭐</td>
+            <td><?= htmlspecialchars($row['feedback']) ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
     </div>
     <?php endif; ?>
   </div>

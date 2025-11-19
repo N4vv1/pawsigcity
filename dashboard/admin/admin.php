@@ -1158,7 +1158,7 @@ if ($noShowCount > 0) {
 <!-- FEEDBACK MODAL -->
 <div id="feedbackModal" class="modal">
   <div class="modal-content" style="max-width: 1600px; max-height: 90vh; overflow-y: auto;">
-    <h2>📊 Customer Feedback Analysis</h2>
+    <h2>Customer Feedback Analysis</h2>
     
     <!-- Filter Section -->
     <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
