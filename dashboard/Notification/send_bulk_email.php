@@ -1,11 +1,12 @@
 <?php
 /**
- * Send Bulk Email - Robust Version
+ * Send Bulk Email - Fixed Version
  */
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
+set_time_limit(300); // 5 minutes max execution time
 
 session_start();
 header('Content-Type: application/json');
@@ -33,23 +34,36 @@ if (!file_exists('../../db.php')) {
 
 require_once '../../db.php';
 
-// Check for PHPMailer
-$autoload_paths = ['/homepage/login/vendor/autoload.php', '../Notification/vendor/autoload.php', '../../vendor/autoload.php'];
+// Check for PHPMailer - FIXED PATHS
+$autoload_paths = [
+    __DIR__ . '/vendor/autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../../homepage/login/vendor/autoload.php'
+];
+
 $autoload_found = false;
 
 foreach ($autoload_paths as $path) {
+    error_log("Checking autoload path: $path");
     if (file_exists($path)) {
         require $path;
         $autoload_found = true;
-        error_log("PHPMailer autoload found at: $path");
+        error_log("✓ PHPMailer autoload found at: $path");
         break;
     }
 }
 
 if (!$autoload_found) {
+    error_log("✗ PHPMailer autoload not found in any of these paths:");
+    foreach ($autoload_paths as $path) {
+        error_log("  - $path");
+    }
+    
     echo json_encode([
         'success' => false, 
-        'message' => 'PHPMailer not installed. Please install via Composer: composer require phpmailer/phpmailer'
+        'message' => 'PHPMailer not installed. Please install via Composer: composer require phpmailer/phpmailer',
+        'debug' => 'Checked paths: ' . implode(', ', $autoload_paths)
     ]);
     exit;
 }
@@ -214,6 +228,21 @@ try {
         </div>
     ";
     
+    // SMTP Configuration - GET FROM ENVIRONMENT OR CONFIG
+    $smtp_username = getenv('SMTP_USERNAME');
+    $smtp_password = getenv('SMTP_PASSWORD');
+    
+    // Fallback to hardcoded (REMOVE THIS IN PRODUCTION!)
+    if (empty($smtp_username)) {
+        $smtp_username = 'johnbernardmitra25@gmail.com';
+        $smtp_password = 'iigy qtnu ojku ktsx';
+        error_log("WARNING: Using hardcoded SMTP credentials");
+    }
+    
+    if (empty($smtp_username) || empty($smtp_password)) {
+        throw new Exception('SMTP credentials not configured');
+    }
+    
     // Send emails
     $success_count = 0;
     $failed_count = 0;
@@ -232,22 +261,17 @@ try {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = getenv('SMTP_USERNAME') ?: 'johnbernardmitra25@gmail.com';
-            $mail->Password   = getenv('SMTP_PASSWORD') ?: 'iigy qtnu ojku ktsx';
+            $mail->Username   = $smtp_username;
+            $mail->Password   = $smtp_password;
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
             $mail->SMTPDebug  = 0; // Set to 2 for debugging
-            $mail->Timeout    = 30; // 30 seconds timeout
-            
-            // Verify credentials are set
-            if (empty($mail->Username) || empty($mail->Password)) {
-                throw new Exception('SMTP credentials not configured');
-            }
+            $mail->Timeout    = 30;
             
             // Email settings
-            $mail->setFrom($mail->Username, 'PAWsig City');
+            $mail->setFrom($smtp_username, 'PAWsig City');
             $mail->addAddress($recipient_email, $recipient_name);
-            $mail->addReplyTo($mail->Username, 'PAWsig City');
+            $mail->addReplyTo($smtp_username, 'PAWsig City');
             
             $mail->isHTML(true);
             $mail->CharSet = 'UTF-8';
@@ -256,15 +280,18 @@ try {
             $mail->AltBody = strip_tags($email_content);
             
             // Send email
-            $mail->send();
-            $success_count++;
-            error_log("✓ Email sent successfully to: $recipient_email");
+            if ($mail->send()) {
+                $success_count++;
+                error_log("✓ Email sent successfully to: $recipient_email");
+            } else {
+                throw new Exception("Send failed: " . $mail->ErrorInfo);
+            }
             
             // Clear recipients for next iteration
             $mail->clearAddresses();
             $mail->clearAllRecipients();
             
-            // Small delay to avoid rate limiting (Gmail allows ~100-500 per day for free accounts)
+            // Small delay to avoid rate limiting
             usleep(100000); // 0.1 second delay
             
         } catch (Exception $e) {
@@ -282,21 +309,26 @@ try {
         error_log("Failed emails: " . implode(', ', $failed_emails));
     }
     
-    // Log email sending activity to database (optional)
+    // Log email sending activity to database
     try {
         $log_query = "INSERT INTO email_logs 
                       (admin_id, template_type, recipients_count, success_count, failed_count, sent_at) 
                       VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)";
-        pg_query_params($conn, $log_query, [
+        $log_result = pg_query_params($conn, $log_query, [
             $_SESSION['user_id'],
             $template_type,
             $recipient_count,
             $success_count,
             $failed_count
         ]);
+        
+        if ($log_result) {
+            error_log("✓ Email activity logged to database");
+        } else {
+            error_log("✗ Failed to log email activity: " . pg_last_error($conn));
+        }
     } catch (Exception $e) {
-        // Log but don't fail the request
-        error_log("Failed to log email activity: " . $e->getMessage());
+        error_log("✗ Exception while logging email activity: " . $e->getMessage());
     }
     
     // Response
@@ -317,11 +349,12 @@ try {
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to send any emails. Please check your SMTP configuration.',
+            'message' => 'Failed to send any emails. Please check your SMTP configuration and error logs.',
             'details' => [
                 'success' => 0,
                 'failed' => $failed_count,
-                'total' => $recipient_count
+                'total' => $recipient_count,
+                'failed_emails' => $failed_emails
             ]
         ]);
     }
@@ -332,7 +365,7 @@ try {
     
     echo json_encode([
         'success' => false,
-        'message' => 'An error occurred while processing your request: ' . $e->getMessage()
+        'message' => 'An error occurred: ' . $e->getMessage()
     ]);
 }
 
