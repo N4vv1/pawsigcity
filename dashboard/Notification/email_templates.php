@@ -14,7 +14,7 @@ return [
                 We appreciate your loyalty to PAWsig City! 
             </p>
             <div style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); padding: 25px; text-align: center; margin: 25px 0; border-radius: 12px; box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);">
-                <h2 style="color: #fff; font-size: 32px; margin: 0 0 10px 0;">🎉 SPECIAL OFFER 🎉</h2>
+                <h2 style="color: #fff; font-size: 32px; margin: 0 0 10px 0;"> SPECIAL OFFER </h2>
                 <p style="color: #fff; font-size: 24px; font-weight: bold; margin: 0;">20% OFF</p>
                 <p style="color: #fff; font-size: 16px; margin: 10px 0 0 0;">All Grooming Services</p>
             </div>
@@ -40,7 +40,7 @@ return [
                 Dear Valued Customer,
             </p>
             <div style="background: #FFF3CD; padding: 20px; border-left: 4px solid #FFA500; margin: 20px 0; border-radius: 8px;">
-                <h3 style="color: #856404; margin: 0 0 10px 0;">⚠️ Temporary Closure</h3>
+                <h3 style="color: #856404; margin: 0 0 10px 0;"> Temporary Closure</h3>
                 <p style="color: #856404; margin: 0; font-size: 15px;">
                     PAWsig City will be temporarily closed for maintenance and improvements.
                 </p>
@@ -61,14 +61,14 @@ return [
 
     // Reopening Notice Template
     'reopening' => [
-        'subject' => 'We\'re Back! PAWsig City is Now Open 🎊',
+        'subject' => 'We\'re Back! PAWsig City is Now Open ',
         'title' => 'We\'re Open Again!',
         'content' => '
             <p style="font-size: 16px; color: #666; line-height: 1.6;">
                 Great news! PAWsig City has reopened and we\'re excited to welcome you back!
             </p>
             <div style="background: linear-gradient(135deg, #A8E6CF 0%, #7FD4B3 100%); padding: 25px; text-align: center; margin: 25px 0; border-radius: 12px;">
-                <h2 style="color: #2d5f4a; font-size: 36px; margin: 0;">🎊 WE\'RE OPEN! 🎊</h2>
+                <h2 style="color: #2d5f4a; font-size: 36px; margin: 0;"> WE\'RE OPEN! </h2>
                 <p style="color: #2d5f4a; font-size: 18px; margin: 15px 0 0 0;">
                     Visit us today with exciting new improvements!
                 </p>

@@ -568,7 +568,7 @@ $templates = include('email_templates.php');
 
 <main>
   <div class="header">
-    <h1>📧 Email Notifications</h1>
+    <h1> Email Notifications</h1>
     <p>Send announcements, promotions, and updates to your users</p>
   </div>
 
@@ -580,11 +580,11 @@ $templates = include('email_templates.php');
         <label for="template">Choose Template Type</label>
         <select class="form-control" id="template" name="template_type" required>
           <option value="">-- Select Template --</option>
-          <option value="discount">🎉 Discount/Promotion</option>
-          <option value="closure">⚠️ Closure Notice</option>
-          <option value="reopening">🎊 Reopening Announcement</option>
-          <option value="announcement">📢 General Announcement</option>
-          <option value="custom">✏️ Custom Message</option>
+          <option value="discount"> Discount/Promotion</option>
+          <option value="closure"> Closure Notice</option>
+          <option value="reopening"> Reopening Announcement</option>
+          <option value="announcement"> General Announcement</option>
+          <option value="custom"> Custom Message</option>
         </select>
       </div>
 
