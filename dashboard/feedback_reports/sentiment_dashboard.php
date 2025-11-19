@@ -835,13 +835,12 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
 
   <!-- PDF Export Display (Hidden from screen, visible on print) -->
   <div id="exportDisplay" style="display: none;">
-    <h2>Feedback Report - Organized by Sentiment</h2>
     <p style="margin-bottom: 20px; color: #666;">Report Generated: <?= date('M d, Y H:i') ?></p>
 
     <!-- POSITIVE FEEDBACK -->
     <div class="sentiment-section">
       <div class="sentiment-header positive">
-        ✓ POSITIVE FEEDBACK (<?= count($feedback_by_sentiment['positive']) ?> responses)
+         POSITIVE FEEDBACK (<?= count($feedback_by_sentiment['positive']) ?> responses)
       </div>
       <div class="sentiment-summary">
         <strong>Count:</strong> <?= count($feedback_by_sentiment['positive']) ?> | 
@@ -880,7 +879,7 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
     <!-- NEUTRAL FEEDBACK -->
     <div class="sentiment-section">
       <div class="sentiment-header neutral">
-        ◆ NEUTRAL FEEDBACK (<?= count($feedback_by_sentiment['neutral']) ?> responses)
+         NEUTRAL FEEDBACK (<?= count($feedback_by_sentiment['neutral']) ?> responses)
       </div>
       <div class="sentiment-summary">
         <strong>Count:</strong> <?= count($feedback_by_sentiment['neutral']) ?> | 
@@ -919,7 +918,7 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
     <!-- NEGATIVE FEEDBACK -->
     <div class="sentiment-section">
       <div class="sentiment-header negative">
-        ✗ NEGATIVE FEEDBACK (<?= count($feedback_by_sentiment['negative']) ?> responses)
+         NEGATIVE FEEDBACK (<?= count($feedback_by_sentiment['negative']) ?> responses)
       </div>
       <div class="sentiment-summary">
         <strong>Count:</strong> <?= count($feedback_by_sentiment['negative']) ?> | 
