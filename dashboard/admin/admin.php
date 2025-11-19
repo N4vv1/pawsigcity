@@ -633,6 +633,16 @@ if ($noShowCount > 0) {
       <p><?= $archived_pets ?></p>
       <a href="javascript:void(0)" onclick="openModal('archived_pets')">View Archived</a>
     </div>
+
+    <div class="card">
+      <div class="card-icon"><i class='bx bx-message-dots'></i></div>
+      <h3>Customer Feedback</h3>
+      <p><?php 
+        $feedback_count = pg_query($conn, "SELECT COUNT(*) as count FROM appointments WHERE rating IS NOT NULL");
+        echo $feedback_count ? pg_fetch_result($feedback_count, 0, 'count') : 0;
+      ?></p>
+      <a href="javascript:void(0)" onclick="openModal('feedback')">View Feedback</a>
+    </div>
   </div>
 </main>
 
@@ -903,8 +913,6 @@ if ($noShowCount > 0) {
      style="max-width: 1400px; max-height: 85vh; overflow-y: auto;
             position: absolute; right: 80px; top: 50%; transform: translateY(-50%);">
 
-
-
     <h2>All Appointments</h2>
     <div style="overflow-x: auto;">
     <table style="font-size: 0.85rem; min-width: 100%;">
@@ -957,13 +965,12 @@ if ($noShowCount > 0) {
               <?= date('M d, Y g:i A', strtotime($row['appointment_date'])) ?>
             </td>
             
-            <!-- STATUS COLUMN - FIXED -->
             <td>
               <?php if (!empty($row['cancel_reason']) && $row['status'] !== 'cancelled'): ?>
                 <span style="color: red; font-weight: bold; font-size: 0.8rem;">Cancel Request</span>
               
               <?php elseif (!empty($row['reschedule_reason']) && $row['reschedule_approved'] !== true): ?>
-                <span style="color: orange; font-weight: bold; font-size: 0.8rem;">Reschedule Request</span>
+                <span style="color: orange; font-weight: bold; font-size: 0.8rem;">Reschedule</span>
               
               <?php elseif ($row['status'] === 'no_show'): ?>
                 <span style="color: red; font-weight: bold; font-size: 0.8rem;">No Show</span>
@@ -991,7 +998,6 @@ if ($noShowCount > 0) {
               <?= !empty($row['notes']) ? htmlspecialchars(substr($row['notes'], 0, 50)) . (strlen($row['notes']) > 50 ? '...' : '') : '-' ?>
             </td>
             
-            <!-- CANCEL REASON COLUMN - ADDED DATA -->
             <td style="font-size: 0.75rem; color: #d32f2f; max-width: 150px;">
               <?php if (!empty($row['cancel_reason'])): ?>
                 <strong></strong> <?= htmlspecialchars(substr($row['cancel_reason'], 0, 60)) ?><?= strlen($row['cancel_reason']) > 60 ? '...' : '' ?>
@@ -1000,7 +1006,6 @@ if ($noShowCount > 0) {
               <?php endif; ?>
             </td>
 
-            <!-- RESCHEDULE REASON COLUMN - NEW -->
             <td style="font-size: 0.75rem; color: #ff9800; max-width: 150px;">
               <?php if (!empty($row['reschedule_reason'])): ?>
                 <strong>Reason:</strong> <?= htmlspecialchars(substr($row['reschedule_reason'], 0, 60)) ?><?= strlen($row['reschedule_reason']) > 60 ? '...' : '' ?>
@@ -1150,6 +1155,208 @@ if ($noShowCount > 0) {
   </div>
 </div>
 
+<!-- FEEDBACK MODAL -->
+<div id="feedbackModal" class="modal">
+  <div class="modal-content" style="max-width: 1600px; max-height: 90vh; overflow-y: auto;">
+    <h2>📊 Customer Feedback Analysis</h2>
+    
+    <!-- Filter Section -->
+    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+      <label style="font-weight: 600; margin-right: 10px;">Filter by Sentiment:</label>
+      <select id="feedbackFilter" onchange="filterFeedbackTable()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; margin-right: 20px;">
+        <option value="all">All Feedback</option>
+        <option value="positive">Positive (4-5 ⭐)</option>
+        <option value="neutral">Neutral (3 ⭐)</option>
+        <option value="negative">Negative (1-2 ⭐)</option>
+      </select>
+      
+      <label style="font-weight: 600; margin-right: 10px;">Time Period:</label>
+      <select id="timeFilter" onchange="filterFeedbackTable()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+        <option value="all">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+      </select>
+    </div>
+    
+    <?php
+    // Fetch all feedback with customer and pet details
+    $feedbackQuery = "
+        SELECT 
+            a.appointment_id,
+            a.appointment_date,
+            a.rating,
+            a.feedback,
+            u.first_name,
+            u.middle_name,
+            u.last_name,
+            p.name AS pet_name,
+            p.breed AS pet_breed,
+            pk.name AS package_name,
+            a.groomer_name,
+            CASE 
+                WHEN a.rating >= 4 THEN 'POSITIVE'
+                WHEN a.rating = 3 THEN 'NEUTRAL'
+                ELSE 'NEGATIVE'
+            END AS sentiment
+        FROM appointments a
+        JOIN users u ON a.user_id = u.user_id
+        JOIN pets p ON a.pet_id = p.pet_id
+        JOIN packages pk ON a.package_id = pk.package_id
+        WHERE a.rating IS NOT NULL
+        ORDER BY a.appointment_date DESC
+    ";
+    
+    $feedbackResult = pg_query($conn, $feedbackQuery);
+    
+    // Calculate statistics
+    $positive_count = 0;
+    $neutral_count = 0;
+    $negative_count = 0;
+    $total_rating = 0;
+    $feedback_data = [];
+    
+    while ($row = pg_fetch_assoc($feedbackResult)) {
+        $feedback_data[] = $row;
+        
+        if ($row['rating'] >= 4) {
+            $positive_count++;
+        } elseif ($row['rating'] == 3) {
+            $neutral_count++;
+        } else {
+            $negative_count++;
+        }
+        
+        $total_rating += $row['rating'];
+    }
+    
+    $total_feedback = count($feedback_data);
+    $average_rating = $total_feedback > 0 ? round($total_rating / $total_feedback, 2) : 0;
+    $positive_percent = $total_feedback > 0 ? round(($positive_count / $total_feedback) * 100, 1) : 0;
+    $neutral_percent = $total_feedback > 0 ? round(($neutral_count / $total_feedback) * 100, 1) : 0;
+    $negative_percent = $total_feedback > 0 ? round(($negative_count / $total_feedback) * 100, 1) : 0;
+    ?>
+    
+    <!-- Summary Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+      <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; font-size: 2.5rem; font-weight: bold;"><?= $positive_count ?></h3>
+        <p style="margin: 5px 0; font-size: 1rem; font-weight: 600;">POSITIVE</p>
+        <small style="font-size: 0.9rem; opacity: 0.9;"><?= $positive_percent ?>% of total</small>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, #FF9800 0%, #f57c00 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; font-size: 2.5rem; font-weight: bold;"><?= $neutral_count ?></h3>
+        <p style="margin: 5px 0; font-size: 1rem; font-weight: 600;">NEUTRAL</p>
+        <small style="font-size: 0.9rem; opacity: 0.9;"><?= $neutral_percent ?>% of total</small>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, #F44336 0%, #d32f2f 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; font-size: 2.5rem; font-weight: bold;"><?= $negative_count ?></h3>
+        <p style="margin: 5px 0; font-size: 1rem; font-weight: 600;">NEGATIVE</p>
+        <small style="font-size: 0.9rem; opacity: 0.9;"><?= $negative_percent ?>% of total</small>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, #A8E6CF 0%, #3ABB87 100%); color: #252525; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="margin: 0; font-size: 2.5rem; font-weight: bold;"><?= $average_rating ?></h3>
+        <p style="margin: 5px 0; font-size: 1rem; font-weight: 600;">AVERAGE RATING</p>
+        <small style="font-size: 0.9rem;">out of 5.0 stars</small>
+      </div>
+    </div>
+    
+    <!-- Feedback Table -->
+    <h3 style="margin: 25px 0 15px 0; color: #252525;">All Feedback (Page 1 of 1)</h3>
+    <div style="overflow-x: auto;">
+      <table id="feedbackTableMain" style="font-size: 0.9rem;">
+        <thead>
+          <tr>
+            <th style="min-width: 120px;">Date</th>
+            <th style="min-width: 140px;">Customer</th>
+            <th style="min-width: 120px;">Pet</th>
+            <th style="min-width: 100px;">Service</th>
+            <th style="min-width: 100px;">Groomer</th>
+            <th style="min-width: 100px;">Rating</th>
+            <th style="min-width: 250px;">Feedback</th>
+            <th style="min-width: 100px;">Sentiment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if (empty($feedback_data)): ?>
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                <i class='bx bx-comment-x' style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+                <strong>No feedback yet</strong>
+                <p style="margin-top: 5px; font-size: 0.9rem;">Completed appointments with ratings will appear here</p>
+              </td>
+            </tr>
+          <?php else: ?>
+            <?php foreach ($feedback_data as $fb): 
+              $customer_name = trim($fb['first_name'] . ' ' . $fb['middle_name'] . ' ' . $fb['last_name']);
+              $sentiment_lower = strtolower($fb['sentiment']);
+              
+              // Sentiment colors
+              $sentiment_colors = [
+                'positive' => '#4CAF50',
+                'neutral' => '#FF9800',
+                'negative' => '#F44336'
+              ];
+              $sentiment_bg = $sentiment_colors[$sentiment_lower];
+            ?>
+            <tr class="feedback-row" data-sentiment="<?= $sentiment_lower ?>" data-date="<?= $fb['appointment_date'] ?>">
+              <td style="font-size: 0.85rem; white-space: nowrap;">
+                <?= date('M d, Y', strtotime($fb['appointment_date'])) ?><br>
+                <small style="color: #666;"><?= date('g:i A', strtotime($fb['appointment_date'])) ?></small>
+              </td>
+              
+              <td>
+                <strong><?= htmlspecialchars($customer_name) ?></strong>
+              </td>
+              
+              <td>
+                <strong><?= htmlspecialchars($fb['pet_name']) ?></strong><br>
+                <small style="color: #666;"><?= htmlspecialchars($fb['pet_breed']) ?></small>
+              </td>
+              
+              <td><?= htmlspecialchars($fb['package_name']) ?></td>
+              
+              <td><?= !empty($fb['groomer_name']) ? htmlspecialchars($fb['groomer_name']) : '<em style="color: #999;">Not assigned</em>' ?></td>
+              
+              <td>
+                <div style="color: #FFD700; font-size: 1.1rem; margin-bottom: 3px;">
+                  <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <?= $i <= $fb['rating'] ? '★' : '☆' ?>
+                  <?php endfor; ?>
+                </div>
+                <small style="color: #666;"><?= $fb['rating'] ?>/5</small>
+              </td>
+              
+              <td style="max-width: 300px; line-height: 1.4;">
+                <?php if (!empty($fb['feedback'])): ?>
+                  <span style="font-style: italic; color: #333;">
+                    "<?= htmlspecialchars($fb['feedback']) ?>"
+                  </span>
+                <?php else: ?>
+                  <em style="color: #999;">No comment provided</em>
+                <?php endif; ?>
+              </td>
+              
+              <td>
+                <span style="background: <?= $sentiment_bg ?>; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; display: inline-block; text-transform: uppercase;">
+                  <?= $fb['sentiment'] ?>
+                </span>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </div>
+    
+    <button onclick="closeModal('feedbackModal')" style="margin-top: 25px;">Close</button>
+  </div>
+</div>
+
 <script>
 // Define functions IMMEDIATELY in global scope
 window.openModal = function(type) {
@@ -1163,7 +1370,8 @@ window.openModal = function(type) {
     completed: 'completedModal',
     appointments: 'appointmentsModal',
     history: 'historyModal',
-    archived_pets: 'archived_petsModal'
+    archived_pets: 'archived_petsModal',
+    feedback: 'feedbackModal'
   };
   
   console.log('openModal called with:', type);
@@ -1185,6 +1393,61 @@ window.closeModal = function(id) {
   const modal = document.getElementById(id);
   if (modal) modal.style.display = 'none';
 };
+
+function filterFeedbackTable() {
+  const sentimentFilter = document.getElementById('feedbackFilter').value;
+  const timeFilter = document.getElementById('timeFilter').value;
+  const rows = document.querySelectorAll('.feedback-row');
+  
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+  const yearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+  
+  let visibleCount = 0;
+  
+  rows.forEach(row => {
+    const sentiment = row.getAttribute('data-sentiment');
+    const dateStr = row.getAttribute('data-date');
+    const rowDate = new Date(dateStr);
+    
+    // Check sentiment filter
+    let sentimentMatch = sentimentFilter === 'all' || sentiment === sentimentFilter;
+    
+    // Check time filter
+    let timeMatch = true;
+    if (timeFilter === 'today') {
+      timeMatch = rowDate >= today;
+    } else if (timeFilter === 'week') {
+      timeMatch = rowDate >= weekAgo;
+    } else if (timeFilter === 'month') {
+      timeMatch = rowDate >= monthAgo;
+    } else if (timeFilter === 'year') {
+      timeMatch = rowDate >= yearAgo;
+    }
+    
+    if (sentimentMatch && timeMatch) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  // Show message if no results
+  const tbody = document.querySelector('#feedbackTableMain tbody');
+  const noResultsRow = tbody.querySelector('.no-results-row');
+  
+  if (visibleCount === 0 && !noResultsRow) {
+    const tr = document.createElement('tr');
+    tr.className = 'no-results-row';
+    tr.innerHTML = '<td colspan="8" style="text-align: center; padding: 30px; color: #999;"><i class="bx bx-search-alt" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i><strong>No feedback matches your filters</strong></td>';
+    tbody.appendChild(tr);
+  } else if (visibleCount > 0 && noResultsRow) {
+    noResultsRow.remove();
+  }
+}
 
 window.viewHistory = function(userId) {
   openModal('history');
@@ -1236,6 +1499,7 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('confirmedModal exists:', document.getElementById('confirmedModal') !== null);
   console.log('completedModal exists:', document.getElementById('completedModal') !== null);
   console.log('appointmentsModal exists:', document.getElementById('appointmentsModal') !== null);
+  console.log('feedbackModal exists:', document.getElementById('feedbackModal') !== null);
   
   // Auto-open archived pets modal if there's a show parameter
   const urlParams = new URLSearchParams(window.location.search);
