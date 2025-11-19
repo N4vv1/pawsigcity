@@ -373,100 +373,6 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
       display: flex;
     }
 
-    /* STATS CARDS */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      margin-bottom: 50px;
-    }
-
-    .stat-card {
-      background: var(--white-color);
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-3px);
-    }
-
-    .stat-card h3 {
-      font-size: 0.85rem;
-      color: #999;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 500;
-    }
-
-    .stat-card .count {
-      font-size: 2.5rem;
-      font-weight: 600;
-      color: var(--dark-color);
-      margin-bottom: 8px;
-    }
-
-    .stat-card.positive .count { color: var(--positive-color); }
-    .stat-card.neutral .count { color: var(--neutral-color); }
-    .stat-card.negative .count { color: var(--negative-color); }
-    .stat-card.pending .count { color: var(--pending-color); }
-
-    .stat-card .percentage {
-      font-size: 0.9rem;
-      color: #999;
-    }
-
-    /* ANALYZE BUTTON */
-    .analyze-section {
-      background: var(--white-color);
-      padding: 35px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      margin-bottom: 50px;
-      text-align: center;
-    }
-
-    .analyze-section h2 {
-      font-size: 1.2rem;
-      color: var(--dark-color);
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
-    .analyze-section p {
-      color: #666;
-      margin-bottom: 20px;
-    }
-
-    .analyze-btn {
-      background: var(--dark-color);
-      color: var(--white-color);
-      padding: 14px 35px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .analyze-btn:hover {
-      background: #1a1a1a;
-      transform: translateY(-1px);
-    }
-
-    .analyze-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .analyze-btn i {
-      margin-right: 8px;
-    }
-
     /* FEEDBACK TABLE */
     .feedback-section {
       background: var(--white-color);
@@ -640,26 +546,9 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
       background: var(--negative-color);
     }
 
-    /* LOADING SPINNER */
-    .spinner {
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top: 3px solid white;
-      border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      margin-right: 10px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     /* PRINT STYLES */
     @media print {
-      .sidebar, .export-btn, .analyze-section, .filter-buttons, .pagination, .apply-filter-btn, .date-filter-section, #screenDisplay {
+      .sidebar, .export-btn, .filter-buttons, .pagination, .apply-filter-btn, .date-filter-section, #screenDisplay {
         display: none !important;
       }
       
@@ -796,7 +685,7 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
   <div class="header">
     <div class="header-left">
       <h1>Feedbacks</h1>
-      <p>Analyze customer feedback</p>
+      <p>Customer feedback reports</p>
     </div>
     <button class="export-btn" onclick="exportToPDF()">
       <i class='bx bx-download'></i>
@@ -839,46 +728,6 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
       </div>
     </form>
   </div>
-
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <div class="stat-card positive">
-      <h3>Positive</h3>
-      <div class="count"><?= $positive_count ?></div>
-      <div class="percentage"><?= $positive_percent ?>% of total</div>
-    </div>
-
-    <div class="stat-card neutral">
-      <h3>Neutral</h3>
-      <div class="count"><?= $neutral_count ?></div>
-      <div class="percentage"><?= $neutral_percent ?>% of total</div>
-    </div>
-
-    <div class="stat-card negative">
-      <h3>Negative</h3>
-      <div class="count"><?= $negative_count ?></div>
-      <div class="percentage"><?= $negative_percent ?>% of total</div>
-    </div>
-
-    <div class="stat-card pending">
-      <h3>Pending</h3>
-      <div class="count"><?= $pending_count ?></div>
-      <div class="percentage">Not analyzed</div>
-    </div>
-  </div>
-
-  <!-- Analyze Button -->
-  <?php if ($pending_count > 0): ?>
-  <div class="analyze-section">
-    <h2>Run Sentiment Analysis</h2>
-    <p>
-      Analyze <?= $pending_count ?> pending feedback<?= $pending_count > 1 ? 's' : '' ?> using VADER sentiment analysis
-    </p>
-    <button class="analyze-btn" onclick="runSentimentAnalysis()">
-      <i class='bx bx-brain'></i> Analyze Now
-    </button>
-  </div>
-  <?php endif; ?>
 
   <!-- Screen Display Feedback Table -->
   <div class="feedback-section" id="screenDisplay">
@@ -1201,51 +1050,6 @@ function showToast(message, isError = false) {
   toast.className = 'toast' + (isError ? ' error' : '');
   toast.style.display = 'block';
   setTimeout(() => toast.style.display = 'none', 4000);
-}
-
-// Run sentiment analysis
-function runSentimentAnalysis() {
-  const btn = event.target;
-  const originalText = btn.innerHTML;
-  
-  // Disable button and show loading
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Analyzing...';
-  
-  // Call Python script via PHP handler
-  fetch('run_sentiment_analysis.php')
-    .then(response => response.json())
-    .then(data => {
-      console.log('Full response:', data);
-      
-      if (data.success) {
-        showToast('✅ ' + data.message);
-        setTimeout(() => location.reload(), 2000);
-      } else {
-        let errorDetails = data.message;
-        if (data.error) {
-          errorDetails += '\n\nError output:\n' + data.error;
-        }
-        if (data.command) {
-          errorDetails += '\n\nCommand: ' + data.command;
-        }
-        if (data.return_code) {
-          errorDetails += '\n\nReturn code: ' + data.return_code;
-        }
-        
-        console.error('Error details:', errorDetails);
-        alert(errorDetails);
-        showToast('❌ ' + data.message, true);
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }
-    })
-    .catch(error => {
-      console.error('Fetch error:', error);
-      showToast('❌ Error running analysis: ' + error.message, true);
-      btn.disabled = false;
-      btn.innerHTML = originalText;
-    });
 }
 
 // Export to PDF

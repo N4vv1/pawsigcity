@@ -1157,7 +1157,7 @@ if ($noShowCount > 0) {
 
 <!-- FEEDBACK MODAL -->
 <div id="feedbackModal" class="modal">
-  <div class="modal-content" style="max-width: 1600px; max-height: 90vh; overflow-y: auto;">
+  <div class="modal-content" style="max-width: 1200px; max-height: 90vh; overflow-y: auto;">
     <h2>Customer Feedback Analysis</h2>
     
     <!-- Filter Section -->
