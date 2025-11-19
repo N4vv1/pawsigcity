@@ -666,7 +666,7 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
     <hr>
     <a href="../feedback_reports/sentiment_dashboard.php"><i class='bx bx-comment-detail'></i>Feedback Reports</a>
     <hr>
-    <a href="../Notification/email_notifications.php"><i class='bx bx-mail-send'></i>Email Notifications</a>
+    <a href="../Notification/email_notification.php"><i class='bx bx-mail-send'></i>Email Notifications</a>
     <hr>
     <a href="../../homepage/logout/logout.php"><i class='bx bx-log-out'></i>Logout</a>
   </nav>
@@ -1046,12 +1046,6 @@ if (file_exists($peakModelPath) && file_exists($noshowModelPath)) {
         <span class="detail-value"><strong>${peakHour}:00</strong> (${peakHourCount} apt${peakHourCount > 1 ? 's' : ''})</span>
       </div>
       ${hourlyBreakdown}
-      <div class="algorithm-info">
-        <strong>📊 Actual Data:</strong> All statistics are based on real bookings for this day.
-      </div>
-      <div class="algorithm-info">
-        <strong>💡 Recommendation:</strong> ${recommendation}
-      </div>
     `;
 
     modal.classList.add('show');
