@@ -837,7 +837,6 @@ while ($row = pg_fetch_assoc($all_feedback_result)) {
 
   <!-- PDF Export Display (Hidden from screen, visible on print) -->
   <div id="exportDisplay" style="display: none;">
-    <p style="margin-bottom: 20px; color: #666;">Report Generated: <?= date('M d, Y H:i') ?></p>
 
     <!-- POSITIVE FEEDBACK -->
     <div class="sentiment-section">

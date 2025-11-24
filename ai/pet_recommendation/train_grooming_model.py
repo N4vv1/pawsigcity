@@ -40,22 +40,22 @@ clf.fit(X_train, y_train)
 # ===== TRAINING ACCURACY =====
 train_predictions = clf.predict(X_train)
 train_accuracy = accuracy_score(y_train, train_predictions)
-print(f"📊 Training Accuracy: {train_accuracy * 100:.2f}%")
+print(f" Training Accuracy: {train_accuracy * 100:.2f}%")
 
 # ===== TESTING ACCURACY =====
 test_predictions = clf.predict(X_test)
 test_accuracy = accuracy_score(y_test, test_predictions)
-print(f"📊 Testing Accuracy: {test_accuracy * 100:.2f}%\n")
+print(f" Testing Accuracy: {test_accuracy * 100:.2f}%\n")
 
 # ===== CROSS-VALIDATION ACCURACY =====
 cv_scores = cross_val_score(clf, X, y, cv=5)
-print(f"📊 Cross-Validation Accuracy (5-fold):")
+print(f"  Cross-Validation Accuracy (5-fold):")
 print(f"   Mean: {cv_scores.mean() * 100:.2f}%")
 print(f"   Std Dev: {cv_scores.std() * 100:.2f}%")
 print(f"   All folds: {[f'{score*100:.2f}%' for score in cv_scores]}\n")
 
 # ===== CLASSIFICATION REPORT =====
-print("📋 Classification Report (Test Set):")
+print(" Classification Report (Test Set):")
 print(classification_report(
     y_test, 
     test_predictions, 
@@ -64,13 +64,13 @@ print(classification_report(
 ))
 
 # ===== CONFUSION MATRIX =====
-print("📊 Confusion Matrix (Test Set):")
+print(" Confusion Matrix (Test Set):")
 cm = confusion_matrix(y_test, test_predictions)
 print(cm)
 print(f"\nPackage labels: {le_package.classes_.tolist()}\n")
 
 # ===== BREED-PACKAGE MAPPING ANALYSIS =====
-print("📌 Breed to Package Mapping:")
+print(" Breed to Package Mapping:")
 breed_package_map = df.groupby('Breed')['Package'].agg(lambda x: x.mode()[0] if not x.mode().empty else x.iloc[0])
 for breed, package in breed_package_map.items():
     print(f"   {breed} → {package}")
@@ -97,5 +97,5 @@ accuracy_metrics = {
 with open("model_accuracy.pkl", "wb") as f:
     pickle.dump(accuracy_metrics, f)
 
-print("✅ Model trained and saved successfully with accuracy metrics!")
-print(f"✅ Model accuracy: {test_accuracy * 100:.2f}%")
+print(" Model trained and saved successfully with accuracy metrics!")
+print(f" Model accuracy: {test_accuracy * 100:.2f}%")
