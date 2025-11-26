@@ -60,10 +60,12 @@ $total_pages = ceil($total_records / $items_per_page);
 $query = "
     SELECT a.*, 
            p.name AS pet_name, 
-           pk.name AS package_name
+           pk.name AS package_name,
+           pp.price AS package_price
     FROM appointments a
     JOIN pets p ON a.pet_id = p.pet_id
     JOIN packages pk ON a.package_id = pk.package_id
+    LEFT JOIN package_prices pp ON pp.package_id = a.package_id
     WHERE $where_clause
     ORDER BY a.appointment_date ASC
     LIMIT $items_per_page OFFSET $offset
@@ -648,6 +650,7 @@ if ($row_count > 0) {
     table {
       width: 100%;
       border-collapse: collapse;
+      max-width: 1500px;
     }
 
     table th,
@@ -1570,6 +1573,7 @@ if ($row_count > 0) {
               <th>ID</th>
               <th>Pet</th>
               <th>Service</th>
+              <th>Price</th>
               <th>Date & Time</th>
               <th>Recommended</th>
               <th>Approval</th>
@@ -1584,6 +1588,9 @@ if ($row_count > 0) {
                 <td><?= htmlspecialchars($row['appointment_id']) ?></td>
                 <td><?= htmlspecialchars($row['pet_name']) ?></td>
                 <td><?= htmlspecialchars($row['package_name']) ?></td>
+                <td style="font-weight: 600; color: #016B61;">
+                  ₱<?= number_format($row['package_price'], 2) ?>
+                </td>
                 <td>
                   <?= htmlspecialchars(date("M d, Y h:i A", strtotime($row['appointment_date']))) ?>
                   
